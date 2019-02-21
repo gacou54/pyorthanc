@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='pyorthanc',
     version='',
-    packages=['orthanc', 'orthanc.datastructure.tree'],
+    packages=['orthanc'],
     url='https://github.com/gacou54/pyorthanc',
     license='MIT',
     author='Gabriel Couture',
