@@ -116,310 +116,436 @@ class Orthanc:
 
         return requests.put(route, data, json=json, **kwargs)
 
-    def get_resourcetype_identifier_attachments(self,
-                                                resourceType: str,
-                                                identifier: str,
-                                                params: Dict = None,
-                                                **kwargs) -> requests.Response:
-        """
+    def get_attachments(
+            self, resource_type: str,
+            identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
+        """Get list of files attached to the object identifier
 
         List the files that are attached to this patient, study, series or instance
+
+        Parameters
+        ----------
+        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier : Object identifier (patient, study, series, instance).
+        params : GET HTTP request's params.
+
         Returns
         -------
         requests.Response
+            List of files attached to the object corresponding to the object identifier
         """
         return self.get_request(
-            f'{self._orthanc_url}/{resourceType}/{identifier}/attachments',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments',
             params=params,
             **kwargs)
 
-    def get_resourcetype_identifier_attachments_name(
-            self,
-            resourceType: str,
+    def get_attachment_by_name(
+            self, resource_type: str,
             identifier: str,
             name: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get attachment file corresponding to object identifier and attachment's name
+
+        Parameters
+        ----------
+        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier : Object identifier (patient, study, series, instance).
+        name : Attachment name.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Attachment file corresponding to object identifier and attachment's name
         """
         return self.get_request(
-            f'{self._orthanc_url}/{resourceType}/{identifier}/attachments/{name}',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}',
             params=params,
             **kwargs)
 
-    def delete_resourceType_identifier_attachments_name(
-            self, resourceType: str, identifier: str, name: str,
+    def delete_attachment_by_name(
+            self, resource_type: str,
+            identifier: str,
+            name: str,
             **kwargs) -> requests.Response:
-        """Delete method
+        """Delete attachment by name
+
+        Delete the specified attachment file.
+
+        Parameters
+        ----------
+        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier : Object identifier (patient, study, series, instance).
+        name : Attachment name.
 
         Returns
         -------
         requests.Response
         """
         return self.delete_request(
-            f'{self._orthanc_url}/{resourceType}/{identifier}/attachments/{name}',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}',
             **kwargs)
 
-    def put_resourceType_identifier_attachments_name(
-            self,
-            resourceType: str,
+    def put_attachment_by_name(
+            self, resource_type: str,
             identifier: str,
             name: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Put method
+        """Put attachment with given name
+
+        Parameters
+        ----------
+        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier : Object identifier (patient, study, series, instance).
+        name : Attachment name.
+        data : Data to send in the request's body.
+        json : json to send in the request's body.
 
         Returns
         -------
         requests.Response
         """
         return self.put_request(
-            f'{self._orthanc_url}/{resourceType}/{identifier}/attachments/{name}',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}',
             data=data,
             json=json,
             **kwargs)
 
-    def post_resourceType_identifier_attachments_name_compress(
-            self,
-            resourceType: str,
+    def post_compress_attachment(
+            self, resource_type: str,
             identifier: str,
             name: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Compress attachment file
+
+        This method should compress the DICOM instance(s).
+
+        Parameters
+        ----------
+        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier : Object identifier (patient, study, series, instance).
+        name : Attachment name.
+        data : Data to send in the request's body.
+        json : json to send in the request's body.
 
         Returns
         -------
         requests.Response
         """
         return self.post_request(
-            f'{self._orthanc_url}/{resourceType}/{identifier}/attachments/{name}/compress',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/compress',
             data=data,
             json=json,
             **kwargs)
 
-    def get_resourceType_identifier_attachments_name_compressed_data(
-            self,
-            resourceType: str,
+    def get_attachment_compressed_data(
+            self, resource_type: str,
             identifier: str,
             name: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
-        Return the (possibly compressed) data, as stored on the disk
-        Returns
-        -------
-        requests.Response
-        """
-        return self.get_request(
-            f'{self._orthanc_url}/{resourceType}/{identifier}/attachments/{name}/compressed_data',
-            params=params,
-            **kwargs)
+        """Get attachment compressed data
 
-    def get_resourceType_identifier_attachments_name_compressed_md5(
-            self,
-            resourceType: str,
-            identifier: str,
-            name: str,
-            params: Dict = None,
-            **kwargs) -> requests.Response:
-        """Get method
+        Return the (possibly compressed) data, as stored on the disk.
+
+        Parameters
+        ----------
+        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier : Object identifier (patient, study, series, instance).
+        name : Attachment name.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            The (possibly compressed) data, as stored on the disk.
         """
         return self.get_request(
-            f'{self._orthanc_url}/{resourceType}/{identifier}/attachments/{name}/compressed_md5',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/compressed_data',
             params=params,
             **kwargs)
 
-    def get_resourceType_identifier_attachments_name_compressed_size(
-            self,
-            resourceType: str,
+    def get_attachment_compressed_data_md5(
+            self, resource_type: str,
             identifier: str,
             name: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get attachment by name as compressed data in md5
+
+        Return the (possibly compressed) data, with md5 encryption.
+        Note that md5 is not a safe encryption and should not be used if
+        real encryption is needed.
+
+        Parameters
+        ----------
+        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier : Object identifier (patient, study, series, instance).
+        name : Attachment name.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            The (possibly compressed) data, with md5 encryption.
         """
         return self.get_request(
-            f'{self._orthanc_url}/{resourceType}/{identifier}/attachments/{name}/compressed_size',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/compressed_md5',
             params=params,
             **kwargs)
 
-    def get_resourceType_identifier_attachments_name_data(
-            self,
-            resourceType: str,
+    def get_attachment_compressed_size(
+            self, resource_type: str,
             identifier: str,
             name: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get attachment compressed size
+
+        Parameters
+        ----------
+        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier : Object identifier (patient, study, series, instance).
+        name : Attachment name.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Attachment compressed size.
         """
         return self.get_request(
-            f'{self._orthanc_url}/{resourceType}/{identifier}/attachments/{name}/data',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/compressed_size',
             params=params,
             **kwargs)
 
-    def get_resourceType_identifier_attachments_name_is_compressed(
-            self,
-            resourceType: str,
+    def get_attachment_data(
+            self, resource_type: str,
+            identifier: str,
+            name: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
+        """Get attachment data
+
+        Parameters
+        ----------
+        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier : Object identifier (patient, study, series, instance).
+        name : Attachment name.
+        params : GET HTTP request's params.
+
+        Returns
+        -------
+        requests.Response
+            Attachment data.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/data',
+            params=params,
+            **kwargs)
+
+    def get_if_attachment_compressed(
+            self, resource_type: str,
             identifier: str,
             name: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
         """Get method
+
         Is this attachment compressed: "0" means uncompressed, "1" compressed
+
+        Parameters
+        ----------
+        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier : Object identifier (patient, study, series, instance).
+        name : Attachment name.
+        params : GET HTTP request's params.
+
+        Returns
+        -------
+        requests.Response
+            "0" means uncompressed, "1" compressed
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/is_compressed',
+            params=params,
+            **kwargs)
+
+    def get_attachments_name_md5(
+            self, resource_type: str,
+            identifier: str,
+            name: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
+        """Get method
+        HERE
+
+        Parameters
+        ----------
+        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier : Object identifier (patient, study, series, instance).
+        name : Attachment name.
+        params : GET HTTP request's params.
+
         Returns
         -------
         requests.Response
         """
         return self.get_request(
-            f'{self._orthanc_url}/{resourceType}/{identifier}/attachments/{name}/is_compressed',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/md5',
             params=params,
             **kwargs)
 
-    def get_resourceType_identifier_attachments_name_md5(
+    def get_resource_type_identifier_attachments_name_size(
             self,
-            resourceType: str,
+            resource_type: str,
             identifier: str,
             name: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
         """Get method
 
-        Returns
-        -------
-        requests.Response
-        """
-        return self.get_request(
-            f'{self._orthanc_url}/{resourceType}/{identifier}/attachments/{name}/md5',
-            params=params,
-            **kwargs)
-
-    def get_resourceType_identifier_attachments_name_size(
-            self,
-            resourceType: str,
-            identifier: str,
-            name: str,
-            params: Dict = None,
-            **kwargs) -> requests.Response:
-        """Get method
+        Parameters
+        ----------
+        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier : Object identifier (patient, study, series, instance).
 
         Returns
         -------
         requests.Response
         """
         return self.get_request(
-            f'{self._orthanc_url}/{resourceType}/{identifier}/attachments/{name}/size',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/size',
             params=params,
             **kwargs)
 
-    def post_resourceType_identifier_attachments_name_uncompress(
+    def post_resource_type_identifier_attachments_name_uncompress(
             self,
-            resourceType: str,
+            resource_type: str,
             identifier: str,
             name: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
         """Post method
+
+        Parameters
+        ----------
+        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier : Object identifier (patient, study, series, instance).
 
         Returns
         -------
         requests.Response
         """
         return self.post_request(
-            f'{self._orthanc_url}/{resourceType}/{identifier}/attachments/{name}/uncompress',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/uncompress',
             data=data,
             json=json,
             **kwargs)
 
-    def post_resourceType_identifier_attachments_name_verify_md5(
+    def post_resource_type_identifier_attachments_name_verify_md5(
             self,
-            resourceType: str,
+            resource_type: str,
             identifier: str,
             name: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
         """Post method
+
         Check that there is no corruption on the disk (HTTP status == 200 iff. no error)
+
+        Parameters
+        ----------
+        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier : Object identifier (patient, study, series, instance).
+
         Returns
         -------
         requests.Response
         """
         return self.post_request(
-            f'{self._orthanc_url}/{resourceType}/{identifier}/attachments/{name}/verify_md5',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/verify_md5',
             data=data,
             json=json,
             **kwargs)
 
-    def get_resourceType_identifier_metadata(self,
-                                             resourceType: str,
-                                             identifier: str,
-                                             params: Dict = None,
-                                             **kwargs) -> requests.Response:
+    def get_resource_type_identifier_metadata(
+            self,
+            resource_type: str,
+            identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         "?expand" argument
+
+        Parameters
+        ----------
+        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier : Object identifier (patient, study, series, instance).
+
         Returns
         -------
         requests.Response
         """
         return self.get_request(
-            f'{self._orthanc_url}/{resourceType}/{identifier}/metadata',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/metadata',
             params=params,
             **kwargs)
 
-    def get_resourceType_identifier_metadata_name(
+    def get_resource_type_identifier_metadata_name(
             self,
-            resourceType: str,
+            resource_type: str,
             identifier: str,
             name: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
         """Get method
 
+        Parameters
+        ----------
+        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier : Object identifier (patient, study, series, instance).
+
         Returns
         -------
         requests.Response
         """
         return self.get_request(
-            f'{self._orthanc_url}/{resourceType}/{identifier}/metadata/{name}',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/metadata/{name}',
             params=params,
             **kwargs)
 
-    def delete_resourceType_identifier_metadata_name(
-            self, resourceType: str, identifier: str, name: str,
+    def delete_resource_type_identifier_metadata_name(
+            self, resource_type: str, identifier: str, name: str,
             **kwargs) -> requests.Response:
         """Delete method
+
+        Parameters
+        ----------
+        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier : Object identifier (patient, study, series, instance).
 
         Returns
         -------
         requests.Response
         """
         return self.delete_request(
-            f'{self._orthanc_url}/{resourceType}/{identifier}/metadata/{name}',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/metadata/{name}',
             **kwargs)
 
-    def put_resourceType_identifier_metadata_name(
+    def put_resource_type_identifier_metadata_name(
             self,
-            resourceType: str,
+            resource_type: str,
             identifier: str,
             name: str,
             data: Dict = None,
@@ -427,12 +553,17 @@ class Orthanc:
             **kwargs) -> requests.Response:
         """Put method
 
+        Parameters
+        ----------
+        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier : Object identifier (patient, study, series, instance).
+
         Returns
         -------
         requests.Response
         """
         return self.put_request(
-            f'{self._orthanc_url}/{resourceType}/{identifier}/metadata/{name}',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/metadata/{name}',
             data=data,
             json=json,
             **kwargs)
