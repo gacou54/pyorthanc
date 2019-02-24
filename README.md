@@ -1,6 +1,9 @@
 # PyOrthanc
 Python library that wrap the Orthanc REST API and facilitate the manipulation of Orthanc data.
 
+## NOTE
+I am currently building a major rewrite in an other branch, which will cover all api routes. Current method names may change.
+
 ## Installation
 If you have `git`:
 ```sh
