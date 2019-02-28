@@ -2034,7 +2034,9 @@ class Orthanc:
             params: Dict = None,
             **kwargs) -> requests.Response:
         """Get method
+
         Get the query retrieve level for this C-Find SCU request
+
         Returns
         -------
         requests.Response
@@ -2044,12 +2046,14 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_queries_identifier_modality(self,
-                                        identifier: str,
-                                        params: Dict = None,
-                                        **kwargs) -> requests.Response:
+    def get_queries_identifier_modality(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         Get the modality to which this C-Find SCU request was issued (cf. /modalities)
+
         Returns
         -------
         requests.Response
@@ -2059,12 +2063,14 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_queries_identifier_query(self,
-                                     identifier: str,
-                                     params: Dict = None,
-                                     **kwargs) -> requests.Response:
+    def get_queries_identifier_query(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         Access the C-Find SCU query; "?simplify" argument to simplify output
+
         Returns
         -------
         requests.Response
@@ -2074,13 +2080,15 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def post_queries_identifier_retrieve(self,
-                                         identifier: str,
-                                         data: Dict = None,
-                                         json=None,
-                                         **kwargs) -> requests.Response:
+    def post_queries_identifier_retrieve(
+            self, identifier: str,
+            data: Dict = None,
+            json=None,
+            **kwargs) -> requests.Response:
         """Post method
+
         C-Move SCU: Send all the results to another modality whose AET is in the body
+
         Returns
         -------
         requests.Response
@@ -2093,7 +2101,9 @@ class Orthanc:
 
     def get_series(self, params: Dict = None, **kwargs) -> requests.Response:
         """Get method
+
         "since" and "limit" arguments + "expand" argument to retrieve the content of the series
+
         Returns
         -------
         requests.Response
@@ -2101,10 +2111,10 @@ class Orthanc:
         return self.get_request(
             f'{self._orthanc_url}/series', params=params, **kwargs)
 
-    def get_series_identifier(self,
-                              identifier: str,
-                              params: Dict = None,
-                              **kwargs) -> requests.Response:
+    def get_series_identifier(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
 
         Returns
@@ -2116,8 +2126,7 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def delete_series_identifier(self, identifier: str,
-                                 **kwargs) -> requests.Response:
+    def delete_series_identifier(self, identifier: str, **kwargs) -> requests.Response:
         """Delete method
 
         Returns
@@ -2127,13 +2136,15 @@ class Orthanc:
         return self.delete_request(f'{self._orthanc_url}/series/{identifier}',
                                    **kwargs)
 
-    def post_series_identifier_anonymize(self,
-                                         identifier: str,
-                                         data: Dict = None,
-                                         json=None,
-                                         **kwargs) -> requests.Response:
+    def post_series_identifier_anonymize(
+            self, identifier: str,
+            data: Dict = None,
+            json=None,
+            **kwargs) -> requests.Response:
         """Post method
+
         http://book.orthanc-server.com/users/anonymization.html
+
         Returns
         -------
         requests.Response
@@ -2144,12 +2155,14 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_series_identifier_archive(self,
-                                      identifier: str,
-                                      params: Dict = None,
-                                      **kwargs) -> requests.Response:
+    def get_series_identifier_archive(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         Create a ZIP archive for media storage with DICOMDIR
+
         Returns
         -------
         requests.Response
@@ -2159,13 +2172,15 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def post_series_identifier_archive(self,
-                                       identifier: str,
-                                       data: Dict = None,
-                                       json=None,
-                                       **kwargs) -> requests.Response:
+    def post_series_identifier_archive(
+            self, identifier: str,
+            data: Dict = None,
+            json=None,
+            **kwargs) -> requests.Response:
         """Post method
+
         Create a ZIP archive for media storage with DICOMDIR
+
         Returns
         -------
         requests.Response
@@ -2176,12 +2191,14 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_series_identifier_instances(self,
-                                        identifier: str,
-                                        params: Dict = None,
-                                        **kwargs) -> requests.Response:
+    def get_series_identifier_instances(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         Retrieve all the instances of this series in a single REST call
+
         Returns
         -------
         requests.Response
@@ -2191,12 +2208,14 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_series_identifier_instances_tags(self,
-                                             identifier: str,
-                                             params: Dict = None,
-                                             **kwargs) -> requests.Response:
+    def get_series_identifier_instances_tags(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         "?simplify" argument to simplify output, "?short"
+
         Returns
         -------
         requests.Response
@@ -2206,12 +2225,14 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_series_identifier_media(self,
-                                    identifier: str,
-                                    params: Dict = None,
-                                    **kwargs) -> requests.Response:
+    def get_series_identifier_media(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         Create archives for media storage with DICOMDIR
+
         Returns
         -------
         requests.Response
@@ -2221,13 +2242,15 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def post_series_identifier_media(self,
-                                     identifier: str,
-                                     data: Dict = None,
-                                     json=None,
-                                     **kwargs) -> requests.Response:
+    def post_series_identifier_media(
+            self, identifier: str,
+            data: Dict = None,
+            json=None,
+            **kwargs) -> requests.Response:
         """Post method
+
         Create archives for media storage with DICOMDIR
+
         Returns
         -------
         requests.Response
@@ -2238,13 +2261,15 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_series_identifier_modify(self,
-                                      identifier: str,
-                                      data: Dict = None,
-                                      json=None,
-                                      **kwargs) -> requests.Response:
+    def post_series_identifier_modify(
+            self, identifier: str,
+            data: Dict = None,
+            json=None,
+            **kwargs) -> requests.Response:
         """Post method
+
         http://book.orthanc-server.com/users/anonymization.html
+
         Returns
         -------
         requests.Response
@@ -2255,12 +2280,14 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_series_identifier_module(self,
-                                     identifier: str,
-                                     params: Dict = None,
-                                     **kwargs) -> requests.Response:
+    def get_series_identifier_module(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         "?simplify" argument to simplify output, "?short"
+
         Returns
         -------
         requests.Response
@@ -2270,12 +2297,14 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_series_identifier_ordered_slices(self,
-                                             identifier: str,
-                                             params: Dict = None,
-                                             **kwargs) -> requests.Response:
+    def get_series_identifier_ordered_slices(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         Order the slices of a 2D+t, 3D or 3D+t image
+
         Returns
         -------
         requests.Response
@@ -2285,12 +2314,14 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_series_identifier_patient(self,
-                                      identifier: str,
-                                      params: Dict = None,
-                                      **kwargs) -> requests.Response:
+    def get_series_identifier_patient(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         Retrieve the parent patient of this series
+
         Returns
         -------
         requests.Response
@@ -2300,13 +2331,15 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def post_series_identifier_reconstruct(self,
-                                           identifier: str,
-                                           data: Dict = None,
-                                           json=None,
-                                           **kwargs) -> requests.Response:
+    def post_series_identifier_reconstruct(
+            self, identifier: str,
+            data: Dict = None,
+            json=None,
+            **kwargs) -> requests.Response:
         """Post method
+
         Force reconstruction of the main DICOM tags, JSON summary and metadata of child instances
+
         Returns
         -------
         requests.Response
@@ -2317,12 +2350,14 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_series_identifier_shared_tags(self,
-                                          identifier: str,
-                                          params: Dict = None,
-                                          **kwargs) -> requests.Response:
+    def get_series_identifier_shared_tags(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         "?simplify" argument to simplify output, "?short"
+
         Returns
         -------
         requests.Response
@@ -2332,10 +2367,10 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_series_identifier_statistics(self,
-                                         identifier: str,
-                                         params: Dict = None,
-                                         **kwargs) -> requests.Response:
+    def get_series_identifier_statistics(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
 
         Returns
@@ -2347,12 +2382,14 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_series_identifier_study(self,
-                                    identifier: str,
-                                    params: Dict = None,
-                                    **kwargs) -> requests.Response:
+    def get_series_identifier_study(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         Retrieve the parent study of this series
+
         Returns
         -------
         requests.Response
@@ -2362,8 +2399,7 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_statistics(self, params: Dict = None,
-                       **kwargs) -> requests.Response:
+    def get_statistics(self, params: Dict = None, **kwargs) -> requests.Response:
         """Get method
 
         Returns
@@ -2375,7 +2411,9 @@ class Orthanc:
 
     def get_studies(self, params: Dict = None, **kwargs) -> requests.Response:
         """Get method
+
         "since" and "limit" arguments + "expand" argument to retrieve the content of the studies
+
         Returns
         -------
         requests.Response
@@ -2383,10 +2421,10 @@ class Orthanc:
         return self.get_request(
             f'{self._orthanc_url}/studies', params=params, **kwargs)
 
-    def get_studies_identifier(self,
-                               identifier: str,
-                               params: Dict = None,
-                               **kwargs) -> requests.Response:
+    def get_studies_identifier(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
 
         Returns
@@ -2398,8 +2436,7 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def delete_studies_identifier(self, identifier: str,
-                                  **kwargs) -> requests.Response:
+    def delete_studies_identifier(self, identifier: str, **kwargs) -> requests.Response:
         """Delete method
 
         Returns
@@ -2409,13 +2446,15 @@ class Orthanc:
         return self.delete_request(f'{self._orthanc_url}/studies/{identifier}',
                                    **kwargs)
 
-    def post_studies_identifier_anonymize(self,
-                                          identifier: str,
-                                          data: Dict = None,
-                                          json=None,
-                                          **kwargs) -> requests.Response:
+    def post_studies_identifier_anonymize(
+            self, identifier: str,
+            data: Dict = None,
+            json=None,
+            **kwargs) -> requests.Response:
         """Post method
+
         http://book.orthanc-server.com/users/anonymization.html
+
         Returns
         -------
         requests.Response
@@ -2426,12 +2465,14 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_studies_identifier_archive(self,
-                                       identifier: str,
-                                       params: Dict = None,
-                                       **kwargs) -> requests.Response:
+    def get_studies_identifier_archive(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         Create ZIP
+
         Returns
         -------
         requests.Response
@@ -2441,13 +2482,15 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def post_studies_identifier_archive(self,
-                                        identifier: str,
-                                        data: Dict = None,
-                                        json=None,
-                                        **kwargs) -> requests.Response:
+    def post_studies_identifier_archive(
+            self, identifier: str,
+            data: Dict = None,
+            json=None,
+            **kwargs) -> requests.Response:
         """Post method
+
         Create ZIP
+
         Returns
         -------
         requests.Response
@@ -2458,12 +2501,14 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_studies_identifier_instances(self,
-                                         identifier: str,
-                                         params: Dict = None,
-                                         **kwargs) -> requests.Response:
+    def get_studies_identifier_instances(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         Retrieve all the instances of this patient in a single REST call
+
         Returns
         -------
         requests.Response
@@ -2473,12 +2518,14 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_studies_identifier_instances_tags(self,
-                                              identifier: str,
-                                              params: Dict = None,
-                                              **kwargs) -> requests.Response:
+    def get_studies_identifier_instances_tags(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         "?simplify" argument to simplify output, "?short"
+
         Returns
         -------
         requests.Response
@@ -2488,12 +2535,14 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_studies_identifier_media(self,
-                                     identifier: str,
-                                     params: Dict = None,
-                                     **kwargs) -> requests.Response:
+    def get_studies_identifier_media(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         Create a ZIP archive for media storage with DICOMDIR
+
         Returns
         -------
         requests.Response
@@ -2503,13 +2552,15 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def post_studies_identifier_media(self,
-                                      identifier: str,
-                                      data: Dict = None,
-                                      json=None,
-                                      **kwargs) -> requests.Response:
+    def post_studies_identifier_media(
+            self, identifier: str,
+            data: Dict = None,
+            json=None,
+            **kwargs) -> requests.Response:
         """Post method
+
         Create a ZIP archive for media storage with DICOMDIR
+
         Returns
         -------
         requests.Response
@@ -2520,13 +2571,15 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_studies_identifier_merge(self,
-                                      identifier: str,
-                                      data: Dict = None,
-                                      json=None,
-                                      **kwargs) -> requests.Response:
+    def post_studies_identifier_merge(
+            self, identifier: str,
+            data: Dict = None,
+            json=None,
+            **kwargs) -> requests.Response:
         """Post method
+
         Merge a study, i.e. move series from another study into this study
+
         Returns
         -------
         requests.Response
@@ -2537,13 +2590,15 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_studies_identifier_modify(self,
-                                       identifier: str,
-                                       data: Dict = None,
-                                       json=None,
-                                       **kwargs) -> requests.Response:
+    def post_studies_identifier_modify(
+            self, identifier: str,
+            data: Dict = None,
+            json=None,
+            **kwargs) -> requests.Response:
         """Post method
+
         http://book.orthanc-server.com/users/anonymization.html
+
         Returns
         -------
         requests.Response
@@ -2554,12 +2609,14 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_studies_identifier_module(self,
-                                      identifier: str,
-                                      params: Dict = None,
-                                      **kwargs) -> requests.Response:
+    def get_studies_identifier_module(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         "?simplify" argument to simplify output, "?short"
+
         Returns
         -------
         requests.Response
@@ -2569,12 +2626,14 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_studies_identifier_module_patient(self,
-                                              identifier: str,
-                                              params: Dict = None,
-                                              **kwargs) -> requests.Response:
+    def get_studies_identifier_module_patient(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         "?simplify" argument to simplify output, "?short"
+
         Returns
         -------
         requests.Response
@@ -2584,12 +2643,14 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_studies_identifier_patient(self,
-                                       identifier: str,
-                                       params: Dict = None,
-                                       **kwargs) -> requests.Response:
+    def get_studies_identifier_patient(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         Retrieve the parent patient of this study
+
         Returns
         -------
         requests.Response
@@ -2599,13 +2660,15 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def post_studies_identifier_reconstruct(self,
-                                            identifier: str,
-                                            data: Dict = None,
-                                            json=None,
-                                            **kwargs) -> requests.Response:
+    def post_studies_identifier_reconstruct(
+            self, identifier: str,
+            data: Dict = None,
+            json=None,
+            **kwargs) -> requests.Response:
         """Post method
+
         Force reconstruction of the main DICOM tags, JSON summary and metadata of child instances
+
         Returns
         -------
         requests.Response
@@ -2616,12 +2679,14 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_studies_identifier_series(self,
-                                      identifier: str,
-                                      params: Dict = None,
-                                      **kwargs) -> requests.Response:
+    def get_studies_identifier_series(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         Retrieve all the series of this study in a single REST call
+
         Returns
         -------
         requests.Response
@@ -2631,12 +2696,14 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_studies_identifier_shared_tags(self,
-                                           identifier: str,
-                                           params: Dict = None,
-                                           **kwargs) -> requests.Response:
+    def get_studies_identifier_shared_tags(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
+
         "?simplify" argument to simplify output, "?short"
+
         Returns
         -------
         requests.Response
@@ -2646,13 +2713,15 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def post_studies_identifier_split(self,
-                                      identifier: str,
-                                      data: Dict = None,
-                                      json=None,
-                                      **kwargs) -> requests.Response:
+    def post_studies_identifier_split(
+            self, identifier: str,
+            data: Dict = None,
+            json=None,
+            **kwargs) -> requests.Response:
         """Post method
+
         Split a study, i.e. create a new study from a subset of its child series
+
         Returns
         -------
         requests.Response
@@ -2663,10 +2732,10 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_studies_identifier_statistics(self,
-                                          identifier: str,
-                                          params: Dict = None,
-                                          **kwargs) -> requests.Response:
+    def get_studies_identifier_statistics(
+            self, identifier: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
         """Get method
 
         Returns
@@ -2688,10 +2757,11 @@ class Orthanc:
         return self.get_request(
             f'{self._orthanc_url}/system', params=params, **kwargs)
 
-    def post_tools_create_archive(self, data: Dict = None, json=None,
-                                  **kwargs) -> requests.Response:
+    def post_tools_create_archive(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
         """Post method
+
         Create a ZIP from a set of unrelated DICOM resources
+
         Returns
         -------
         requests.Response
@@ -2702,10 +2772,12 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_tools_create_dicom(self, data: Dict = None, json=None,
-                                **kwargs) -> requests.Response:
+    def post_tools_create_dicom(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
         """Post method
-        Create and store a new DICOM instance, possibly with an image or a PDF payload
+
+        Create and store a new DICOM instance,
+        possibly with an image or a PDF payload
+
         Returns
         -------
         requests.Response
@@ -2716,10 +2788,11 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_tools_create_media(self, data: Dict = None, json=None,
-                                **kwargs) -> requests.Response:
+    def post_tools_create_media(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
         """Post method
+
         Create a ZIP-with-DICOMDIR from a set of unrelated DICOM resources
+
         Returns
         -------
         requests.Response
@@ -2730,12 +2803,14 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_tools_create_media_extended(self,
-                                         data: Dict = None,
-                                         json=None,
-                                         **kwargs) -> requests.Response:
+    def post_tools_create_media_extended(
+            self, data: Dict = None,
+            json=None,
+            **kwargs) -> requests.Response:
         """Post method
+
         Create a ZIP-with-DICOMDIR from a set of unrelated DICOM resources, including type-3 tags
+
         Returns
         -------
         requests.Response
@@ -2746,10 +2821,11 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_tools_default_encoding(self, params: Dict = None,
-                                   **kwargs) -> requests.Response:
+    def get_tools_default_encoding(self, params: Dict = None, **kwargs) -> requests.Response:
         """Get method
+
         Get the default encoding used by Orthanc, or temporarily change it until the next restart
+
         Returns
         -------
         requests.Response
@@ -2759,12 +2835,14 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def put_tools_default_encoding(self,
-                                   data: Dict = None,
-                                   json=None,
-                                   **kwargs) -> requests.Response:
+    def put_tools_default_encoding(
+            self, data: Dict = None,
+            json=None,
+            **kwargs) -> requests.Response:
         """Put method
+
         Get the default encoding used by Orthanc, or temporarily change it until the next restart
+
         Returns
         -------
         requests.Response
@@ -2775,10 +2853,11 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_tools_dicom_conformance(self, params: Dict = None,
-                                    **kwargs) -> requests.Response:
+    def get_tools_dicom_conformance(self, params: Dict = None, **kwargs) -> requests.Response:
         """Get method
+
         DICOM conformance statement of this version of Orthanc
+
         Returns
         -------
         requests.Response
@@ -2788,10 +2867,11 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def post_tools_execute_script(self, data: Dict = None, json=None,
-                                  **kwargs) -> requests.Response:
+    def post_tools_execute_script(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
         """Post method
+
         Execute the Lua script in the POST body
+
         Returns
         -------
         requests.Response
@@ -2802,10 +2882,11 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_tools_find(self, data: Dict = None, json=None,
-                        **kwargs) -> requests.Response:
+    def post_tools_find(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
         """Post method
+
         Runs a C-Find call from the REST API
+
         Returns
         -------
         requests.Response
@@ -2813,10 +2894,11 @@ class Orthanc:
         return self.post_request(
             f'{self._orthanc_url}/tools/find', data=data, json=json, **kwargs)
 
-    def get_tools_generate_uid(self, params: Dict = None,
-                               **kwargs) -> requests.Response:
+    def get_tools_generate_uid(self, params: Dict = None, **kwargs) -> requests.Response:
         """Get method
+
         Generate DICOM UID. The "level" GET argument must be "patient", "study", "series" or "instance"
+
         Returns
         -------
         requests.Response
@@ -2824,12 +2906,14 @@ class Orthanc:
         return self.get_request(
             f'{self._orthanc_url}/tools/generate_uid', params=params, **kwargs)
 
-    def post_tools_invalidate_tags(self,
-                                   data: Dict = None,
-                                   json=None,
-                                   **kwargs) -> requests.Response:
+    def post_tools_invalidate_tags(
+            self, data: Dict = None,
+            json=None,
+            **kwargs) -> requests.Response:
         """Post method
+
         Invalidate the JSON summary of all the DICOM files (useful if new private tags are registered)
+
         Returns
         -------
         requests.Response
@@ -2840,10 +2924,11 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_tools_lookup(self, data: Dict = None, json=None,
-                          **kwargs) -> requests.Response:
+    def post_tools_lookup(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
         """Post method
+
         Map DICOM UIDs to Orthanc identifiers
+
         Returns
         -------
         requests.Response
@@ -2854,10 +2939,11 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_tools_metrics(self, params: Dict = None,
-                          **kwargs) -> requests.Response:
+    def get_tools_metrics(self, params: Dict = None, **kwargs) -> requests.Response:
         """Get method
+
         See whether the collection of metrics is enabled, and enable/disable this collection
+
         Returns
         -------
         requests.Response
@@ -2865,10 +2951,11 @@ class Orthanc:
         return self.get_request(
             f'{self._orthanc_url}/tools/metrics', params=params, **kwargs)
 
-    def put_tools_metrics(self, data: Dict = None, json=None,
-                          **kwargs) -> requests.Response:
+    def put_tools_metrics(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
         """Put method
+
         See whether the collection of metrics is enabled, and enable/disable this collection
+
         Returns
         -------
         requests.Response
@@ -2879,10 +2966,11 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_tools_metrics_prometheus(self, params: Dict = None,
-                                     **kwargs) -> requests.Response:
+    def get_tools_metrics_prometheus(self, params: Dict = None, **kwargs) -> requests.Response:
         """Get method
+
         Retrieve the metrics in the Prometheus text-based exposition format
+
         Returns
         -------
         requests.Response
@@ -2892,10 +2980,11 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_tools_now(self, params: Dict = None,
-                      **kwargs) -> requests.Response:
+    def get_tools_now(self, params: Dict = None, **kwargs) -> requests.Response:
         """Get method
+
         Returns the current *universal* datetime (UTC) in the ISO 8601 format
+
         Returns
         -------
         requests.Response
@@ -2903,10 +2992,11 @@ class Orthanc:
         return self.get_request(
             f'{self._orthanc_url}/tools/now', params=params, **kwargs)
 
-    def get_tools_now_local(self, params: Dict = None,
-                            **kwargs) -> requests.Response:
+    def get_tools_now_local(self, params: Dict = None, **kwargs) -> requests.Response:
         """Get method
+
         Returns the current *local* datetime in the ISO 8601 format
+
         Returns
         -------
         requests.Response
@@ -2914,10 +3004,11 @@ class Orthanc:
         return self.get_request(
             f'{self._orthanc_url}/tools/now_local', params=params, **kwargs)
 
-    def post_tools_reconstruct(self, data: Dict = None, json=None,
-                               **kwargs) -> requests.Response:
+    def post_tools_reconstruct(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
         """Post method
+
         Reconstructs the main DICOM tags, the JSON summary and metadata of all the instances stored in Orthanc. Slow operation!
+
         Returns
         -------
         requests.Response
@@ -2928,10 +3019,11 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_tools_reset(self, data: Dict = None, json=None,
-                         **kwargs) -> requests.Response:
+    def post_tools_reset(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
         """Post method
+
         Hot restart of Orthanc, the configuration file will be read again
+
         Returns
         -------
         requests.Response
@@ -2941,7 +3033,9 @@ class Orthanc:
 
     def post_tools_shutdown(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
         """Post method
+
         Stop Orthanc
+
         Returns
         -------
         requests.Response
