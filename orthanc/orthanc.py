@@ -656,9 +656,14 @@ class Orthanc:
         return self.get_request(f'{self._orthanc_url}/instances', params=params, **kwargs)
 
     def post_instances(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
-        """Post instance
+        """Post instances
 
-        Add the new DICOM file given in the POST body
+        Add the new DICOM file given in the POST body.
+
+        Parameters
+        ----------
+        data : POST HTTP request's data.
+        json : POST HTTP request's json data.
 
         Returns
         -------
@@ -672,9 +677,11 @@ class Orthanc:
             **kwargs) -> requests.Response:
         """Get instance
 
+        Instance dictionary with main information.
+
         Parameters
         ----------
-        identifier : identifier
+        identifier : Instance identifier.
         params : GET HTTP request's params.
 
         Returns
@@ -688,9 +695,14 @@ class Orthanc:
     def delete_instance(self, identifier: str, **kwargs) -> requests.Response:
         """Delete specified instance
 
+        Parameters
+        ----------
+        identifier : Instance identifier.
+
         Returns
         -------
         requests.Response
+            HTTP Status == 200 if no error.
         """
         return self.delete_request(f'{self._orthanc_url}/instances/{identifier}', **kwargs)
 
@@ -699,14 +711,15 @@ class Orthanc:
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Anonymize specified instance
 
         http://book.orthanc-server.com/users/anonymization.html
 
         Parameters
         ----------
-        identifier : identifier
-        HERE
+        identifier : Instance identifier.
+        data : POST HTTP request's data.
+        json : POST HTTP request's json data.
 
         Returns
         -------
@@ -718,68 +731,100 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_instances_identifier_content(
+    def get_instance_content(
             self, identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get instance content (first level DICOM tags)
 
         List the first-level DICOM tags
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Instance's first level DICOM tags.
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/content/',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_content_group_element(
+    def get_instance_content_of_group_element(
             self, identifier: str,
             group_element: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get value of DICOM tags corresponding to a specified group element
 
-        Raw access to the value of DICOM tags (comprising the padding character)
+        Raw access to the value of DICOM tags (comprising the padding character).
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        group_element : Group element corresponding to targeted DICOM tag.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            DICOM tag value.
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/content/{group_element}',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_content_group_element_index(
+    def get_instance_content_of_group_element_at_specified_indexes(
             self, identifier: str,
             group_element: str,
-            index: str,
+            indexes: List[str],
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get value of DICOM tags corresponding to a specified group element at specified indexes
 
         Raw access to the content of DICOM sequences.
+
+        Parameters
+        ----------
+        identifier : instance identifier.
+        group_element : Group element corresponding to targeted DICOM tag.
+        indexes : Sequences on indexes to have access to.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Content of DICOM instances indexes sequences.
         """
+        formatted_indexes = ''
+
+        for index in indexes:
+            formatted_indexes += index + '/'
+
         return self.get_request(
-            f'{self._orthanc_url}/instances/{identifier}/content/{group_element}/{index}/...',
+            f'{self._orthanc_url}/instances/{identifier}/content/{group_element}/{formatted_indexes}',
             params=params,
             **kwargs)
 
-    def post_instances_identifier_export(
+    def export_instance_to_filesystem(
             self, identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Write the DICOM file to filesystem
 
-        Write the DICOM file to the filesystem where Orthanc is running
+        Write the DICOM file to the filesystem where Orthanc is running.
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        data : POST HTTP request's data.
+        json : POST HTTP request's json data.
 
         Returns
         -------
@@ -791,31 +836,52 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_instances_identifier_file(
+    def get_instance_file(
             self, identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get instance DICOM file
+        
+        Retrieve on local computer the instance file in bytes.
 
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Bytes corresponding to DICOM file.
+
+        Examples
+        --------
+        >>> orthanc = Orthanc('ORTHANC_URL')
+        >>> dicom_file_bytes = orthanc.get_instance_file('an_instance_identifier').json()
+        >>> with open('your_path', 'wb') as file_handler:
+        ...     file_handler.write(dicom_file_bytes)
+
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/file',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_frames(
+    def get_instance_frames(
             self, identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get Instances's frames
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Frames of specified instance.
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/frames',
