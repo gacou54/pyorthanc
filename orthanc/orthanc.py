@@ -526,7 +526,7 @@ class Orthanc:
         resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
         identifier : Object identifier (patient, study, series, instance).
         name : Attachment name.
-        params: Dict = None,
+        params : GET HTTP request's params.
 
         Returns
         -------
@@ -587,22 +587,25 @@ class Orthanc:
             **kwargs)
 
     def get_changes(self, params: Dict = None, **kwargs) -> requests.Response:
-        """Get method
+        """Get changes (last, since or with specified limit)
 
-        HERE
-        "last", "limit" and "since" arguments
+        With "last", "limit" and "since" arguments.
+
+        Parameters
+        ----------
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Changes (depends on given params/arguments)
         """
-        return self.get_request(
-            f'{self._orthanc_url}/changes', params=params, **kwargs)
+        return self.get_request(f'{self._orthanc_url}/changes', params=params, **kwargs)
 
     def delete_changes(self, **kwargs) -> requests.Response:
-        """Delete method
+        """Delete changes (last, since or with specified limit)
 
-        "last", "limit" and "since" arguments
+        With "last", "limit" and "since" arguments.
 
         Returns
         -------
@@ -611,19 +614,23 @@ class Orthanc:
         return self.delete_request(f'{self._orthanc_url}/changes', **kwargs)
 
     def get_exports(self, params: Dict = None, **kwargs) -> requests.Response:
-        """Get method
+        """Get exports
 
-        "last", "limit" and "since" arguments
+        With "last", "limit" and "since" arguments
+
+        Parameters
+        ----------
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            The exports.
         """
-        return self.get_request(
-            f'{self._orthanc_url}/exports', params=params, **kwargs)
+        return self.get_request(f'{self._orthanc_url}/exports', params=params, **kwargs)
 
     def delete_exports(self, **kwargs) -> requests.Response:
-        """Delete method
+        """Delete exports
 
         "last", "limit" and "since" arguments
 
@@ -634,18 +641,22 @@ class Orthanc:
         return self.delete_request(f'{self._orthanc_url}/exports', **kwargs)
 
     def get_instances(self, params: Dict = None, **kwargs) -> requests.Response:
-        """Get method
+        """Get all instances identifiers
 
         Arguments : "last" and "limit"
 
+        Parameters
+        ----------
+        params : GET HTTP request's params.
+
         -------
         requests.Response
+            All instances identifiers.
         """
-        return self.get_request(
-            f'{self._orthanc_url}/instances', params=params, **kwargs)
+        return self.get_request(f'{self._orthanc_url}/instances', params=params, **kwargs)
 
     def post_instances(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
-        """Post method
+        """Post instance
 
         Add the new DICOM file given in the POST body
 
@@ -653,36 +664,37 @@ class Orthanc:
         -------
         requests.Response
         """
-        return self.post_request(
-            f'{self._orthanc_url}/instances', data=data, json=json, **kwargs)
+        return self.post_request(f'{self._orthanc_url}/instances', data=data, json=json, **kwargs)
 
-    def get_instances_identifier(
+    def get_instance(
             self, identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get instance
 
+        Parameters
+        ----------
+        identifier : identifier
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Instance dictionary with main information.
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}', params=params, **kwargs)
 
-    def delete_instances_identifier(self, identifier: str,
-                                    **kwargs) -> requests.Response:
-        """Delete method
-
+    def delete_instance(self, identifier: str, **kwargs) -> requests.Response:
+        """Delete specified instance
 
         Returns
         -------
         requests.Response
         """
-        return self.delete_request(
-            f'{self._orthanc_url}/instances/{identifier}', **kwargs)
+        return self.delete_request(f'{self._orthanc_url}/instances/{identifier}', **kwargs)
 
-    def post_instances_identifier_anonymize(
+    def anonymize_specified_instance(
             self, identifier: str,
             data: Dict = None,
             json=None,
@@ -690,6 +702,11 @@ class Orthanc:
         """Post method
 
         http://book.orthanc-server.com/users/anonymization.html
+
+        Parameters
+        ----------
+        identifier : identifier
+        HERE
 
         Returns
         -------
