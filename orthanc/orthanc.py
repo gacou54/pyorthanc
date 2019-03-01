@@ -888,26 +888,34 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_instances_identifier_frames_frameNumber_image_int16(
+    def get_instance_frame_image_int16(
             self, identifier: str,
-            frameNumber: str,
+            frame_number: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
         """Get method
+        HERE
 
-        Truncated decoded image to the [-32768;32767] range (Accepts image/png, image/jpg, image/x-portable-arbitrarymap)
+        Truncated decoded image to the [-32768;32767] range
+        (Accepts image/png, image/jpg, image/x-portable-arbitrarymap)
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        frame_number : Frame number.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
         """
         return self.get_request(
-            f'{self._orthanc_url}/instances/{identifier}/frames/{frameNumber}/image_int16',
+            f'{self._orthanc_url}/instances/{identifier}/frames/{frame_number}/image_int16',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_frames_frameNumber_image_uint16(
-            self, identifier: str, frameNumber: str, params: Dict = None,
+    def get_instances_identifier_frames_frame_number_image_uint16(
+            self, identifier: str, frame_number: str, params: Dict = None,
             **kwargs) -> requests.Response:
         """Get method
 
@@ -918,13 +926,13 @@ class Orthanc:
         requests.Response
         """
         return self.get_request(
-            f'{self._orthanc_url}/instances/{identifier}/frames/{frameNumber}/image_uint16',
+            f'{self._orthanc_url}/instances/{identifier}/frames/{frame_number}/image_uint16',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_frames_frameNumber_image_uint8(
+    def get_instances_identifier_frames_frame_number_image_uint8(
             self, identifier: str,
-            frameNumber: str,
+            frame_number: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
         """Get method
@@ -936,13 +944,13 @@ class Orthanc:
         requests.Response
         """
         return self.get_request(
-            f'{self._orthanc_url}/instances/{identifier}/frames/{frameNumber}/image_uint8',
+            f'{self._orthanc_url}/instances/{identifier}/frames/{frame_number}/image_uint8',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_frames_frameNumber_matlab(
+    def get_instances_identifier_frames_frame_number_matlab(
             self, identifier: str,
-            frameNumber: str,
+            frame_number: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
         """Get method
@@ -954,13 +962,13 @@ class Orthanc:
         requests.Response
         """
         return self.get_request(
-            f'{self._orthanc_url}/instances/{identifier}/frames/{frameNumber}/matlab',
+            f'{self._orthanc_url}/instances/{identifier}/frames/{frame_number}/matlab',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_frames_frameNumber_preview(
+    def get_instances_identifier_frames_frame_number_preview(
             self, identifier: str,
-            frameNumber: str,
+            frame_number: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
         """Get method
@@ -972,13 +980,13 @@ class Orthanc:
         requests.Response
         """
         return self.get_request(
-            f'{self._orthanc_url}/instances/{identifier}/frames/{frameNumber}/preview',
+            f'{self._orthanc_url}/instances/{identifier}/frames/{frame_number}/preview',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_frames_frameNumber_raw(
+    def get_instances_identifier_frames_frame_number_raw(
             self, identifier: str,
-            frameNumber: str,
+            frame_number: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
         """Get method
@@ -990,13 +998,13 @@ class Orthanc:
         requests.Response
         """
         return self.get_request(
-            f'{self._orthanc_url}/instances/{identifier}/frames/{frameNumber}/raw',
+            f'{self._orthanc_url}/instances/{identifier}/frames/{frame_number}/raw',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_frames_frameNumber_raw_gz(
+    def get_instances_identifier_frames_frame_number_raw_gz(
             self, identifier: str,
-            frameNumber: str,
+            frame_number: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
         """Get method
@@ -1008,7 +1016,7 @@ class Orthanc:
         requests.Response
         """
         return self.get_request(
-            f'{self._orthanc_url}/instances/{identifier}/frames/{frameNumber}/raw.gz',
+            f'{self._orthanc_url}/instances/{identifier}/frames/{frame_number}/raw.gz',
             params=params,
             **kwargs)
 
@@ -1564,7 +1572,6 @@ class Orthanc:
 
     def delete_patients_identifier(self, identifier: str, **kwargs) -> requests.Response:
         """Delete method
-
 
         Returns
         -------
