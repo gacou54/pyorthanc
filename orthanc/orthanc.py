@@ -888,16 +888,41 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_instance_frame_image_int16(
+    def get_instance_frame_as_int16_image(
             self, identifier: str,
             frame_number: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
-        HERE
+        """Get instance frame as int16 image
 
         Truncated decoded image to the [-32768;32767] range
-        (Accepts image/png, image/jpg, image/x-portable-arbitrarymap)
+        (Accepts image/png, image/jpg, image/x-portable-arbitrarymap).
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        frame_number : Frame number.
+        params : GET HTTP request's params.
+
+        Returns
+        -------
+        requests.Response
+            Instance frame as int16 image.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/instances/{identifier}/frames/{frame_number}/image_int16',
+            params=params,
+            **kwargs)
+
+    def get_instance_frame_as_image_uint16(
+            self, identifier: str,
+            frame_number: str,
+            params: Dict = None,
+            **kwargs) -> requests.Response:
+        """Get instance frame as uint16 image
+
+        Truncated decoded image to the [0;65535] range
+         (Accepts image/png, image/jpg, image/x-portable-arbitrarymap).
 
         Parameters
         ----------
@@ -910,34 +935,25 @@ class Orthanc:
         requests.Response
         """
         return self.get_request(
-            f'{self._orthanc_url}/instances/{identifier}/frames/{frame_number}/image_int16',
-            params=params,
-            **kwargs)
-
-    def get_instances_identifier_frames_frame_number_image_uint16(
-            self, identifier: str, frame_number: str, params: Dict = None,
-            **kwargs) -> requests.Response:
-        """Get method
-
-        Truncated decoded image to the [0;65535] range (Accepts image/png, image/jpg, image/x-portable-arbitrarymap)
-
-        Returns
-        -------
-        requests.Response
-        """
-        return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/frames/{frame_number}/image_uint16',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_frames_frame_number_image_uint8(
+    def get_instance_frame_as_image_uint8(
             self, identifier: str,
             frame_number: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get instance frame as uint16 image
 
-        Truncated decoded image to the [0;255] range (Accepts image/png, image/jpg, image/x-portable-arbitrarymap)
+        Truncated decoded image to the [0;255] range
+         (Accepts image/png, image/jpg, image/x-portable-arbitrarymap).
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        frame_number : Frame number.
+        params : GET HTTP request's params.
 
         Returns
         -------
@@ -948,14 +964,21 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_instances_identifier_frames_frame_number_matlab(
+    def get_instance_frame_as_readable_image_by_matlab(
             self, identifier: str,
             frame_number: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get instance frame as a readable image by matlab
 
+        Get a kind of array :
         a = eval(urlread('http://localhost:8042/instances/.../frames/0/matlab'))
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        frame_number : Frame number.
+        params : GET HTTP request's params.
 
         Returns
         -------
@@ -966,153 +989,214 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_instances_identifier_frames_frame_number_preview(
+    def get_preview_of_instance_frame(
             self, identifier: str,
             frame_number: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get a preview of an instance frame
 
         Rescaled image (so that all the range [0;255] is used)
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        frame_number : Frame number.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+           A rescaled image (so that all the range [0;255] is used) corresponding to specified frame.
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/frames/{frame_number}/preview',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_frames_frame_number_raw(
+    def get_raw_content_of_instance_frame(
             self, identifier: str,
             frame_number: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get raw content of an instance frame (bypass image decoding)
 
-        Access to the raw content of one frame (bypass image decoding)
+        Access to the raw content of one frame (bypass image decoding).
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        frame_number : Frame number.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Raw content of one frame (bypass image decoding).
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/frames/{frame_number}/raw',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_frames_frame_number_raw_gz(
+    def get_raw_compressed_content_of_instance_frame(
             self, identifier: str,
             frame_number: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get raw content of an instance frame (compressed using gzip)
 
-        Access to the raw content of one frame, compressed using gzip
+        Access to the raw content of one frame, compressed using gzip.
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        frame_number : Frame number.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Raw content of one frame, compressed using gzip
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/frames/{frame_number}/raw.gz',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_header(
+    def get_instance_header(
             self, identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get the meta information (header) of the DICOM file
 
-        Get the meta information (header) of the DICOM file, "?simplify" argument to simplify output, "?short"
+        Get the meta information (header) of the DICOM file,
+         "?simplify" argument to simplify output, "?short".
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Meta information (header) of the DICOM file.
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/header',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_image_int16(
+    def get_instance_image_as_int16(
             self, identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get instance image as an int16 image
 
-        Truncated decoded image to the [-32768;32767] range (Accepts image/png, image/jpg, image/x-portable-arbitrarymap)
+        Truncated decoded image to the [-32768;32767] range
+         (Accepts image/png, image/jpg, image/x-portable-arbitrarymap).
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Instance image as an int16 image.
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/image_int16',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_image_uint16(
+    def get_instance_image_as_uint16(
             self, identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get instance image as an uint16 image
 
-        Truncated decoded image to the [0;65535] range (Accepts image/png, image/jpg, image/x-portable-arbitrarymap)
+        Truncated decoded image to the [0;65535] range
+         (Accepts image/png, image/jpg, image/x-portable-arbitrarymap)
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Instance image as an uint16 image.
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/image_uint16',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_image_uint8(
+    def get_instance_image_as_uint8(
             self, identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get instance image as an uint8 image
 
-        Truncated decoded image to the [0;255] range (Accepts image/png, image/jpg, image/x-portable-arbitrarymap)
+        Truncated decoded image to the [0;255] range
+         (Accepts image/png, image/jpg, image/x-portable-arbitrarymap)
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Instance image as an uint8 image.
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/image_uint8',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_matlab(
+    def get_instance_image_as_readable_image_by_matlab(
             self, identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get instance image that is readable by matlab
 
         a = eval(urlread('http://localhost:8042/instances/.../matlab'))
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Instance image that is readable by matlab.
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/matlab',
             params=params,
             **kwargs)
 
-    def post_instances_identifier_modify(
+    def modify_instance(
             self, identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Modify instance
 
-        http://book.orthanc-server.com/users/anonymization.html
+        See http://book.orthanc-server.com/users/anonymization.html .
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        data : POST HTTP request's data.
+        json : POST HTTP request's json data.
 
         Returns
         -------
@@ -1124,82 +1208,112 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_instances_identifier_module(
+    def get_instance_module(
             self, identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get instance module
 
         "?simplify" argument to simplify output, "?short"
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Instance module.
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/module',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_patient(
+    def get_instance_patient_identifier(
             self, identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get instance's patient's identifier
 
-        Retrieve the parent patient of this instance
+        Retrieve the parent patient of this instance.
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Patient identifier.
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/patient',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_pdf(
+    def get_instance_pdf(
             self, identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get the PDF inside the DICOM file, if any.
 
-        Return the encapsulated PDF inside the DICOM file, if any
+        Return the encapsulated PDF inside the DICOM file, if any.
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            PDF inside the DICOM file, if any.
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/pdf',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_preview(
+    def get_preview_of_instance_image(
             self, identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get a preview of an instance image
 
-        Rescaled image (so that all the range [0;255] is used)
+        Rescaled image (so that all the range [0;255] is used).
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+           A rescaled image (so that all the range [0;255] is used).
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/preview',
             params=params,
             **kwargs)
 
-    def post_instances_identifier_reconstruct(
+    def reconstruct_main_dicom_tags_of_instance(
             self, identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Reconstruction of the main DICOM tags
 
-        Force reconstruction of the main DICOM tags, JSON summary and metadata
+        Force reconstruction of the main DICOM tags, JSON summary and metadata.
+
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        data : POST HTTP request's data.
+        json : POST HTTP request's json data.
 
         Returns
         -------
@@ -1219,6 +1333,11 @@ class Orthanc:
 
         Retrieve the parent series of this instance
 
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        params : GET HTTP request's params.
+
         Returns
         -------
         requests.Response
@@ -1234,6 +1353,10 @@ class Orthanc:
             **kwargs) -> requests.Response:
         """Get method
 
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
@@ -1250,6 +1373,10 @@ class Orthanc:
             **kwargs) -> requests.Response:
         """Get method
 
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
@@ -1268,6 +1395,11 @@ class Orthanc:
 
         Retrieve the parent study of this instance
 
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        params : GET HTTP request's params.
+
         Returns
         -------
         requests.Response
@@ -1285,6 +1417,11 @@ class Orthanc:
 
         "?simplify" argument to simplify output (same as "simplified-tags"), "?short"
 
+        Parameters
+        ----------
+        identifier : Instance identifier.
+        params : GET HTTP request's params.
+
         Returns
         -------
         requests.Response
@@ -1298,6 +1435,10 @@ class Orthanc:
         """Get method
 
         List the jobs, "?expand" to get more information
+
+        Parameters
+        ----------
+        params : GET HTTP request's params.
 
         Returns
         -------
@@ -1314,6 +1455,11 @@ class Orthanc:
 
         Get information about one job
 
+        Parameters
+        ----------
+        identifier : Job identifier.
+        params : GET HTTP request's params.
+
         Returns
         -------
         requests.Response
@@ -1329,6 +1475,10 @@ class Orthanc:
         """Post method
 
         Cancel the job, tag it as failed
+
+        Parameters
+        ----------
+        identifier : Job identifier.
 
         Returns
         -------
@@ -1349,6 +1499,10 @@ class Orthanc:
 
         Pause the job
 
+        Parameters
+        ----------
+        identifier : Job identifier.
+
         Returns
         -------
         requests.Response
@@ -1366,7 +1520,11 @@ class Orthanc:
             **kwargs) -> requests.Response:
         """Post method
 
-        Resumbit a failed job
+        Resubmit a failed job.
+
+        Parameters
+        ----------
+        identifier : Job identifier.
 
         Returns
         -------
@@ -1387,6 +1545,10 @@ class Orthanc:
 
         Resume a paused job
 
+        Parameters
+        ----------
+        identifier : Object identifier.
+
         Returns
         -------
         requests.Response
@@ -1406,6 +1568,11 @@ class Orthanc:
 
         Retrieve outputs generated by the job (only valid after job is successful)
 
+        Parameters
+        ----------
+        identifier : Job identifier.
+        params : GET HTTP request's params.
+
         Returns
         -------
         requests.Response
@@ -1418,6 +1585,9 @@ class Orthanc:
     def get_modalities(self, params: Dict = None, **kwargs) -> requests.Response:
         """Get method
 
+        Parameters
+        ----------
+        params : GET HTTP request's params.
 
         Returns
         -------
@@ -1429,6 +1599,10 @@ class Orthanc:
     def get_modalities_dicom(self, dicom: str, params: Dict = None, **kwargs) -> requests.Response:
         """Get method
 
+        Parameters
+        ----------
+        dicom : Dicom.
+        params : GET HTTP request's params.
 
         Returns
         -------
@@ -1440,6 +1614,9 @@ class Orthanc:
     def delete_modalities_dicom(self, dicom: str, **kwargs) -> requests.Response:
         """Delete method
 
+        Parameters
+        ----------
+        dicom : Modality (AET for another DICOM server).
 
         Returns
         -------
@@ -1455,6 +1632,9 @@ class Orthanc:
             **kwargs) -> requests.Response:
         """Put method
 
+        Parameters
+        ----------
+        dicom : Modality (AET for another DICOM server).
 
         Returns
         -------
@@ -1474,6 +1654,10 @@ class Orthanc:
         """Post method
 
         C-Echo SCU
+
+        Parameters
+        ----------
+        dicom : Modality (AET for another DICOM server).
 
         Returns
         -------
@@ -3097,7 +3281,8 @@ class Orthanc:
     def post_tools_reconstruct(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
         """Post method
 
-        Reconstructs the main DICOM tags, the JSON summary and metadata of all the instances stored in Orthanc. Slow operation!
+        Reconstructs the main DICOM tags, the JSON summary and metadata of
+         all the instances stored in Orthanc. Slow operation!
 
         Returns
         -------
