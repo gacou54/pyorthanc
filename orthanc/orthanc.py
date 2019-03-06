@@ -1325,13 +1325,13 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_instances_identifier_series(
+    def get_instance_series_identifier(
             self, identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get instance's series's identifier
 
-        Retrieve the parent series of this instance
+        Retrieve the parent series of this instance.
 
         Parameters
         ----------
@@ -1341,17 +1341,20 @@ class Orthanc:
         Returns
         -------
         requests.Response
+            Series's identifier.
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/series',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_simplified_tags(
+    def get_instance_simplified_tags(
             self, identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get instance's simplified DICOM tags
+
+        Instance simplified DICOM tags (e.g. "PatientID" instead of "(0010,0020)").
 
         Parameters
         ----------
@@ -1361,17 +1364,18 @@ class Orthanc:
         Returns
         -------
         requests.Response
+            Instance's simplified DICOM tags. Should be in the form of a dictionary.
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/simplified_tags',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_statistics(
+    def get_instance_statistics(
             self, identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get instance's statistics
 
         Parameters
         ----------
@@ -1381,19 +1385,20 @@ class Orthanc:
         Returns
         -------
         requests.Response
+            Instance's statistics.
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/statistics',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_study(
+    def get_instance_study_identifier(
             self, identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get instance's study's identifier
 
-        Retrieve the parent study of this instance
+        Retrieve the parent study of this instance.
 
         Parameters
         ----------
@@ -1403,17 +1408,18 @@ class Orthanc:
         Returns
         -------
         requests.Response
+            Instance's study's identifier.
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/study',
             params=params,
             **kwargs)
 
-    def get_instances_identifier_tags(
+    def get_instance_tags(
             self, identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get instance's tags.
 
         "?simplify" argument to simplify output (same as "simplified-tags"), "?short"
 
@@ -1425,6 +1431,7 @@ class Orthanc:
         Returns
         -------
         requests.Response
+            Instance's DICOM tags. Should be in the form of a dictionary.
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{identifier}/tags',
@@ -1432,7 +1439,7 @@ class Orthanc:
             **kwargs)
 
     def get_jobs(self, params: Dict = None, **kwargs) -> requests.Response:
-        """Get method
+        """Get running jobs
 
         List the jobs, "?expand" to get more information
 
@@ -1443,17 +1450,18 @@ class Orthanc:
         Returns
         -------
         requests.Response
+            List of running jobs identifier.
         """
         return self.get_request(
             f'{self._orthanc_url}/jobs', params=params, **kwargs)
 
-    def get_jobs_identifier(
+    def get_job_information(
             self, identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get information of specified job
 
-        Get information about one job
+        Get information about specified job.
 
         Parameters
         ----------
@@ -1463,22 +1471,25 @@ class Orthanc:
         Returns
         -------
         requests.Response
+            Information about specified job.
         """
         return self.get_request(
             f'{self._orthanc_url}/jobs/{identifier}', params=params, **kwargs)
 
-    def post_jobs_identifier_cancel(
+    def cancel_job(
             self, identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Cancel specified job
 
         Cancel the job, tag it as failed
 
         Parameters
         ----------
         identifier : Job identifier.
+        data : POST HTTP request's data.
+        json : POST HTTP request's json data.
 
         Returns
         -------
@@ -1490,18 +1501,20 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_jobs_identifier_pause(
+    def pause_job(
             self, identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Pause specified job
 
-        Pause the job
+        Pause the specified job.
 
         Parameters
         ----------
         identifier : Job identifier.
+        data : POST HTTP request's data.
+        json : POST HTTP request's json data.
 
         Returns
         -------
@@ -1513,18 +1526,20 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_jobs_identifier_resubmit(
+    def resubmit_job(
             self, identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Resubmit job
 
         Resubmit a failed job.
 
         Parameters
         ----------
         identifier : Job identifier.
+        data : POST HTTP request's data.
+        json : POST HTTP request's json data.
 
         Returns
         -------
@@ -1542,6 +1557,7 @@ class Orthanc:
             json=None,
             **kwargs) -> requests.Response:
         """Post method
+        HERE
 
         Resume a paused job
 
