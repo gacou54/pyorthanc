@@ -671,11 +671,11 @@ class Orthanc:
         """
         return self.post_request(f'{self._orthanc_url}/instances', data=data, json=json, **kwargs)
 
-    def get_instance(
+    def get_instance_information(
             self, instance_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get instance
+        """Get instance information
 
         Instance dictionary with main information.
 
@@ -1807,7 +1807,7 @@ class Orthanc:
         return self.get_request(
             f'{self._orthanc_url}/patients', params=params, **kwargs)
 
-    def get_patient_main_information(
+    def get_patient_information(
             self, patient_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
@@ -1986,7 +1986,7 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def create_patient_zip_media_with_dicomdir(
+    def create_patient_zip_media(
             self, patient_identifier: str,
             data: Dict = None,
             json=None,
@@ -2107,7 +2107,7 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def reconstruct_patient(
+    def reconstruct_main_dicom_tags_of_patient(
             self, patient_identifier: str,
             data: Dict = None,
             json=None,
@@ -2392,7 +2392,7 @@ class Orthanc:
         return self.get_request(
             f'{self._orthanc_url}/queries', params=params, **kwargs)
 
-    def get_queries_identifier(
+    def get_queries_information(
             self, query_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
@@ -2504,17 +2504,23 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_queries_identifier_answers_index_query_instances(
+    def find_child_dicom_instances_of_answer(
             self, query_identifier: str,
             index: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
-        HERE
+        """Find child dicom instances of answer
 
         Launch another C-Find SCU to find the child DICOM instances of
-         the given answer (might not work with all PACS)
+         the given answer (might not work with all PACS).
+
+        Parameters
+        ----------
+        query_identifier : Query identifier.
+        index : Index of wanted answer.
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -2526,15 +2532,22 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_queries_identifier_answers_index_query_series(
+    def find_child_dicom_series_of_answer(
             self, query_identifier: str,
             index: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Find child dicom series of answer
 
-        Launch another C-Find SCU to find the child series of the given answer
+        Launch another C-Find SCU to find the child series of the given answer.
+
+        Parameters
+        ----------
+        query_identifier : Query identifier.
+        index : Index of wanted answer.
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -2546,15 +2559,22 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_queries_identifier_answers_index_query_studies(
+    def find_child_dicom_studies_of_answer(
             self, query_identifier: str,
             index: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Find child dicom studies of answer
 
-        Launch another C-Find SCU to find the child patient of the given answer
+        Launch another C-Find SCU to find the child patient of the given answer.
+
+        Parameters
+        ----------
+        query_identifier : Query identifier.
+        index : Index of wanted answer.
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -2566,65 +2586,90 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_queries_identifier_level(
+    def get_query_retrive_level(
             self, query_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get query retrieve level
 
-        Get the query retrieve level for this C-Find SCU request
+        Get the query retrieve level for this C-Find SCU request.
+
+        Parameters
+        ----------
+        query_identifier : Query identifier.
+        index : Index of wanted answer.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Query retrieve level for this C-Find SCU request
         """
         return self.get_request(
             f'{self._orthanc_url}/queries/{query_identifier}/level',
             params=params,
             **kwargs)
 
-    def get_queries_identifier_modality(
+    def get_query_modality(
             self, query_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get the modality to which this C-Find SCU request was issued
 
         Get the modality to which this C-Find SCU request was issued (cf. /modalities)
+
+        Parameters
+        ----------
+        query_identifier : Query identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Modality to which this C-Find SCU request was issued.
         """
         return self.get_request(
             f'{self._orthanc_url}/queries/{query_identifier}/modality',
             params=params,
             **kwargs)
 
-    def get_queries_identifier_query(
+    def get_query_information(
             self, query_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get access query
 
-        Access the C-Find SCU query; "?simplify" argument to simplify output
+        Access the C-Find SCU query; "?simplify" argument to simplify output.
+
+        Parameters
+        ----------
+        query_identifier : Query identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Query information.
         """
         return self.get_request(
             f'{self._orthanc_url}/queries/{query_identifier}/query',
             params=params,
             **kwargs)
 
-    def post_queries_identifier_retrieve(
+    def retrieve_query_results_to_another_modality(
             self, query_identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Retrieve (C-Move) query results to another modality
 
         C-Move SCU: Send all the results to another modality whose AET is in the body
+
+        Parameters
+        ----------
+        query_identifier : Query identifier.
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -2633,13 +2678,15 @@ class Orthanc:
         Examples
         --------
         >>> orthanc = Orthanc('http://localhost:8042')
-        >>> orthanc.query_on_remote_modality('remote_modality',
-        ...                                    data={'Level': 'Study',
-        ...                                          'Query': {
-        ...                                             'QueryRetrieveLevel': 'Study',
-        ...                                             'Modality':'SR'}})
+        >>> query_id = orthanc.query_on_remote_modality(
+        ...     'remote_modality',
+        ...     data={'Level': 'Study',
+        ...           'Query': {'QueryRetrieveLevel': 'Study',
+        ...                     'Modality':'SR'}})
 
-        >>> orthanc.retrieve_from_remote_modality('remote_modality')
+        >>> orthanc.retrieve_query_results_to_another_modality(
+        ...         query_identifier='query_id',
+        ...         json='remote_modality')
 
         """
         return self.post_request(
@@ -2649,50 +2696,72 @@ class Orthanc:
             **kwargs)
 
     def get_series(self, params: Dict = None, **kwargs) -> requests.Response:
-        """Get method
+        """Get series identifiers
 
-        "since" and "limit" arguments + "expand" argument to retrieve the content of the series
+        "since" and "limit" arguments + "expand" argument to retrieve the content of the series.
+
+        Parameters
+        ----------
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            List of series identifiers.
         """
         return self.get_request(
             f'{self._orthanc_url}/series', params=params, **kwargs)
 
-    def get_series_identifier(
+    def get_series_information(
             self, series_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get series information
+
+        Parameters
+        ----------
+        series_identifier : Series identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Series main information in the form of dictionary.
         """
         return self.get_request(
             f'{self._orthanc_url}/series/{series_identifier}',
             params=params,
             **kwargs)
 
-    def delete_series_identifier(self, series_identifier: str, **kwargs) -> requests.Response:
-        """Delete method
+    def delete_series(self, series_identifier: str, **kwargs) -> requests.Response:
+        """Delete specified series
+
+        Parameters
+        ----------
+        series_identifier : Series identifier.
 
         Returns
         -------
         requests.Response
+            HTTP status == 200 if no error.
         """
         return self.delete_request(f'{self._orthanc_url}/series/{series_identifier}',
                                    **kwargs)
 
-    def post_series_identifier_anonymize(
+    def anonymize_series(
             self, series_identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Anonymize series
 
         http://book.orthanc-server.com/users/anonymization.html
+
+        Parameters
+        ----------
+        series_identifier : Series identifier.
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -2704,31 +2773,43 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_series_identifier_archive(
+    def get_series_zip_file(
             self, series_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get series zip file
 
-        Create a ZIP archive for media storage with DICOMDIR
+        Get a ZIP archive for media storage with DICOMDIR.
+
+        Parameters
+        ----------
+        series_identifier : Series identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Series zip file.
         """
         return self.get_request(
             f'{self._orthanc_url}/series/{series_identifier}/archive',
             params=params,
             **kwargs)
 
-    def post_series_identifier_archive(
+    def create_series_zip_file(
             self, series_identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Create series zip file
 
-        Create a ZIP archive for media storage with DICOMDIR
+        Create a ZIP archive for media storage with DICOMDIR.
+
+        Parameters
+        ----------
+        series_identifier : Series identifier.
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -2740,47 +2821,64 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_series_identifier_instances(
+    def get_series_instances(
             self, series_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get series instances
 
-        Retrieve all the instances of this series in a single REST call
+        Retrieve all the instances of this series in a single REST call.
+
+        Parameters
+        ----------
+        series_identifier : Series identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            List of series instances.
         """
         return self.get_request(
             f'{self._orthanc_url}/series/{series_identifier}/instances',
             params=params,
             **kwargs)
 
-    def get_series_identifier_instances_tags(
+    def get_series_instances_tags(
             self, series_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get series instances tags
 
-        "?simplify" argument to simplify output, "?short"
+        "?simplify" argument to simplify output, "?short".
+
+        Parameters
+        ----------
+        series_identifier : Series identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            List of series instances tags.
         """
         return self.get_request(
             f'{self._orthanc_url}/series/{series_identifier}/instances_tags',
             params=params,
             **kwargs)
 
-    def get_series_identifier_media(
+    def get_series_archives(
             self, series_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get series media storage with DICOMDIR
 
-        Create archives for media storage with DICOMDIR
+        Get archives for media storage with DICOMDIR.
+
+        Parameters
+        ----------
+        series_identifier : Series identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
@@ -2791,14 +2889,20 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def post_series_identifier_media(
+    def create_archive_for_media_storage(
             self, series_identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Create archive for media storage
 
-        Create archives for media storage with DICOMDIR
+        Create archives for media storage with DICOMDIR.
+
+        Parameters
+        ----------
+        series_identifier : Series identifier.
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -2810,14 +2914,20 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_series_identifier_modify(
+    def post_series_modify(
             self, series_identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Modify series
 
         http://book.orthanc-server.com/users/anonymization.html
+
+        Parameters
+        ----------
+        series_identifier : Series identifier.
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -2829,30 +2939,41 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_series_identifier_module(
+    def get_series_module(
             self, series_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get series module
 
-        "?simplify" argument to simplify output, "?short"
+        "?simplify" argument to simplify output, "?short".
+
+        Parameters
+        ----------
+        series_identifier : Series identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Series module.
         """
         return self.get_request(
             f'{self._orthanc_url}/series/{series_identifier}/module',
             params=params,
             **kwargs)
 
-    def get_series_identifier_ordered_slices(
+    def get_series_ordered_slices(
             self, series_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get series ordered slices
 
-        Order the slices of a 2D+t, 3D or 3D+t image
+        Order the slices of a 2D+t, 3D or 3D+t image.
+
+        Parameters
+        ----------
+        series_identifier : Series identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
@@ -2863,31 +2984,44 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_series_identifier_patient(
+    def get_series_patient_identifier(
             self, series_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get series patient identifier
 
-        Retrieve the parent patient of this series
+        Retrieve the parent patient of this series.
+
+        Parameters
+        ----------
+        series_identifier : Series identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Patient identifier.
         """
         return self.get_request(
             f'{self._orthanc_url}/series/{series_identifier}/patient',
             params=params,
             **kwargs)
 
-    def post_series_identifier_reconstruct(
+    def reconstruct_main_dicom_tags_of_series(
             self, series_identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Reconstruction of the main DICOM tags
 
-        Force reconstruction of the main DICOM tags, JSON summary and metadata of child instances
+        Force reconstruction of the main DICOM tags,
+        JSON summary and metadata of child instances
+
+        Parameters
+        ----------
+        series_identifier : Series identifier.
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -2899,13 +3033,18 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_series_identifier_shared_tags(
+    def get_series_shared_tags(
             self, series_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get series shared tags
 
-        "?simplify" argument to simplify output, "?short"
+        "?simplify" argument to simplify output, "?short".
+
+        Parameters
+        ----------
+        series_identifier : Series identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
@@ -2916,32 +3055,44 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_series_identifier_statistics(
+    def get_series_statistics(
             self, series_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get series statistics
+
+        Parameters
+        ----------
+        series_identifier : Series identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Series statistics.
         """
         return self.get_request(
             f'{self._orthanc_url}/series/{series_identifier}/statistics',
             params=params,
             **kwargs)
 
-    def get_series_identifier_study(
+    def get_series_study_identifier(
             self, series_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get series study identifier
 
-        Retrieve the parent study of this series
+        Retrieve the parent study of this series.
+
+        Parameters
+        ----------
+        series_identifier : Series identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Series study identifier.
         """
         return self.get_request(
             f'{self._orthanc_url}/series/{series_identifier}/study',
@@ -2949,60 +3100,87 @@ class Orthanc:
             **kwargs)
 
     def get_statistics(self, params: Dict = None, **kwargs) -> requests.Response:
-        """Get method
+        """Get Orthanc statistics
+
+        Parameters
+        ----------
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Orthanc statistics.
         """
         return self.get_request(
             f'{self._orthanc_url}/statistics', params=params, **kwargs)
 
     def get_studies(self, params: Dict = None, **kwargs) -> requests.Response:
-        """Get method
+        """Get studies identifiers
 
-        "since" and "limit" arguments + "expand" argument to retrieve the content of the studies
+        "since" and "limit" arguments + "expand" argument to retrieve the content of the studies.
+
+        Parameters
+        ----------
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            List of the studies identifiers.
         """
         return self.get_request(
             f'{self._orthanc_url}/studies', params=params, **kwargs)
 
-    def get_studies_identifier(
+    def get_study_information(
             self, study_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get study information
+
+        Parameters
+        ----------
+        study_identifier : studies identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Study main information in the form of a dictionary.
         """
         return self.get_request(
             f'{self._orthanc_url}/studies/{study_identifier}',
             params=params,
             **kwargs)
 
-    def delete_studies_identifier(self, study_identifier: str, **kwargs) -> requests.Response:
-        """Delete method
+    def delete_study(self, study_identifier: str, **kwargs) -> requests.Response:
+        """Delete specified study
+
+        Parameters
+        ----------
+        study_identifier : studies identifier.
 
         Returns
         -------
         requests.Response
+            HTTP status == 200 if no error.
         """
         return self.delete_request(f'{self._orthanc_url}/studies/{study_identifier}',
                                    **kwargs)
 
-    def post_studies_identifier_anonymize(
+    def anonymize_study(
             self, study_identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Anonymize study
 
         http://book.orthanc-server.com/users/anonymization.html
+
+        Parameters
+        ----------
+        study_identifier : studies identifier.
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -3014,13 +3192,18 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_studies_identifier_archive(
+    def get_study_zip_file(
             self, study_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get study zip file
 
-        Create ZIP
+        Get ZIP file
+
+        Parameters
+        ----------
+        study_identifier : studies identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
@@ -3031,14 +3214,20 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def post_studies_identifier_archive(
+    def create_study_zip_file(
             self, study_identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Create study zip file
 
-        Create ZIP
+        Create ZIP.
+
+        Parameters
+        ----------
+        study_identifier : studies identifier.
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -3050,30 +3239,41 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_studies_identifier_instances(
+    def get_study_instances(
             self, study_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get study instances
 
-        Retrieve all the instances of this patient in a single REST call
+        Retrieve all the instances of this patient in a single REST call.
+
+        Parameters
+        ----------
+        study_identifier : studies identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            List of study instances.
         """
         return self.get_request(
             f'{self._orthanc_url}/studies/{study_identifier}/instances',
             params=params,
             **kwargs)
 
-    def get_studies_identifier_instances_tags(
+    def get_study_instances_tags(
             self, study_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get study instances tags
 
-        "?simplify" argument to simplify output, "?short"
+        "?simplify" argument to simplify output, "?short".
+
+        Parameters
+        ----------
+        study_identifier : studies identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
@@ -3089,6 +3289,7 @@ class Orthanc:
             params: Dict = None,
             **kwargs) -> requests.Response:
         """Get method
+        HERE
 
         Create a ZIP archive for media storage with DICOMDIR
 
