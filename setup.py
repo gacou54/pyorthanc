@@ -8,5 +8,5 @@ setup(
     license='MIT',
     author='Gabriel Couture',
     author_email='gacou54@gmail.com',
-    description=''
+    description='', install_requires=['requests']
 )

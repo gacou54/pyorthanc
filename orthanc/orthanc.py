@@ -13,7 +13,7 @@ class Orthanc:
     `setup_credential`.
     """
 
-    def __init__(self, orthanc_url: str):
+    def __init__(self, orthanc_url: str) -> None:
         """Constructor
 
         Parameters
@@ -1756,7 +1756,7 @@ class Orthanc:
         ...                                             'QueryRetrieveLevel': 'Study',
         ...                                             'Modality':'SR'}}).json()
 
-        >>> orthanc.retrieve_from_modality('modality')  # TODO
+        >>> orthanc.retrieve_query_results_to_another_modality('modality')
         """
         return self.post_request(
             f'{self._orthanc_url}/modalities/{modality}/query',
@@ -2682,10 +2682,10 @@ class Orthanc:
         ...     'modality',
         ...     data={'Level': 'Study',
         ...           'Query': {'QueryRetrieveLevel': 'Study',
-        ...                     'Modality':'SR'}})
+        ...                     'Modality':'SR'}}).json()
 
         >>> orthanc.retrieve_query_results_to_another_modality(
-        ...         query_identifier='query_id',
+        ...         query_identifier=query_id['ID'],
         ...         json='modality')
 
         """

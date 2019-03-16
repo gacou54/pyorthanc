@@ -51,14 +51,18 @@ orthanc.setup_credentials('username', 'password')  # If needed
 orthanc.get_modalities().json()
 ```
 
-#### Query (C-Find) from remote modality:
+#### Query (C-Find) and Retrieve (C-Move) from remote modality:
 ```python
-from orthanc import Modality
+from orthanc import RemoteModality
 
 
-remote_modality = Modality('http://localhost:8042', 'sample')
+remote_modality = RemoteModality('http://localhost:8042', 'modality')
 remote_modality.setup_credentials('username', 'password')  # If needed
 
+# Query (C-Find) on modality
 data = {'Level': 'Study', 'Query': {'PatientID': '*'}}
 query_response = remote_modality.query(data=data)
+
+# Retrieve (C-Move) results of query on a target modality (AET)
+remote_modality.retrieve(query_response.json()['ID'], 'target_modality')
 ```
