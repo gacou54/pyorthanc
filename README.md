@@ -23,10 +23,10 @@ from orthanc import Orthanc
 
 
 orthanc = Orthanc('http://localhost:8042')
-orthanc.setup_credentials(username, password)  # If needed
+orthanc.setup_credentials('username', 'password')  # If needed
 
 # To get patients identifier and main information
-patients_identifiers = orthanc.get_patients_identifiers().json()
+patients_identifiers = orthanc.get_patients().json()
 
 for patient_identifier in patients_identifiers:
     patient_information = orthanc.get_patient_information(patient_identifier).json()
@@ -34,7 +34,7 @@ for patient_identifier in patients_identifiers:
 
 # To get patient's studies identifier and main information
 a_patient_identifier = patients_identifiers[0]
-studies_identifiers = orthanc.get_studies_identifiers(a_patient_identifier)
+studies_identifiers = orthanc.get_studies(a_patient_identifier)
 
 for study_identifier in studies_identifiers:
     study_information = orthanc.get_study_information(study_identifier).json()
@@ -46,18 +46,18 @@ from orthanc import Orthanc
 
 
 orthanc = Orthanc('http://localhost:8042')
-orthanc.setup_credentials(username, password)  # If needed
+orthanc.setup_credentials('username', 'password')  # If needed
 
 orthanc.get_modalities().json()
 ```
 
 #### Query (C-Find) from remote modality:
 ```python
-from orthanc import RemoteModality
+from orthanc import Modality
 
 
-remote_modality = RemoteModality('http://localhost:8042', 'sample')
-remote_modality.setup_credentials(username, password)  # If needed
+remote_modality = Modality('http://localhost:8042', 'sample')
+remote_modality.setup_credentials('username', 'password')  # If needed
 
 data = {'Level': 'Study', 'Query': {'PatientID': '*'}}
 query_response = remote_modality.query(data=data)

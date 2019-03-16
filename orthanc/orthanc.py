@@ -1601,8 +1601,8 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_remote_modalities(self, params: Dict = None, **kwargs) -> requests.Response:
-        """Get remotes modalities
+    def get_modalities(self, params: Dict = None, **kwargs) -> requests.Response:
+        """Get modalities
 
         List registered modalities (remote PACS servers that are connected to Orthanc)
         See the Orthanc's config for more details (AET addresses).
@@ -1619,15 +1619,15 @@ class Orthanc:
         return self.get_request(
             f'{self._orthanc_url}/modalities', params=params, **kwargs)
 
-    def get_remote_modality(
-            self, remote_modality: str,
+    def get_modality(
+            self, modality: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get specified remote modality
+        """Get specified modality
 
         Parameters
         ----------
-        remote_modality : Remote modality (remote PACS server, see orthanc.get_modalities()).
+        modality : Modality (remote PACS server, see orthanc.get_modalities()).
         params : GET HTTP request's params.
 
         Returns
@@ -1635,24 +1635,24 @@ class Orthanc:
         requests.Response
         """
         return self.get_request(
-            f'{self._orthanc_url}/modalities/{remote_modality}', params=params, **kwargs)
+            f'{self._orthanc_url}/modalities/{modality}', params=params, **kwargs)
 
-    def delete_remote_modality(self, remote_modality: str, **kwargs) -> requests.Response:
+    def delete_modality(self, modality: str, **kwargs) -> requests.Response:
         """Delete remote modality
 
         Parameters
         ----------
-        remote_modality : Remote modality (remote PACS server, see orthanc.get_modalities()).
+        modality : Modality (remote PACS server, see orthanc.get_modalities()).
 
         Returns
         -------
         requests.Response
         """
-        return self.delete_request(f'{self._orthanc_url}/modalities/{remote_modality}',
+        return self.delete_request(f'{self._orthanc_url}/modalities/{modality}',
                                    **kwargs)
 
-    def put_remote_modality(
-            self, remote_modality: str,
+    def put_modality(
+            self, modality: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
@@ -1660,7 +1660,7 @@ class Orthanc:
 
         Parameters
         ----------
-        remote_modality : Remote modality (remote PACS server, see orthanc.get_modalities()).
+        modality : Modality (remote PACS server, see orthanc.get_modalities()).
         data : Dictionary to send in the body of request.
         json : json to send in the body of request.
 
@@ -1669,13 +1669,13 @@ class Orthanc:
         requests.Response
         """
         return self.put_request(
-            f'{self._orthanc_url}/modalities/{remote_modality}',
+            f'{self._orthanc_url}/modalities/{modality}',
             data=data,
             json=json,
             **kwargs)
 
-    def echo_to_remote_modality(
-            self, remote_modality: str,
+    def echo_to_modality(
+            self, modality: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
@@ -1685,7 +1685,7 @@ class Orthanc:
 
         Parameters
         ----------
-        remote_modality : Remote modality (remote PACS server, see orthanc.get_modalities()).
+        modality : Modality (remote PACS server, see orthanc.get_modalities()).
         data : Dictionary to send in the body of request.
         json : json to send in the body of request.
 
@@ -1695,13 +1695,13 @@ class Orthanc:
             If HTTP status == 200 then C-Echo succeeded.
         """
         return self.post_request(
-            f'{self._orthanc_url}/modalities/{remote_modality}/echo',
+            f'{self._orthanc_url}/modalities/{modality}/echo',
             data=data,
             json=json,
             **kwargs)
 
-    def move_from_remote_modality(
-            self, remote_modality: str,
+    def move_from_modality(
+            self, modality: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
@@ -1711,7 +1711,7 @@ class Orthanc:
 
         Parameters
         ----------
-        remote_modality : Remote modality (remote PACS server, see orthanc.get_modalities()).
+        modality : Modality (remote PACS server, see orthanc.get_modalities()).
         data : Dictionary to send in the body of request.
         json : json to send in the body of request.
 
@@ -1721,13 +1721,13 @@ class Orthanc:
             If HTTP status == 200 then C-Move succeeded.
         """
         return self.post_request(
-            f'{self._orthanc_url}/modalities/{remote_modality}/move',
+            f'{self._orthanc_url}/modalities/{modality}/move',
             data=data,
             json=json,
             **kwargs)
 
-    def query_on_remote_modality(
-            self, remote_modality: str,
+    def query_on_modality(
+            self, modality: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
@@ -1738,7 +1738,7 @@ class Orthanc:
 
         Parameters
         ----------
-        remote_modality : Remote modality (remote PACS server, see orthanc.get_modalities()).
+        modality : Modality (remote PACS server, see orthanc.get_modalities()).
         data : Dictionary to send in the body of request.
         json : json to send in the body of request.
 
@@ -1750,22 +1750,22 @@ class Orthanc:
         Examples
         --------
         >>> orthanc = Orthanc('http://localhost:8042')
-        >>> orthanc.query_on_remote_modality('remote_modality',
+        >>> orthanc.query_on_modality('modality',
         ...                                    data={'Level': 'Study',
         ...                                          'Query': {
         ...                                             'QueryRetrieveLevel': 'Study',
         ...                                             'Modality':'SR'}}).json()
 
-        >>> orthanc.retrieve_from_remote_modality('remote_modality')  # TODO
+        >>> orthanc.retrieve_from_modality('modality')  # TODO
         """
         return self.post_request(
-            f'{self._orthanc_url}/modalities/{remote_modality}/query',
+            f'{self._orthanc_url}/modalities/{modality}/query',
             data=data,
             json=json,
             **kwargs)
 
-    def store_on_remote_modality(
-            self, remote_modality: str,
+    def store_on_modality(
+            self, modality: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
@@ -1775,7 +1775,7 @@ class Orthanc:
 
         Parameters
         ----------
-        remote_modality : Remote modality (remote PACS server, see orthanc.get_modalities()).
+        modality : Modality (remote PACS server, see orthanc.get_modalities()).
         data : Dictionary to send in the body of request.
         json : json to send in the body of request.
 
@@ -1785,7 +1785,7 @@ class Orthanc:
             If HTTP status == 200 then C-Move succeeded.
         """
         return self.post_request(
-            f'{self._orthanc_url}/modalities/{remote_modality}/store',
+            f'{self._orthanc_url}/modalities/{modality}/store',
             data=data,
             json=json,
             **kwargs)
@@ -2678,15 +2678,15 @@ class Orthanc:
         Examples
         --------
         >>> orthanc = Orthanc('http://localhost:8042')
-        >>> query_id = orthanc.query_on_remote_modality(
-        ...     'remote_modality',
+        >>> query_id = orthanc.query_on_modality(
+        ...     'modality',
         ...     data={'Level': 'Study',
         ...           'Query': {'QueryRetrieveLevel': 'Study',
         ...                     'Modality':'SR'}})
 
         >>> orthanc.retrieve_query_results_to_another_modality(
         ...         query_identifier='query_id',
-        ...         json='remote_modality')
+        ...         json='modality')
 
         """
         return self.post_request(

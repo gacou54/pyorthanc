@@ -21,8 +21,8 @@ class RemoteModality:
         self.orthanc_url: str = orthanc_url
         self.modality: str = modality
 
-        self.credentials_are_set: bool = False
-        self.credentials: HTTPBasicAuth = None
+        self._credentials_are_set: bool = False
+        self._credentials: HTTPBasicAuth = None
 
     def setup_credentials(self, username: str, password: str) -> None:
         """Set credentials needed for HTTP requests
@@ -32,8 +32,8 @@ class RemoteModality:
         username : str
         password : str
         """
-        self.credentials = HTTPBasicAuth(username, password)
-        self.credentials_are_set = True
+        self._credentials = HTTPBasicAuth(username, password)
+        self._credentials_are_set = True
 
     def echo(self) -> requests.Response:
         """C-Echo to remote modality
@@ -105,8 +105,8 @@ class RemoteModality:
         requests.Response
             Response of the HTTP POST requests
         """
-        if self.credentials_are_set:
-            return requests.post(route, data=data, auth=self.credentials)
+        if self._credentials_are_set:
+            return requests.post(route, data=data, auth=self._credentials)
 
         return requests.post(route, data=data)
 
