@@ -1305,7 +1305,7 @@ class Orthanc:
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Reconstruction of the main DICOM tags
+        """Reconstruction of the main DICOM tags of instance
 
         Force reconstruction of the main DICOM tags, JSON summary and metadata.
 
@@ -1964,7 +1964,7 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_patient_media(
+    def get_patient_archice(
             self, patient_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
@@ -1986,12 +1986,12 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def create_patient_zip_media(
+    def create_patient_archive_for_media_storage(
             self, patient_identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Create patient zip media with DICOMDIR
+        """Create patient archive media with DICOMDIR
 
         Create a ZIP archive for media storage with DICOMDIR.
 
@@ -2112,7 +2112,7 @@ class Orthanc:
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Force reconstruction of the main DICOM tags
+        """Force reconstruction of the main DICOM tags of patient
 
         Force reconstruction of the main DICOM tags,
         JSON summary and metadata of child instances
@@ -2889,7 +2889,7 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def create_archive_for_media_storage(
+    def create_series_archive_for_media_storage(
             self, series_identifier: str,
             data: Dict = None,
             json=None,
@@ -3012,7 +3012,7 @@ class Orthanc:
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Reconstruction of the main DICOM tags
+        """Reconstruction of the main DICOM tags of series
 
         Force reconstruction of the main DICOM tags,
         JSON summary and metadata of child instances
@@ -3284,14 +3284,16 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_studies_identifier_media(
+    def get_study_archive(
             self, study_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
-        HERE
+        """Get study archive
 
-        Create a ZIP archive for media storage with DICOMDIR
+        Parameters
+        ----------
+        study_identifier : studies identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
@@ -3302,14 +3304,20 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def post_studies_identifier_media(
+    def create_study_archive_for_media_storage(
             self, study_identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Create archive for media storage
 
-        Create a ZIP archive for media storage with DICOMDIR
+        Create a ZIP archive for media storage with DICOMDIR.
+
+        Parameters
+        ----------
+        study_identifier : Study identifier.
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -3321,14 +3329,20 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_studies_identifier_merge(
+    def merge_study(
             self, study_identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Merge study
 
         Merge a study, i.e. move series from another study into this study
+
+        Parameters
+        ----------
+        study_identifier : Study identifier.
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -3340,14 +3354,20 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_studies_identifier_modify(
+    def modify_study(
             self, study_identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Modify study
 
         http://book.orthanc-server.com/users/anonymization.html
+
+        Parameters
+        ----------
+        study_identifier : Study identifier.
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -3359,65 +3379,90 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_studies_identifier_module(
+    def get_study_module(
             self, study_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get study module
 
-        "?simplify" argument to simplify output, "?short"
+        "?simplify" argument to simplify output, "?short".
+
+        Parameters
+        ----------
+        study_identifier : Study identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Study module
         """
         return self.get_request(
             f'{self._orthanc_url}/studies/{study_identifier}/module',
             params=params,
             **kwargs)
 
-    def get_studies_identifier_module_patient(
+    def get_study_module_patient(
             self, study_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get study's module_patient
 
         "?simplify" argument to simplify output, "?short"
+
+        Parameters
+        ----------
+        study_identifier : Study identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Study's module_patient
         """
         return self.get_request(
             f'{self._orthanc_url}/studies/{study_identifier}/module_patient',
             params=params,
             **kwargs)
 
-    def get_studies_identifier_patient(
+    def get_study_patient_identifier(
             self, study_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get study's patient identifier
 
         Retrieve the parent patient of this study
+
+        Parameters
+        ----------
+        study_identifier : Study identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Study's patient identifier.
         """
         return self.get_request(
             f'{self._orthanc_url}/studies/{study_identifier}/patient',
             params=params,
             **kwargs)
 
-    def post_studies_identifier_reconstruct(
+    def reconstruct_study_main_dicom_tags(
             self, study_identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Reconstruct the main DICOM tags of study
 
-        Force reconstruction of the main DICOM tags, JSON summary and metadata of child instances
+        Force reconstruction of the main DICOM tags,
+        JSON summary and metadata of child instances
+
+        Parameters
+        ----------
+        study_identifier : Study identifier.
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -3429,48 +3474,66 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_studies_identifier_series(
+    def get_study_series_identifiers(
             self, study_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get study's series identifiers
 
-        Retrieve all the series of this study in a single REST call
+        Retrieve all the series of this study in a single REST call.
+
+        Parameters
+        ----------
+        study_identifier : Study identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            List of study's series identifiers.
         """
         return self.get_request(
             f'{self._orthanc_url}/studies/{study_identifier}/series',
             params=params,
             **kwargs)
 
-    def get_studies_identifier_shared_tags(
+    def get_study_shared_tags(
             self, study_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get study's shared tags
 
         "?simplify" argument to simplify output, "?short"
+
+        Parameters
+        ----------
+        study_identifier : Study identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Study's shared tags.
         """
         return self.get_request(
             f'{self._orthanc_url}/studies/{study_identifier}/shared_tags',
             params=params,
             **kwargs)
 
-    def post_studies_identifier_split(
+    def split_study(
             self, study_identifier: str,
             data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Split study
 
-        Split a study, i.e. create a new study from a subset of its child series
+        Split a study, i.e. create a new study from a subset of its child series.
+
+        Parameters
+        ----------
+        study_identifier : Study identifier.
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -3482,15 +3545,21 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_studies_identifier_statistics(
+    def get_study_statistics(
             self, study_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get method
+        """Get study statistics
+
+        Parameters
+        ----------
+        study_identifier : Study identifier.
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Study statistics.
         """
         return self.get_request(
             f'{self._orthanc_url}/studies/{study_identifier}/statistics',
@@ -3498,7 +3567,11 @@ class Orthanc:
             **kwargs)
 
     def get_system(self, params: Dict = None, **kwargs) -> requests.Response:
-        """Get method
+        """Get system
+
+        Parameters
+        ----------
+        params : GET HTTP request's params.
 
         Returns
         -------
@@ -3507,10 +3580,15 @@ class Orthanc:
         return self.get_request(
             f'{self._orthanc_url}/system', params=params, **kwargs)
 
-    def post_tools_create_archive(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
-        """Post method
+    def create_archive(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
+        """Create archive (ZIP) from specified set of DICOM objects
 
         Create a ZIP from a set of unrelated DICOM resources
+
+        Parameters
+        ----------
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -3522,11 +3600,16 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_tools_create_dicom(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
-        """Post method
+    def create_and_store_dicom(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
+        """Create and store new DICOM instance
 
         Create and store a new DICOM instance,
         possibly with an image or a PDF payload
+
+        Parameters
+        ----------
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -3538,10 +3621,15 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_tools_create_media(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
-        """Post method
+    def create_media(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
+        """Create a ZIP with DICOMDIR from specified DICOM objects
 
         Create a ZIP-with-DICOMDIR from a set of unrelated DICOM resources
+
+        Parameters
+        ----------
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -3553,13 +3641,19 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_tools_create_media_extended(
+    def create_media_extended_to_type3(
             self, data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Create a ZIP with DICOMDIR from specified DICOM objects (this include type-3 tags)
 
-        Create a ZIP-with-DICOMDIR from a set of unrelated DICOM resources, including type-3 tags
+        Create a ZIP-with-DICOMDIR from a set of unrelated DICOM resources,
+        including type-3 tags.
+
+        Parameters
+        ----------
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -3571,27 +3665,37 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_tools_default_encoding(self, params: Dict = None, **kwargs) -> requests.Response:
-        """Get method
+    def get_default_encoding(self, params: Dict = None, **kwargs) -> requests.Response:
+        """Get default encoding
 
-        Get the default encoding used by Orthanc, or temporarily change it until the next restart
+        Get the default encoding used by Orthanc.
+
+        Parameters
+        ----------
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Default Encoding.
         """
         return self.get_request(
             f'{self._orthanc_url}/tools/default_encoding',
             params=params,
             **kwargs)
 
-    def put_tools_default_encoding(
+    def put_default_encoding(
             self, data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Put method
+        """Change the default encoding
 
-        Get the default encoding used by Orthanc, or temporarily change it until the next restart
+        Temporarily change the default encoding until the next restart.
+
+        Parameters
+        ----------
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -3603,24 +3707,34 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_tools_dicom_conformance(self, params: Dict = None, **kwargs) -> requests.Response:
-        """Get method
+    def get_dicom_conformance(self, params: Dict = None, **kwargs) -> requests.Response:
+        """Get DICOM conformance statement of this version of Orthanc
 
-        DICOM conformance statement of this version of Orthanc
+        DICOM conformance statement of this version of Orthanc.
+
+        Parameters
+        ----------
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            DICOM conformance statement of this version of Orthanc.
         """
         return self.get_request(
             f'{self._orthanc_url}/tools/dicom_conformance',
             params=params,
             **kwargs)
 
-    def post_tools_execute_script(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
-        """Post method
+    def execute_given_script(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
+        """Execute given script
 
-        Execute the Lua script in the POST body
+        Execute the Lua script in the POST body.
+
+        Parameters
+        ----------
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -3632,10 +3746,15 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_tools_find(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
-        """Post method
+    def c_find(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
+        """C-Find call
 
         Runs a C-Find call from the REST API
+
+        Parameters
+        ----------
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -3644,25 +3763,36 @@ class Orthanc:
         return self.post_request(
             f'{self._orthanc_url}/tools/find', data=data, json=json, **kwargs)
 
-    def get_tools_generate_uid(self, params: Dict = None, **kwargs) -> requests.Response:
-        """Get method
+    def generate_uid(self, params: Dict = None, **kwargs) -> requests.Response:
+        """Generate a DICOM UID
 
         Generate DICOM UID. The "level" GET argument must be "patient", "study", "series" or "instance"
+
+        Parameters
+        ----------
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            DICOM UID.
         """
         return self.get_request(
             f'{self._orthanc_url}/tools/generate_uid', params=params, **kwargs)
 
-    def post_tools_invalidate_tags(
+    def invalidate_tags(
             self, data: Dict = None,
             json=None,
             **kwargs) -> requests.Response:
-        """Post method
+        """Invalidate the JSON summary of all DICOM files
 
-        Invalidate the JSON summary of all the DICOM files (useful if new private tags are registered)
+        Invalidate the JSON summary of all the DICOM files
+        (useful if new private tags are registered).
+
+        Parameters
+        ----------
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -3674,10 +3804,15 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_tools_lookup(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
-        """Post method
+    def lookup(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
+        """Map DICOM UIDs to Orthanc identifiers
 
         Map DICOM UIDs to Orthanc identifiers
+
+        Parameters
+        ----------
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -3689,22 +3824,32 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_tools_metrics(self, params: Dict = None, **kwargs) -> requests.Response:
-        """Get method
+    def get_metrics(self, params: Dict = None, **kwargs) -> requests.Response:
+        """Get metrics
 
-        See whether the collection of metrics is enabled, and enable/disable this collection
+        See whether the collection of metrics is enabled.
+
+        Parameters
+        ----------
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Metrics
         """
         return self.get_request(
             f'{self._orthanc_url}/tools/metrics', params=params, **kwargs)
 
-    def put_tools_metrics(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
+    def put_metrics(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
         """Put method
 
-        See whether the collection of metrics is enabled, and enable/disable this collection
+        Enable/disable this collection of metrics
+
+        Parameters
+        ----------
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -3716,49 +3861,69 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_tools_metrics_prometheus(self, params: Dict = None, **kwargs) -> requests.Response:
-        """Get method
+    def get_metrics_prometheus(self, params: Dict = None, **kwargs) -> requests.Response:
+        """Get metrics in the Prometheus text-based exposition format
 
-        Retrieve the metrics in the Prometheus text-based exposition format
+        Retrieve the metrics in the Prometheus text-based exposition format.
+
+        Parameters
+        ----------
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Metrics in the Prometheus text-based exposition format.
         """
         return self.get_request(
             f'{self._orthanc_url}/tools/metrics_prometheus',
             params=params,
             **kwargs)
 
-    def get_tools_now(self, params: Dict = None, **kwargs) -> requests.Response:
-        """Get method
+    def get_universal_time(self, params: Dict = None, **kwargs) -> requests.Response:
+        """Get universal current time
 
-        Returns the current *universal* datetime (UTC) in the ISO 8601 format
+        Returns the current *universal* datetime (UTC) in the ISO 8601 format.
+
+        Parameters
+        ----------
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Universal current time.
         """
         return self.get_request(
             f'{self._orthanc_url}/tools/now', params=params, **kwargs)
 
-    def get_tools_now_local(self, params: Dict = None, **kwargs) -> requests.Response:
-        """Get method
+    def get_local_time(self, params: Dict = None, **kwargs) -> requests.Response:
+        """Get local current time
 
-        Returns the current *local* datetime in the ISO 8601 format
+        Returns the current *local* datetime in the ISO 8601 format.
+
+        Parameters
+        ----------
+        params : GET HTTP request's params.
 
         Returns
         -------
         requests.Response
+            Local current time.
         """
         return self.get_request(
             f'{self._orthanc_url}/tools/now_local', params=params, **kwargs)
 
-    def post_tools_reconstruct(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
-        """Post method
+    def reconstruct_main_dicom_tags(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
+        """Reconstruct main DICOM tags
 
         Reconstructs the main DICOM tags, the JSON summary and metadata of
          all the instances stored in Orthanc. Slow operation!
+
+        Parameters
+        ----------
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -3770,10 +3935,15 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def post_tools_reset(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
-        """Post method
+    def reset_orthanc(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
+        """Hot restart of Orthanc
 
         Hot restart of Orthanc, the configuration file will be read again
+
+        Parameters
+        ----------
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
@@ -3782,10 +3952,15 @@ class Orthanc:
         return self.post_request(
             f'{self._orthanc_url}/tools/reset', data=data, json=json, **kwargs)
 
-    def post_tools_shutdown(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
-        """Post method
+    def shutdown_orthanc(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
+        """Shutdown Orthanc
 
-        Stop Orthanc
+        Stop Orthanc.
+
+        Parameters
+        ----------
+        data : Dictionary to send in the body of request.
+        json : json to send in the body of request.
 
         Returns
         -------
