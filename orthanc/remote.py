@@ -1,16 +1,18 @@
 # coding: utf-8
 # author: gabriel couture
-from typing import Dict, Any
+from typing import Dict
 
 import requests
 from requests.auth import HTTPBasicAuth
 
+from orthanc import Orthanc
+
 
 class RemoteModality:
-    """Wrapper around Orthanc API when dealing with a remote modality.
+    """Wrapper around Orthanc API when dealing with a (remote) modality.
     """
 
-    def __init__(self, orthanc_url: str, modality: str):
+    def __init__(self, orthanc_url: str, modality: str) -> None:
         """Constructor
 
         Parameters
@@ -18,11 +20,11 @@ class RemoteModality:
         orthanc_url : str
         modality : str
         """
-        self.orthanc_url: str = orthanc_url
+        self.orthanc: Orthanc = Orthanc(orthanc_url)
         self.modality: str = modality
 
-        self.credentials_are_set: bool = False
-        self.credentials: HTTPBasicAuth = None
+        self._credentials_are_set: bool = False
+        self._credentials: HTTPBasicAuth = None
 
     def setup_credentials(self, username: str, password: str) -> None:
         """Set credentials needed for HTTP requests
@@ -32,8 +34,8 @@ class RemoteModality:
         username : str
         password : str
         """
-        self.credentials = HTTPBasicAuth(username, password)
-        self.credentials_are_set = True
+        self._credentials = HTTPBasicAuth(username, password)
+        self._credentials_are_set = True
 
     def echo(self) -> requests.Response:
         """C-Echo to remote modality
@@ -43,10 +45,18 @@ class RemoteModality:
         requests.Response
             Response object from echo.
         """
-        return self.post_request(f'{self.orthanc_url}/modalities/{self.modality}/echo')
+        return self.orthanc.echo_to_modality(self.modality)
 
     def query(self, data: Dict) -> requests.Response:
         """C-Find (Querying with data)
+
+        Parameters
+        ----------
+        data : Dictionary to send in the body of request.
+
+        Returns
+        -------
+        requests.Response
 
         Examples
         -------
@@ -62,65 +72,48 @@ class RemoteModality:
 
         >>> remote_modality.setup_credentials('username', 'password')
         >>> remote_modality.query(data=data)
-
-        Parameters
-        ----------
-        data : dict
-            Data dictionary.
-
-        Returns
-        -------
-        requests.Response
         """
-        formatted_data = self.__format_data(data)
-
-        return self.post_request(f'{self.orthanc_url}/modalities/'
-                                 f'{self.modality}/query',
-                                 data=formatted_data)
+        return self.orthanc.query_on_modality(self.modality, data=data)
 
     def move(self, data: Dict) -> requests.Response:
         """C-Move
 
+        Parameters
+        ----------
+        data : Dictionary to send in the body of request.
+
         Returns
         -------
         requests.Response
         """
-        formatted_data = self.__format_data(data)
+        return self.orthanc.move_from_modality(self.modality, data=data)
 
-        return self.post_request(f'{self.orthanc_url}/modalities/'
-                                 f'{self.modality}/move',
-                                 data=formatted_data)
+    def retrieve(self, query_identifier: str, target_modality: str,) -> requests.Response:
+        """Retrieve (C-Move) query results to another modality
 
-    def post_request(self, route: str, data: str = None) -> Any:
-        """POST to specified route
+        C-Move SCU: Send all the results to another modality whose AET is in the body
 
         Parameters
         ----------
-        route : str
-        data : dict
-            Dictionary of data for the POST HTTP request
+        query_identifier : Query identifier.
+        target_modality : Name of target modality (AET).
 
         Returns
         -------
         requests.Response
-            Response of the HTTP POST requests
+
+        Examples
+        --------
+        >>> remote_modality = RemoteModality('http://localhost:8042', 'modality')
+        >>> query_id = remote_modality.query(
+        ...     data={'Level': 'Study',
+        ...           'Query': {'QueryRetrieveLevel': 'Study',
+        ...                     'Modality':'SR'}}).json()
+
+        >>> remote_modality.retrieve(query_identifier=query_id['ID'],
+        ...                          target_modality='modality')
+
         """
-        if self.credentials_are_set:
-            return requests.post(route, data=data, auth=self.credentials)
+        return self.orthanc.retrieve_query_results_to_another_modality(
+            query_identifier, json=target_modality)
 
-        return requests.post(route, data=data)
-
-    def __format_data(self, data: Dict) -> str:
-        """Format dictionary data in a string
-
-        Parameters
-        ----------
-        data: Dict
-            Data dictionary
-
-        Returns
-        -------
-        str
-            String corresponding to data
-        """
-        return str(data).replace('\'', '\"')
