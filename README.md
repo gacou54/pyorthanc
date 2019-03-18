@@ -7,6 +7,7 @@ Link to Orthanc web site: https://www.orthanc-server.com/
 Please note that this is an early version of the wrapper (version < 1.0),
 therefore some methods description (and maybe name) may change because 
 they don't describe adequately the behavior of the corresponding Orthanc REST API route.
+Also note that this librairy is still under development.
 If the description of an `Orthanc` method does not correspond to the planned 
 behavior, please do an issue.
 
