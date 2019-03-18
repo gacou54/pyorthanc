@@ -32,7 +32,7 @@ Be sure that Orthanc is running. The default URL (if running locally) is `http:/
 
 #### With Orthanc server:
 ```python
-from orthanc import Orthanc
+from pyorthanc import Orthanc
 
 
 orthanc = Orthanc('http://localhost:8042')
@@ -55,7 +55,7 @@ for study_identifier in studies_identifiers:
 
 #### Getting list of remote modalities
 ```python
-from orthanc import Orthanc
+from pyorthanc import Orthanc
 
 
 orthanc = Orthanc('http://localhost:8042')
@@ -66,7 +66,7 @@ orthanc.get_modalities().json()
 
 #### Query (C-Find) and Retrieve (C-Move) from remote modality:
 ```python
-from orthanc import RemoteModality
+from pyorthanc import RemoteModality
 
 
 remote_modality = RemoteModality('http://localhost:8042', 'modality')

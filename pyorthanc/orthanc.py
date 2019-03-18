@@ -268,7 +268,7 @@ class Orthanc:
             The (possibly compressed) data, as stored on the disk.
         """
         return self.get_request(
-            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/compressed_data',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/compressed-data',
             params=params,
             **kwargs)
 
@@ -297,7 +297,7 @@ class Orthanc:
             The (possibly compressed) data, with md5 encryption.
         """
         return self.get_request(
-            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/compressed_md5',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/compressed-md5',
             params=params,
             **kwargs)
 
@@ -322,7 +322,7 @@ class Orthanc:
             Attachment compressed size.
         """
         return self.get_request(
-            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/compressed_size',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/compressed-size',
             params=params,
             **kwargs)
 
@@ -374,7 +374,7 @@ class Orthanc:
             "0" means uncompressed, "1" compressed
         """
         return self.get_request(
-            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/is_compressed',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/is-compressed',
             params=params,
             **kwargs)
 
@@ -483,7 +483,7 @@ class Orthanc:
             HTTP status == 200 if no error.
         """
         return self.post_request(
-            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/verify_md5',
+            f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}/verify-md5',
             data=data,
             json=json,
             **kwargs)
@@ -713,7 +713,7 @@ class Orthanc:
             **kwargs) -> requests.Response:
         """Anonymize specified instance
 
-        http://book.orthanc-server.com/users/anonymization.html
+        http://book.pyorthanc-server.com/users/anonymization.html
 
         Parameters
         ----------
@@ -754,7 +754,7 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_instance_content_of_group_element(
+    def get_instance_content_by_group_element(
             self, instance_identifier: str,
             group_element: str,
             params: Dict = None,
@@ -762,6 +762,7 @@ class Orthanc:
         """Get value of DICOM tags corresponding to a specified group element
 
         Raw access to the value of DICOM tags (comprising the padding character).
+        Group element name should be in the form {tag1}/{index1}/{tag2}/...
 
         Parameters
         ----------
@@ -773,41 +774,15 @@ class Orthanc:
         -------
         requests.Response
             DICOM tag value.
+
+        Examples
+        --------
+        >>> pyorthanc = Orthanc('http://localhost:8080')
+        >>> pyorthanc.get_instance_content_by_group_element(
+        ...     '0040-a730/6/0040-a730/0/0040-a160').json()
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{instance_identifier}/content/{group_element}',
-            params=params,
-            **kwargs)
-
-    def get_instance_content_of_group_element_at_specified_indexes(
-            self, instance_identifier: str,
-            group_element: str,
-            indexes: List[str],
-            params: Dict = None,
-            **kwargs) -> requests.Response:
-        """Get value of DICOM tags corresponding to a specified group element at specified indexes
-
-        Raw access to the content of DICOM sequences.
-
-        Parameters
-        ----------
-        instance_identifier : instance identifier.
-        group_element : Group element corresponding to targeted DICOM tag.
-        indexes : Sequences on indexes to have access to.
-        params : GET HTTP request's params.
-
-        Returns
-        -------
-        requests.Response
-            Content of DICOM instances indexes sequences.
-        """
-        formatted_indexes = ''
-
-        for index in indexes:
-            formatted_indexes += index + '/'
-
-        return self.get_request(
-            f'{self._orthanc_url}/instances/{instance_identifier}/content/{group_element}/{formatted_indexes}',
             params=params,
             **kwargs)
 
@@ -846,7 +821,7 @@ class Orthanc:
 
         Parameters
         ----------
-        identifier : Instance identifier.
+        instance_identifier : Instance identifier.
         params : GET HTTP request's params.
 
         Returns
@@ -856,8 +831,8 @@ class Orthanc:
 
         Examples
         --------
-        >>> orthanc = Orthanc('ORTHANC_URL')
-        >>> dicom_file_bytes = orthanc.get_instance_file('an_instance_identifier').json()
+        >>> pyorthanc = Orthanc('ORTHANC_URL')
+        >>> dicom_file_bytes = pyorthanc.get_instance_file('an_instance_identifier').json()
         >>> with open('your_path', 'wb') as file_handler:
         ...     file_handler.write(dicom_file_bytes)
 
@@ -910,7 +885,7 @@ class Orthanc:
             Instance frame as int16 image.
         """
         return self.get_request(
-            f'{self._orthanc_url}/instances/{instance_identifier}/frames/{frame_number}/image_int16',
+            f'{self._orthanc_url}/instances/{instance_identifier}/frames/{frame_number}/image-int16',
             params=params,
             **kwargs)
 
@@ -935,7 +910,7 @@ class Orthanc:
         requests.Response
         """
         return self.get_request(
-            f'{self._orthanc_url}/instances/{instance_identifier}/frames/{frame_number}/image_uint16',
+            f'{self._orthanc_url}/instances/{instance_identifier}/frames/{frame_number}/image-uint16',
             params=params,
             **kwargs)
 
@@ -960,7 +935,7 @@ class Orthanc:
         requests.Response
         """
         return self.get_request(
-            f'{self._orthanc_url}/instances/{instance_identifier}/frames/{frame_number}/image_uint8',
+            f'{self._orthanc_url}/instances/{instance_identifier}/frames/{frame_number}/image-uint8',
             params=params,
             **kwargs)
 
@@ -1108,7 +1083,7 @@ class Orthanc:
             Instance image as an int16 image.
         """
         return self.get_request(
-            f'{self._orthanc_url}/instances/{instance_identifier}/image_int16',
+            f'{self._orthanc_url}/instances/{instance_identifier}/image-int16',
             params=params,
             **kwargs)
 
@@ -1132,7 +1107,7 @@ class Orthanc:
             Instance image as an uint16 image.
         """
         return self.get_request(
-            f'{self._orthanc_url}/instances/{instance_identifier}/image_uint16',
+            f'{self._orthanc_url}/instances/{instance_identifier}/image-uint16',
             params=params,
             **kwargs)
 
@@ -1156,7 +1131,7 @@ class Orthanc:
             Instance image as an uint8 image.
         """
         return self.get_request(
-            f'{self._orthanc_url}/instances/{instance_identifier}/image_uint8',
+            f'{self._orthanc_url}/instances/{instance_identifier}/image-uint8',
             params=params,
             **kwargs)
 
@@ -1190,7 +1165,7 @@ class Orthanc:
             **kwargs) -> requests.Response:
         """Modify instance
 
-        See http://book.orthanc-server.com/users/anonymization.html .
+        See http://book.pyorthanc-server.com/users/anonymization.html .
 
         Parameters
         ----------
@@ -1367,7 +1342,7 @@ class Orthanc:
             Instance's simplified DICOM tags. Should be in the form of a dictionary.
         """
         return self.get_request(
-            f'{self._orthanc_url}/instances/{instance_identifier}/simplified_tags',
+            f'{self._orthanc_url}/instances/{instance_identifier}/simplified-tags',
             params=params,
             **kwargs)
 
@@ -1627,7 +1602,7 @@ class Orthanc:
 
         Parameters
         ----------
-        modality : Modality (remote PACS server, see orthanc.get_modalities()).
+        modality : Modality (remote PACS server, see pyorthanc.get_modalities()).
         params : GET HTTP request's params.
 
         Returns
@@ -1642,7 +1617,7 @@ class Orthanc:
 
         Parameters
         ----------
-        modality : Modality (remote PACS server, see orthanc.get_modalities()).
+        modality : Modality (remote PACS server, see pyorthanc.get_modalities()).
 
         Returns
         -------
@@ -1660,7 +1635,7 @@ class Orthanc:
 
         Parameters
         ----------
-        modality : Modality (remote PACS server, see orthanc.get_modalities()).
+        modality : Modality (remote PACS server, see pyorthanc.get_modalities()).
         data : Dictionary to send in the body of request.
         json : json to send in the body of request.
 
@@ -1685,7 +1660,7 @@ class Orthanc:
 
         Parameters
         ----------
-        modality : Modality (remote PACS server, see orthanc.get_modalities()).
+        modality : Modality (remote PACS server, see pyorthanc.get_modalities()).
         data : Dictionary to send in the body of request.
         json : json to send in the body of request.
 
@@ -1711,7 +1686,7 @@ class Orthanc:
 
         Parameters
         ----------
-        modality : Modality (remote PACS server, see orthanc.get_modalities()).
+        modality : Modality (remote PACS server, see pyorthanc.get_modalities()).
         data : Dictionary to send in the body of request.
         json : json to send in the body of request.
 
@@ -1734,11 +1709,11 @@ class Orthanc:
         """Query on remote modalities
 
         DICOM C-Find SCU (Query), with subsequent possibility for Retrieve.
-        See http://book.orthanc-server.com/users/rest.html#performing-queries-on-modalities.
+        See http://book.pyorthanc-server.com/users/rest.html#performing-queries-on-modalities.
 
         Parameters
         ----------
-        modality : Modality (remote PACS server, see orthanc.get_modalities()).
+        modality : Modality (remote PACS server, see pyorthanc.get_modalities()).
         data : Dictionary to send in the body of request.
         json : json to send in the body of request.
 
@@ -1749,14 +1724,14 @@ class Orthanc:
 
         Examples
         --------
-        >>> orthanc = Orthanc('http://localhost:8042')
-        >>> orthanc.query_on_modality('modality',
+        >>> pyorthanc = Orthanc('http://localhost:8042')
+        >>> pyorthanc.query_on_modality('modality',
         ...                                    data={'Level': 'Study',
         ...                                          'Query': {
         ...                                             'QueryRetrieveLevel': 'Study',
         ...                                             'Modality':'SR'}}).json()
 
-        >>> orthanc.retrieve_query_results_to_another_modality('modality')
+        >>> pyorthanc.retrieve_query_results_to_another_modality('modality')
         """
         return self.post_request(
             f'{self._orthanc_url}/modalities/{modality}/query',
@@ -1775,7 +1750,7 @@ class Orthanc:
 
         Parameters
         ----------
-        modality : Modality (remote PACS server, see orthanc.get_modalities()).
+        modality : Modality (remote PACS server, see pyorthanc.get_modalities()).
         data : Dictionary to send in the body of request.
         json : json to send in the body of request.
 
@@ -1850,7 +1825,7 @@ class Orthanc:
             **kwargs) -> requests.Response:
         """Anonymize specified patient
 
-        http://book.orthanc-server.com/users/anonymization.html
+        http://book.pyorthanc-server.com/users/anonymization.html
 
         Parameters
         ----------
@@ -1960,7 +1935,7 @@ class Orthanc:
             Patient instances tags.
         """
         return self.get_request(
-            f'{self._orthanc_url}/patients/{patient_identifier}/instances_tags',
+            f'{self._orthanc_url}/patients/{patient_identifier}/instances-tags',
             params=params,
             **kwargs)
 
@@ -2018,7 +1993,7 @@ class Orthanc:
             **kwargs) -> requests.Response:
         """Modify patient
 
-        http://book.orthanc-server.com/users/anonymization.html
+        http://book.pyorthanc-server.com/users/anonymization.html
 
         Parameters
         ----------
@@ -2175,7 +2150,7 @@ class Orthanc:
         requests.Response
         """
         return self.get_request(
-            f'{self._orthanc_url}/patients/{patient_identifier}/shared_tags',
+            f'{self._orthanc_url}/patients/{patient_identifier}/shared-tags',
             params=params,
             **kwargs)
 
@@ -2527,7 +2502,7 @@ class Orthanc:
         requests.Response
         """
         return self.post_request(
-            f'{self._orthanc_url}/queries/{query_identifier}/answers/{index}/query_instances',
+            f'{self._orthanc_url}/queries/{query_identifier}/answers/{index}/query-instances',
             data=data,
             json=json,
             **kwargs)
@@ -2554,7 +2529,7 @@ class Orthanc:
         requests.Response
         """
         return self.post_request(
-            f'{self._orthanc_url}/queries/{query_identifier}/answers/{index}/query_series',
+            f'{self._orthanc_url}/queries/{query_identifier}/answers/{index}/query-series',
             data=data,
             json=json,
             **kwargs)
@@ -2581,12 +2556,12 @@ class Orthanc:
         requests.Response
         """
         return self.post_request(
-            f'{self._orthanc_url}/queries/{query_identifier}/answers/{index}/query_studies',
+            f'{self._orthanc_url}/queries/{query_identifier}/answers/{index}/query-studies',
             data=data,
             json=json,
             **kwargs)
 
-    def get_query_retrive_level(
+    def get_query_retrieve_level(
             self, query_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
@@ -2597,7 +2572,6 @@ class Orthanc:
         Parameters
         ----------
         query_identifier : Query identifier.
-        index : Index of wanted answer.
         params : GET HTTP request's params.
 
         Returns
@@ -2677,14 +2651,14 @@ class Orthanc:
 
         Examples
         --------
-        >>> orthanc = Orthanc('http://localhost:8042')
-        >>> query_id = orthanc.query_on_modality(
+        >>> pyorthanc = Orthanc('http://localhost:8042')
+        >>> query_id = pyorthanc.query_on_modality(
         ...     'modality',
         ...     data={'Level': 'Study',
         ...           'Query': {'QueryRetrieveLevel': 'Study',
         ...                     'Modality':'SR'}}).json()
 
-        >>> orthanc.retrieve_query_results_to_another_modality(
+        >>> pyorthanc.retrieve_query_results_to_another_modality(
         ...         query_identifier=query_id['ID'],
         ...         json='modality')
 
@@ -2755,7 +2729,7 @@ class Orthanc:
             **kwargs) -> requests.Response:
         """Anonymize series
 
-        http://book.orthanc-server.com/users/anonymization.html
+        http://book.pyorthanc-server.com/users/anonymization.html
 
         Parameters
         ----------
@@ -2863,7 +2837,7 @@ class Orthanc:
             List of series instances tags.
         """
         return self.get_request(
-            f'{self._orthanc_url}/series/{series_identifier}/instances_tags',
+            f'{self._orthanc_url}/series/{series_identifier}/instances-tags',
             params=params,
             **kwargs)
 
@@ -2921,7 +2895,7 @@ class Orthanc:
             **kwargs) -> requests.Response:
         """Modify series
 
-        http://book.orthanc-server.com/users/anonymization.html
+        http://book.pyorthanc-server.com/users/anonymization.html
 
         Parameters
         ----------
@@ -2980,7 +2954,7 @@ class Orthanc:
         requests.Response
         """
         return self.get_request(
-            f'{self._orthanc_url}/series/{series_identifier}/ordered_slices',
+            f'{self._orthanc_url}/series/{series_identifier}/ordered-slices',
             params=params,
             **kwargs)
 
@@ -3051,7 +3025,7 @@ class Orthanc:
         requests.Response
         """
         return self.get_request(
-            f'{self._orthanc_url}/series/{series_identifier}/shared_tags',
+            f'{self._orthanc_url}/series/{series_identifier}/shared-tags',
             params=params,
             **kwargs)
 
@@ -3174,7 +3148,7 @@ class Orthanc:
             **kwargs) -> requests.Response:
         """Anonymize study
 
-        http://book.orthanc-server.com/users/anonymization.html
+        http://book.pyorthanc-server.com/users/anonymization.html
 
         Parameters
         ----------
@@ -3280,7 +3254,7 @@ class Orthanc:
         requests.Response
         """
         return self.get_request(
-            f'{self._orthanc_url}/studies/{study_identifier}/instances_tags',
+            f'{self._orthanc_url}/studies/{study_identifier}/instances-tags',
             params=params,
             **kwargs)
 
@@ -3361,7 +3335,7 @@ class Orthanc:
             **kwargs) -> requests.Response:
         """Modify study
 
-        http://book.orthanc-server.com/users/anonymization.html
+        http://book.pyorthanc-server.com/users/anonymization.html
 
         Parameters
         ----------
@@ -3421,7 +3395,7 @@ class Orthanc:
             Study's module_patient
         """
         return self.get_request(
-            f'{self._orthanc_url}/studies/{study_identifier}/module_patient',
+            f'{self._orthanc_url}/studies/{study_identifier}/module-patient',
             params=params,
             **kwargs)
 
@@ -3516,7 +3490,7 @@ class Orthanc:
             Study's shared tags.
         """
         return self.get_request(
-            f'{self._orthanc_url}/studies/{study_identifier}/shared_tags',
+            f'{self._orthanc_url}/studies/{study_identifier}/shared-tags',
             params=params,
             **kwargs)
 
@@ -3660,7 +3634,7 @@ class Orthanc:
         requests.Response
         """
         return self.post_request(
-            f'{self._orthanc_url}/tools/create_media_extended',
+            f'{self._orthanc_url}/tools/create_media-extended',
             data=data,
             json=json,
             **kwargs)
@@ -3741,7 +3715,7 @@ class Orthanc:
         requests.Response
         """
         return self.post_request(
-            f'{self._orthanc_url}/tools/execute_script',
+            f'{self._orthanc_url}/tools/execute-script',
             data=data,
             json=json,
             **kwargs)
@@ -3778,7 +3752,7 @@ class Orthanc:
             DICOM UID.
         """
         return self.get_request(
-            f'{self._orthanc_url}/tools/generate_uid', params=params, **kwargs)
+            f'{self._orthanc_url}/tools/generate-uid', params=params, **kwargs)
 
     def invalidate_tags(
             self, data: Dict = None,
@@ -3799,7 +3773,7 @@ class Orthanc:
         requests.Response
         """
         return self.post_request(
-            f'{self._orthanc_url}/tools/invalidate_tags',
+            f'{self._orthanc_url}/tools/invalidate-tags',
             data=data,
             json=json,
             **kwargs)
@@ -3876,7 +3850,7 @@ class Orthanc:
             Metrics in the Prometheus text-based exposition format.
         """
         return self.get_request(
-            f'{self._orthanc_url}/tools/metrics_prometheus',
+            f'{self._orthanc_url}/tools/metrics-prometheus',
             params=params,
             **kwargs)
 
@@ -3912,7 +3886,7 @@ class Orthanc:
             Local current time.
         """
         return self.get_request(
-            f'{self._orthanc_url}/tools/now_local', params=params, **kwargs)
+            f'{self._orthanc_url}/tools/now-local', params=params, **kwargs)
 
     def reconstruct_main_dicom_tags(self, data: Dict = None, json=None, **kwargs) -> requests.Response:
         """Reconstruct main DICOM tags
