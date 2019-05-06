@@ -5,7 +5,7 @@ from typing import Dict
 import requests
 from requests.auth import HTTPBasicAuth
 
-from orthanc import Orthanc
+from pyorthanc import Orthanc
 
 
 class RemoteModality:
