@@ -98,8 +98,9 @@ class Patient:
         """
         study_identifiers = self.orthanc.get_patient_studies(
             self.patient_identifier).json()
+        print(study_identifiers)
 
-        return list(map(lambda i: Study(i, self.orthanc), study_identifiers))
+        return list(map(lambda i: Study(i['ID'], self.orthanc), study_identifiers))
 
     def __str__(self):
         return f'Patient (id={self.get_id()}, identifier={self.get_identifier()})'

@@ -52,10 +52,12 @@ class Orthanc:
             Response of the HTTP GET request.
         """
         if self._credentials_are_set:
-            return requests.get(
+            response = requests.get(
                 route, params=params, auth=self._credentials, **kwargs)
+        else:
+            response = requests.get(route, params=params, **kwargs)
 
-        return requests.get(route, params=params, **kwargs)
+        return response
 
     def delete_request(self, route: str, **kwargs) -> requests.Response:
         """DELETE to specified route
@@ -1909,7 +1911,7 @@ class Orthanc:
         Returns
         -------
         requests.Response
-            Patient instance.
+            Patient instances main information.
         """
         return self.get_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/instances',
@@ -2113,7 +2115,7 @@ class Orthanc:
             self, patient_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get patient series identifiers
+        """Get patient series
 
         Retrieve all the series of this patient in a single REST call.
 
@@ -2125,7 +2127,7 @@ class Orthanc:
         Returns
         -------
         requests.Response
-            List of series identifiers.
+            List of series main information.
         """
         return self.get_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/series',
@@ -2178,7 +2180,7 @@ class Orthanc:
             self, patient_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get patient studies identifiers
+        """Get patient studies
 
         Retrieve all the studies of this patient in a single REST call.
 
@@ -2190,7 +2192,7 @@ class Orthanc:
         Returns
         -------
         requests.Response
-            List of patient studies identifier.
+            List of patient studies information.
         """
         return self.get_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/studies',
@@ -3452,7 +3454,7 @@ class Orthanc:
             self, study_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get study's series identifiers
+        """Get study's series
 
         Retrieve all the series of this study in a single REST call.
 
@@ -3464,7 +3466,7 @@ class Orthanc:
         Returns
         -------
         requests.Response
-            List of study's series identifiers.
+            List of study's series main information.
         """
         return self.get_request(
             f'{self._orthanc_url}/studies/{study_identifier}/series',

@@ -24,7 +24,7 @@ class Instance:
 
         self.instance_identifier: str = instance_identifier
 
-    def retrieve_dicom_file(self) -> bytes:
+    def get_instance_dicom_file(self) -> bytes:
         """Retrieves DICOM file
 
         This method retrieves bytes corresponding to DICOM file.
@@ -38,7 +38,7 @@ class Instance:
         --------
         >>> instance = Instance('instance identifier',
         ...                     Orthanc('http://localhost:8080'))
-        >>> dicom_file_bytes = instance.retrieve_dicom_file('instance_identifier')
+        >>> dicom_file_bytes = instance.get_instance_dicom_file('instance_identifier')
         >>> with open('your_path', 'wb') as file_handler:
         ...     file_handler.write(dicom_file_bytes)
         """

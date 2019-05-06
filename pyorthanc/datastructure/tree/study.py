@@ -108,7 +108,7 @@ class Study:
         series_identifiers = self.orthanc.get_study_series_identifiers(
             self.study_identifier)
 
-        return list(map(lambda i: Series(i, self.orthanc), series_identifiers))
+        return list(map(lambda i: Series(i['ID'], self.orthanc), series_identifiers))
 
     def __str__(self):
         return f'Study (id={self.get_id()}, identifier={self.get_identifier()})'

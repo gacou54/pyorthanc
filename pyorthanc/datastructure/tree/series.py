@@ -88,7 +88,7 @@ class Series:
         instance_identifiers = self.orthanc.get_series_instances(
             self.series_identifier)
 
-        return list(map(lambda i: Instance(i, self.orthanc),
+        return list(map(lambda i: Instance(i['ID'], self.orthanc),
                         instance_identifiers))
 
     def __str__(self):
