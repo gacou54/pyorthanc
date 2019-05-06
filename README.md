@@ -18,7 +18,7 @@ useful for anyone writing python script to interact with Orthanc.
 ## Intallation
 If you have `git`:
 ```sh
-pip install git+https://github.com/gacou54/pyorthanc.git
+pip install git+https://gitlab.physmed.chudequebec.ca/gacou54/pyorthanc.git
 ```
 
 If not, clone the repository, unzip and pip install the directory:
