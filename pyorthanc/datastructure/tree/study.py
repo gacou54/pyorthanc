@@ -106,7 +106,7 @@ class Study:
             List of the study's series
         """
         series_identifiers = self.orthanc.get_study_series_identifiers(
-            self.study_identifier)
+            self.study_identifier).json()
 
         return list(map(lambda i: Series(i['ID'], self.orthanc), series_identifiers))
 
