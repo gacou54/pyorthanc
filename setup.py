@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='pyorthanc',
     version='',
-    packages=['orthanc'],
+    packages=['pyorthanc'],
     url='https://github.com/gacou54/pyorthanc',
     license='MIT',
     author='Gabriel Couture',
