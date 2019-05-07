@@ -12,15 +12,15 @@ class RemoteModality:
     """Wrapper around Orthanc API when dealing with a (remote) modality.
     """
 
-    def __init__(self, orthanc_url: str, modality: str) -> None:
+    def __init__(self, orthanc: Orthanc, modality: str) -> None:
         """Constructor
 
         Parameters
         ----------
-        orthanc_url : str
-        modality : str
+        orthanc : Orthanc object.
+        modality : Remote modality.
         """
-        self.orthanc: Orthanc = Orthanc(orthanc_url)
+        self.orthanc: Orthanc = orthanc
         self.modality: str = modality
 
         self._credentials_are_set: bool = False
@@ -31,8 +31,8 @@ class RemoteModality:
 
         Parameters
         ----------
-        username : str
-        password : str
+        username : username.
+        password : password.
         """
         self._credentials = HTTPBasicAuth(username, password)
         self._credentials_are_set = True
@@ -67,8 +67,10 @@ class RemoteModality:
         ...                  }
         ... }
 
-        >>> remote_modality = RemoteModality(orthanc_url='http://localhost:8042',
-        ...                                  modality='sample')
+        >>> remote_modality = RemoteModality(
+        ...     orthanc=Orthanc('http://localhost:8042'),
+        ...     modality='sample'
+        ... )
 
         >>> remote_modality.setup_credentials('username', 'password')
         >>> remote_modality.query(data=data)
@@ -104,16 +106,17 @@ class RemoteModality:
 
         Examples
         --------
-        >>> remote_modality = RemoteModality('http://localhost:8042', 'modality')
+        >>> remote_modality = RemoteModality(Orthanc('http://localhost:8042'), 'modality')
         >>> query_id = remote_modality.query(
         ...     data={'Level': 'Study',
         ...           'Query': {'QueryRetrieveLevel': 'Study',
         ...                     'Modality':'SR'}}).json()
 
-        >>> remote_modality.retrieve(query_identifier=query_id['ID'],
-        ...                          target_modality='modality')
+        >>> remote_modality.retrieve(
+        ...     query_identifier=query_id['ID'],
+        ...     target_modality='modality'
+        ... )
 
         """
         return self.orthanc.retrieve_query_results_to_another_modality(
             query_identifier, json=target_modality)
-
