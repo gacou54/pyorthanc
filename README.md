@@ -23,7 +23,7 @@ pip install git+https://gitlab.physmed.chudequebec.ca/gacou54/pyorthanc.git
 
 If not, clone the repository, unzip and pip install the directory:
 ```sh
-pip install -e pyorthanc-master
+pip install -e pyorthanc
 ```
 
 ## Usage
@@ -54,7 +54,7 @@ for study_identifier in studies_identifiers:
     study_information = orthanc.get_study_information(study_identifier).json()
 ```
 
-#### Getting list of remote modalities
+#### Getting list of remote modalities:
 ```python
 from pyorthanc import Orthanc
 
@@ -79,4 +79,21 @@ query_response = remote_modality.query(data=data)
 
 # Retrieve (C-Move) results of query on a target modality (AET)
 remote_modality.retrieve(query_response.json()['ID'], 'target_modality')
+```
+
+#### Build a patient tree structure of all patients in Orthanc instance:
+Each patient is a tree. Layers in each tree are `Patient` -> `Study` -> `Series` -> `Instance`.
+```python
+from pyorthanc import Orthanc, datastructure
+
+
+patient_forest = datastructure.build_patient_forest(
+    Orthanc('http://localhost:8042/')
+)    
+
+for patient in patient_forest:
+    patient_info = patient.get_main_information()
+    
+    for study in patient.get_studies():
+        ...
 ```
