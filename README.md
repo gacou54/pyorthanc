@@ -67,10 +67,10 @@ orthanc.get_modalities().json()
 
 #### Query (C-Find) and Retrieve (C-Move) from remote modality:
 ```python
-from pyorthanc import RemoteModality
+from pyorthanc import RemoteModality, Orthanc
 
 
-remote_modality = RemoteModality('http://localhost:8042', 'modality')
+remote_modality = RemoteModality(Orthanc('http://localhost:8042'), 'modality')
 remote_modality.setup_credentials('username', 'password')  # If needed
 
 # Query (C-Find) on modality
