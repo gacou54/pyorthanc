@@ -21,8 +21,10 @@ def build_patient_forest(orthanc: Orthanc, max_worker: int = 100) -> List[Patien
 
     Parameters
     ----------
-    orthanc : Orthanc object.
-    max_worker : Number of maximum workers for the concurrent building tree.
+    orthanc
+        Orthanc object.
+    max_worker
+        Number of maximum workers for the concurrent building tree.
 
     Returns
     -------

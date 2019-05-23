@@ -18,8 +18,10 @@ class Study:
 
         Parameters
         ----------
-        study_identifier : Orthanc study identifier
-        orthanc : Orthanc object
+        study_identifier
+            Orthanc study identifier.
+        orthanc
+            Orthanc object.
         """
         self.orthanc: Orthanc = orthanc
 
