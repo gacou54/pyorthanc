@@ -13,7 +13,8 @@ def build_patient_forest(orthanc: Orthanc, max_worker: int = 100) -> List[Patien
 
     Each tree in the forest correspond to a patient. The layers in the
     tree correspond to:
-        Patient -> Studies -> Series -> Instance
+
+    ```Patient -> Studies -> Series -> Instances```
 
     Note that trees are build asynchronously. You may want to change the
     default value (100). Increase this number could improve performance,
