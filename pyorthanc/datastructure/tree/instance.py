@@ -17,8 +17,10 @@ class Instance:
 
         Parameters
         ----------
-        instance_identifier : Orthanc instance identifier.
-        orthanc : Orthanc object.
+        instance_identifier
+            Orthanc instance identifier.
+        orthanc
+            Orthanc object.
         """
         self.orthanc: Orthanc = orthanc
 
@@ -100,7 +102,8 @@ class Instance:
 
         Parameters
         ----------
-        tag : Tag like '0040-a730'.
+        tag
+            Tag like '0040-a730'.
 
         Returns
         -------
@@ -116,7 +119,8 @@ class Instance:
 
         Parameters
         ----------
-        group_element : Group element like '0040-a730/1/0040-a730'.
+        group_element
+            Group element like '0040-a730/1/0040-a730'.
 
         Returns
         -------
