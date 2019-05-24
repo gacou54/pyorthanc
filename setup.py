@@ -8,5 +8,6 @@ setup(
     license='MIT',
     author='Gabriel Couture',
     author_email='gacou54@gmail.com',
-    description='', install_requires=['requests']
+    description='Orthanc REST API python wrapper with additional utilities',
+    install_requires=['requests']
 )
