@@ -1,7 +1,7 @@
 .idea/
 *.pyc
 __pycache__/
-docs/
+docs/build/*
 
 generation/
 playground.py

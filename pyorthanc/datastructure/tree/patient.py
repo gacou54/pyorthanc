@@ -18,8 +18,10 @@ class Patient:
 
         Parameters
         ----------
-        patient_identifier : Orthanc patient identifier
-        orthanc : Orthanc object
+        patient_identifier
+            Orthanc patient identifier.
+        orthanc
+            Orthanc object.
         """
         self.orthanc: Orthanc = orthanc
 

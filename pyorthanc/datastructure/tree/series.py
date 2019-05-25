@@ -18,8 +18,10 @@ class Series:
 
         Parameters
         ----------
-        series_identifier : Orthanc series identifier
-        orthanc : Orthanc object
+        series_identifier
+            Orthanc series identifier.
+        orthanc
+            Orthanc object.
         """
         self.orthanc: Orthanc = orthanc
 

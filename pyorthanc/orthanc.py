@@ -18,7 +18,7 @@ class Orthanc:
 
         Parameters
         ----------
-        orthanc_url : str
+        orthanc_url
             Orthanc server address
         """
         self._orthanc_url: str = orthanc_url
@@ -31,8 +31,10 @@ class Orthanc:
 
         Parameters
         ----------
-        username : Username.
-        password : Password.
+        username
+            Username.
+        password
+            Password.
         """
         self._credentials = HTTPBasicAuth(username, password)
         self._credentials_are_set = True
@@ -43,8 +45,10 @@ class Orthanc:
 
         Parameters
         ----------
-        route : HTTP route.
-        params : Params with the HTTP GET request.
+        route
+            HTTP route.
+        params
+            Params with the HTTP GET request.
 
         Returns
         -------
@@ -64,7 +68,8 @@ class Orthanc:
 
         Parameters
         ----------
-        route : HTTP route.
+        route
+            HTTP route.
 
         Returns
         -------
@@ -82,9 +87,12 @@ class Orthanc:
 
         Parameters
         ----------
-        route : HTTP route.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        route
+            HTTP route.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -103,9 +111,12 @@ class Orthanc:
 
         Parameters
         ----------
-        route : str
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        route
+            HTTP route.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -129,9 +140,12 @@ class Orthanc:
 
         Parameters
         ----------
-        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
-        identifier : Object identifier (patient, study, series, instance).
-        params : GET HTTP request's params.
+        resource_type
+            Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier
+            Object identifier (patient, study, series, instance).
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -153,10 +167,14 @@ class Orthanc:
 
         Parameters
         ----------
-        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
-        identifier : Object identifier (patient, study, series, instance).
-        name : Attachment name.
-        params : GET HTTP request's params.
+        resource_type
+            Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier
+            Object identifier (patient, study, series, instance).
+        name
+            Attachment name.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -179,9 +197,12 @@ class Orthanc:
 
         Parameters
         ----------
-        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
-        identifier : Object identifier (patient, study, series, instance).
-        name : Attachment name.
+        resource_type
+            Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier
+            Object identifier (patient, study, series, instance).
+        name
+            Attachment name.
 
         Returns
         -------
@@ -202,11 +223,16 @@ class Orthanc:
 
         Parameters
         ----------
-        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
-        identifier : Object identifier (patient, study, series, instance).
-        name : Attachment name.
-        data : Data to send in the request's body.
-        json : json to send in the request's body.
+        resource_type
+            Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier
+            Object identifier (patient, study, series, instance).
+        name
+            Attachment name.
+        data
+            Data to send in the request's body.
+        json
+            json to send in the request's body.
 
         Returns
         -------
@@ -231,11 +257,16 @@ class Orthanc:
 
         Parameters
         ----------
-        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
-        identifier : Object identifier (patient, study, series, instance).
-        name : Attachment name.
-        data : Data to send in the request's body.
-        json : json to send in the request's body.
+        resource_type
+            Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier
+            Object identifier (patient, study, series, instance).
+        name
+            Attachment name.
+        data
+            Data to send in the request's body.
+        json
+            json to send in the request's body.
 
         Returns
         -------
@@ -259,10 +290,14 @@ class Orthanc:
 
         Parameters
         ----------
-        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
-        identifier : Object identifier (patient, study, series, instance).
-        name : Attachment name.
-        params : GET HTTP request's params.
+        resource_type
+            Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier
+            Object identifier (patient, study, series, instance).
+        name
+            Attachment name.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -288,10 +323,14 @@ class Orthanc:
 
         Parameters
         ----------
-        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
-        identifier : Object identifier (patient, study, series, instance).
-        name : Attachment name.
-        params : GET HTTP request's params.
+        resource_type
+            Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier
+            Object identifier (patient, study, series, instance).
+        name
+            Attachment name.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -313,10 +352,14 @@ class Orthanc:
 
         Parameters
         ----------
-        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
-        identifier : Object identifier (patient, study, series, instance).
-        name : Attachment name.
-        params : GET HTTP request's params.
+        resource_type
+            Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier
+            Object identifier (patient, study, series, instance).
+        name
+            Attachment name.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -338,10 +381,14 @@ class Orthanc:
 
         Parameters
         ----------
-        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
-        identifier : Object identifier (patient, study, series, instance).
-        name : Attachment name.
-        params : GET HTTP request's params.
+        resource_type
+            Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier
+            Object identifier (patient, study, series, instance).
+        name
+            Attachment name.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -365,10 +412,14 @@ class Orthanc:
 
         Parameters
         ----------
-        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
-        identifier : Object identifier (patient, study, series, instance).
-        name : Attachment name.
-        params : GET HTTP request's params.
+        resource_type
+            Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier
+            Object identifier (patient, study, series, instance).
+        name
+            Attachment name.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -393,10 +444,14 @@ class Orthanc:
 
         Parameters
         ----------
-        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
-        identifier : Object identifier (patient, study, series, instance).
-        name : Attachment name.
-        params : GET HTTP request's params.
+        resource_type
+            Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier
+            Object identifier (patient, study, series, instance).
+        name
+            Attachment name.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -418,10 +473,14 @@ class Orthanc:
 
         Parameters
         ----------
-        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
-        identifier : Object identifier (patient, study, series, instance).
-        name : Attachment name.
-        params : GET HTTP request's params.
+        resource_type
+            Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier
+            Object identifier (patient, study, series, instance).
+        name
+            Attachment name.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -444,11 +503,16 @@ class Orthanc:
 
         Parameters
         ----------
-        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
-        identifier : Object identifier (patient, study, series, instance).
-        name : Attachment name.
-        data : POST HTTP request's data.
-        json : POST HTTP request's json data.
+        resource_type
+            Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier
+            Object identifier (patient, study, series, instance).
+        name
+            Attachment name.
+        data
+            POST HTTP request's data.
+        json
+            POST HTTP request's json data.
 
         Returns
         -------
@@ -473,11 +537,16 @@ class Orthanc:
 
         Parameters
         ----------
-        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
-        identifier : Object identifier (patient, study, series, instance).
-        name : Attachment name.
-        data : POST HTTP request's data.
-        json : POST HTTP request's json data.
+        resource_type
+            Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier
+            Object identifier (patient, study, series, instance).
+        name
+            Attachment name.
+        data
+            POST HTTP request's data.
+        json
+            POST HTTP request's json data.
 
         Returns
         -------
@@ -501,9 +570,12 @@ class Orthanc:
 
         Parameters
         ----------
-        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
-        identifier : Object identifier (patient, study, series, instance).
-        params : GET HTTP request's params.
+        resource_type
+            Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier
+            Object identifier (patient, study, series, instance).
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -525,10 +597,14 @@ class Orthanc:
 
         Parameters
         ----------
-        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
-        identifier : Object identifier (patient, study, series, instance).
-        name : Attachment name.
-        params : GET HTTP request's params.
+        resource_type
+            Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier
+            Object identifier (patient, study, series, instance).
+        name
+            Attachment name.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -549,9 +625,12 @@ class Orthanc:
 
         Parameters
         ----------
-        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
-        identifier : Object identifier (patient, study, series, instance).
-        name : Attachment name.
+        resource_type
+            Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier
+            Object identifier (patient, study, series, instance).
+        name
+            Attachment name.
 
         Returns
         -------
@@ -572,11 +651,16 @@ class Orthanc:
 
         Parameters
         ----------
-        resource_type : Resource type ('Patient', 'Study', 'Series' or 'Instance').
-        identifier : Object identifier (patient, study, series, instance).
-        name : Attachment name.
-        data : PUT HTTP request's data.
-        json : PUT HTTP request's json data.
+        resource_type
+            Resource type ('Patient', 'Study', 'Series' or 'Instance').
+        identifier
+            Object identifier (patient, study, series, instance).
+        name
+            Attachment name.
+        data
+            PUT HTTP request's data.
+        json
+            PUT HTTP request's json data.
 
         Returns
         -------
@@ -595,7 +679,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -622,7 +707,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -645,11 +731,13 @@ class Orthanc:
     def get_instances(self, params: Dict = None, **kwargs) -> requests.Response:
         """Get all instances identifiers
 
-        Arguments : "last" and "limit"
+        Arguments
+            "last" and "limit"
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         -------
         requests.Response
@@ -664,8 +752,10 @@ class Orthanc:
 
         Parameters
         ----------
-        data : POST HTTP request's data.
-        json : POST HTTP request's json data.
+        data
+            POST HTTP request's data.
+        json
+            POST HTTP request's json data.
 
         Returns
         -------
@@ -683,8 +773,10 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -699,7 +791,8 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
+        instance_identifier
+            Instance identifier.
 
         Returns
         -------
@@ -719,9 +812,12 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        data : POST HTTP request's data.
-        json : POST HTTP request's json data.
+        instance_identifier
+            Instance identifier.
+        data
+            POST HTTP request's data.
+        json
+            POST HTTP request's json data.
 
         Returns
         -------
@@ -743,8 +839,10 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -768,9 +866,12 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        group_element : Group element corresponding to targeted DICOM tag.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        group_element
+            Group element corresponding to targeted DICOM tag.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -799,9 +900,12 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        data : POST HTTP request's data.
-        json : POST HTTP request's json data.
+        instance_identifier
+            Instance identifier.
+        data
+            POST HTTP request's data.
+        json
+            POST HTTP request's json data.
 
         Returns
         -------
@@ -823,8 +927,10 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -852,8 +958,10 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -877,9 +985,12 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        frame_number : Frame number.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        frame_number
+            Frame number.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -903,9 +1014,12 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        frame_number : Frame number.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        frame_number
+            Frame number.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -928,9 +1042,12 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        frame_number : Frame number.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        frame_number
+            Frame number.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -953,9 +1070,12 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        frame_number : Frame number.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        frame_number
+            Frame number.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -977,9 +1097,12 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        frame_number : Frame number.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        frame_number
+            Frame number.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1002,9 +1125,12 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        frame_number : Frame number.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        frame_number
+            Frame number.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1027,9 +1153,12 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        frame_number : Frame number.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        frame_number
+            Frame number.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1052,8 +1181,10 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1076,8 +1207,10 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1100,8 +1233,10 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1124,8 +1259,10 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1147,8 +1284,10 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1171,9 +1310,12 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        data : POST HTTP request's data.
-        json : POST HTTP request's json data.
+        instance_identifier
+            Instance identifier.
+        data
+            POST HTTP request's data.
+        json
+            POST HTTP request's json data.
 
         Returns
         -------
@@ -1195,8 +1337,10 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1218,8 +1362,10 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1241,8 +1387,10 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1264,8 +1412,10 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1288,9 +1438,12 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        data : POST HTTP request's data.
-        json : POST HTTP request's json data.
+        instance_identifier
+            Instance identifier.
+        data
+            POST HTTP request's data.
+        json
+            POST HTTP request's json data.
 
         Returns
         -------
@@ -1312,8 +1465,10 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1335,8 +1490,10 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1356,8 +1513,10 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1379,8 +1538,10 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1402,8 +1563,10 @@ class Orthanc:
 
         Parameters
         ----------
-        instance_identifier : Instance identifier.
-        params : GET HTTP request's params.
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1422,7 +1585,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1442,8 +1606,10 @@ class Orthanc:
 
         Parameters
         ----------
-        job_identifier : Job identifier.
-        params : GET HTTP request's params.
+        job_identifier
+            Job identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1464,9 +1630,12 @@ class Orthanc:
 
         Parameters
         ----------
-        job_identifier : Job identifier.
-        data : POST HTTP request's data.
-        json : POST HTTP request's json data.
+        job_identifier
+            Job identifier.
+        data
+            POST HTTP request's data.
+        json
+            POST HTTP request's json data.
 
         Returns
         -------
@@ -1489,9 +1658,12 @@ class Orthanc:
 
         Parameters
         ----------
-        job_identifier : Job identifier.
-        data : POST HTTP request's data.
-        json : POST HTTP request's json data.
+        job_identifier
+            Job identifier.
+        data
+            POST HTTP request's data.
+        json
+            POST HTTP request's json data.
 
         Returns
         -------
@@ -1514,9 +1686,12 @@ class Orthanc:
 
         Parameters
         ----------
-        job_identifier : Job identifier.
-        data : POST HTTP request's data.
-        json : POST HTTP request's json data.
+        job_identifier
+            Job identifier.
+        data
+            POST HTTP request's data.
+        json
+            POST HTTP request's json data.
 
         Returns
         -------
@@ -1539,9 +1714,12 @@ class Orthanc:
 
         Parameters
         ----------
-        job_identifier : Job identifier.
-        data : POST HTTP request's data.
-        json : POST HTTP request's json data.
+        job_identifier
+            Job identifier.
+        data
+            POST HTTP request's data.
+        json
+            POST HTTP request's json data.
 
         Returns
         -------
@@ -1564,9 +1742,12 @@ class Orthanc:
 
         Parameters
         ----------
-        job_identifier : Job identifier.
-        key : Key to get output
-        params : GET HTTP request's params.
+        job_identifier
+            Job identifier.
+        key
+            Key to get output
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1586,7 +1767,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1604,8 +1786,10 @@ class Orthanc:
 
         Parameters
         ----------
-        modality : Modality (remote PACS server, see pyorthanc.get_modalities()).
-        params : GET HTTP request's params.
+        modality
+            Modality (remote PACS server, see pyorthanc.get_modalities()).
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1619,7 +1803,8 @@ class Orthanc:
 
         Parameters
         ----------
-        modality : Modality (remote PACS server, see pyorthanc.get_modalities()).
+        modality
+            Modality (remote PACS server, see pyorthanc.get_modalities()).
 
         Returns
         -------
@@ -1637,9 +1822,12 @@ class Orthanc:
 
         Parameters
         ----------
-        modality : Modality (remote PACS server, see pyorthanc.get_modalities()).
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        modality
+            Modality (remote PACS server, see pyorthanc.get_modalities()).
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -1662,9 +1850,12 @@ class Orthanc:
 
         Parameters
         ----------
-        modality : Modality (remote PACS server, see pyorthanc.get_modalities()).
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        modality
+            Modality (remote PACS server, see pyorthanc.get_modalities()).
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -1688,9 +1879,12 @@ class Orthanc:
 
         Parameters
         ----------
-        modality : Modality (remote PACS server, see pyorthanc.get_modalities()).
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        modality
+            Modality (remote PACS server, see pyorthanc.get_modalities()).
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -1715,9 +1909,12 @@ class Orthanc:
 
         Parameters
         ----------
-        modality : Modality (remote PACS server, see pyorthanc.get_modalities()).
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        modality
+            Modality (remote PACS server, see pyorthanc.get_modalities()).
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -1752,9 +1949,12 @@ class Orthanc:
 
         Parameters
         ----------
-        modality : Modality (remote PACS server, see pyorthanc.get_modalities()).
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        modality
+            Modality (remote PACS server, see pyorthanc.get_modalities()).
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -1774,7 +1974,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1792,8 +1993,10 @@ class Orthanc:
 
         Parameters
         ----------
-        patient_identifier : Patient identifier.
-        params : GET HTTP request's params.
+        patient_identifier
+            Patient identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1810,7 +2013,8 @@ class Orthanc:
 
         Parameters
         ----------
-        patient_identifier : Patient identifier.
+        patient_identifier
+            Patient identifier.
 
         Returns
         -------
@@ -1831,9 +2035,12 @@ class Orthanc:
 
         Parameters
         ----------
-        patient_identifier : Patient identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        patient_identifier
+            Patient identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -1856,8 +2063,10 @@ class Orthanc:
 
         Parameters
         ----------
-        patient_identifier : Patient identifier.
-        params : GET HTTP request's params.
+        patient_identifier
+            Patient identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1880,9 +2089,12 @@ class Orthanc:
 
         Parameters
         ----------
-        patient_identifier : Patient identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        patient_identifier
+            Patient identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -1905,8 +2117,10 @@ class Orthanc:
 
         Parameters
         ----------
-        patient_identifier : Patient identifier.
-        params : GET HTTP request's params.
+        patient_identifier
+            Patient identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1928,8 +2142,10 @@ class Orthanc:
 
         Parameters
         ----------
-        patient_identifier : Patient identifier.
-        params : GET HTTP request's params.
+        patient_identifier
+            Patient identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1951,8 +2167,10 @@ class Orthanc:
 
         Parameters
         ----------
-        patient_identifier : Patient identifier.
-        params : GET HTTP request's params.
+        patient_identifier
+            Patient identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -1974,9 +2192,12 @@ class Orthanc:
 
         Parameters
         ----------
-        patient_identifier : Patient identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        patient_identifier
+            Patient identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -1999,9 +2220,12 @@ class Orthanc:
 
         Parameters
         ----------
-        patient_identifier : Patient identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        patient_identifier
+            Patient identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -2023,8 +2247,10 @@ class Orthanc:
 
         Parameters
         ----------
-        patient_identifier : Patient identifier.
-        params : GET HTTP request's params.
+        patient_identifier
+            Patient identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2045,8 +2271,10 @@ class Orthanc:
 
         Parameters
         ----------
-        patient_identifier : Patient identifier.
-        params : GET HTTP request's params.
+        patient_identifier
+            Patient identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2069,9 +2297,12 @@ class Orthanc:
 
         Parameters
         ----------
-        patient_identifier : Patient identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        patient_identifier
+            Patient identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -2096,9 +2327,12 @@ class Orthanc:
 
         Parameters
         ----------
-        patient_identifier : Patient identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        patient_identifier
+            Patient identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -2121,8 +2355,10 @@ class Orthanc:
 
         Parameters
         ----------
-        patient_identifier : Patient identifier.
-        params : GET HTTP request's params.
+        patient_identifier
+            Patient identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2144,8 +2380,10 @@ class Orthanc:
 
         Parameters
         ----------
-        patient_identifier : Patient identifier.
-        params : GET HTTP request's params.
+        patient_identifier
+            Patient identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2164,8 +2402,10 @@ class Orthanc:
 
         Parameters
         ----------
-        patient_identifier : Patient identifier.
-        params : GET HTTP request's params.
+        patient_identifier
+            Patient identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2186,8 +2426,10 @@ class Orthanc:
 
         Parameters
         ----------
-        patient_identifier : Patient identifier.
-        params : GET HTTP request's params.
+        patient_identifier
+            Patient identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2204,7 +2446,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2222,8 +2465,10 @@ class Orthanc:
 
         Parameters
         ----------
-        peer_identifier : Peer identifier.
-        params : GET HTTP request's params.
+        peer_identifier
+            Peer identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2237,7 +2482,8 @@ class Orthanc:
 
         Parameters
         ----------
-        peer_identifier : Peer identifier.
+        peer_identifier
+            Peer identifier.
 
         Returns
         -------
@@ -2256,9 +2502,12 @@ class Orthanc:
 
         Parameters
         ----------
-        peer_identifier : Peer identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        peer_identifier
+            Peer identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -2281,9 +2530,12 @@ class Orthanc:
 
         Parameters
         ----------
-        peer_identifier : Peer identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        peer_identifier
+            Peer identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -2302,7 +2554,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2323,8 +2576,10 @@ class Orthanc:
 
         Parameters
         ----------
-        plugin_identifier : Plugin identifier.
-        params : GET HTTP request's params.
+        plugin_identifier
+            Plugin identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2343,7 +2598,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2359,7 +2615,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2377,8 +2634,10 @@ class Orthanc:
 
         Parameters
         ----------
-        query_identifier : Query identifier.
-        params : GET HTTP request's params.
+        query_identifier
+            Query identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2395,7 +2654,8 @@ class Orthanc:
 
         Parameters
         ----------
-        query_identifier : Query identifier.
+        query_identifier
+            Query identifier.
 
         Returns
         -------
@@ -2416,8 +2676,10 @@ class Orthanc:
 
         Parameters
         ----------
-        query_identifier : Query identifier.
-        params : GET HTTP request's params.
+        query_identifier
+            Query identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2440,9 +2702,12 @@ class Orthanc:
 
         Parameters
         ----------
-        query_identifier : Query identifier.
-        index : Index of wanted answer.
-        params : GET HTTP request's params.
+        query_identifier
+            Query identifier.
+        index
+            Index of wanted answer.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2466,10 +2731,14 @@ class Orthanc:
 
         Parameters
         ----------
-        query_identifier : Query identifier.
-        index : Index of wanted answer.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        query_identifier
+            Query identifier.
+        index
+            Index of wanted answer.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -2494,10 +2763,14 @@ class Orthanc:
 
         Parameters
         ----------
-        query_identifier : Query identifier.
-        index : Index of wanted answer.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        query_identifier
+            Query identifier.
+        index
+            Index of wanted answer.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -2521,10 +2794,14 @@ class Orthanc:
 
         Parameters
         ----------
-        query_identifier : Query identifier.
-        index : Index of wanted answer.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        query_identifier
+            Query identifier.
+        index
+            Index of wanted answer.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -2548,10 +2825,14 @@ class Orthanc:
 
         Parameters
         ----------
-        query_identifier : Query identifier.
-        index : Index of wanted answer.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        query_identifier
+            Query identifier.
+        index
+            Index of wanted answer.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -2573,8 +2854,10 @@ class Orthanc:
 
         Parameters
         ----------
-        query_identifier : Query identifier.
-        params : GET HTTP request's params.
+        query_identifier
+            Query identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2596,8 +2879,10 @@ class Orthanc:
 
         Parameters
         ----------
-        query_identifier : Query identifier.
-        params : GET HTTP request's params.
+        query_identifier
+            Query identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2619,8 +2904,10 @@ class Orthanc:
 
         Parameters
         ----------
-        query_identifier : Query identifier.
-        params : GET HTTP request's params.
+        query_identifier
+            Query identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2643,9 +2930,12 @@ class Orthanc:
 
         Parameters
         ----------
-        query_identifier : Query identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        query_identifier
+            Query identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -2678,7 +2968,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2696,8 +2987,10 @@ class Orthanc:
 
         Parameters
         ----------
-        series_identifier : Series identifier.
-        params : GET HTTP request's params.
+        series_identifier
+            Series identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2714,7 +3007,8 @@ class Orthanc:
 
         Parameters
         ----------
-        series_identifier : Series identifier.
+        series_identifier
+            Series identifier.
 
         Returns
         -------
@@ -2735,9 +3029,12 @@ class Orthanc:
 
         Parameters
         ----------
-        series_identifier : Series identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        series_identifier
+            Series identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -2759,8 +3056,10 @@ class Orthanc:
 
         Parameters
         ----------
-        series_identifier : Series identifier.
-        params : GET HTTP request's params.
+        series_identifier
+            Series identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2783,9 +3082,12 @@ class Orthanc:
 
         Parameters
         ----------
-        series_identifier : Series identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        series_identifier
+            Series identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -2807,8 +3109,10 @@ class Orthanc:
 
         Parameters
         ----------
-        series_identifier : Series identifier.
-        params : GET HTTP request's params.
+        series_identifier
+            Series identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2830,8 +3134,10 @@ class Orthanc:
 
         Parameters
         ----------
-        series_identifier : Series identifier.
-        params : GET HTTP request's params.
+        series_identifier
+            Series identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2853,8 +3159,10 @@ class Orthanc:
 
         Parameters
         ----------
-        series_identifier : Series identifier.
-        params : GET HTTP request's params.
+        series_identifier
+            Series identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2876,9 +3184,12 @@ class Orthanc:
 
         Parameters
         ----------
-        series_identifier : Series identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        series_identifier
+            Series identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -2901,9 +3212,12 @@ class Orthanc:
 
         Parameters
         ----------
-        series_identifier : Series identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        series_identifier
+            Series identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -2925,8 +3239,10 @@ class Orthanc:
 
         Parameters
         ----------
-        series_identifier : Series identifier.
-        params : GET HTTP request's params.
+        series_identifier
+            Series identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2948,8 +3264,10 @@ class Orthanc:
 
         Parameters
         ----------
-        series_identifier : Series identifier.
-        params : GET HTTP request's params.
+        series_identifier
+            Series identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2970,8 +3288,10 @@ class Orthanc:
 
         Parameters
         ----------
-        series_identifier : Series identifier.
-        params : GET HTTP request's params.
+        series_identifier
+            Series identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -2995,9 +3315,12 @@ class Orthanc:
 
         Parameters
         ----------
-        series_identifier : Series identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        series_identifier
+            Series identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3019,8 +3342,10 @@ class Orthanc:
 
         Parameters
         ----------
-        series_identifier : Series identifier.
-        params : GET HTTP request's params.
+        series_identifier
+            Series identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3039,8 +3364,10 @@ class Orthanc:
 
         Parameters
         ----------
-        series_identifier : Series identifier.
-        params : GET HTTP request's params.
+        series_identifier
+            Series identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3062,8 +3389,10 @@ class Orthanc:
 
         Parameters
         ----------
-        series_identifier : Series identifier.
-        params : GET HTTP request's params.
+        series_identifier
+            Series identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3080,7 +3409,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3097,7 +3427,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3115,8 +3446,10 @@ class Orthanc:
 
         Parameters
         ----------
-        study_identifier : studies identifier.
-        params : GET HTTP request's params.
+        study_identifier
+            studies identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3133,7 +3466,8 @@ class Orthanc:
 
         Parameters
         ----------
-        study_identifier : studies identifier.
+        study_identifier
+            studies identifier.
 
         Returns
         -------
@@ -3154,9 +3488,12 @@ class Orthanc:
 
         Parameters
         ----------
-        study_identifier : studies identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        study_identifier
+            studies identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3178,8 +3515,10 @@ class Orthanc:
 
         Parameters
         ----------
-        study_identifier : studies identifier.
-        params : GET HTTP request's params.
+        study_identifier
+            studies identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3201,9 +3540,12 @@ class Orthanc:
 
         Parameters
         ----------
-        study_identifier : studies identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        study_identifier
+            studies identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3225,8 +3567,10 @@ class Orthanc:
 
         Parameters
         ----------
-        study_identifier : studies identifier.
-        params : GET HTTP request's params.
+        study_identifier
+            studies identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3248,8 +3592,10 @@ class Orthanc:
 
         Parameters
         ----------
-        study_identifier : studies identifier.
-        params : GET HTTP request's params.
+        study_identifier
+            studies identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3268,8 +3614,10 @@ class Orthanc:
 
         Parameters
         ----------
-        study_identifier : studies identifier.
-        params : GET HTTP request's params.
+        study_identifier
+            studies identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3291,9 +3639,12 @@ class Orthanc:
 
         Parameters
         ----------
-        study_identifier : Study identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        study_identifier
+            Study identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3316,9 +3667,12 @@ class Orthanc:
 
         Parameters
         ----------
-        study_identifier : Study identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        study_identifier
+            Study identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3341,9 +3695,12 @@ class Orthanc:
 
         Parameters
         ----------
-        study_identifier : Study identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        study_identifier
+            Study identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3365,8 +3722,10 @@ class Orthanc:
 
         Parameters
         ----------
-        study_identifier : Study identifier.
-        params : GET HTTP request's params.
+        study_identifier
+            Study identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3388,8 +3747,10 @@ class Orthanc:
 
         Parameters
         ----------
-        study_identifier : Study identifier.
-        params : GET HTTP request's params.
+        study_identifier
+            Study identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3411,8 +3772,10 @@ class Orthanc:
 
         Parameters
         ----------
-        study_identifier : Study identifier.
-        params : GET HTTP request's params.
+        study_identifier
+            Study identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3436,9 +3799,12 @@ class Orthanc:
 
         Parameters
         ----------
-        study_identifier : Study identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        study_identifier
+            Study identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3460,8 +3826,10 @@ class Orthanc:
 
         Parameters
         ----------
-        study_identifier : Study identifier.
-        params : GET HTTP request's params.
+        study_identifier
+            Study identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3483,8 +3851,10 @@ class Orthanc:
 
         Parameters
         ----------
-        study_identifier : Study identifier.
-        params : GET HTTP request's params.
+        study_identifier
+            Study identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3507,9 +3877,12 @@ class Orthanc:
 
         Parameters
         ----------
-        study_identifier : Study identifier.
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        study_identifier
+            Study identifier.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3529,8 +3902,10 @@ class Orthanc:
 
         Parameters
         ----------
-        study_identifier : Study identifier.
-        params : GET HTTP request's params.
+        study_identifier
+            Study identifier.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3547,7 +3922,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3563,8 +3939,10 @@ class Orthanc:
 
         Parameters
         ----------
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3584,8 +3962,10 @@ class Orthanc:
 
         Parameters
         ----------
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3604,8 +3984,10 @@ class Orthanc:
 
         Parameters
         ----------
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3628,8 +4010,10 @@ class Orthanc:
 
         Parameters
         ----------
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3648,7 +4032,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3670,8 +4055,10 @@ class Orthanc:
 
         Parameters
         ----------
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3690,7 +4077,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3709,8 +4097,10 @@ class Orthanc:
 
         Parameters
         ----------
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3729,8 +4119,10 @@ class Orthanc:
 
         Parameters
         ----------
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3746,7 +4138,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3767,8 +4160,10 @@ class Orthanc:
 
         Parameters
         ----------
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3787,8 +4182,10 @@ class Orthanc:
 
         Parameters
         ----------
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3807,7 +4204,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3824,8 +4222,10 @@ class Orthanc:
 
         Parameters
         ----------
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3844,7 +4244,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3863,7 +4264,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3880,7 +4282,8 @@ class Orthanc:
 
         Parameters
         ----------
-        params : GET HTTP request's params.
+        params
+            GET HTTP request's params.
 
         Returns
         -------
@@ -3898,8 +4301,10 @@ class Orthanc:
 
         Parameters
         ----------
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3918,8 +4323,10 @@ class Orthanc:
 
         Parameters
         ----------
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------
@@ -3935,8 +4342,10 @@ class Orthanc:
 
         Parameters
         ----------
-        data : Dictionary to send in the body of request.
-        json : json to send in the body of request.
+        data
+            Dictionary to send in the body of request.
+        json
+            json to send in the body of request.
 
         Returns
         -------

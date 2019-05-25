@@ -17,8 +17,10 @@ class RemoteModality:
 
         Parameters
         ----------
-        orthanc : Orthanc object.
-        modality : Remote modality.
+        orthanc
+            Orthanc object.
+        modality
+            Remote modality.
         """
         self.orthanc: Orthanc = orthanc
         self.modality: str = modality
@@ -31,8 +33,10 @@ class RemoteModality:
 
         Parameters
         ----------
-        username : username.
-        password : password.
+        username
+            Username.
+        password
+            Password.
         """
         self._credentials = HTTPBasicAuth(username, password)
         self._credentials_are_set = True
@@ -52,7 +56,8 @@ class RemoteModality:
 
         Parameters
         ----------
-        data : Dictionary to send in the body of request.
+        data
+            Dictionary to send in the body of request.
 
         Returns
         -------
@@ -82,7 +87,8 @@ class RemoteModality:
 
         Parameters
         ----------
-        data : Dictionary to send in the body of request.
+        data
+            Dictionary to send in the body of request.
 
         Returns
         -------
@@ -97,8 +103,10 @@ class RemoteModality:
 
         Parameters
         ----------
-        query_identifier : Query identifier.
-        target_modality : Name of target modality (AET).
+        query_identifier
+            Query identifier.
+        target_modality
+            Name of target modality (AET).
 
         Returns
         -------

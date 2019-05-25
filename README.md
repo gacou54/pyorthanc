@@ -1,9 +1,10 @@
-# PyOrthanc
+PyOrthanc
+=========
 Python library that wrap the Orthanc REST API and facilitate the manipulation of data.
 
 Link to Orthanc web site: https://www.orthanc-server.com/
 
-#### Notes
+__Notes__:
 Please note that this is an early version of the wrapper (version < 1.0),
 therefore some methods description (and maybe name) may change because 
 they don't describe adequately the behavior of the corresponding Orthanc REST API route.
@@ -15,7 +16,8 @@ However, 'PyOrthanc' contains objects and functions that may be
 useful for anyone writing python script to interact with Orthanc.
 
 
-## Intallation
+Installation
+------------
 If you have `git`:
 ```sh
 pip install git+https://gitlab.physmed.chudequebec.ca/gacou54/pyorthanc.git
@@ -26,10 +28,9 @@ If not, clone the repository, unzip and pip install the directory:
 pip install -e pyorthanc
 ```
 
-## Usage
+Example of usage:
+-----------------
 Be sure that Orthanc is running. The default URL (if running locally) is `http://localhost:8042`.
-
-### Example of usage:
 
 #### With Orthanc server:
 ```python
