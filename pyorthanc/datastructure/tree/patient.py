@@ -25,7 +25,7 @@ class Patient:
 
         self.patient_identifier: str = patient_identifier
 
-        self.studies: List[Study] = self._build_studies()
+        self.studies: List[Study] = []
 
     def get_identifier(self) -> str:
         """Get patient identifier
@@ -88,18 +88,20 @@ class Patient:
         """
         return list(self.studies)
 
-    def _build_studies(self) -> List[Study]:
+    def build_studies(self) -> None:
         """Build a list of the patient's studies
 
         Returns
         -------
-        List[Study]
-            List of the patient's studies
+        None
         """
         study_identifiers = self.orthanc.get_patient_studies(
             self.patient_identifier).json()
 
-        return list(map(lambda i: Study(i['ID'], self.orthanc), study_identifiers))
+        self.studies =  list(map(
+            lambda i: Study(i['ID'], self.orthanc),
+            study_identifiers
+        ))
 
     def __str__(self):
         return f'Patient (id={self.get_id()}, identifier={self.get_identifier()})'

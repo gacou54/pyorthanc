@@ -25,7 +25,7 @@ class Study:
 
         self.study_identifier: str = study_identifier
 
-        self.series: List[Series] = self._build_series()
+        self.series: List[Series] = []
 
     def get_identifier(self) -> str:
         """Get Study identifier
@@ -97,18 +97,20 @@ class Study:
         """
         return list(self.series)
 
-    def _build_series(self) -> List[Series]:
+    def build_series(self) -> None:
         """Build a list of the study's series
 
         Returns
         -------
-        List[Series]
-            List of the study's series
+        None
         """
         series_identifiers = self.orthanc.get_study_series_identifiers(
             self.study_identifier).json()
 
-        return list(map(lambda i: Series(i['ID'], self.orthanc), series_identifiers))
+        self.series = list(map(
+            lambda i: Series(i['ID'], self.orthanc),
+            series_identifiers
+        ))
 
     def __str__(self):
         return f'Study (id={self.get_id()}, identifier={self.get_identifier()})'

@@ -25,7 +25,7 @@ class Series:
 
         self.series_identifier: str = series_identifier
 
-        self.instances: List[Instance] = self._build_instances()
+        self.instances: List[Instance] = []
 
     def get_instances(self) -> List[Instance]:
         """Get series instance
@@ -88,8 +88,10 @@ class Series:
         instance_identifiers = self.orthanc.get_series_instances(
             self.series_identifier).json()
 
-        return list(map(lambda i: Instance(i['ID'], self.orthanc),
-                        instance_identifiers))
+        self.instances =  list(map(
+            lambda i: Instance(i['ID'], self.orthanc),
+            instance_identifiers
+        ))
 
     def __str__(self):
         return f'Series (identifier={self.get_identifier()})'
