@@ -104,7 +104,7 @@ class Study:
         -------
         None
         """
-        series_identifiers = self.orthanc.get_study_series_identifiers(
+        series_identifiers = self.orthanc.get_study_series_information(
             self.study_identifier).json()
 
         self.series = list(map(

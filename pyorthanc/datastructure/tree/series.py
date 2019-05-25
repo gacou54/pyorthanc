@@ -85,7 +85,7 @@ class Series:
         List[Instance]
             List of the series instances.
         """
-        instance_identifiers = self.orthanc.get_series_instances(
+        instance_identifiers = self.orthanc.get_series_instance_information(
             self.series_identifier).json()
 
         self.instances =  list(map(

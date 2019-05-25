@@ -95,7 +95,7 @@ class Patient:
         -------
         None
         """
-        study_identifiers = self.orthanc.get_patient_studies(
+        study_identifiers = self.orthanc.get_patient_study_information(
             self.patient_identifier).json()
 
         self.studies =  list(map(
