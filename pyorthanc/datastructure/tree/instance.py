@@ -12,7 +12,10 @@ class Instance:
     or the entire DICOM file of the Instance
     """
 
-    def __init__(self, instance_identifier: str, orthanc: Orthanc) -> None:
+    def __init__(
+            self, instance_identifier: str,
+            orthanc: Orthanc,
+            instance_information: Dict = None) -> None:
         """Constructor
 
         Parameters
@@ -21,10 +24,13 @@ class Instance:
             Orthanc instance identifier.
         orthanc
             Orthanc object.
+        instance_information
+            Dictionary of instance's information.
         """
-        self.orthanc: Orthanc = orthanc
+        self.orthanc = orthanc
 
-        self.instance_identifier: str = instance_identifier
+        self.instance_identifier = instance_identifier
+        self.instance_information = instance_information
 
     def get_instance_dicom_file(self) -> bytes:
         """Retrieves DICOM file
@@ -64,7 +70,11 @@ class Instance:
         Dict
             Dictionary with tags as key and information as value
         """
-        return self.orthanc.get_instance_information(self.instance_identifier).json()
+        if self.instance_information is None:
+            self.instance_information = self.orthanc.get_instance_information(
+                self.instance_identifier).json()
+
+        return self.instance_information
 
     def get_content(self) -> Any:
         """Get content

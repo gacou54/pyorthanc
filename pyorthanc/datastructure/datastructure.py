@@ -1,14 +1,18 @@
 # coding: utf-8
 # author: gabriel couture
-import asyncio
 from concurrent.futures import ThreadPoolExecutor
-from typing import List
+from typing import List, Dict, Callable
 
+from pyorthanc.datastructure.tree import Study, Series, Instance
 from pyorthanc.datastructure.tree.patient import Patient
 from pyorthanc.orthanc import Orthanc
 
 
-def build_patient_forest(orthanc: Orthanc, max_worker: int = 100) -> List[Patient]:
+def build_patient_forest(
+        orthanc: Orthanc,
+        max_nbr_workers: int = 100,
+        series_filter: Callable = None,
+        do_trim_forest_after_construction: bool = True) -> List[Patient]:
     """Build a patient forest
 
     Each tree in the forest correspond to a patient. The layers in the
@@ -16,41 +20,93 @@ def build_patient_forest(orthanc: Orthanc, max_worker: int = 100) -> List[Patien
 
     ```Patient -> Studies -> Series -> Instances```
 
-    Note that trees are build asynchronously. You may want to change the
-    default value (100). Increase this number could improve performance,
+    Note that trees are build concurrently. You may want to change the
+    default values. Increase this number could improve performance,
     but it will take more memory.
 
     Parameters
     ----------
     orthanc
         Orthanc object.
-    max_worker
-        Number of maximum workers for the concurrent building tree.
+    max_nbr_workers
+        Number of workers for to build the concurrent tree.
+    series_filter
+        Series filter (e.g. lambda series: series.get_modality() == 'SR')
+    do_trim_forest_after_construction
+        If True, trim the forest after its construction.
 
     Returns
     -------
     List[Patient]
         List of patient tree representation.
     """
-    event_loop = asyncio.get_event_loop()
-    return event_loop.run_until_complete(_build_patient_forest(orthanc, max_worker))
+    patient_identifiers = orthanc.get_patients().json()
+
+    with ThreadPoolExecutor(max_workers=max_nbr_workers) as patient_executor:
+        future_patients = patient_executor.map(
+            lambda patient_identifier: _build_patient(
+                patient_identifier,
+                orthanc,
+                series_filter
+            ),
+            patient_identifiers
+        )
+
+    patient_forest = list(future_patients)
+
+    if do_trim_forest_after_construction:
+        return trim_patient_forest(patient_forest)
+
+    return patient_forest
 
 
-async def _build_patient_forest(orthanc: Orthanc, max_worker: int) -> List[Patient]:
-    patient_identifiers: List[str] = orthanc.get_patients().json()
+def _build_patient(
+        patient_identifier: str,
+        orthanc: Orthanc,
+        series_filter: Callable) -> Patient:
+    study_information = orthanc.get_patient_study_information(patient_identifier).json()
 
-    with ThreadPoolExecutor(max_workers=max_worker) as executor:
-        event_loop = asyncio.get_event_loop()
+    patient = Patient(patient_identifier, orthanc)
+    patient.studies = [_build_study(i, orthanc, series_filter) for i in study_information]
 
-        futures = [
-            event_loop.run_in_executor(
-                executor,
-                lambda patient_identifier: Patient(patient_identifier, orthanc),
-                patient_identifier
-            )
-            for patient_identifier in patient_identifiers
-        ]
+    return patient
 
-        responses = [r for r in await asyncio.gather(*futures)]
 
-    return responses
+def _build_study(
+        study_information: Dict,
+        orthanc: Orthanc,
+        series_filter: Callable) -> Study:
+    series_information = orthanc.get_study_series_information(study_information['ID']).json()
+
+    study = Study(study_information['ID'], orthanc, study_information)
+    study.series = [_build_series(i, orthanc, series_filter) for i in series_information]
+
+    return study
+
+
+def _build_series(
+        series_information: Dict,
+        orthanc: Orthanc,
+        series_filter: Callable) -> Series:
+    instance_information = orthanc.get_series_instance_information(series_information['ID']).json()
+
+    series = Series(series_information['ID'], orthanc, series_information)
+
+    if series_filter is not None:
+        if not series_filter(series):
+            return series
+
+    series.instances = [Instance(i['ID'], orthanc, i) for i in instance_information]
+
+    return series
+
+
+def trim_patient_forest(patient_forest: List[Patient]) -> List[Patient]:
+    for patient in patient_forest:
+        patient.trim()
+
+    patients = filter(
+        lambda patient: not patient.is_empty(), patient_forest
+    )
+
+    return list(patients)

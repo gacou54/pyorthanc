@@ -2416,11 +2416,11 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def get_patient_studies(
+    def get_patient_study_information(
             self, patient_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get patient studies
+        """Get patient study main information for all patient studies
 
         Retrieve all the studies of this patient in a single REST call.
 
@@ -3099,7 +3099,7 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_series_instances(
+    def get_series_instance_information(
             self, series_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
@@ -3816,11 +3816,11 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_study_series_identifiers(
+    def get_study_series_information(
             self, study_identifier: str,
             params: Dict = None,
             **kwargs) -> requests.Response:
-        """Get study's series
+        """Get study's series main information
 
         Retrieve all the series of this study in a single REST call.
 

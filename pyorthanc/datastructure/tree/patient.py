@@ -13,7 +13,10 @@ class Patient:
     or the entire DICOM file of the Patient
     """
 
-    def __init__(self, patient_identifier: str, orthanc: Orthanc) -> None:
+    def __init__(
+            self, patient_identifier: str,
+            orthanc: Orthanc,
+            patient_information: Dict = None) -> None:
         """Constructor
 
         Parameters
@@ -22,12 +25,15 @@ class Patient:
             Orthanc patient identifier.
         orthanc
             Orthanc object.
+        patient_information
+            Dictionary of patient's information.
         """
-        self.orthanc: Orthanc = orthanc
+        self.orthanc = orthanc
 
-        self.patient_identifier: str = patient_identifier
+        self.patient_identifier = patient_identifier
+        self.patient_information = patient_information
 
-        self.studies: List[Study] = self._build_studies()
+        self.studies: List[Study] = []
 
     def get_identifier(self) -> str:
         """Get patient identifier
@@ -47,8 +53,11 @@ class Patient:
         Dict
             Dictionary of patient main information.
         """
-        return self.orthanc.get_patient_information(
-            self.patient_identifier).json()
+        if self.patient_information is None:
+            self.patient_information = self.orthanc.get_patient_information(
+                self.patient_identifier).json()
+
+        return self.patient_information
 
     def get_id(self) -> str:
         """Get patient ID
@@ -90,18 +99,36 @@ class Patient:
         """
         return list(self.studies)
 
-    def _build_studies(self) -> List[Study]:
+    def build_studies(self) -> None:
         """Build a list of the patient's studies
-
-        Returns
-        -------
-        List[Study]
-            List of the patient's studies
         """
-        study_identifiers = self.orthanc.get_patient_studies(
+        study_identifiers = self.orthanc.get_patient_study_information(
             self.patient_identifier).json()
 
-        return list(map(lambda i: Study(i['ID'], self.orthanc), study_identifiers))
+        self.studies = list(map(
+            lambda i: Study(i['ID'], self.orthanc),
+            study_identifiers
+        ))
 
     def __str__(self):
         return f'Patient (id={self.get_id()}, identifier={self.get_identifier()})'
+
+    def trim(self) -> None:
+        """Delete empty studies
+        """
+        for study in self.get_studies():
+            study.trim()
+
+        self.studies = list(filter(
+            lambda study: not study.is_empty(), self.studies
+        ))
+
+    def is_empty(self) -> bool:
+        """Check if studies is empty
+
+        Returns
+        -------
+        bool
+            True if patient has no instance
+        """
+        return self.studies == []

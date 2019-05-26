@@ -13,7 +13,10 @@ class Study:
     or the entire DICOM file of the Series
     """
 
-    def __init__(self, study_identifier: str, orthanc: Orthanc) -> None:
+    def __init__(
+            self, study_identifier: str,
+            orthanc: Orthanc,
+            study_information: Dict = None) -> None:
         """Constructor
 
         Parameters
@@ -22,12 +25,15 @@ class Study:
             Orthanc study identifier.
         orthanc
             Orthanc object.
+        study_information
+            Dictionary of study's information.
         """
-        self.orthanc: Orthanc = orthanc
+        self.orthanc = orthanc
 
-        self.study_identifier: str = study_identifier
+        self.study_identifier = study_identifier
+        self.study_information = study_information
 
-        self.series: List[Series] = self._build_series()
+        self.series: List[Series] = []
 
     def get_identifier(self) -> str:
         """Get Study identifier
@@ -47,7 +53,11 @@ class Study:
         Dict
             Dictionary of study information
         """
-        return self.orthanc.get_study_information(self.study_identifier).json()
+        if self.study_information is None:
+            self.study_information = self.orthanc.get_study_information(
+                self.study_identifier).json()
+
+        return self.study_information
 
     def get_date(self) -> str:
         """Get study date
@@ -99,18 +109,34 @@ class Study:
         """
         return list(self.series)
 
-    def _build_series(self) -> List[Series]:
+    def build_series(self) -> None:
         """Build a list of the study's series
-
-        Returns
-        -------
-        List[Series]
-            List of the study's series
         """
-        series_identifiers = self.orthanc.get_study_series_identifiers(
+        series_identifiers = self.orthanc.get_study_series_information(
             self.study_identifier).json()
 
-        return list(map(lambda i: Series(i['ID'], self.orthanc), series_identifiers))
+        self.series = list(map(
+            lambda i: Series(i['ID'], self.orthanc),
+            series_identifiers
+        ))
 
     def __str__(self):
         return f'Study (id={self.get_id()}, identifier={self.get_identifier()})'
+
+    def trim(self) -> None:
+        """Delete empty series
+        """
+        self.series = list(filter(
+            lambda series: not series.is_empty(),
+            self.series
+        ))
+
+    def is_empty(self) -> bool:
+        """Check if series is empty
+
+        Returns
+        -------
+        bool
+            True if study has no instance
+        """
+        return self.series == []
