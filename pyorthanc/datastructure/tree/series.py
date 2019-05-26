@@ -28,9 +28,9 @@ class Series:
         series_information
             Dictionary of series information.
         """
-        self.orthanc: Orthanc = orthanc
+        self.orthanc = orthanc
 
-        self.series_identifier: str = series_identifier
+        self.series_identifier = series_identifier
         self.series_information = series_information
 
         self.instances: List[Instance] = []
@@ -89,12 +89,8 @@ class Series:
         """
         return self.get_main_information()['MainDicomTags']['SeriesNumber']
 
-    def _build_instances(self) -> None:
+    def build_instances(self) -> None:
         """Build a list of the series's instances
-
-        Returns
-        -------
-        None
         """
         instance_identifiers = self.orthanc.get_series_instance_information(
             self.series_identifier).json()
@@ -106,3 +102,13 @@ class Series:
 
     def __str__(self):
         return f'Series (identifier={self.get_identifier()})'
+
+    def is_empty(self) -> bool:
+        """Check if series is empty
+
+        Returns
+        -------
+        bool
+            True if series has no instance
+        """
+        return self.instances == []

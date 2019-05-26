@@ -101,10 +101,6 @@ class Patient:
 
     def build_studies(self) -> None:
         """Build a list of the patient's studies
-
-        Returns
-        -------
-        None
         """
         study_identifiers = self.orthanc.get_patient_study_information(
             self.patient_identifier).json()
@@ -116,3 +112,23 @@ class Patient:
 
     def __str__(self):
         return f'Patient (id={self.get_id()}, identifier={self.get_identifier()})'
+
+    def trim(self) -> None:
+        """Delete empty studies
+        """
+        for study in self.get_studies():
+            study.trim()
+
+        self.studies = list(filter(
+            lambda study: not study.is_empty(), self.studies
+        ))
+
+    def is_empty(self) -> bool:
+        """Check if studies is empty
+
+        Returns
+        -------
+        bool
+            True if patient has no instance
+        """
+        return self.studies == []

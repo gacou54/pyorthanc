@@ -111,10 +111,6 @@ class Study:
 
     def build_series(self) -> None:
         """Build a list of the study's series
-
-        Returns
-        -------
-        None
         """
         series_identifiers = self.orthanc.get_study_series_information(
             self.study_identifier).json()
@@ -126,3 +122,21 @@ class Study:
 
     def __str__(self):
         return f'Study (id={self.get_id()}, identifier={self.get_identifier()})'
+
+    def trim(self) -> None:
+        """Delete empty series
+        """
+        self.series = list(filter(
+            lambda series: not series.is_empty(),
+            self.series
+        ))
+
+    def is_empty(self) -> bool:
+        """Check if series is empty
+
+        Returns
+        -------
+        bool
+            True if study has no instance
+        """
+        return self.series == []

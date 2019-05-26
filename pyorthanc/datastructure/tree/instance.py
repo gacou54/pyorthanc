@@ -27,9 +27,9 @@ class Instance:
         instance_information
             Dictionary of instance's information.
         """
-        self.orthanc: Orthanc = orthanc
+        self.orthanc = orthanc
 
-        self.instance_identifier: str = instance_identifier
+        self.instance_identifier = instance_identifier
         self.instance_information = instance_information
 
     def get_instance_dicom_file(self) -> bytes:
