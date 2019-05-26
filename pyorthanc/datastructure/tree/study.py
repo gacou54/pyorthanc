@@ -13,7 +13,10 @@ class Study:
     or the entire DICOM file of the Series
     """
 
-    def __init__(self, study_identifier: str, orthanc: Orthanc) -> None:
+    def __init__(
+            self, study_identifier: str,
+            orthanc: Orthanc,
+            study_information: Dict = None) -> None:
         """Constructor
 
         Parameters
@@ -22,10 +25,13 @@ class Study:
             Orthanc study identifier.
         orthanc
             Orthanc object.
+        study_information
+            Dictionary of study's information.
         """
-        self.orthanc: Orthanc = orthanc
+        self.orthanc = orthanc
 
-        self.study_identifier: str = study_identifier
+        self.study_identifier = study_identifier
+        self.study_information = study_information
 
         self.series: List[Series] = []
 
@@ -47,7 +53,11 @@ class Study:
         Dict
             Dictionary of study information
         """
-        return self.orthanc.get_study_information(self.study_identifier).json()
+        if self.study_information is None:
+            self.study_information = self.orthanc.get_study_information(
+                self.study_identifier).json()
+
+        return self.study_information
 
     def get_date(self) -> str:
         """Get study date

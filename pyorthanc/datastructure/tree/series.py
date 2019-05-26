@@ -13,7 +13,10 @@ class Series:
     or the entire DICOM file of the Series
     """
 
-    def __init__(self, series_identifier: str, orthanc: Orthanc) -> None:
+    def __init__(
+            self, series_identifier: str,
+            orthanc: Orthanc,
+            series_information: Dict = None) -> None:
         """Constructor
 
         Parameters
@@ -22,10 +25,13 @@ class Series:
             Orthanc series identifier.
         orthanc
             Orthanc object.
+        series_information
+            Dictionary of series information.
         """
         self.orthanc: Orthanc = orthanc
 
         self.series_identifier: str = series_identifier
+        self.series_information = series_information
 
         self.instances: List[Instance] = []
 
@@ -57,7 +63,11 @@ class Series:
         Dict
             Dictionary of series main information.
         """
-        return self.orthanc.get_series_information(self.series_identifier).json()
+        if self.series_information is None:
+            self.series_information = self.orthanc.get_series_information(
+                self.series_identifier).json()
+
+        return self.series_information
 
     def get_modality(self) -> str:
         """Get series modality
@@ -79,18 +89,17 @@ class Series:
         """
         return self.get_main_information()['MainDicomTags']['SeriesNumber']
 
-    def _build_instances(self) -> List[Instance]:
+    def _build_instances(self) -> None:
         """Build a list of the series's instances
 
         Returns
         -------
-        List[Instance]
-            List of the series instances.
+        None
         """
         instance_identifiers = self.orthanc.get_series_instance_information(
             self.series_identifier).json()
 
-        self.instances =  list(map(
+        self.instances = list(map(
             lambda i: Instance(i['ID'], self.orthanc),
             instance_identifiers
         ))

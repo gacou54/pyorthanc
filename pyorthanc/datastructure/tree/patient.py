@@ -13,7 +13,10 @@ class Patient:
     or the entire DICOM file of the Patient
     """
 
-    def __init__(self, patient_identifier: str, orthanc: Orthanc) -> None:
+    def __init__(
+            self, patient_identifier: str,
+            orthanc: Orthanc,
+            patient_information: Dict = None) -> None:
         """Constructor
 
         Parameters
@@ -22,10 +25,13 @@ class Patient:
             Orthanc patient identifier.
         orthanc
             Orthanc object.
+        patient_information
+            Dictionary of patient's information.
         """
-        self.orthanc: Orthanc = orthanc
+        self.orthanc = orthanc
 
-        self.patient_identifier: str = patient_identifier
+        self.patient_identifier = patient_identifier
+        self.patient_information = patient_information
 
         self.studies: List[Study] = []
 
@@ -47,8 +53,11 @@ class Patient:
         Dict
             Dictionary of patient main information.
         """
-        return self.orthanc.get_patient_information(
-            self.patient_identifier).json()
+        if self.patient_information is None:
+            self.patient_information = self.orthanc.get_patient_information(
+                self.patient_identifier).json()
+
+        return self.patient_information
 
     def get_id(self) -> str:
         """Get patient ID
@@ -100,7 +109,7 @@ class Patient:
         study_identifiers = self.orthanc.get_patient_study_information(
             self.patient_identifier).json()
 
-        self.studies =  list(map(
+        self.studies = list(map(
             lambda i: Study(i['ID'], self.orthanc),
             study_identifiers
         ))

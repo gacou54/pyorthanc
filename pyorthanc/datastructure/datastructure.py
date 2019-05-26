@@ -1,8 +1,7 @@
 # coding: utf-8
 # author: gabriel couture
-import asyncio
 from concurrent.futures import ThreadPoolExecutor
-from typing import List
+from typing import List, Dict
 
 from pyorthanc.datastructure.tree import Study, Series, Instance
 from pyorthanc.datastructure.tree.patient import Patient
@@ -41,7 +40,7 @@ def build_patient_forest(
         future_patients = patient_executor.map(
             lambda patient_identifier: _build_patient(
                 patient_identifier,
-                orthanc,
+                orthanc
             ),
             patient_identifiers
         )
@@ -51,29 +50,26 @@ def build_patient_forest(
 
 def _build_patient(patient_identifier: str, orthanc: Orthanc) -> Patient:
     study_information = orthanc.get_patient_study_information(patient_identifier).json()
-    study_identifiers = [study['ID'] for study in study_information]
 
     patient = Patient(patient_identifier, orthanc)
-    patient.studies = [_build_study(i, orthanc) for i in study_identifiers]
+    patient.studies = [_build_study(i, orthanc, ) for i in study_information]
 
     return patient
 
 
-def _build_study(study_identifier: str, orthanc: Orthanc) -> Study:
-    series_information = orthanc.get_study_series_information(study_identifier).json()
-    series_identifiers = [series['ID'] for series in series_information]
+def _build_study(study_information: Dict, orthanc: Orthanc) -> Study:
+    series_information = orthanc.get_study_series_information(study_information['ID']).json()
 
-    study = Study(study_identifier, orthanc)
-    study.series = [_build_series(i, orthanc) for i in series_identifiers]
+    study = Study(study_information['ID'], orthanc, study_information)
+    study.series = [_build_series(i, orthanc) for i in series_information]
 
     return study
 
 
-def _build_series(series_identifier: str, orthanc: Orthanc) -> Series:
-    instance_information = orthanc.get_series_instance_information(series_identifier).json()
-    instance_identifiers = [instance['ID'] for instance in instance_information]
+def _build_series(series_information: Dict, orthanc: Orthanc) -> Series:
+    instance_information = orthanc.get_series_instance_information(series_information['ID']).json()
 
-    series = Series(series_identifier, orthanc)
-    series.instances = [Instance(i, orthanc) for i in instance_identifiers]
+    series = Series(series_information['ID'], orthanc, series_information)
+    series.instances = [Instance(i['ID'], orthanc, i) for i in instance_information]
 
     return series
