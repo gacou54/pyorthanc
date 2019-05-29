@@ -11,6 +11,13 @@ ORTHANC_URL = 'http://localhost:8042'
 
 
 def setup_orthanc_server() -> subprocess.Popen:
+    """Start an Orthanc server
+
+    Returns
+    -------
+    subprocess.Popen
+        Subprocess of the test Orthanc server instance.
+    """
     orthanc_process = subprocess.Popen(['Orthanc', './tests/integration/orthanc_configuration.json'])
     time.sleep(2)  # Wait to be sure that the process is completely started
 
@@ -18,6 +25,13 @@ def setup_orthanc_server() -> subprocess.Popen:
 
 
 def stop_orthanc_server_and_remove_data_directory(orthanc_process: subprocess.Popen) -> None:
+    """Stop the test orthanc server and remove its data directory
+
+    Parameters
+    ----------
+    orthanc_process
+        Orthanc subprocess.Popen process.
+    """
     orthanc_process.kill()
     time.sleep(2)  # Wait to be sure that the process is completely stopped
 
@@ -25,6 +39,8 @@ def stop_orthanc_server_and_remove_data_directory(orthanc_process: subprocess.Po
 
 
 def setup_data() -> None:
+    """Load test dicom files to the test Orthanc server instance
+    """
     headers = {'content-type': 'application/dicom'}
 
     list_of_dicom_file_paths = [
@@ -44,6 +60,8 @@ def setup_data() -> None:
 
 
 def clear_data() -> None:
+    """Remove instance in the test Orthanc instance with API calls
+    """
     instance_identifiers = requests.get(f'{ORTHANC_URL}/instances')
 
     for instance_identifier in instance_identifiers:
