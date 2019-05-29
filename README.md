@@ -28,8 +28,8 @@ If not, clone the repository, unzip and pip install the directory:
 pip install -e pyorthanc
 ```
 
-Example of usage:
------------------
+Example of usage
+----------------
 Be sure that Orthanc is running. The default URL (if running locally) is `http://localhost:8042`.
 
 #### With Orthanc server:
