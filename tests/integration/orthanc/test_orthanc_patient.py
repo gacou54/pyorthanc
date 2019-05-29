@@ -12,14 +12,15 @@ class TestOrthancPatient(unittest.TestCase):
         global orthanc_subprocess
         orthanc_subprocess = setup_server.setup_orthanc_server()
 
+        setup_server.setup_data()
+
     @classmethod
     def tearDownClass(cls) -> None:
+        setup_server.clear_data()
+
         global orthanc_subprocess
-        setup_server.stop_orthanc_server_and_remove_data(orthanc_subprocess)
+        setup_server.stop_orthanc_server_and_remove_data_directory(orthanc_subprocess)
+        del orthanc_subprocess
 
     def test_something(self):
         self.assertEqual(True, True)
-
-
-if __name__ == '__main__':
-    unittest.main()
