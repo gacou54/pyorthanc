@@ -15,6 +15,9 @@ behavior, please do an issue.
 However, 'PyOrthanc' contains objects and functions that may be
 useful for anyone writing python script to interact with Orthanc.
 
+Also note that tests (```python setup.py test```) might only work
+on a linux machine.
+
 
 Installation
 ------------

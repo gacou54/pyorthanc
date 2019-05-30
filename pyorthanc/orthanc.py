@@ -1,5 +1,5 @@
 # coding: utf-8
-from typing import List, Dict
+from typing import List, Dict, Union
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -39,8 +39,10 @@ class Orthanc:
         self._credentials = HTTPBasicAuth(username, password)
         self._credentials_are_set = True
 
-    def get_request(self, route: str, params: Dict = None,
-                    **kwargs) -> requests.Response:
+    def get_request(
+            self, route: str,
+            params: Dict = None,
+            **kwargs) -> Union[List, Dict, str]:
         """GET request with specified route
 
         Parameters
@@ -52,18 +54,28 @@ class Orthanc:
 
         Returns
         -------
-        requests.Response
-            Response of the HTTP GET request.
+        Union[List, Dict, str]
+            Response of the HTTP GET request converted to json format.
         """
         if self._credentials_are_set:
             response = requests.get(
-                route, params=params, auth=self._credentials, **kwargs)
+                route,
+                params=params,
+                auth=self._credentials,
+                **kwargs
+            )
         else:
-            response = requests.get(route, params=params, **kwargs)
+            response = requests.get(
+                route,
+                params=params,
+                **kwargs
+            )
 
-        return response
+        return response.json()
 
-    def delete_request(self, route: str, **kwargs) -> requests.Response:
+    def delete_request(
+            self, route: str,
+            **kwargs) -> Union[List, Dict, str]:
         """DELETE to specified route
 
         Parameters
@@ -73,16 +85,19 @@ class Orthanc:
 
         Returns
         -------
-        requests.Response
-            Response of the HTTP DELETE request.
+        Union[List, Dict, str]
+            Response of the HTTP DELETE request converted to json format.
         """
         if self._credentials_are_set:
-            return requests.delete(route, auth=self._credentials, **kwargs)
+            return requests.delete(route, auth=self._credentials, **kwargs).json()
 
-        return requests.delete(route, **kwargs)
+        return requests.delete(route, **kwargs).json()
 
-    def post_request(self, route: str, data: Dict = None, json=None,
-                     **kwargs) -> requests.Response:
+    def post_request(
+            self, route: str,
+            data: Dict = None,
+            json=None,
+            **kwargs) -> Union[List, Dict, str]:
         """POST to specified route
 
         Parameters
@@ -96,17 +111,25 @@ class Orthanc:
 
         Returns
         -------
-        requests.Response
-            Response of the HTTP POST request.
+        Union[List, Dict, str]
+            Response of the HTTP POST request converted to json format.
         """
         if self._credentials_are_set:
             return requests.post(
-                route, auth=self._credentials, data=data, json=json, **kwargs)
+                route,
+                auth=self._credentials,
+                data=data,
+                json=json,
+                **kwargs
+            ).json()
 
-        return requests.post(route, data=data, json=json, **kwargs)
+        return requests.post(route, data=data, json=json, **kwargs).json()
 
-    def put_request(self, route: str, data: Dict = None, json=None,
-                    **kwargs) -> requests.Response:
+    def put_request(
+            self, route: str,
+            data: Dict = None,
+            json=None,
+            **kwargs) -> Union[List, Dict]:
         """PUT to specified route
 
         Parameters
@@ -120,14 +143,19 @@ class Orthanc:
 
         Returns
         -------
-        requests.Response
-            Response of the HTTP PUT requests
+        Union[List, Dict, str]
+            Response of the HTTP PUT request converted to json format.
         """
         if self._credentials_are_set:
             return requests.put(
-                route, auth=self._credentials, data=data, json=json, **kwargs)
+                route,
+                auth=self._credentials,
+                data=data,
+                json=json,
+                **kwargs
+            ).json()
 
-        return requests.put(route, data, json=json, **kwargs)
+        return requests.put(route, data, json=json, **kwargs).json()
 
     def get_attachments(
             self, resource_type: str,
@@ -1967,7 +1995,7 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_patients(self, params: Dict = None, **kwargs) -> requests.Response:
+    def get_patients(self, params: Dict = None, **kwargs) -> List[str]:
         """Get patient identifiers
 
         "since" and "limit" arguments + "expand" argument to retrieve the content of the patients.
@@ -1979,11 +2007,14 @@ class Orthanc:
 
         Returns
         -------
-        requests.Response
+        List[str]
             List of patient identifiers.
         """
         return self.get_request(
-            f'{self._orthanc_url}/patients', params=params, **kwargs)
+            f'{self._orthanc_url}/patients',
+            params=params,
+            **kwargs
+        )
 
     def get_patient_information(
             self, patient_identifier: str,

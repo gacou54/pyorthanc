@@ -30,11 +30,19 @@ class TestOrthancPatient(unittest.TestCase):
     def given_patient_in_orthanc_server(self):
         setup_server.setup_data()
 
-    def test_givenPatientInOrthanc_whenGettingPatients_thenResultIdAListOfPatientIdentifierStrings(self):
+    def test_givenOrthancWithPatientData_whenGettingPatients_thenResultIsANonEmptyListOfPatientIdentifierStrings(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patients().json()
+        result = self.orthanc.get_patients()
 
         self.assertIsInstance(result, list)
+        self.assertNotEqual(len(result), 0)
         for patient_identifier in result:
             self.assertIsInstance(patient_identifier, str)
+
+    def test_givenOrthancWithoutPatientData_whenGettingPatients_thenResultIsAnEmptyList(self):
+        result = self.orthanc.get_patients()
+        print(result)
+
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 0)
