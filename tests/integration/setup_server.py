@@ -7,7 +7,7 @@ import subprocess
 
 import requests
 
-ORTHANC_URL = 'http://localhost:8042'
+ORTHANC_URL = 'http://localhost:9999'
 
 
 def setup_orthanc_server() -> subprocess.Popen:

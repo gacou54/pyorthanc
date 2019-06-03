@@ -72,7 +72,7 @@
   "HttpServerEnabled" : true,
 
   // HTTP port for the REST services and for the GUI
-  "HttpPort" : 8042,
+  "HttpPort" : 9999,
 
   // When the following option is "true", if an error is encountered
   // while calling the REST API, a JSON message describing the error
@@ -104,7 +104,7 @@
   "DicomCheckCalledAet" : false,
 
   // The DICOM port
-  "DicomPort" : 4242,
+  "DicomPort" : 9998,
 
   // The default encoding that is assumed for DICOM files without
   // "SpecificCharacterSet" DICOM tag, and that is used when answering

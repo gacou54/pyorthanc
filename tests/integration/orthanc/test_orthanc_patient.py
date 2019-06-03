@@ -1,7 +1,6 @@
 # coding: utf-8
 # author: gabriel couture
 import unittest
-from typing import List
 
 from pyorthanc import Orthanc
 from tests.integration import setup_server
