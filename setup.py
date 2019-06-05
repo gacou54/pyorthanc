@@ -4,7 +4,7 @@ setup(
     name='pyorthanc',
     version='',
     packages=find_packages(),
-    url='https://github.com/gacou54/pyorthanc',
+    url='https://gitlab.physmed.chudequebec.ca/gacou54/pyorthanc',
     license='MIT',
     author='Gabriel Couture',
     author_email='gacou54@gmail.com',
