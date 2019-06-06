@@ -60,9 +60,9 @@ def setup_data() -> None:
 
 
 def clear_data() -> None:
-    """Remove instance in the test Orthanc instance with API calls
+    """Remove all patient data in the test Orthanc instance with API calls
     """
-    instance_identifiers = requests.get(f'{ORTHANC_URL}/instances')
+    patient_identifiers = requests.get(f'{ORTHANC_URL}/patients').json()
 
-    for instance_identifier in instance_identifiers:
-        requests.delete(f'{ORTHANC_URL}/instances/{instance_identifier}')
+    for patient_identifier in patient_identifiers:
+        requests.delete(f'{ORTHANC_URL}/patients/{patient_identifier}')

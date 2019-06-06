@@ -41,7 +41,6 @@ class TestOrthancPatient(unittest.TestCase):
 
     def test_givenOrthancWithoutPatientData_whenGettingPatients_thenResultIsAnEmptyList(self):
         result = self.orthanc.get_patients()
-        print(result)
 
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 0)
