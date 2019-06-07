@@ -1,5 +1,4 @@
 # coding: utf-8
-import json
 from typing import List, Dict, Union, Any
 
 import requests
@@ -2084,10 +2083,7 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_patient_zip(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_patient_zip(self, patient_identifier: str) -> Any:
         """Get the
 
         Get the .zip file.
@@ -2096,8 +2092,6 @@ class Orthanc:
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
@@ -2106,8 +2100,7 @@ class Orthanc:
         """
         return self.get_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/archive',
-            params=params,
-            **kwargs)
+        )
 
     def archive_patient(
             self, patient_identifier: str,
@@ -2159,30 +2152,44 @@ class Orthanc:
 
     def get_patient_instances_tags(
             self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+            do_simplify: bool = False,
+            do_keep_short: bool = False) -> Dict:
         """Get tags of all patient instances
 
-        "?simplify" argument to simplify output, "?short"
+        TODO: Split this function in 3 functions
+        Note that do_simplify and do_keep_short can not be both set at True.
 
         Parameters
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
-
+        do_simplify
+            If True, simplify tags.
+        do_keep_short
+            If True, Keep a short version of the tags (with hexadecimal tag name).
         Returns
         -------
-        Any
-            Patient instances tags.
+        Dict
+            Patient instances tags as dictionaries of dictionary.
         """
+        if do_simplify and do_keep_short:
+            raise ValueError('do_simplify and do_keep_short can not be both set at True.')
+
+        if do_simplify:
+            return self.get_request(
+                f'{self._orthanc_url}/patients/{patient_identifier}/instances-tags?simplify',
+            )
+
+        elif do_keep_short:
+            return self.get_request(
+                f'{self._orthanc_url}/patients/{patient_identifier}/instances-tags?short',
+            )
+
         return self.get_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/instances-tags',
-            params=params,
-            **kwargs)
+        )
 
-    def get_patient_archice(
+    def get_patient_archive(
             self, patient_identifier: str,
             params: Dict = None,
             **kwargs) -> Any:

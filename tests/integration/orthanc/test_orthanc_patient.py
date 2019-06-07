@@ -81,11 +81,10 @@ class TestOrthancPatient(unittest.TestCase):
         self.assertDictEqual(result, target)
 
     def test_givenOrthancWithoutPatientData_whenGettingPatientInformation_thenRaiseElementNotFoundError(self):
-        try:
-            self.orthanc.get_patient_information(TestOrthancPatient.A_PATIENT_IDENTIFIER)
-
-        except ElementNotFoundError:
-            pass
+        self.assertRaises(
+            ElementNotFoundError,
+            lambda: self.orthanc.get_patient_information(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+        )
 
     def test_givenOrthancWithPatientData_whenDeletingPatientData_thenResultIsTrue(self):
         self.given_patient_in_orthanc_server()
@@ -110,9 +109,15 @@ class TestOrthancPatient(unittest.TestCase):
             self.assertIn(instance_information['ID'], TestOrthancPatient.PATIENT_INSTANCE_IDENTIFIERS)
 
     def test_givenOrthancWithoutPatientData_whenGettingPatientInstances_thenRaiseElementNotFoundError(self):
-        try:
-            self.orthanc.get_patient_instances(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+        self.assertRaises(
+            ElementNotFoundError,
+            lambda: self.orthanc.get_patient_instances(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+        )
 
-        except ElementNotFoundError:
-            pass
+    def test_givenOrthancWithPatientData_whenGettingPatientInstancesTags_thenResultIsPatientInstancesTags(self):
+        self.given_patient_in_orthanc_server()
 
+        result = self.orthanc.get_patient_instances_tags(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+
+
+        # TODO
