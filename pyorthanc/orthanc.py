@@ -1,8 +1,11 @@
 # coding: utf-8
+import json
 from typing import List, Dict, Union, Any
 
 import requests
 from requests.auth import HTTPBasicAuth
+
+from pyorthanc.exceptions import ElementNotFoundError
 
 
 class Orthanc:
@@ -42,7 +45,7 @@ class Orthanc:
     def get_request(
             self, route: str,
             params: Dict = None,
-            **kwargs) -> Union[List, Dict, str]:
+            **kwargs) -> Union[requests.Response, List, Dict, str]:
         """GET request with specified route
 
         Parameters
@@ -71,11 +74,18 @@ class Orthanc:
                 **kwargs
             )
 
-        return response.json()
+        if response.status_code == 200:
+            return response.json()
+
+        if response.status_code == 404:
+            raise ElementNotFoundError()
+
+        else:
+            return response
 
     def delete_request(
             self, route: str,
-            **kwargs) -> Union[List, Dict, str]:
+            **kwargs) -> bool:
         """DELETE to specified route
 
         Parameters
@@ -85,13 +95,16 @@ class Orthanc:
 
         Returns
         -------
-        Union[List, Dict, str]
-            Response of the HTTP DELETE request converted to json format.
+        bool
+            True if the HTTP DELETE request succeeded (HTTP code 200).
         """
         if self._credentials_are_set:
-            return requests.delete(route, auth=self._credentials, **kwargs).json()
+            response = requests.delete(route, auth=self._credentials, **kwargs)
 
-        return requests.delete(route, **kwargs).json()
+        else:
+            response = requests.delete(route, **kwargs)
+
+        return True if response.status_code == 200 else False
 
     def post_request(
             self, route: str,
@@ -1995,51 +2008,37 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_patients(self, params: Dict = None, **kwargs) -> List[str]:
+    def get_patients(self) -> List[str]:
         """Get patient identifiers
 
         "since" and "limit" arguments + "expand" argument to retrieve the content of the patients.
-
-        Parameters
-        ----------
-        params
-            GET HTTP request's params.
 
         Returns
         -------
         List[str]
             List of patient identifiers.
         """
-        return self.get_request(
-            f'{self._orthanc_url}/patients',
-            params=params,
-            **kwargs
-        )
+        return self.get_request(f'{self._orthanc_url}/patients')
 
     def get_patient_information(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+            self, patient_identifier: str) -> Dict:
         """Get patient mains information
 
         Parameters
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        Dict
             Dictionary of patient main information.
         """
         return self.get_request(
-            f'{self._orthanc_url}/patients/{patient_identifier}',
-            params=params,
-            **kwargs)
+                f'{self._orthanc_url}/patients/{patient_identifier}'
+        )
 
-    def delete_patient(self, patient_identifier: str, **kwargs) -> Any:
+    def delete_patient(self, patient_identifier: str) -> bool:
         """Delete specified patient
 
         Parameters
@@ -2049,11 +2048,12 @@ class Orthanc:
 
         Returns
         -------
-        Any
-            If HTTP status == 200 then deletion has succeeded.
+        bool
+            True if succeed, else returns False
         """
         return self.delete_request(
-            f'{self._orthanc_url}/patients/{patient_identifier}', **kwargs)
+            f'{self._orthanc_url}/patients/{patient_identifier}'
+        )
 
     def anonymize_patient(
             self, patient_identifier: str,
@@ -2138,10 +2138,7 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_patient_instances(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_patient_instances(self, patient_identifier: str) -> List[Dict]:
         """Get patient instances
 
         Retrieve all the instances of this patient in a single REST call.
@@ -2150,18 +2147,15 @@ class Orthanc:
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
-            Patient instances main information.
+        List[Dict]
+            Patient instances main information (list of dict).
         """
         return self.get_request(
-            f'{self._orthanc_url}/patients/{patient_identifier}/instances',
-            params=params,
-            **kwargs)
+            f'{self._orthanc_url}/patients/{patient_identifier}/instances'
+        )
 
     def get_patient_instances_tags(
             self, patient_identifier: str,

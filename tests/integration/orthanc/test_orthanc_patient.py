@@ -3,10 +3,34 @@
 import unittest
 
 from pyorthanc import Orthanc
+from pyorthanc.exceptions import ElementNotFoundError
 from tests.integration import setup_server
 
 
 class TestOrthancPatient(unittest.TestCase):
+    A_PATIENT_IDENTIFIER = 'e34c28ce-981b0e5c-2a481559-cf0d5fbe-053335f8'
+    A_PATIENT_ID = '03HDQ000'
+    A_PATIENT_NAME = 'MR-R'
+    A_PATIENT_SEX = 'M'
+    A_PATIENT_STUDIES = ['118bc493-b3b3172a-082119bd-f6802ec3-81695613']
+    A_PATIENT_INFORMATION = {'ID': A_PATIENT_IDENTIFIER,
+                             'IsStable': False,
+                             'LastUpdate': 'THIS_IS_VARIABLE',
+                             'MainDicomTags': {
+                                 'PatientBirthDate': '',
+                                 'PatientID': A_PATIENT_ID,
+                                 'PatientName': A_PATIENT_NAME,
+                                 'PatientSex': A_PATIENT_SEX
+                             },
+                             'Studies': A_PATIENT_STUDIES,
+                             'Type': 'Patient'
+                             }
+
+    PATIENT_INSTANCE_IDENTIFIERS = [
+        'da2024f5-606f9e83-41b012bb-9dced1ea-77bcd599',
+        '348befe7-5be5ff53-70120381-3baa0cc2-e4e04220',
+        '22dcf059-8fd3ade7-efb39ca3-7f46b248-0200abc9'
+    ]
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -44,3 +68,51 @@ class TestOrthancPatient(unittest.TestCase):
 
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 0)
+
+    def test_givenOrthancWithPatientData_whenGettingPatientInformation_thenResultIsADictionaryOfPatientInformation(self):
+        self.given_patient_in_orthanc_server()
+
+        result = self.orthanc.get_patient_information(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+
+        self.assertIsInstance(result, dict)
+        # Removing a key that is never the same
+        result = {key: value for key, value in result.items() if key != 'LastUpdate'}
+        target = {key: value for key, value in TestOrthancPatient.A_PATIENT_INFORMATION.items() if key != 'LastUpdate'}
+        self.assertDictEqual(result, target)
+
+    def test_givenOrthancWithoutPatientData_whenGettingPatientInformation_thenRaiseElementNotFoundError(self):
+        try:
+            self.orthanc.get_patient_information(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+
+        except ElementNotFoundError:
+            pass
+
+    def test_givenOrthancWithPatientData_whenDeletingPatientData_thenResultIsTrue(self):
+        self.given_patient_in_orthanc_server()
+
+        result = self.orthanc.delete_patient(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+
+        self.assertTrue(result)
+
+    def test_givenOrthancWithoutPatientData_whenDeletingPatientData_thenResultIsFalse(self):
+        result = self.orthanc.delete_patient(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+
+        self.assertFalse(result)
+
+    def test_givenOrthancWithPatientData_whenGettingPatientInstances_thenResultIsAListOfPatientInstanceInformation(self):
+        self.given_patient_in_orthanc_server()
+
+        result = self.orthanc.get_patient_instances(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+
+        self.assertIsInstance(result, list)
+        for instance_information in result:
+            self.assertIsInstance(instance_information, dict)
+            self.assertIn(instance_information['ID'], TestOrthancPatient.PATIENT_INSTANCE_IDENTIFIERS)
+
+    def test_givenOrthancWithoutPatientData_whenGettingPatientInstances_thenRaiseElementNotFoundError(self):
+        try:
+            self.orthanc.get_patient_instances(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+
+        except ElementNotFoundError:
+            pass
+
