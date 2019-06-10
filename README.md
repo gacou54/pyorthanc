@@ -15,6 +15,9 @@ behavior, please do an issue.
 However, 'PyOrthanc' contains objects and functions that may be
 useful for anyone writing python script to interact with Orthanc.
 
+Also note that tests (```python setup.py test```) might only work
+on a linux machine.
+
 
 Installation
 ------------
@@ -28,8 +31,12 @@ If not, clone the repository, unzip and pip install the directory:
 pip install -e pyorthanc
 ```
 
-Example of usage:
------------------
+#### Specific version
+If you are looking for a specific version, lookout the version with the desired 
+tag ar https://gitlab.physmed.chudequebec.ca/gacou54/pyorthanc/tags.
+
+Example of usage
+----------------
 Be sure that Orthanc is running. The default URL (if running locally) is `http://localhost:8042`.
 
 #### With Orthanc server:

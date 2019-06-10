@@ -5,3 +5,4 @@ docs/build/*
 
 generation/
 playground.py
+pyorthanc.egg*
