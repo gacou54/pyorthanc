@@ -66,3 +66,9 @@ class TestOrthancInstance(unittest.TestCase):
 
             for tag_number in tag_numbers:
                 hex(int(tag_number, 16))
+
+    def test_givenOrthancWithoutData_whenGettingInstanceFirstLevelTags_thenRaiseElementNotFoundError(self):
+        self.assertRaises(
+            ElementNotFoundError,
+            lambda: self.orthanc.get_instance_first_level_tags(TestOrthancInstance.A_INSTANCE_IDENTIFIER)
+        )

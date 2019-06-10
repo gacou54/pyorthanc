@@ -858,10 +858,7 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_instance_first_level_tags(
-            self, instance_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_instance_first_level_tags(self, instance_identifier: str, **kwargs) -> Any:
         """Get instance content (first level DICOM tags)
 
         List the first-level DICOM tags
@@ -870,8 +867,6 @@ class Orthanc:
         ----------
         instance_identifier
             Instance identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
@@ -880,13 +875,11 @@ class Orthanc:
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{instance_identifier}/content/',
-            params=params,
             **kwargs)
 
     def get_instance_content_by_group_element(
             self, instance_identifier: str,
             group_element: str,
-            params: Dict = None,
             **kwargs) -> Any:
         """Get value of DICOM tags corresponding to a specified group element
 
@@ -899,8 +892,6 @@ class Orthanc:
             Instance identifier.
         group_element
             Group element corresponding to targeted DICOM tag.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
@@ -909,13 +900,11 @@ class Orthanc:
 
         Examples
         --------
-        >>> pyorthanc = Orthanc('http://localhost:8080')
-        >>> pyorthanc.get_instance_content_by_group_element(
-        ...     '0040-a730/6/0040-a730/0/0040-a160')
+        >>> o = Orthanc('http://localhost:8080')
+        >>> o.get_instance_content_by_group_element('0040-a730/6/0040-a730/0/0040-a160')
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{instance_identifier}/content/{group_element}',
-            params=params,
             **kwargs)
 
     def export_instance_to_filesystem(
