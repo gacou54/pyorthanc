@@ -230,7 +230,7 @@ class Orthanc:
             self, resource_type: str,
             identifier: str,
             name: str,
-            **kwargs) -> Any:
+            **kwargs) -> bool:
         """Delete attachment by name
 
         Delete the specified attachment file.
@@ -246,7 +246,8 @@ class Orthanc:
 
         Returns
         -------
-        Any
+        bool
+            True if succeeded, else False.
         """
         return self.delete_request(
             f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}',
@@ -631,7 +632,6 @@ class Orthanc:
             self, resource_type: str,
             identifier: str,
             name: str,
-            params: Dict = None,
             **kwargs) -> Any:
         """Get the contents of the specified metadata field/name
 
@@ -643,8 +643,6 @@ class Orthanc:
             Object identifier (patient, study, series, instance).
         name
             Attachment name.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
@@ -653,14 +651,14 @@ class Orthanc:
         """
         return self.get_request(
             f'{self._orthanc_url}/{resource_type}/{identifier}/metadata/{name}',
-            params=params,
-            **kwargs)
+            **kwargs
+        )
 
     def delete_metadata_contents_of_specified_name(
             self, resource_type: str,
             identifier: str,
             name: str,
-            **kwargs) -> Any:
+            **kwargs) -> bool:
         """Delete the contents of the specified metadata field/name
 
         Parameters
@@ -674,11 +672,13 @@ class Orthanc:
 
         Returns
         -------
-        Any
+        bool
+            True if succeeded, else False.
         """
         return self.delete_request(
             f'{self._orthanc_url}/{resource_type}/{identifier}/metadata/{name}',
-            **kwargs)
+            **kwargs
+        )
 
     def put_metadata_contents_with_specific_name(
             self, resource_type: str,
@@ -729,14 +729,15 @@ class Orthanc:
         """
         return self.get_request(f'{self._orthanc_url}/changes', params=params, **kwargs)
 
-    def delete_changes(self, **kwargs) -> Any:
+    def delete_changes(self, **kwargs) -> bool:
         """Delete changes (last, since or with specified limit)
 
         With "last", "limit" and "since" arguments.
 
         Returns
         -------
-        Any
+        bool
+            True if succeeded, else False.
         """
         return self.delete_request(f'{self._orthanc_url}/changes', **kwargs)
 
@@ -757,33 +758,27 @@ class Orthanc:
         """
         return self.get_request(f'{self._orthanc_url}/exports', params=params, **kwargs)
 
-    def delete_exports(self, **kwargs) -> Any:
+    def delete_exports(self, **kwargs) -> bool:
         """Delete exports
 
         "last", "limit" and "since" arguments
 
         Returns
         -------
-        Any
+        bool
+            True if succeeded, else, False.
         """
         return self.delete_request(f'{self._orthanc_url}/exports', **kwargs)
 
-    def get_instances(self, params: Dict = None, **kwargs) -> Any:
+    def get_instances(self) -> List[str]:
         """Get all instances identifiers
 
-        Arguments
-            "last" and "limit"
-
-        Parameters
-        ----------
-        params
-            GET HTTP request's params.
-
+        Returns
         -------
-        Any
+        List[str]
             All instances identifiers.
         """
-        return self.get_request(f'{self._orthanc_url}/instances', params=params, **kwargs)
+        return self.get_request(f'{self._orthanc_url}/instances')
 
     def post_instances(self, data: Dict = None, json=None, **kwargs) -> Any:
         """Post instances
@@ -803,10 +798,7 @@ class Orthanc:
         """
         return self.post_request(f'{self._orthanc_url}/instances', data=data, json=json, **kwargs)
 
-    def get_instance_information(
-            self, instance_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_instance_information(self, instance_identifier: str) -> Any:
         """Get instance information
 
         Instance dictionary with main information.
@@ -815,18 +807,15 @@ class Orthanc:
         ----------
         instance_identifier
             Instance identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
         Any
             Instance dictionary with main information.
         """
-        return self.get_request(
-            f'{self._orthanc_url}/instances/{instance_identifier}', params=params, **kwargs)
+        return self.get_request(f'{self._orthanc_url}/instances/{instance_identifier}')
 
-    def delete_instance(self, instance_identifier: str, **kwargs) -> Any:
+    def delete_instance(self, instance_identifier: str) -> bool:
         """Delete specified instance
 
         Parameters
@@ -836,10 +825,10 @@ class Orthanc:
 
         Returns
         -------
-        Any
-            HTTP Status == 200 if no error.
+        bool
+            True if succeeded, else False.
         """
-        return self.delete_request(f'{self._orthanc_url}/instances/{instance_identifier}', **kwargs)
+        return self.delete_request(f'{self._orthanc_url}/instances/{instance_identifier}')
 
     def anonymize_specified_instance(
             self, instance_identifier: str,
@@ -869,7 +858,7 @@ class Orthanc:
             json=json,
             **kwargs)
 
-    def get_instance_content(
+    def get_instance_first_level_tags(
             self, instance_identifier: str,
             params: Dict = None,
             **kwargs) -> Any:
@@ -886,7 +875,7 @@ class Orthanc:
 
         Returns
         -------
-        Any
+        List[str]
             Instance's first level DICOM tags.
         """
         return self.get_request(
@@ -922,7 +911,7 @@ class Orthanc:
         --------
         >>> pyorthanc = Orthanc('http://localhost:8080')
         >>> pyorthanc.get_instance_content_by_group_element(
-        ...     '0040-a730/6/0040-a730/0/0040-a160').json()
+        ...     '0040-a730/6/0040-a730/0/0040-a160')
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{instance_identifier}/content/{group_element}',
@@ -980,7 +969,7 @@ class Orthanc:
         Examples
         --------
         >>> pyorthanc = Orthanc('ORTHANC_URL')
-        >>> dicom_file_bytes = pyorthanc.get_instance_file('an_instance_identifier').json()
+        >>> dicom_file_bytes = pyorthanc.get_instance_file('an_instance_identifier')
         >>> with open('your_path', 'wb') as file_handler:
         ...     file_handler.write(dicom_file_bytes)
 
@@ -1838,7 +1827,7 @@ class Orthanc:
         return self.get_request(
             f'{self._orthanc_url}/modalities/{modality}', params=params, **kwargs)
 
-    def delete_modality(self, modality: str, **kwargs) -> Any:
+    def delete_modality(self, modality: str) -> bool:
         """Delete remote modality
 
         Parameters
@@ -1848,10 +1837,10 @@ class Orthanc:
 
         Returns
         -------
-        Any
+        bool
+            True if succeeded, else False.
         """
-        return self.delete_request(f'{self._orthanc_url}/modalities/{modality}',
-                                   **kwargs)
+        return self.delete_request(f'{self._orthanc_url}/modalities/{modality}')
 
     def put_modality(
             self, modality: str,
@@ -1968,7 +1957,7 @@ class Orthanc:
         ...                                    data={'Level': 'Study',
         ...                                          'Query': {
         ...                                             'QueryRetrieveLevel': 'Study',
-        ...                                             'Modality':'SR'}}).json()
+        ...                                             'Modality':'SR'}})
 
         >>> pyorthanc.retrieve_query_results_to_another_modality('modality')
         """
@@ -2048,7 +2037,7 @@ class Orthanc:
         Returns
         -------
         bool
-            True if succeed, else returns False
+            True if succeeded, else returns False
         """
         return self.delete_request(
             f'{self._orthanc_url}/patients/{patient_identifier}'
@@ -2525,7 +2514,7 @@ class Orthanc:
         return self.get_request(
             f'{self._orthanc_url}/peers/{peer_identifier}', params=params, **kwargs)
 
-    def delete_peers_peer(self, peer_identifier: str, **kwargs) -> Any:
+    def delete_peers_peer(self, peer_identifier: str, **kwargs) -> bool:
         """Delete specified peer
 
         Parameters
@@ -2535,8 +2524,8 @@ class Orthanc:
 
         Returns
         -------
-        Any
-            HTTP status == 200 if no error.
+        bool
+            True if succeeded, else False.
         """
         return self.delete_request(f'{self._orthanc_url}/peers/{peer_identifier}',
                                    **kwargs)
@@ -2697,7 +2686,7 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def delete_query(self, query_identifier: str, **kwargs) -> Any:
+    def delete_query(self, query_identifier: str, **kwargs) -> bool:
         """Delete specified query
 
         Parameters
@@ -2707,8 +2696,8 @@ class Orthanc:
 
         Returns
         -------
-        Any
-            HTTP status == 200 if no error.
+        bool
+            True if succeeded, else False.
         """
         return self.delete_request(f'{self._orthanc_url}/queries/{query_identifier}',
                                    **kwargs)
@@ -2996,7 +2985,7 @@ class Orthanc:
         ...     'modality',
         ...     data={'Level': 'Study',
         ...           'Query': {'QueryRetrieveLevel': 'Study',
-        ...                     'Modality':'SR'}}).json()
+        ...                     'Modality':'SR'}})
 
         >>> pyorthanc.retrieve_query_results_to_another_modality(
         ...         query_identifier=query_id['ID'],
@@ -3050,7 +3039,7 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def delete_series(self, series_identifier: str, **kwargs) -> Any:
+    def delete_series(self, series_identifier: str, **kwargs) -> bool:
         """Delete specified series
 
         Parameters
@@ -3060,8 +3049,8 @@ class Orthanc:
 
         Returns
         -------
-        Any
-            HTTP status == 200 if no error.
+        bool
+            True if succeeded, else False.
         """
         return self.delete_request(f'{self._orthanc_url}/series/{series_identifier}',
                                    **kwargs)
@@ -3509,7 +3498,7 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def delete_study(self, study_identifier: str, **kwargs) -> Any:
+    def delete_study(self, study_identifier: str, **kwargs) -> bool:
         """Delete specified study
 
         Parameters
@@ -3519,8 +3508,8 @@ class Orthanc:
 
         Returns
         -------
-        Any
-            HTTP status == 200 if no error.
+        bool
+            True if succeeded, else False.
         """
         return self.delete_request(f'{self._orthanc_url}/studies/{study_identifier}',
                                    **kwargs)

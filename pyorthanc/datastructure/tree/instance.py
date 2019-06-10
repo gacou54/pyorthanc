@@ -84,7 +84,7 @@ class Instance:
         Any
             Content corresponding.
         """
-        return self.orthanc.get_instance_content(self.instance_identifier).json()
+        return self.orthanc.get_instance_first_level_tags(self.instance_identifier).json()
 
     def get_tags(self) -> Dict:
         """Get tags
