@@ -48,10 +48,10 @@ orthanc = Orthanc('http://localhost:8042')
 orthanc.setup_credentials('username', 'password')  # If needed
 
 # To get patients identifier and main information
-patients_identifiers = orthanc.get_patients().json()
+patients_identifiers = orthanc.get_patients()
 
 for patient_identifier in patients_identifiers:
-    patient_information = orthanc.get_patient_information(patient_identifier).json()
+    patient_information = orthanc.get_patient_information(patient_identifier)
 
 
 # To get patient's studies identifier and main information
@@ -59,7 +59,7 @@ a_patient_identifier = patients_identifiers[0]
 studies_identifiers = orthanc.get_studies(a_patient_identifier)
 
 for study_identifier in studies_identifiers:
-    study_information = orthanc.get_study_information(study_identifier).json()
+    study_information = orthanc.get_study_information(study_identifier)
 ```
 
 #### Getting list of remote modalities:
@@ -70,7 +70,7 @@ from pyorthanc import Orthanc
 orthanc = Orthanc('http://localhost:8042')
 orthanc.setup_credentials('username', 'password')  # If needed
 
-orthanc.get_modalities().json()
+orthanc.get_modalities()
 ```
 
 #### Query (C-Find) and Retrieve (C-Move) from remote modality:
@@ -86,7 +86,7 @@ data = {'Level': 'Study', 'Query': {'PatientID': '*'}}
 query_response = remote_modality.query(data=data)
 
 # Retrieve (C-Move) results of query on a target modality (AET)
-remote_modality.retrieve(query_response.json()['ID'], 'target_modality')
+remote_modality.retrieve(query_response['ID'], 'target_modality')
 ```
 
 #### Build a patient tree structure of all patients in Orthanc instance:
