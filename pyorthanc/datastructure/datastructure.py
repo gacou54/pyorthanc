@@ -40,7 +40,7 @@ def build_patient_forest(
     List[Patient]
         List of patient tree representation.
     """
-    patient_identifiers = orthanc.get_patients().json()
+    patient_identifiers = orthanc.get_patients()
 
     with ThreadPoolExecutor(max_workers=max_nbr_workers) as patient_executor:
         future_patients = patient_executor.map(
@@ -64,7 +64,7 @@ def _build_patient(
         patient_identifier: str,
         orthanc: Orthanc,
         series_filter: Callable) -> Patient:
-    study_information = orthanc.get_patient_study_information(patient_identifier).json()
+    study_information = orthanc.get_patient_study_information(patient_identifier)
 
     patient = Patient(patient_identifier, orthanc)
     patient.studies = [_build_study(i, orthanc, series_filter) for i in study_information]
@@ -76,7 +76,7 @@ def _build_study(
         study_information: Dict,
         orthanc: Orthanc,
         series_filter: Callable) -> Study:
-    series_information = orthanc.get_study_series_information(study_information['ID']).json()
+    series_information = orthanc.get_study_series_information(study_information['ID'])
 
     study = Study(study_information['ID'], orthanc, study_information)
     study.series = [_build_series(i, orthanc, series_filter) for i in series_information]
@@ -88,7 +88,7 @@ def _build_series(
         series_information: Dict,
         orthanc: Orthanc,
         series_filter: Callable) -> Series:
-    instance_information = orthanc.get_series_instance_information(series_information['ID']).json()
+    instance_information = orthanc.get_series_instance_information(series_information['ID'])
 
     series = Series(series_information['ID'], orthanc, series_information)
 

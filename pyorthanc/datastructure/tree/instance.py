@@ -50,7 +50,7 @@ class Instance:
         >>> with open('your_path', 'wb') as file_handler:
         ...     file_handler.write(dicom_file_bytes)
         """
-        return self.orthanc.get_instance_file(self.instance_identifier).json()
+        return self.orthanc.get_instance_file(self.instance_identifier)
 
     def get_identifier(self) -> str:
         """Get instance identifier
@@ -72,7 +72,7 @@ class Instance:
         """
         if self.instance_information is None:
             self.instance_information = self.orthanc.get_instance_information(
-                self.instance_identifier).json()
+                self.instance_identifier)
 
         return self.instance_information
 
@@ -84,7 +84,7 @@ class Instance:
         Any
             Content corresponding.
         """
-        return self.orthanc.get_instance_first_level_tags(self.instance_identifier).json()
+        return self.orthanc.get_instance_first_level_tags(self.instance_identifier)
 
     def get_tags(self) -> Dict:
         """Get tags
@@ -94,7 +94,7 @@ class Instance:
         Dict
             Tags in the form of a dictionary.
         """
-        return self.orthanc.get_instance_tags(self.instance_identifier).json()
+        return self.orthanc.get_instance_tags(self.instance_identifier)
 
     def get_simplified_tags(self) -> Dict:
         """Get simplified tags
@@ -105,7 +105,7 @@ class Instance:
             Simplified tags in the form of a dictionary.
         """
         return self.orthanc.get_instance_simplified_tags(
-            self.instance_identifier).json()
+            self.instance_identifier)
 
     def get_content_by_tag(self, tag: str) -> Any:
         """Get content by tag
@@ -122,7 +122,7 @@ class Instance:
         """
         return self.orthanc.get_instance_content_by_group_element(
             instance_identifier=self.instance_identifier,
-            group_element=tag).json()
+            group_element=tag)
 
     def get_content_by_group_element(self, group_element: str) -> Any:
         """Get content by group element like '0040-a730/1/0040-a730'
@@ -139,7 +139,7 @@ class Instance:
         """
         return self.orthanc.get_instance_content_by_group_element(
             instance_identifier=self.instance_identifier,
-            group_element=group_element).json()
+            group_element=group_element)
 
     def __str__(self):
         return f'Instance (identifier={self.get_identifier()})'

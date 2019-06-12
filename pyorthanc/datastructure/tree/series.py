@@ -65,7 +65,7 @@ class Series:
         """
         if self.series_information is None:
             self.series_information = self.orthanc.get_series_information(
-                self.series_identifier).json()
+                self.series_identifier)
 
         return self.series_information
 
@@ -93,7 +93,7 @@ class Series:
         """Build a list of the series's instances
         """
         instance_identifiers = self.orthanc.get_series_instance_information(
-            self.series_identifier).json()
+            self.series_identifier)
 
         self.instances = list(map(
             lambda i: Instance(i['ID'], self.orthanc),

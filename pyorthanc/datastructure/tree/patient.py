@@ -55,7 +55,7 @@ class Patient:
         """
         if self.patient_information is None:
             self.patient_information = self.orthanc.get_patient_information(
-                self.patient_identifier).json()
+                self.patient_identifier)
 
         return self.patient_information
 
@@ -103,7 +103,7 @@ class Patient:
         """Build a list of the patient's studies
         """
         study_identifiers = self.orthanc.get_patient_study_information(
-            self.patient_identifier).json()
+            self.patient_identifier)
 
         self.studies = list(map(
             lambda i: Study(i['ID'], self.orthanc),

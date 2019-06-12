@@ -55,7 +55,7 @@ class Study:
         """
         if self.study_information is None:
             self.study_information = self.orthanc.get_study_information(
-                self.study_identifier).json()
+                self.study_identifier)
 
         return self.study_information
 
@@ -113,7 +113,7 @@ class Study:
         """Build a list of the study's series
         """
         series_identifiers = self.orthanc.get_study_series_information(
-            self.study_identifier).json()
+            self.study_identifier)
 
         self.series = list(map(
             lambda i: Series(i['ID'], self.orthanc),
