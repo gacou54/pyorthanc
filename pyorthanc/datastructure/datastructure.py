@@ -1,5 +1,6 @@
 # coding: utf-8
 # author: gabriel couture
+import os
 from concurrent.futures import ThreadPoolExecutor
 from typing import List, Dict, Callable
 
@@ -102,11 +103,59 @@ def _build_series(
 
 
 def trim_patient_forest(patient_forest: List[Patient]) -> List[Patient]:
+    """
+
+    Parameters
+    ----------
+    patient_forest
+        Patient forest.
+
+    Returns
+    -------
+    List[Patient]
+        Pruned patient forest.
+    """
     for patient in patient_forest:
         patient.trim()
 
     patients = filter(
-        lambda patient: not patient.is_empty(), patient_forest
+        lambda p: not p.is_empty(), patient_forest
     )
 
     return list(patients)
+
+
+def retrieve_and_write_patients_forest_to_given_path(
+        patient_forest: List[Patient],
+        path: str) -> None:
+    """Retrieve and write patients to given path
+
+    Parameters
+    ----------
+    patient_forest
+        Patient forest.
+    path
+        Path where you want to write the files.
+
+    """
+    for patient in patient_forest:
+        patient_path = os.path.join(path, patient.get_id())
+        used_study_paths = []  # Sometime there are many studies with the same "ID" name.
+
+        for i, study in enumerate(patient.get_studies()):
+            study_path = os.path.join(patient_path, study.get_id())
+
+            if study_path in used_study_paths:
+                study_path += str(i+1)
+            used_study_paths.append(study_path)
+
+            os.makedirs(study_path, exist_ok=True)
+
+            for series in study.get_series():
+                for j, instance in enumerate(series.get_instances()):
+                    instance_path = os.path.join(study_path, f'{series.get_modality()}-{j+1}.dcm')
+
+                    dicom_file_bytes = instance.get_dicom_file_content()
+                    print(instance_path)
+                    with open(instance_path, 'wb') as file_handler:
+                        file_handler.write(dicom_file_bytes)

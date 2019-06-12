@@ -1,4 +1,5 @@
 # coding: utf-8
+from json import JSONDecodeError
 from typing import List, Dict, Union, Any
 
 import requests
@@ -74,7 +75,10 @@ class Orthanc:
             )
 
         if response.status_code == 200:
-            return response.json()
+            try:
+                return response.json()
+            except JSONDecodeError:
+                return response.content
 
         if response.status_code == 404:
             raise ElementNotFoundError()
