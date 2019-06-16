@@ -156,6 +156,5 @@ def retrieve_and_write_patients_forest_to_given_path(
                     instance_path = os.path.join(study_path, f'{series.get_modality()}-{j+1}.dcm')
 
                     dicom_file_bytes = instance.get_dicom_file_content()
-                    print(instance_path)
                     with open(instance_path, 'wb') as file_handler:
                         file_handler.write(dicom_file_bytes)
