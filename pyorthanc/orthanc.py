@@ -75,10 +75,7 @@ class Orthanc:
             )
 
         if response.status_code == 200:
-            try:
-                return response.json()
-            except JSONDecodeError:
-                return response.content
+            return response.json()
 
         if response.status_code == 404:
             raise ElementNotFoundError()
@@ -130,16 +127,27 @@ class Orthanc:
         Union[List, Dict, str]
             Response of the HTTP POST request converted to json format.
         """
+        data = str(data).replace('\'', '\"')
+
         if self._credentials_are_set:
-            return requests.post(
+            response = requests.post(
                 route,
                 auth=self._credentials,
                 data=data,
                 json=json,
                 **kwargs
-            ).json()
+            )
 
-        return requests.post(route, data=data, json=json, **kwargs).json()
+        else:
+            response = requests.post(route, data=data, json=json, **kwargs)
+
+        if response.status_code == 200:
+            return response.json()
+
+        if response.status_code == 404:
+            raise ElementNotFoundError()
+
+        return response
 
     def put_request(
             self, route: str,
@@ -163,15 +171,24 @@ class Orthanc:
             Response of the HTTP PUT request converted to json format.
         """
         if self._credentials_are_set:
-            return requests.put(
+            response = requests.put(
                 route,
                 auth=self._credentials,
                 data=data,
                 json=json,
                 **kwargs
-            ).json()
+            )
 
-        return requests.put(route, data, json=json, **kwargs).json()
+        else:
+            response = requests.put(route, data, json=json, **kwargs)
+
+        if response.status_code == 200:
+            return response.json()
+
+        if response.status_code == 404:
+            raise ElementNotFoundError()
+
+        return response
 
     def get_attachments(
             self, resource_type: str,
@@ -944,7 +961,7 @@ class Orthanc:
             params: Dict = None,
             **kwargs) -> Any:
         """Get instance DICOM file
-        
+
         Retrieve on local computer the instance file in bytes.
 
         Parameters
@@ -1845,7 +1862,7 @@ class Orthanc:
         Parameters
         ----------
         modality
-            Modality (remote PACS server, see pyorthanc.get_modalities()).
+            Modality (remote PACS server, see Orthanc.get_modalities()).
         data
             Dictionary to send in the body of request.
         json
@@ -1863,9 +1880,7 @@ class Orthanc:
 
     def echo_to_modality(
             self, modality: str,
-            data: Dict = None,
-            json=None,
-            **kwargs) -> Any:
+            **kwargs) -> bool:
         """Test connection to remote modality (C-Echo SCU)
 
         C-Echo SCU.
@@ -1873,28 +1888,25 @@ class Orthanc:
         Parameters
         ----------
         modality
-            Modality (remote PACS server, see pyorthanc.get_modalities()).
-        data
-            Dictionary to send in the body of request.
-        json
-            json to send in the body of request.
+            Modality (remote PACS server, see Orthanc.get_modalities()).
 
         Returns
         -------
-        Any
-            If HTTP status == 200 then C-Echo succeeded.
+        bool
+            True if C-Echo succeeded.
         """
-        return self.post_request(
-            f'{self._orthanc_url}/modalities/{modality}/echo',
-            data=data,
-            json=json,
-            **kwargs)
+        echo_response = self.post_request(
+                f'{self._orthanc_url}/modalities/{modality}/echo',
+                **kwargs
+            )
+
+        return True if echo_response == {} else False
 
     def move_from_modality(
             self, modality: str,
             data: Dict = None,
             json=None,
-            **kwargs) -> Any:
+            **kwargs) -> bool:
         """Move (C-Move SCU) specified query.
 
         DICOM C-Move SCU (Retrieve).
@@ -1902,7 +1914,7 @@ class Orthanc:
         Parameters
         ----------
         modality
-            Modality (remote PACS server, see pyorthanc.get_modalities()).
+            Modality (remote PACS server, see Orthanc.get_modalities()).
         data
             Dictionary to send in the body of request.
         json
@@ -1910,8 +1922,8 @@ class Orthanc:
 
         Returns
         -------
-        Any
-            If HTTP status == 200 then C-Move succeeded.
+        bool
+            True if C-Move succeeded.
         """
         return self.post_request(
             f'{self._orthanc_url}/modalities/{modality}/move',
@@ -1945,14 +1957,14 @@ class Orthanc:
 
         Examples
         --------
-        >>> pyorthanc = Orthanc('http://localhost:8042')
-        >>> pyorthanc.query_on_modality('modality',
-        ...                                    data={'Level': 'Study',
-        ...                                          'Query': {
-        ...                                             'QueryRetrieveLevel': 'Study',
-        ...                                             'Modality':'SR'}})
+        >>> orthanc = Orthanc('http://localhost:8042')
+        >>> orthanc.query_on_modality('modality',
+        ...                           data={'Level': 'Study',
+        ...                                 'Query': {
+        ...                                     'QueryRetrieveLevel': 'Study',
+        ...                                     'Modality': 'SR'}})
 
-        >>> pyorthanc.retrieve_query_results_to_another_modality('modality')
+        >>> orthanc.retrieve_query_results_to_given_modality('modality')
         """
         return self.post_request(
             f'{self._orthanc_url}/modalities/{modality}/query',
@@ -2016,7 +2028,7 @@ class Orthanc:
             Dictionary of patient main information.
         """
         return self.get_request(
-                f'{self._orthanc_url}/patients/{patient_identifier}'
+            f'{self._orthanc_url}/patients/{patient_identifier}'
         )
 
     def delete_patient(self, patient_identifier: str) -> bool:
@@ -2949,7 +2961,7 @@ class Orthanc:
             params=params,
             **kwargs)
 
-    def retrieve_query_results_to_another_modality(
+    def retrieve_query_results_to_given_modality(
             self, query_identifier: str,
             data: Dict = None,
             json=None,
@@ -2973,14 +2985,14 @@ class Orthanc:
 
         Examples
         --------
-        >>> pyorthanc = Orthanc('http://localhost:8042')
-        >>> query_id = pyorthanc.query_on_modality(
+        >>> orthanc = Orthanc('http://localhost:8042')
+        >>> query_id = orthanc.query_on_modality(
         ...     'modality',
         ...     data={'Level': 'Study',
         ...           'Query': {'QueryRetrieveLevel': 'Study',
         ...                     'Modality':'SR'}})
 
-        >>> pyorthanc.retrieve_query_results_to_another_modality(
+        >>> orthanc.retrieve_query_results_to_given_modality(
         ...         query_identifier=query_id['ID'],
         ...         json='modality')
 

@@ -3,7 +3,6 @@
 from typing import Dict
 
 import requests
-from requests.auth import HTTPBasicAuth
 
 from pyorthanc import Orthanc
 
@@ -25,33 +24,17 @@ class RemoteModality:
         self.orthanc: Orthanc = orthanc
         self.modality: str = modality
 
-        self._credentials_are_set: bool = False
-        self._credentials: HTTPBasicAuth = None
-
-    def setup_credentials(self, username: str, password: str) -> None:
-        """Set credentials needed for HTTP requests
-
-        Parameters
-        ----------
-        username
-            Username.
-        password
-            Password.
-        """
-        self._credentials = HTTPBasicAuth(username, password)
-        self._credentials_are_set = True
-
-    def echo(self) -> requests.Response:
+    def echo(self) -> bool:
         """C-Echo to remote modality
 
         Returns
         -------
-        requests.Response
-            Response object from echo.
+        bool
+            True if C-Echo succeeded.
         """
         return self.orthanc.echo_to_modality(self.modality)
 
-    def query(self, data: Dict) -> requests.Response:
+    def query(self, data: Dict) -> Dict:
         """C-Find (Querying with data)
 
         Parameters
@@ -66,10 +49,11 @@ class RemoteModality:
         Examples
         -------
         >>> data = {'Level': 'Study',
-        ...         'Query': {'PatientID':'03HD*',
-        ...                   'StudyDescription':'*Chest*',
-        ...                   'PatientName':''
-        ...                  }
+        ...         'Query': {
+        ...             'PatientID':'03HD*',
+        ...             'StudyDescription':'*Chest*',
+        ...             'PatientName':''
+        ...         }
         ... }
 
         >>> remote_modality = RemoteModality(
@@ -77,8 +61,7 @@ class RemoteModality:
         ...     modality='sample'
         ... )
 
-        >>> remote_modality.setup_credentials('username', 'password')
-        >>> remote_modality.query(data=data)
+        >>> remote_modality.query(data)
         """
         return self.orthanc.query_on_modality(self.modality, data=data)
 
@@ -126,5 +109,5 @@ class RemoteModality:
         ... )
 
         """
-        return self.orthanc.retrieve_query_results_to_another_modality(
+        return self.orthanc.retrieve_query_results_to_given_modality(
             query_identifier, json=target_modality)
