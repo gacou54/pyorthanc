@@ -65,8 +65,8 @@ class RemoteModality:
         """
         return self.orthanc.query_on_modality(self.modality, data=data)
 
-    def move(self, data: Dict) -> requests.Response:
-        """C-Move
+    def retrieve(self, data: Dict) -> requests.Response:
+        """Retrieve (C-Move) to local modality
 
         Parameters
         ----------
@@ -79,8 +79,8 @@ class RemoteModality:
         """
         return self.orthanc.move_from_modality(self.modality, data=data)
 
-    def retrieve(self, query_identifier: str, target_modality: str,) -> requests.Response:
-        """Retrieve (C-Move) query results to another modality
+    def move(self, query_identifier: str, target_modality: str,) -> requests.Response:
+        """C-Move query results to another modality
 
         C-Move SCU: Send all the results to another modality whose AET is in the body
 
@@ -110,4 +110,6 @@ class RemoteModality:
 
         """
         return self.orthanc.retrieve_query_results_to_given_modality(
-            query_identifier, json=target_modality)
+            query_identifier,
+            json=target_modality
+        )
