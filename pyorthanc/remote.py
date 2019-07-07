@@ -79,7 +79,7 @@ class RemoteModality:
         """
         return self.orthanc.move_from_modality(self.modality, data=data)
 
-    def move(self, query_identifier: str, target_modality: str,) -> requests.Response:
+    def move(self, query_identifier: str, cmove_data: Dict) -> requests.Response:
         """C-Move query results to another modality
 
         C-Move SCU: Send all the results to another modality whose AET is in the body
@@ -88,8 +88,8 @@ class RemoteModality:
         ----------
         query_identifier
             Query identifier.
-        target_modality
-            Name of target modality (AET).
+        cmove_data
+            Ex. {'TargetAET': 'modality_name', "Synchronous": False}
 
         Returns
         -------
@@ -105,11 +105,11 @@ class RemoteModality:
 
         >>> remote_modality.retrieve(
         ...     query_identifier=query_id['ID'],
-        ...     target_modality='modality'
+        ...     cmove_data={'TargetAET': 'modality'}
         ... )
 
         """
         return self.orthanc.retrieve_query_results_to_given_modality(
             query_identifier,
-            json=target_modality
+            data=cmove_data
         )
