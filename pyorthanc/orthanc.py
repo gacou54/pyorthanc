@@ -73,7 +73,10 @@ class Orthanc:
             )
 
         if response.status_code == 200:
-            return response.json()
+            try:
+                return response.json()
+            except json.JSONDecodeError:
+                return response.text
 
         raise requests.exceptions.HTTPError(
             f'HTTP code: {response.status_code}, with text: {response.text}'
@@ -135,7 +138,10 @@ class Orthanc:
             response = requests.post(route, data=data, **kwargs)
 
         if response.status_code == 200:
-            return response.json()
+            try:
+                return response.json()
+            except json.JSONDecodeError:
+                return response.text
 
         raise requests.exceptions.HTTPError(
             f'HTTP code: {response.status_code}, with text: {response.text}'
@@ -171,7 +177,10 @@ class Orthanc:
             response = requests.put(route, data, **kwargs)
 
         if response.status_code == 200:
-            return response.json()
+            try:
+                return response.json()
+            except json.JSONDecodeError:
+                return response.text
 
         raise requests.exceptions.HTTPError(
             f'HTTP code: {response.status_code}, with text: {response.text}'
