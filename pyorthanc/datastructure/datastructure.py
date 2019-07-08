@@ -12,6 +12,8 @@ from pyorthanc.orthanc import Orthanc
 def build_patient_forest(
         orthanc: Orthanc,
         max_nbr_workers: int = 100,
+        patient_filter: Callable = None,
+        study_filter: Callable = None,
         series_filter: Callable = None,
         do_trim_forest_after_construction: bool = True) -> List[Patient]:
     """Build a patient forest
@@ -31,6 +33,10 @@ def build_patient_forest(
         Orthanc object.
     max_nbr_workers
         Number of workers for to build the concurrent tree.
+    patient_filter
+        Patient filter (e.g. lambda patient: patient.get_id() == '03HDQ99*')
+    study_filter
+        Study filter (e.g. lambda study: study.get_id() == '*pros*')
     series_filter
         Series filter (e.g. lambda series: series.get_modality() == 'SR')
     do_trim_forest_after_construction
@@ -48,6 +54,8 @@ def build_patient_forest(
             lambda patient_identifier: _build_patient(
                 patient_identifier,
                 orthanc,
+                patient_filter,
+                study_filter,
                 series_filter
             ),
             patient_identifiers
@@ -64,11 +72,18 @@ def build_patient_forest(
 def _build_patient(
         patient_identifier: str,
         orthanc: Orthanc,
+        patient_filter: Callable,
+        study_filter: Callable,
         series_filter: Callable) -> Patient:
     study_information = orthanc.get_patient_study_information(patient_identifier)
 
     patient = Patient(patient_identifier, orthanc)
-    patient.studies = [_build_study(i, orthanc, series_filter) for i in study_information]
+
+    if patient_filter is not None:
+        if not patient_filter(patient):
+            return patient
+
+    patient.studies = [_build_study(i, orthanc, study_filter, series_filter) for i in study_information]
 
     return patient
 
@@ -76,10 +91,16 @@ def _build_patient(
 def _build_study(
         study_information: Dict,
         orthanc: Orthanc,
+        study_filter: Callable,
         series_filter: Callable) -> Study:
     series_information = orthanc.get_study_series_information(study_information['ID'])
 
     study = Study(study_information['ID'], orthanc, study_information)
+
+    if study_filter is not None:
+        if not study_filter(study):
+            return study
+
     study.series = [_build_series(i, orthanc, series_filter) for i in series_information]
 
     return study
