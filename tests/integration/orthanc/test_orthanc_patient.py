@@ -2,8 +2,9 @@
 # author: gabriel couture
 import unittest
 
+import requests
+
 from pyorthanc import Orthanc
-from pyorthanc.exceptions import ElementNotFoundError
 from tests.integration import setup_server
 
 
@@ -80,9 +81,9 @@ class TestOrthancPatient(unittest.TestCase):
         target = {key: value for key, value in TestOrthancPatient.A_PATIENT_INFORMATION.items() if key != 'LastUpdate'}
         self.assertDictEqual(result, target)
 
-    def test_givenOrthancWithoutData_whenGettingPatientInformation_thenRaiseElementNotFoundError(self):
+    def test_givenOrthancWithoutData_whenGettingPatientInformation_thenRaiseHTTPError(self):
         self.assertRaises(
-            ElementNotFoundError,
+            requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_information(TestOrthancPatient.A_PATIENT_IDENTIFIER)
         )
 
@@ -108,9 +109,9 @@ class TestOrthancPatient(unittest.TestCase):
             self.assertIsInstance(instance_information, dict)
             self.assertIn(instance_information['ID'], TestOrthancPatient.PATIENT_INSTANCE_IDENTIFIERS)
 
-    def test_givenOrthancWithoutData_whenGettingPatientInstances_thenRaiseElementNotFoundError(self):
+    def test_givenOrthancWithoutData_whenGettingPatientInstances_thenRaiseHTTPError(self):
         self.assertRaises(
-            ElementNotFoundError,
+            requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_instances(TestOrthancPatient.A_PATIENT_IDENTIFIER)
         )
 
@@ -127,9 +128,9 @@ class TestOrthancPatient(unittest.TestCase):
                 for key in tag_content.keys():
                     self.assertIn(key, ('Name', 'Type', 'Value'))
 
-    def test_givenOrthancWithoutData_whenGettingPatientInstancesTags_thenRaiseElementNotFoundError(self):
+    def test_givenOrthancWithoutData_whenGettingPatientInstancesTags_thenRaiseHTTPError(self):
         self.assertRaises(
-            ElementNotFoundError,
+            requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_instances_tags(TestOrthancPatient.A_PATIENT_IDENTIFIER)
         )
 
@@ -146,9 +147,9 @@ class TestOrthancPatient(unittest.TestCase):
                 self.assertIsInstance(tag, str)
                 self.assertIn(type(tag_content), (dict, list, str, type(None)))
 
-    def test_givenOrthancWithoutData_whenGettingPatientSimplifiedInstancesTags_thenRaiseElementNotFoundError(self):
+    def test_givenOrthancWithoutData_whenGettingPatientSimplifiedInstancesTags_thenRaiseHTTPError(self):
         self.assertRaises(
-            ElementNotFoundError,
+            requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_simplified_instances_tags(TestOrthancPatient.A_PATIENT_IDENTIFIER)
         )
 
@@ -170,8 +171,8 @@ class TestOrthancPatient(unittest.TestCase):
 
                 self.assertIn(type(tag_content), (dict, list, str, type(None)))
 
-    def test_givenOrthancWithoutData_whenGettingPatientShortInstancesTags_thenRaiseElementNotFoundError(self):
+    def test_givenOrthancWithoutData_whenGettingPatientShortInstancesTags_thenRaiseHTTPError(self):
         self.assertRaises(
-            ElementNotFoundError,
+            requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_short_instances_tags(TestOrthancPatient.A_PATIENT_IDENTIFIER)
         )

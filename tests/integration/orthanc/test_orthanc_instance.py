@@ -2,8 +2,9 @@
 # author: gabriel couture
 import unittest
 
+import requests
+
 from pyorthanc import Orthanc
-from pyorthanc.exceptions import ElementNotFoundError
 from tests.integration import setup_server
 
 
@@ -67,8 +68,8 @@ class TestOrthancInstance(unittest.TestCase):
             for tag_number in tag_numbers:
                 hex(int(tag_number, 16))
 
-    def test_givenOrthancWithoutData_whenGettingInstanceFirstLevelTags_thenRaiseElementNotFoundError(self):
+    def test_givenOrthancWithoutData_whenGettingInstanceFirstLevelTags_thenRaiseHTTPError(self):
         self.assertRaises(
-            ElementNotFoundError,
+            requests.exceptions.HTTPError,
             lambda: self.orthanc.get_instance_first_level_tags(TestOrthancInstance.A_INSTANCE_IDENTIFIER)
         )

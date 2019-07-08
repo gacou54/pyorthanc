@@ -5,8 +5,6 @@ from typing import List, Dict, Union, Any
 import requests
 from requests.auth import HTTPBasicAuth
 
-from pyorthanc.exceptions import ElementNotFoundError
-
 
 class Orthanc:
     """Wrapper around Orthanc REST API
@@ -77,11 +75,9 @@ class Orthanc:
         if response.status_code == 200:
             return response.json()
 
-        if response.status_code == 404:
-            raise ElementNotFoundError()
-
-        else:
-            return response
+        raise requests.exceptions.HTTPError(
+            f'HTTP code: {response.status_code}, with text: {response.text}'
+        )
 
     def delete_request(
             self, route: str,
@@ -132,7 +128,6 @@ class Orthanc:
                 route,
                 auth=self._credentials,
                 data=data,
-
                 **kwargs
             )
 
@@ -142,10 +137,9 @@ class Orthanc:
         if response.status_code == 200:
             return response.json()
 
-        if response.status_code == 404:
-            raise ElementNotFoundError()
-
-        return response
+        raise requests.exceptions.HTTPError(
+            f'HTTP code: {response.status_code}, with text: {response.text}'
+        )
 
     def put_request(
             self, route: str,
@@ -179,10 +173,9 @@ class Orthanc:
         if response.status_code == 200:
             return response.json()
 
-        if response.status_code == 404:
-            raise ElementNotFoundError()
-
-        return response
+        raise requests.exceptions.HTTPError(
+            f'HTTP code: {response.status_code}, with text: {response.text}'
+        )
 
     def get_attachments(self, resource_type: str, identifier: str, params: Dict = None, **kwargs) -> Any:
         """Get list of files attached to the object identifier
