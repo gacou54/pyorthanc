@@ -14,20 +14,21 @@ class TestOrthancPatient(unittest.TestCase):
     A_PATIENT_NAME = 'MR-R'
     A_PATIENT_SEX = 'M'
     A_PATIENT_STUDIES = ['118bc493-b3b3172a-082119bd-f6802ec3-81695613']
-    A_PATIENT_INFORMATION = {'ID': A_PATIENT_IDENTIFIER,
-                             'IsStable': False,
-                             'LastUpdate': 'THIS_IS_VARIABLE',
-                             'MainDicomTags': {
-                                 'PatientBirthDate': '',
-                                 'PatientID': A_PATIENT_ID,
-                                 'PatientName': A_PATIENT_NAME,
-                                 'PatientSex': A_PATIENT_SEX
-                             },
-                             'Studies': A_PATIENT_STUDIES,
-                             'Type': 'Patient'
-                             }
+    A_PATIENT_INFORMATION = {
+        'ID': A_PATIENT_IDENTIFIER,
+        'IsStable': False,
+        'LastUpdate': 'THIS_IS_VARIABLE',
+        'MainDicomTags': {
+            'PatientBirthDate': '',
+            'PatientID': A_PATIENT_ID,
+            'PatientName': A_PATIENT_NAME,
+            'PatientSex': A_PATIENT_SEX
+        },
+        'Studies': A_PATIENT_STUDIES,
+        'Type': 'Patient'
+    }
 
-    PATIENT_INSTANCE_IDENTIFIERS = [
+    A_LIST_OF_INSTANCE_IDENTIFIERS_OF_A_PATIENT = [
         'da2024f5-606f9e83-41b012bb-9dced1ea-77bcd599',
         '348befe7-5be5ff53-70120381-3baa0cc2-e4e04220',
         '22dcf059-8fd3ade7-efb39ca3-7f46b248-0200abc9'
@@ -107,7 +108,7 @@ class TestOrthancPatient(unittest.TestCase):
         self.assertIsInstance(result, list)
         for instance_information in result:
             self.assertIsInstance(instance_information, dict)
-            self.assertIn(instance_information['ID'], TestOrthancPatient.PATIENT_INSTANCE_IDENTIFIERS)
+            self.assertIn(instance_information['ID'], TestOrthancPatient.A_LIST_OF_INSTANCE_IDENTIFIERS_OF_A_PATIENT)
 
     def test_givenOrthancWithoutData_whenGettingPatientInstances_thenRaiseHTTPError(self):
         self.assertRaises(
@@ -134,10 +135,11 @@ class TestOrthancPatient(unittest.TestCase):
             lambda: self.orthanc.get_patient_instances_tags(TestOrthancPatient.A_PATIENT_IDENTIFIER)
         )
 
-    def test_givenOrthancWithData_whenGettingPatientSimplifiedInstancesTags_thenResultIsPatientSimplifiedInstancesTags(self):
+    def test_givenOrthancWithData_whenGettingPatientSimplifiedInstancesTags_thenResultIsPatientSimplifiedInstancesTags(
+            self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patient_simplified_instances_tags(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_instances_tags_in_simplified_version(TestOrthancPatient.A_PATIENT_IDENTIFIER)
 
         self.assertIsInstance(result, dict)
         for instance_identifier, instance_tags in result.items():
@@ -150,13 +152,15 @@ class TestOrthancPatient(unittest.TestCase):
     def test_givenOrthancWithoutData_whenGettingPatientSimplifiedInstancesTags_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
-            lambda: self.orthanc.get_patient_simplified_instances_tags(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+            lambda: self.orthanc.get_patient_instances_tags_in_simplified_version(
+                TestOrthancPatient.A_PATIENT_IDENTIFIER
+            )
         )
 
     def test_givenOrthancWithData_whenGettingPatientShortInstancesTags_thenResultIsPatientShortInstancesTags(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patient_short_instances_tags(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_instances_tags_in_shorter_version(TestOrthancPatient.A_PATIENT_IDENTIFIER)
 
         self.assertIsInstance(result, dict)
         for instance_identifier, instance_tags in result.items():
@@ -174,5 +178,5 @@ class TestOrthancPatient(unittest.TestCase):
     def test_givenOrthancWithoutData_whenGettingPatientShortInstancesTags_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
-            lambda: self.orthanc.get_patient_short_instances_tags(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+            lambda: self.orthanc.get_patient_instances_tags_in_shorter_version(TestOrthancPatient.A_PATIENT_IDENTIFIER)
         )

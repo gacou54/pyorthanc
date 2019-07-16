@@ -956,8 +956,8 @@ class Orthanc:
 
         Examples
         --------
-        >>> pyorthanc = Orthanc('ORTHANC_URL')
-        >>> dicom_file_bytes = pyorthanc.get_instance_file('an_instance_identifier')
+        >>> orthanc = Orthanc('ORTHANC_URL')
+        >>> dicom_file_bytes = orthanc.get_instance_file('an_instance_identifier')
         >>> with open('your_path', 'wb') as file_handler:
         ...     file_handler.write(dicom_file_bytes)
 
@@ -1203,7 +1203,6 @@ class Orthanc:
         """Get the meta information (header) of the DICOM file
 
         Get the meta information (header) of the DICOM file,
-         "?simplify" argument to simplify output, "?short".
 
         Parameters
         ----------
@@ -1219,6 +1218,58 @@ class Orthanc:
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{instance_identifier}/header',
+            params=params,
+            **kwargs
+        )
+
+    def get_instance_header_in_simplified_version(
+            self, instance_identifier: str,
+            params: Dict = None,
+            **kwargs) -> Any:
+        """Get the meta information (header) of the DICOM file in a simplified version
+
+        Get the meta information (header) of the DICOM file,
+
+        Parameters
+        ----------
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Meta information (header) of the DICOM file in a simplified version.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/instances/{instance_identifier}/header?simplify',
+            params=params,
+            **kwargs
+        )
+
+    def get_instance_header_in_shorter_version(
+            self, instance_identifier: str,
+            params: Dict = None,
+            **kwargs) -> Any:
+        """Get the meta information (header) of the DICOM file in a shorter version
+
+        Get the meta information (header) of the DICOM file,
+
+        Parameters
+        ----------
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Meta information (header) of the DICOM file in a shorter version.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/instances/{instance_identifier}/header?short',
             params=params,
             **kwargs
         )
@@ -1361,8 +1412,6 @@ class Orthanc:
             **kwargs) -> Any:
         """Get instance module
 
-        "?simplify" argument to simplify output, "?short"
-
         Parameters
         ----------
         instance_identifier
@@ -1377,6 +1426,54 @@ class Orthanc:
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{instance_identifier}/module',
+            params=params,
+            **kwargs
+        )
+
+    def get_instance_module_in_simplified_version(
+            self, instance_identifier: str,
+            params: Dict = None,
+            **kwargs) -> Any:
+        """Get instance module in a simplified version
+
+        Parameters
+        ----------
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Instance module in a simplified version.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/instances/{instance_identifier}/module?simplify',
+            params=params,
+            **kwargs
+        )
+
+    def get_instance_module_in_shorter_version(
+            self, instance_identifier: str,
+            params: Dict = None,
+            **kwargs) -> Any:
+        """Get instance module in a shorter verion
+
+        Parameters
+        ----------
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Instance module in a shorter version.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/instances/{instance_identifier}/module?short',
             params=params,
             **kwargs
         )
@@ -1592,8 +1689,6 @@ class Orthanc:
             **kwargs) -> Any:
         """Get instance's tags.
 
-        "?simplify" argument to simplify output (same as "simplified-tags"), "?short"
-
         Parameters
         ----------
         instance_identifier
@@ -1608,6 +1703,54 @@ class Orthanc:
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{instance_identifier}/tags',
+            params=params,
+            **kwargs
+        )
+
+    def get_instance_tags_in_simplified_version(
+            self, instance_identifier: str,
+            params: Dict = None,
+            **kwargs) -> Any:
+        """Get instance's tags in a simplified version.
+
+        Parameters
+        ----------
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Instance's DICOM tags in a simplified version. Should be in the form of a dictionary.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/instances/{instance_identifier}/tags?simplify',
+            params=params,
+            **kwargs
+        )
+
+    def get_instance_tags_in_shorter_version(
+            self, instance_identifier: str,
+            params: Dict = None,
+            **kwargs) -> Any:
+        """Get instance's tags in a shorter version
+
+        Parameters
+        ----------
+        instance_identifier
+            Instance identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Instance's DICOM tags in a shorter version. Should be in the form of a dictionary.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/instances/{instance_identifier}/tags?short',
             params=params,
             **kwargs
         )
@@ -2072,8 +2215,8 @@ class Orthanc:
         """
         return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/instances-tags', )
 
-    def get_patient_simplified_instances_tags(self, patient_identifier: str) -> Dict:
-        """Get simplified tags of all patient's instances
+    def get_patient_instances_tags_in_simplified_version(self, patient_identifier: str) -> Dict:
+        """Get tags of all patient's instances in a simplified version
 
         Simplified instance tags (without hexadecimal tag identifier, readable for humans).
 
@@ -2085,12 +2228,12 @@ class Orthanc:
         Returns
         -------
         Dict
-            Patient simplified instances tags as dictionaries of dictionary.
+            Patient instances tags as dictionaries of dictionary in a simplified version.
         """
         return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/instances-tags?simplify')
 
-    def get_patient_short_instances_tags(self, patient_identifier: str) -> Dict:
-        """Get tags of all patient instances in a shorter format
+    def get_patient_instances_tags_in_shorter_version(self, patient_identifier: str) -> Dict:
+        """Get tags of all patient instances in a shorter version
 
         Short version of the tags (with hexadecimal tag name).
 
@@ -2175,7 +2318,25 @@ class Orthanc:
             **kwargs) -> Any:
         """Get patient module
 
-        "?simplify" argument to simplify output, "?short"
+        Parameters
+        ----------
+        patient_identifier
+            Patient identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Patient module.
+        """
+        return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/module', params=params, **kwargs)
+
+    def get_patient_module_in_simplified_version(
+            self, patient_identifier: str,
+            params: Dict = None,
+            **kwargs) -> Any:
+        """Get patient module in a simplified version
 
         Parameters
         ----------
@@ -2187,8 +2348,37 @@ class Orthanc:
         Returns
         -------
         Any
+            Patient module in a simplified version.
         """
-        return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/module', params=params, **kwargs)
+        return self.get_request(
+            f'{self._orthanc_url}/patients/{patient_identifier}/module?simplify',
+            params=params,
+            **kwargs
+        )
+
+    def get_patient_module_in_shorter_version(
+            self, patient_identifier: str,
+            params: Dict = None,
+            **kwargs) -> Any:
+        """Get patient module in a shorter version
+
+        Parameters
+        ----------
+        patient_identifier
+            Patient identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Patient module in a shorter version.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/patients/{patient_identifier}/module?short',
+            params=params,
+            **kwargs
+        )
 
     def get_if_patient_is_protected(
             self, patient_identifier: str,
@@ -2285,7 +2475,29 @@ class Orthanc:
             **kwargs) -> Any:
         """Get patient shared tags
 
-        "?simplify" argument to simplify output, "?short".
+        Parameters
+        ----------
+        patient_identifier
+            Patient identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Patient shared tags.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/patients/{patient_identifier}/shared-tags',
+            params=params,
+            **kwargs
+        )
+
+    def get_patient_shared_tags_in_simplified_version(
+            self, patient_identifier: str,
+            params: Dict = None,
+            **kwargs) -> Any:
+        """Get patient shared tags in a simplified version
 
         Parameters
         ----------
@@ -2297,9 +2509,34 @@ class Orthanc:
         Returns
         -------
         Any
+            Patient shared tags in a simplified version.
         """
         return self.get_request(
-            f'{self._orthanc_url}/patients/{patient_identifier}/shared-tags',
+            f'{self._orthanc_url}/patients/{patient_identifier}/shared-tags?simplify',
+            params=params,
+            **kwargs
+        )
+
+    def get_patient_shared_tags_in_shorter_version(
+            self, patient_identifier: str,
+            params: Dict = None,
+            **kwargs) -> Any:
+        """Get patient shared tags in a shorter version
+
+        Parameters
+        ----------
+        patient_identifier
+            Patient identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Patient shared tags in a shorter version.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/patients/{patient_identifier}/shared-tags?short',
             params=params,
             **kwargs
         )
@@ -2576,8 +2813,6 @@ class Orthanc:
             **kwargs) -> Any:
         """Get content of specified answer of C-Find
 
-        Access 1 answer of C-Find SCU; "?simplify" argument to simplify output.
-
         Parameters
         ----------
         query_identifier
@@ -2594,6 +2829,33 @@ class Orthanc:
         """
         return self.get_request(
             f'{self._orthanc_url}/queries/{query_identifier}/answers/{index}/content',
+            params=params,
+            **kwargs
+        )
+
+    def get_content_of_specified_query_answer_in_simplified_version(
+            self, query_identifier: str,
+            index: str,
+            params: Dict = None,
+            **kwargs) -> Any:
+        """Get content of specified answer of C-Find in simplified version
+
+        Parameters
+        ----------
+        query_identifier
+            Query identifier.
+        index
+            Index of wanted answer.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Specified answer of C-Find SCU operation in a simplified version.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/queries/{query_identifier}/answers/{index}/content?simplify',
             params=params,
             **kwargs
         )
@@ -2746,9 +3008,7 @@ class Orthanc:
         return self.get_request(f'{self._orthanc_url}/queries/{query_identifier}/modality', params=params, **kwargs)
 
     def get_query_information(self, query_identifier: str, params: Dict = None, **kwargs) -> Any:
-        """Get access query
-
-        Access the C-Find SCU query; "?simplify" argument to simplify output.
+        """Get query main information
 
         Parameters
         ----------
@@ -2763,6 +3023,27 @@ class Orthanc:
             Query information.
         """
         return self.get_request(f'{self._orthanc_url}/queries/{query_identifier}/query', params=params, **kwargs)
+
+    def get_query_information_in_simplified_version(self, query_identifier: str, params: Dict = None, **kwargs) -> Any:
+        """Get query information in a simplified version
+
+        Parameters
+        ----------
+        query_identifier
+            Query identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Query information in a simplified version.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/queries/{query_identifier}/query?simplify',
+            params=params,
+            **kwargs
+        )
 
     def retrieve_query_results_to_given_modality(self, query_identifier: str, data: Dict = None, **kwargs) -> Any:
         """Retrieve (C-Move) query results to another modality
@@ -2922,8 +3203,6 @@ class Orthanc:
     def get_series_instances_tags(self, series_identifier: str, params: Dict = None, **kwargs) -> Any:
         """Get series instances tags
 
-        "?simplify" argument to simplify output, "?short".
-
         Parameters
         ----------
         series_identifier
@@ -2938,6 +3217,54 @@ class Orthanc:
         """
         return self.get_request(
             f'{self._orthanc_url}/series/{series_identifier}/instances-tags',
+            params=params,
+            **kwargs
+        )
+
+    def get_series_instances_tags_in_simplified_version(
+            self, series_identifier: str,
+            params: Dict = None,
+            **kwargs) -> Any:
+        """Get series instances tags in a simplified version
+
+        Parameters
+        ----------
+        series_identifier
+            Series identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            List of series instances tags in a simplified version.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/series/{series_identifier}/instances-tags?simplify',
+            params=params,
+            **kwargs
+        )
+
+    def get_series_instances_tags_in_shorter_version(
+            self, series_identifier: str,
+            params: Dict = None,
+            **kwargs) -> Any:
+        """Get series instances tags in a shorter version
+
+        Parameters
+        ----------
+        series_identifier
+            Series identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            List of series instances tags in a shorter version.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/series/{series_identifier}/instances-tags?short',
             params=params,
             **kwargs
         )
@@ -2999,8 +3326,6 @@ class Orthanc:
     def get_series_module(self, series_identifier: str, params: Dict = None, **kwargs) -> Any:
         """Get series module
 
-        "?simplify" argument to simplify output, "?short".
-
         Parameters
         ----------
         series_identifier
@@ -3014,6 +3339,48 @@ class Orthanc:
             Series module.
         """
         return self.get_request(f'{self._orthanc_url}/series/{series_identifier}/module', params=params, **kwargs)
+
+    def get_series_module_in_simplified_version(self, series_identifier: str, params: Dict = None, **kwargs) -> Any:
+        """Get series module in simplified version
+
+        Parameters
+        ----------
+        series_identifier
+            Series identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Series module in a simplified version.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/series/{series_identifier}/module?simplify',
+            params=params,
+            **kwargs
+        )
+
+    def get_series_module_in_shorter_version(self, series_identifier: str, params: Dict = None, **kwargs) -> Any:
+        """Get series module in a shorter version
+
+        Parameters
+        ----------
+        series_identifier
+            Series identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Series module in a shorter version.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/series/{series_identifier}/module?short',
+            params=params,
+            **kwargs
+        )
 
     def get_series_ordered_slices(self, series_identifier: str, params: Dict = None, **kwargs) -> Any:
         """Get series ordered slices
@@ -3031,8 +3398,11 @@ class Orthanc:
         -------
         Any
         """
-        return self.get_request(f'{self._orthanc_url}/series/{series_identifier}/ordered-slices', params=params,
-                                **kwargs)
+        return self.get_request(
+            f'{self._orthanc_url}/series/{series_identifier}/ordered-slices',
+            params=params,
+            **kwargs
+        )
 
     def get_series_patient_identifier(self, series_identifier: str, params: Dict = None, **kwargs) -> Any:
         """Get series patient identifier
@@ -3075,7 +3445,29 @@ class Orthanc:
     def get_series_shared_tags(self, series_identifier: str, params: Dict = None, **kwargs) -> Any:
         """Get series shared tags
 
-        "?simplify" argument to simplify output, "?short".
+        Parameters
+        ----------
+        series_identifier
+            Series identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Series shared tags.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/series/{series_identifier}/shared-tags',
+            params=params,
+            **kwargs
+        )
+
+    def get_series_shared_tags_in_simplified_version(
+            self, series_identifier: str,
+            params: Dict = None,
+            **kwargs) -> Any:
+        """Get series shared tags in a simplified version
 
         Parameters
         ----------
@@ -3087,8 +3479,34 @@ class Orthanc:
         Returns
         -------
         Any
+            Series shared tags in a simplified version.
         """
-        return self.get_request(f'{self._orthanc_url}/series/{series_identifier}/shared-tags', params=params, **kwargs)
+        return self.get_request(
+            f'{self._orthanc_url}/series/{series_identifier}/shared-tags?simplify',
+            params=params,
+            **kwargs
+        )
+
+    def get_series_shared_tags_in_shorter_version(self, series_identifier: str, params: Dict = None, **kwargs) -> Any:
+        """Get series shared tags in a shorter version
+
+        Parameters
+        ----------
+        series_identifier
+            Series identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Series shared tags in a shorter version.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/series/{series_identifier}/shared-tags?short',
+            params=params,
+            **kwargs
+        )
 
     def get_series_statistics(self, series_identifier: str, params: Dict = None, **kwargs) -> Any:
         """Get series statistics
@@ -3266,7 +3684,29 @@ class Orthanc:
     def get_study_instances_tags(self, study_identifier: str, params: Dict = None, **kwargs) -> Any:
         """Get study instances tags
 
-        "?simplify" argument to simplify output, "?short".
+        Parameters
+        ----------
+        study_identifier
+            studies identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Study instances tags
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/studies/{study_identifier}/instances-tags',
+            params=params,
+            **kwargs
+        )
+
+    def get_study_instances_tags_in_simplified_version(
+            self, study_identifier: str,
+            params: Dict = None,
+            **kwargs) -> Any:
+        """Get study instances tags in a simplified version
 
         Parameters
         ----------
@@ -3278,9 +3718,31 @@ class Orthanc:
         Returns
         -------
         Any
+            Study instances tags in a simplified version.
         """
         return self.get_request(
-            f'{self._orthanc_url}/studies/{study_identifier}/instances-tags',
+            f'{self._orthanc_url}/studies/{study_identifier}/instances-tags?simplify',
+            params=params,
+            **kwargs
+        )
+
+    def get_study_instances_tags_in_shorter_version(self, study_identifier: str, params: Dict = None, **kwargs) -> Any:
+        """Get study instances tags in a shorter version
+
+        Parameters
+        ----------
+        study_identifier
+            studies identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Study instances tags in a shorter version.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/studies/{study_identifier}/instances-tags?short',
             params=params,
             **kwargs
         )
@@ -3358,8 +3820,6 @@ class Orthanc:
     def get_study_module(self, study_identifier: str, params: Dict = None, **kwargs) -> Any:
         """Get study module
 
-        "?simplify" argument to simplify output, "?short".
-
         Parameters
         ----------
         study_identifier
@@ -3374,10 +3834,50 @@ class Orthanc:
         """
         return self.get_request(f'{self._orthanc_url}/studies/{study_identifier}/module', params=params, **kwargs)
 
+    def get_study_module_in_simplified_version(self, study_identifier: str, params: Dict = None, **kwargs) -> Any:
+        """Get study module in a simplified version
+
+        Parameters
+        ----------
+        study_identifier
+            Study identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Study module in a simplified version.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/studies/{study_identifier}/module?simplify',
+            params=params,
+            **kwargs
+        )
+
+    def get_study_module_in_shorter_version(self, study_identifier: str, params: Dict = None, **kwargs) -> Any:
+        """Get study module in a shorter version
+
+        Parameters
+        ----------
+        study_identifier
+            Study identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Study module in a shorter version.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/studies/{study_identifier}/module?short',
+            params=params,
+            **kwargs
+        )
+
     def get_study_module_patient(self, study_identifier: str, params: Dict = None, **kwargs) -> Any:
         """Get study's module_patient
-
-        "?simplify" argument to simplify output, "?short"
 
         Parameters
         ----------
@@ -3393,6 +3893,48 @@ class Orthanc:
         """
         return self.get_request(
             f'{self._orthanc_url}/studies/{study_identifier}/module-patient',
+            params=params,
+            **kwargs
+        )
+
+    def get_study_module_patient_in_simplified_version(self, study_identifier: str, params: Dict = None, **kwargs) -> Any:
+        """Get study's module_patient in a simplified version
+
+        Parameters
+        ----------
+        study_identifier
+            Study identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Study's module_patient in a simplified version.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/studies/{study_identifier}/module-patient?simplify',
+            params=params,
+            **kwargs
+        )
+
+    def get_study_module_patient_in_shorter_version(self, study_identifier: str, params: Dict = None, **kwargs) -> Any:
+        """Get study's module_patient in shorter version
+
+        Parameters
+        ----------
+        study_identifier
+            Study identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Study's module_patient in a shorter version
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/studies/{study_identifier}/module-patient?shorter',
             params=params,
             **kwargs
         )
@@ -3457,8 +3999,6 @@ class Orthanc:
     def get_study_shared_tags(self, study_identifier: str, params: Dict = None, **kwargs) -> Any:
         """Get study's shared tags
 
-        "?simplify" argument to simplify output, "?short"
-
         Parameters
         ----------
         study_identifier
@@ -3472,6 +4012,48 @@ class Orthanc:
             Study's shared tags.
         """
         return self.get_request(f'{self._orthanc_url}/studies/{study_identifier}/shared-tags', params=params, **kwargs)
+
+    def get_study_shared_tags_in_simplified_version(self, study_identifier: str, params: Dict = None, **kwargs) -> Any:
+        """Get study's shared tags in a simplified version
+
+        Parameters
+        ----------
+        study_identifier
+            Study identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Study's shared tags in a simplified version.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/studies/{study_identifier}/shared-tags?simplify',
+            params=params,
+            **kwargs
+        )
+
+    def get_study_shared_tags_in_shorter_version(self, study_identifier: str, params: Dict = None, **kwargs) -> Any:
+        """Get study's shared tags in a shorter version
+
+        Parameters
+        ----------
+        study_identifier
+            Study identifier.
+        params
+            GET HTTP request's params.
+
+        Returns
+        -------
+        Any
+            Study's shared tags in a shorter version.
+        """
+        return self.get_request(
+            f'{self._orthanc_url}/studies/{study_identifier}/shared-tags?short',
+            params=params,
+            **kwargs
+        )
 
     def split_study(self, study_identifier: str, data: Dict = None, **kwargs) -> Any:
         """Split study
