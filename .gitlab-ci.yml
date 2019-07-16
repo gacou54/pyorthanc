@@ -1,9 +1,13 @@
+before_script:
+  - /opt/rh/rh-python36/root/usr/bin/pip3.6 install virtualenv
+  - virtualenv -p /opt/rh/rh-python36/root/usr/bin/python3.6 venv
+  - ./venv/bin/pip3 install requests
+
+
 stages:
   - test
 
 test:
   stage: test
   script:
-    - export PATH="$PATH:/opt/rh/rh-python36/root/usr/bin/"
-    - pip3.6 install requests
-    - python3.6 setup.py test
+    - ./venv/bin/python3 setup.py test
