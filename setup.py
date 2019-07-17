@@ -3,7 +3,7 @@ import subprocess
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
-LINTER_COMMAND = ['pycodestyle', '--ignore=E501', 'pyorthanc', 'tests']
+LINTER_COMMAND = ['./venv/bin/pycodestyle', '--ignore=E501', 'pyorthanc', 'tests']
 UNIT_TESTS_COMMAND = ['./venv/bin/python', '-m', 'unittest', 'discover', '-s', './tests/unit/']
 INTEGRATION_TESTS_COMMAND = ['./venv/bin/python', '-m', 'unittest', 'discover', '-s', './tests/integration']
 
