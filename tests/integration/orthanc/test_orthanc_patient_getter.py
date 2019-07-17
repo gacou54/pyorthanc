@@ -144,7 +144,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
             lambda: self.orthanc.get_patient_instances_tags(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
         )
 
-    def test_givenOrthancWithData_whenGettingPatientSimplifiedInstancesTags_thenResultIsPatientSimplifiedInstancesTags(
+    def test_givenOrthancWithData_whenGettingPatientInstancesTagsInSimplifiedVersion_thenResultIsPatientInstancesTagsInSimplifiedVersion(
             self):
         self.given_patient_in_orthanc_server()
 
@@ -158,7 +158,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
                 self.assertIsInstance(tag, str)
                 self.assertIn(type(tag_content), (dict, list, str, type(None)))
 
-    def test_givenOrthancWithoutData_whenGettingPatientSimplifiedInstancesTags_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutData_whenGettingPatientInstancesTagsInSimplifiedVersion_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_instances_tags_in_simplified_version(
@@ -166,7 +166,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
             )
         )
 
-    def test_givenOrthancWithData_whenGettingPatientShortInstancesTags_thenResultIsPatientShortInstancesTags(self):
+    def test_givenOrthancWithData_whenGettingPatientInstancesTagsInShorterVersion_thenResultIsPatientInstancesTagsInShorterVersion(self):
         self.given_patient_in_orthanc_server()
 
         result = self.orthanc.get_patient_instances_tags_in_shorter_version(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
@@ -184,7 +184,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
 
                 self.assertIn(type(tag_content), (dict, list, str, type(None)))
 
-    def test_givenOrthancWithoutData_whenGettingPatientShortInstancesTags_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutData_whenGettingPatientInstancesTagsInShorterVersion_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_instances_tags_in_shorter_version(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
