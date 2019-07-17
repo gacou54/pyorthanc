@@ -43,7 +43,7 @@ class Orthanc:
     def get_request(
             self, route: str,
             params: Dict = None,
-            **kwargs) -> Union[requests.Response, List, Dict, str]:
+            **kwargs) -> Union[List, Dict, str, bytes]:
         """GET request with specified route
 
         Parameters
@@ -55,7 +55,7 @@ class Orthanc:
 
         Returns
         -------
-        Union[List, Dict, str]
+        Union[List, Dict, str, bytes]
             Response of the HTTP GET request converted to json format.
         """
         if self._credentials_are_set:
@@ -76,7 +76,7 @@ class Orthanc:
             try:
                 return response.json()
             except json.JSONDecodeError:
-                return response.text
+                return response.content
 
         raise requests.exceptions.HTTPError(
             f'HTTP code: {response.status_code}, with text: {response.text}'
@@ -108,7 +108,7 @@ class Orthanc:
     def post_request(
             self, route: str,
             data: Dict = None,
-            **kwargs) -> Union[List, Dict, str]:
+            **kwargs) -> Union[List, Dict, str, bytes]:
         """POST to specified route
 
         Parameters
@@ -120,7 +120,7 @@ class Orthanc:
 
         Returns
         -------
-        Union[List, Dict, str]
+        Union[List, Dict, str, bytes]
             Response of the HTTP POST request converted to json format.
         """
         if data is not None:
@@ -141,7 +141,7 @@ class Orthanc:
             try:
                 return response.json()
             except json.JSONDecodeError:
-                return response.text
+                return response.content
 
         raise requests.exceptions.HTTPError(
             f'HTTP code: {response.status_code}, with text: {response.text}'
@@ -150,7 +150,7 @@ class Orthanc:
     def put_request(
             self, route: str,
             data: Dict = None,
-            **kwargs) -> Union[List, Dict]:
+            **kwargs) -> Union[List, Dict, str, bytes]:
         """PUT to specified route
 
         Parameters
@@ -162,7 +162,7 @@ class Orthanc:
 
         Returns
         -------
-        Union[List, Dict, str]
+        Union[List, Dict, str, bytes]
             Response of the HTTP PUT request converted to json format.
         """
         if self._credentials_are_set:
@@ -180,7 +180,7 @@ class Orthanc:
             try:
                 return response.json()
             except json.JSONDecodeError:
-                return response.text
+                return response.content
 
         raise requests.exceptions.HTTPError(
             f'HTTP code: {response.status_code}, with text: {response.text}'
@@ -2087,7 +2087,7 @@ class Orthanc:
 
     def get_patient_information(
             self, patient_identifier: str) -> Dict:
-        """Get patient mains information
+        """Get patient main information
 
         Parameters
         ----------
@@ -2143,7 +2143,7 @@ class Orthanc:
         )
 
     def get_patient_zip(self, patient_identifier: str) -> Any:
-        """Get the
+        """Get the bytes of the zip file
 
         Get the .zip file.
 
@@ -2156,8 +2156,20 @@ class Orthanc:
         -------
         Any
             Zip file of the patient.
+
+
+        Examples
+        --------
+        >>> from pyorthanc import Orthanc
+        >>> orthanc = Orthanc('http://localhost:8042')
+        >>> a_patient_identifier = orthanc.get_patients()[0]
+        >>> bytes_content = orthanc.get_patient_zip(a_patient_identifier)
+        >>> with open('patient_zip_file_path.zip', 'wb') as file_handler:
+        ...     file_handler.write(bytes_content)
         """
-        return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/archive')
+        return self.get_request(
+            f'{self._orthanc_url}/patients/{patient_identifier}/archive'
+        )
 
     def archive_patient(
             self, patient_identifier: str,

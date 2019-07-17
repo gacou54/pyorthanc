@@ -1,6 +1,8 @@
 # coding: utf-8
 # author: gabriel couture
+import os
 import unittest
+import zipfile
 
 import requests
 
@@ -8,7 +10,7 @@ from pyorthanc import Orthanc
 from tests.integration import setup_server
 
 
-class TestOrthancPatient(unittest.TestCase):
+class TestOrthancPatientGetter(unittest.TestCase):
     A_PATIENT_IDENTIFIER = 'e34c28ce-981b0e5c-2a481559-cf0d5fbe-053335f8'
     A_PATIENT_ID = '03HDQ000'
     A_PATIENT_NAME = 'MR-R'
@@ -63,7 +65,7 @@ class TestOrthancPatient(unittest.TestCase):
         self.assertIsInstance(result, list)
         self.assertNotEqual(len(result), 0)
         for patient_identifier in result:
-            self.assertIn(patient_identifier, [TestOrthancPatient.A_PATIENT_IDENTIFIER])
+            self.assertIn(patient_identifier, [TestOrthancPatientGetter.A_PATIENT_IDENTIFIER])
 
     def test_givenOrthancWithoutData_whenGettingPatients_thenResultIsAnEmptyList(self):
         result = self.orthanc.get_patients()
@@ -74,52 +76,59 @@ class TestOrthancPatient(unittest.TestCase):
     def test_givenOrthancWithData_whenGettingPatientInformation_thenResultIsADictionaryOfPatientInformation(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patient_information(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_information(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
 
         self.assertIsInstance(result, dict)
         # Removing a key that is never the same
         result = {key: value for key, value in result.items() if key != 'LastUpdate'}
-        target = {key: value for key, value in TestOrthancPatient.A_PATIENT_INFORMATION.items() if key != 'LastUpdate'}
+        target = {key: value for key, value in TestOrthancPatientGetter.A_PATIENT_INFORMATION.items() if key != 'LastUpdate'}
         self.assertDictEqual(result, target)
 
     def test_givenOrthancWithoutData_whenGettingPatientInformation_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
-            lambda: self.orthanc.get_patient_information(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+            lambda: self.orthanc.get_patient_information(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
         )
 
-    def test_givenOrthancWithData_whenDeletingPatientData_thenResultIsTrue(self):
+    def test_givenOrthancWithData_whenGettingPatientZip_thenResultIsBytesOfAValidZipFile(self):
+        a_patient_zip_file_path = './tests/integration/data/A_PATIENT_DATA.zip'
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.delete_patient(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_zip(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
 
-        self.assertTrue(result)
+        with open(a_patient_zip_file_path, 'wb') as file_handler:
+            file_handler.write(result)
 
-    def test_givenOrthancWithoutData_whenDeletingPatientData_thenResultIsFalse(self):
-        result = self.orthanc.delete_patient(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+        a_zip_file = zipfile.ZipFile(a_patient_zip_file_path)
+        self.assertIsNone(a_zip_file.testzip())
+        os.remove(a_patient_zip_file_path)
 
-        self.assertFalse(result)
+    def test_givenOrthancWithData_whenGettingPatientZip_thenRaiseHTTPError(self):
+        self.assertRaises(
+            requests.exceptions.HTTPError,
+            lambda: self.orthanc.get_patient_zip(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
+        )
 
     def test_givenOrthancWithData_whenGettingPatientInstances_thenResultIsAListOfPatientInstanceInformation(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patient_instances(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_instances(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
 
         self.assertIsInstance(result, list)
         for instance_information in result:
             self.assertIsInstance(instance_information, dict)
-            self.assertIn(instance_information['ID'], TestOrthancPatient.A_LIST_OF_INSTANCE_IDENTIFIERS_OF_A_PATIENT)
+            self.assertIn(instance_information['ID'], TestOrthancPatientGetter.A_LIST_OF_INSTANCE_IDENTIFIERS_OF_A_PATIENT)
 
     def test_givenOrthancWithoutData_whenGettingPatientInstances_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
-            lambda: self.orthanc.get_patient_instances(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+            lambda: self.orthanc.get_patient_instances(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
         )
 
     def test_givenOrthancWithData_whenGettingPatientInstancesTags_thenResultIsPatientInstancesTags(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patient_instances_tags(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_instances_tags(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
 
         self.assertIsInstance(result, dict)
         for instance_identifier, instance_tags in result.items():
@@ -132,14 +141,14 @@ class TestOrthancPatient(unittest.TestCase):
     def test_givenOrthancWithoutData_whenGettingPatientInstancesTags_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
-            lambda: self.orthanc.get_patient_instances_tags(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+            lambda: self.orthanc.get_patient_instances_tags(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
         )
 
     def test_givenOrthancWithData_whenGettingPatientSimplifiedInstancesTags_thenResultIsPatientSimplifiedInstancesTags(
             self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patient_instances_tags_in_simplified_version(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_instances_tags_in_simplified_version(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
 
         self.assertIsInstance(result, dict)
         for instance_identifier, instance_tags in result.items():
@@ -153,14 +162,14 @@ class TestOrthancPatient(unittest.TestCase):
         self.assertRaises(
             requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_instances_tags_in_simplified_version(
-                TestOrthancPatient.A_PATIENT_IDENTIFIER
+                TestOrthancPatientGetter.A_PATIENT_IDENTIFIER
             )
         )
 
     def test_givenOrthancWithData_whenGettingPatientShortInstancesTags_thenResultIsPatientShortInstancesTags(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patient_instances_tags_in_shorter_version(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_instances_tags_in_shorter_version(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
 
         self.assertIsInstance(result, dict)
         for instance_identifier, instance_tags in result.items():
@@ -178,5 +187,5 @@ class TestOrthancPatient(unittest.TestCase):
     def test_givenOrthancWithoutData_whenGettingPatientShortInstancesTags_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
-            lambda: self.orthanc.get_patient_instances_tags_in_shorter_version(TestOrthancPatient.A_PATIENT_IDENTIFIER)
+            lambda: self.orthanc.get_patient_instances_tags_in_shorter_version(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
         )
