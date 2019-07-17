@@ -203,9 +203,8 @@ class TestOrthancPatientGetter(unittest.TestCase):
         self.assertIsNone(a_zip_file.testzip())
         os.remove(TestOrthancPatientGetter.A_PATIENT_ZIP_FILE_PATH)
 
-    def test_givenOrthancWithData_whenGettingPatientArchive_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutData_whenGettingPatientArchive_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_archive(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
         )
-

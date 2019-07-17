@@ -2279,6 +2279,16 @@ class Orthanc:
         -------
         bytes
             Bytes of archive zip file
+
+        Examples
+        --------
+        >>> from pyorthanc import Orthanc
+        >>> orthanc = Orthanc('http://localhost:8042')
+        >>> a_patient_identifier = orthanc.get_patients()[0]
+        >>> bytes_content = orthanc.get_patient_archive(a_patient_identifier)
+        >>> with open('patient_archive_zip_file_path.zip', 'wb') as file_handler:
+        ...     file_handler.write(bytes_content)
+
         """
         return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/media', params=params, **kwargs)
 
