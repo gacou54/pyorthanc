@@ -1,8 +1,22 @@
-.idea/
+*
+
+!.gitignore
+!setup.py
+!requirements.txt
+!gitlab-ci.yml
+
+!README.md
+
+!pyorthanc/
+!pyorthanc/**
+
+!tests/
+!tests/**
+
+!docs/
+!docs/**
+docs/build/
+
 *.pyc
 __pycache__/
-docs/build/*
 
-generation/
-playground.py
-pyorthanc.egg*
