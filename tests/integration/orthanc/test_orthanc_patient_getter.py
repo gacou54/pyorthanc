@@ -126,7 +126,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
             lambda: self.orthanc.get_patient_instances(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
         )
 
-    def test_givenOrthancWithData_whenGettingPatientInstancesTags_thenResultIsPatientInstancesTags(self):
+    def test_givenOrthancWithData_whenGettingPatientInstancesTags_thenResultIsADictOfPatientInstancesTags(self):
         self.given_patient_in_orthanc_server()
 
         result = self.orthanc.get_patient_instances_tags(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
@@ -145,7 +145,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
             lambda: self.orthanc.get_patient_instances_tags(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
         )
 
-    def test_givenOrthancWithData_whenGettingPatientInstancesTagsInSimplifiedVersion_thenResultIsPatientInstancesTagsInSimplifiedVersion(
+    def test_givenOrthancWithData_whenGettingPatientInstancesTagsInSimplifiedVersion_thenResultIsADictOfPatientInstancesTagsInSimplifiedVersion(
             self):
         self.given_patient_in_orthanc_server()
 
@@ -167,7 +167,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
             )
         )
 
-    def test_givenOrthancWithData_whenGettingPatientInstancesTagsInShorterVersion_thenResultIsPatientInstancesTagsInShorterVersion(self):
+    def test_givenOrthancWithData_whenGettingPatientInstancesTagsInShorterVersion_thenResultIsADictOfPatientInstancesTagsInShorterVersion(self):
         self.given_patient_in_orthanc_server()
 
         result = self.orthanc.get_patient_instances_tags_in_shorter_version(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
@@ -207,4 +207,55 @@ class TestOrthancPatientGetter(unittest.TestCase):
         self.assertRaises(
             requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_archive(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
+        )
+
+    def test_givenOrthancWithData_whenGettingPatientModule_thenResultIsADictOfDICOMPatientModuleTags(self):
+        self.given_patient_in_orthanc_server()
+
+        result = self.orthanc.get_patient_module(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
+
+        self.assertIsInstance(result, dict)
+        for dicom_tag, tag in result.items():
+            self.assertIn('0010,', dicom_tag)
+            self.assertIsInstance(tag, dict)
+
+            for key in tag.keys():
+                self.assertIn(key, ('Name', 'Type', 'Value'))
+
+    def test_givenOrthancWithoutData_whenGettingPatientModule_thenRaiseHTTPError(self):
+        self.assertRaises(
+            requests.HTTPError,
+            self.orthanc.get_patient_module(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
+        )
+
+    def test_givenOrthancWithData_whenGettingPatientModuleInSimplifiedVersion_thenResultIsADictOfDICOMPatientModuleTagsInSimplifiedVersion(self):
+        self.given_patient_in_orthanc_server()
+
+        result = self.orthanc.get_patient_module_in_simplified_version(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
+
+        self.assertIsInstance(result, dict)
+        for dicom_simplified_tag, tag in result.items():
+            self.assertIn('Patient', dicom_simplified_tag)
+            self.assertIsInstance(tag, str)
+
+    def test_givenOrthancWithoutData_whenGettingPatientModuleInSimplifiedVersion_thenRaiseHTTPError(self):
+        self.assertRaises(
+            requests.HTTPError,
+            self.orthanc.get_patient_module_in_simplified_version(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
+        )
+
+    def test_givenOrthancWithData_whenGettingPatientModuleInShorterVersion_thenResultIsADictOfDICOMPatientModuleTagsInShorterVersion(self):
+        self.given_patient_in_orthanc_server()
+
+        result = self.orthanc.get_patient_module_in_shorter_version(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
+
+        self.assertIsInstance(result, dict)
+        for dicom_tag, tag in result.items():
+            self.assertIn('0010,', dicom_tag)
+            self.assertIsInstance(tag, str)
+
+    def test_givenOrthancWithoutData_whenGettingPatientModuleInShorterVersion_thenRaiseHTTPError(self):
+        self.assertRaises(
+            requests.HTTPError,
+            self.orthanc.get_patient_module_in_shorter_version(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
         )

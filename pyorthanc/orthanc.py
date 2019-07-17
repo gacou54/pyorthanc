@@ -2260,10 +2260,7 @@ class Orthanc:
         """
         return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/instances-tags?short')
 
-    def get_patient_archive(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_patient_archive(self, patient_identifier: str) -> Any:
         """Get patient zip archive for media storage with DICOMDIR
 
         Create a ZIP archive for media storage with DICOMDIR.
@@ -2272,8 +2269,6 @@ class Orthanc:
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
@@ -2290,7 +2285,9 @@ class Orthanc:
         ...     file_handler.write(bytes_content)
 
         """
-        return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/media', params=params, **kwargs)
+        return self.get_request(
+            f'{self._orthanc_url}/patients/{patient_identifier}/media',
+        )
 
     def create_patient_archive_for_media_storage(
             self, patient_identifier: str,
@@ -2334,72 +2331,61 @@ class Orthanc:
         """
         return self.post_request(f'{self._orthanc_url}/patients/{patient_identifier}/modify', data=data, **kwargs)
 
-    def get_patient_module(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_patient_module(self, patient_identifier: str) -> Dict:
         """Get patient module
 
+        The method returns the DICOM patient module (PatientName, PatientID, PatientBirthDate, ...)
+
         Parameters
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
-            Patient module.
+        Dict
+            DICOM Patient module.
         """
-        return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/module', params=params, **kwargs)
+        return self.get_request(
+            f'{self._orthanc_url}/patients/{patient_identifier}/module'
+        )
 
-    def get_patient_module_in_simplified_version(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_patient_module_in_simplified_version(self, patient_identifier: str) -> Dict:
         """Get patient module in a simplified version
 
+        The method returns the DICOM patient module (PatientName, PatientID, PatientBirthDate, ...)
+
         Parameters
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        Dict
             Patient module in a simplified version.
         """
         return self.get_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/module?simplify',
-            params=params,
-            **kwargs
         )
 
-    def get_patient_module_in_shorter_version(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_patient_module_in_shorter_version(self, patient_identifier: str) -> Dict:
         """Get patient module in a shorter version
+
+        The method returns the DICOM patient module (PatientName, PatientID, PatientBirthDate, ...)
 
         Parameters
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        Dict
             Patient module in a shorter version.
         """
         return self.get_request(
-            f'{self._orthanc_url}/patients/{patient_identifier}/module?short',
-            params=params,
-            **kwargs
+            f'{self._orthanc_url}/patients/{patient_identifier}/module?short'
         )
 
     def get_if_patient_is_protected(
