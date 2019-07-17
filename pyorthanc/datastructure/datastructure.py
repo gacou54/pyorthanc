@@ -173,7 +173,7 @@ def retrieve_and_write_patients_forest_to_given_path(
             study_path = os.path.join(patient_path, 'anonymized-study' if study.get_id() == '' else study.get_id())
 
             if study_path in used_study_paths:
-                study_path += str(j+1)
+                study_path += str(j + 1)
             used_study_paths.append(study_path)
 
             os.makedirs(study_path, exist_ok=True)
