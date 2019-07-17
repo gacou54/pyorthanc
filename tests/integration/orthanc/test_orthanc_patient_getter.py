@@ -36,6 +36,8 @@ class TestOrthancPatientGetter(unittest.TestCase):
         '22dcf059-8fd3ade7-efb39ca3-7f46b248-0200abc9'
     ]
 
+    A_PATIENT_ZIP_FILE_PATH = './tests/integration/data/A_PATIENT_DATA.zip'
+
     @classmethod
     def setUpClass(cls) -> None:
         global orthanc_subprocess
@@ -91,17 +93,16 @@ class TestOrthancPatientGetter(unittest.TestCase):
         )
 
     def test_givenOrthancWithData_whenGettingPatientZip_thenResultIsBytesOfAValidZipFile(self):
-        a_patient_zip_file_path = './tests/integration/data/A_PATIENT_DATA.zip'
         self.given_patient_in_orthanc_server()
 
         result = self.orthanc.get_patient_zip(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
 
-        with open(a_patient_zip_file_path, 'wb') as file_handler:
+        with open(TestOrthancPatientGetter.A_PATIENT_ZIP_FILE_PATH, 'wb') as file_handler:
             file_handler.write(result)
 
-        a_zip_file = zipfile.ZipFile(a_patient_zip_file_path)
+        a_zip_file = zipfile.ZipFile(TestOrthancPatientGetter.A_PATIENT_ZIP_FILE_PATH)
         self.assertIsNone(a_zip_file.testzip())
-        os.remove(a_patient_zip_file_path)
+        os.remove(TestOrthancPatientGetter.A_PATIENT_ZIP_FILE_PATH)
 
     def test_givenOrthancWithData_whenGettingPatientZip_thenRaiseHTTPError(self):
         self.assertRaises(
@@ -189,3 +190,22 @@ class TestOrthancPatientGetter(unittest.TestCase):
             requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_instances_tags_in_shorter_version(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
         )
+
+    def test_givenOrthancWithData_whenGettingPatientArchive_thenResultIsBytesOfAValidZipFileOfPatientArchive(self):
+        self.given_patient_in_orthanc_server()
+
+        result = self.orthanc.get_patient_archive(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
+
+        with open(TestOrthancPatientGetter.A_PATIENT_ZIP_FILE_PATH, 'wb') as file_handler:
+            file_handler.write(result)
+
+        a_zip_file = zipfile.ZipFile(TestOrthancPatientGetter.A_PATIENT_ZIP_FILE_PATH)
+        self.assertIsNone(a_zip_file.testzip())
+        os.remove(TestOrthancPatientGetter.A_PATIENT_ZIP_FILE_PATH)
+
+    def test_givenOrthancWithData_whenGettingPatientArchive_thenRaiseHTTPError(self):
+        self.assertRaises(
+            requests.exceptions.HTTPError,
+            lambda: self.orthanc.get_patient_archive(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
+        )
+

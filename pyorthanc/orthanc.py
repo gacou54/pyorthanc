@@ -2154,9 +2154,8 @@ class Orthanc:
 
         Returns
         -------
-        Any
-            Zip file of the patient.
-
+        bytes
+            Bytes of Zip file of the patient.
 
         Examples
         --------
@@ -2278,7 +2277,8 @@ class Orthanc:
 
         Returns
         -------
-        Any
+        bytes
+            Bytes of archive zip file
         """
         return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/media', params=params, **kwargs)
 
