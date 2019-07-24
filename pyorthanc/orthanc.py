@@ -1,6 +1,6 @@
 # coding: utf-8
 import json
-from typing import List, Dict, Union, Any
+from typing import List, Dict, Union, Any, Optional
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -25,7 +25,7 @@ class Orthanc:
         self._orthanc_url: str = orthanc_url
 
         self._credentials_are_set: bool = False
-        self._credentials: HTTPBasicAuth = None
+        self._credentials: Optional[HTTPBasicAuth] = None
 
     def setup_credentials(self, username: str, password: str) -> None:
         """Set credentials needed for HTTP requests
@@ -40,10 +40,7 @@ class Orthanc:
         self._credentials = HTTPBasicAuth(username, password)
         self._credentials_are_set = True
 
-    def get_request(
-            self, route: str,
-            params: Dict = None,
-            **kwargs) -> Union[List, Dict, str, bytes]:
+    def get_request(self, route: str, params: Optional[Dict] = None, **kwargs):
         """GET request with specified route
 
         Parameters
@@ -55,7 +52,7 @@ class Orthanc:
 
         Returns
         -------
-        Union[List, Dict, str, bytes]
+        Union[List, Dict, str, bytes, int]
             Response of the HTTP GET request converted to json format.
         """
         if self._credentials_are_set:
@@ -107,7 +104,7 @@ class Orthanc:
 
     def post_request(
             self, route: str,
-            data: Dict = None,
+            data: Optional[Dict] = None,
             **kwargs) -> Union[List, Dict, str, bytes]:
         """POST to specified route
 
@@ -123,19 +120,18 @@ class Orthanc:
         Union[List, Dict, str, bytes]
             Response of the HTTP POST request converted to json format.
         """
-        if data is not None:
-            data = json.dumps(data)
+        json_data = None if data is None else json.dumps(data)
 
         if self._credentials_are_set:
             response = requests.post(
                 route,
                 auth=self._credentials,
-                data=data,
+                data=json_data,
                 **kwargs
             )
 
         else:
-            response = requests.post(route, data=data, **kwargs)
+            response = requests.post(route, data=json_data, **kwargs)
 
         if response.status_code == 200:
             try:
@@ -149,7 +145,7 @@ class Orthanc:
 
     def put_request(
             self, route: str,
-            data: Dict = None,
+            data: Optional[Union[Dict, str]] = None,
             **kwargs) -> Union[List, Dict, str, bytes]:
         """PUT to specified route
 
@@ -2015,7 +2011,9 @@ class Orthanc:
         bool
             True if C-Move succeeded.
         """
-        return self.post_request(f'{self._orthanc_url}/modalities/{modality}/move', data=data, **kwargs)
+        json_response = self.post_request(f'{self._orthanc_url}/modalities/{modality}/move', data=data, **kwargs)
+
+        return True if json_response == {} else False
 
     def query_on_modality(
             self, modality: str,
@@ -2047,7 +2045,7 @@ class Orthanc:
         ...                                     'QueryRetrieveLevel': 'Study',
         ...                                     'Modality': 'SR'}})
 
-        >>> orthanc.retrieve_query_results_to_given_modality('modality')
+        >>> orthanc.move_query_results_to_given_modality('modality')
         """
         return self.post_request(f'{self._orthanc_url}/modalities/{modality}/query', data=data, **kwargs)
 
@@ -2403,31 +2401,49 @@ class Orthanc:
         bool
             False means unprotected, True means protected.
         """
-        return self.get_request(
+        request_result = self.get_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/protected'
         )
 
-    def set_patient_protected_or_not(
-            self, patient_identifier: str,
-            data: Dict = None,
-            **kwargs) -> Any:
-        """Set patient as protected or not
+        return False if request_result == 0 else True
 
-        Protection against recycling: "0" means unprotected, "1" protected
+    def set_patient_to_protected(self, patient_identifier: str, **kwargs) -> Any:
+        """Set patient to protected state
 
         Parameters
         ----------
         patient_identifier
             Patient identifier.
-        data
-            Dictionary to send in the body of request.
 
         Returns
         -------
         Any
-            HTTP status == 200 if no error.
+            Nothing
         """
-        return self.put_request(f'{self._orthanc_url}/patients/{patient_identifier}/protected', data=data, **kwargs)
+        return self.put_request(
+            f'{self._orthanc_url}/patients/{patient_identifier}/protected',
+            data='1',
+            **kwargs
+        )
+
+    def set_patient_to_not_protected(self, patient_identifier: str, **kwargs) -> Any:
+        """Set patient to not protected state
+
+        Parameters
+        ----------
+        patient_identifier
+            Patient identifier.
+
+        Returns
+        -------
+        Any
+            Nothing
+        """
+        return self.put_request(
+            f'{self._orthanc_url}/patients/{patient_identifier}/protected',
+            data='0',
+            **kwargs
+        )
 
     def reconstruct_main_dicom_tags_of_patient(
             self, patient_identifier: str,
@@ -3050,10 +3066,10 @@ class Orthanc:
             **kwargs
         )
 
-    def retrieve_query_results_to_given_modality(self, query_identifier: str, data: Dict = None, **kwargs) -> Any:
-        """Retrieve (C-Move) query results to another modality
+    def move_query_results_to_given_modality(self, query_identifier: str, data: Dict = None, **kwargs) -> bool:
+        """Move (C-Move) what is in the given query results to another modality
 
-        C-Move SCU: Send all the results to another modality whose AET is in the body
+        C-Move SCU: Send all the results to another modality whose AET is in the body.
 
         Parameters
         ----------
@@ -3064,7 +3080,8 @@ class Orthanc:
 
         Returns
         -------
-        Any
+        bool
+            True if the C-Move operation was sent without problem.
 
         Examples
         --------
@@ -3075,12 +3092,14 @@ class Orthanc:
         ...           'Query': {'QueryRetrieveLevel': 'Study',
         ...                     'Modality':'SR'}})
 
-        >>> orthanc.retrieve_query_results_to_given_modality(
+        >>> orthanc.move_query_results_to_given_modality(
         ...         query_identifier=query_id['ID'],
         ...         json='modality')
 
         """
-        return self.post_request(f'{self._orthanc_url}/queries/{query_identifier}/retrieve', data=data, **kwargs)
+        json_response = self.post_request(f'{self._orthanc_url}/queries/{query_identifier}/retrieve', data=data, **kwargs)
+
+        return True if json_response == {} else False
 
     def get_series(self, params: Dict = None, **kwargs) -> Any:
         """Get series identifiers

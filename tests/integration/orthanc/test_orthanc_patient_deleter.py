@@ -2,8 +2,6 @@
 # author: gabriel couture
 import unittest
 
-import requests
-
 from pyorthanc import Orthanc
 from tests.integration import setup_server
 

@@ -1,6 +1,14 @@
 certifi==2019.6.16
 chardet==3.0.4
+entrypoints==0.3
+flake8==3.7.8
 idna==2.8
+mccabe==0.6.1
+mypy==0.720
+mypy-extensions==0.4.1
 pycodestyle==2.5.0
+pyflakes==2.1.1
 requests==2.22.0
+typed-ast==1.4.0
+typing-extensions==3.7.4
 urllib3==1.25.3

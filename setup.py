@@ -3,7 +3,8 @@ import subprocess
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
-LINTER_COMMAND = ['./venv/bin/pycodestyle', '--ignore=E501', 'pyorthanc', 'tests']
+FLAKE8_COMMAND = ['./venv/bin/flake8', '--ignore=E501', 'pyorthanc', 'tests']
+MYPY_COMMAND = ['./venv/bin/mypy', 'pyorthanc']
 UNIT_TESTS_COMMAND = ['./venv/bin/python', '-m', 'unittest', 'discover', '-s', './tests/unit/']
 INTEGRATION_TESTS_COMMAND = ['./venv/bin/python', '-m', 'unittest', 'discover', '-s', './tests/integration']
 
@@ -38,7 +39,8 @@ class LintTests(TestCommand):
     user_options = []
 
     def run_tests(self):
-        _run_command(LINTER_COMMAND)
+        _run_command(FLAKE8_COMMAND)
+        _run_command(MYPY_COMMAND)
 
 
 class AllTests(TestCommand):
@@ -46,9 +48,10 @@ class AllTests(TestCommand):
     user_options = []
 
     def run_tests(self):
+        _run_command(FLAKE8_COMMAND)
+        _run_command(MYPY_COMMAND)
         _run_command(UNIT_TESTS_COMMAND)
         _run_command(INTEGRATION_TESTS_COMMAND)
-        _run_command(LINTER_COMMAND)
 
 
 setup(
@@ -63,8 +66,8 @@ setup(
     install_requires=['requests'],
     cmdclass={
         'lint': LintTests,
-        'test': UnitTests,
+        'unit': UnitTests,
         'integration': IntegrationTests,
-        'alltests': AllTests
+        'test': AllTests
     },
 )
