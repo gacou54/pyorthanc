@@ -2388,27 +2388,24 @@ class Orthanc:
             f'{self._orthanc_url}/patients/{patient_identifier}/module?short'
         )
 
-    def get_if_patient_is_protected(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_if_patient_is_protected(self, patient_identifier: str) -> bool:
         """Get if patient is protected against recycling
 
-        Protection against recycling: "0" means unprotected, "1" protected.
+        Protection against recycling: False means unprotected, True protected.
 
         Parameters
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
-            Protection against recycling: "0" means unprotected, "1" protected.
+        bool
+            False means unprotected, True means protected.
         """
-        return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/protected', params=params, **kwargs)
+        return self.get_request(
+            f'{self._orthanc_url}/patients/{patient_identifier}/protected'
+        )
 
     def set_patient_protected_or_not(
             self, patient_identifier: str,

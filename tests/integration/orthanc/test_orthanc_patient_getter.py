@@ -259,3 +259,12 @@ class TestOrthancPatientGetter(unittest.TestCase):
             requests.HTTPError,
             self.orthanc.get_patient_module_in_shorter_version(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
         )
+
+    def test_givenOrthancWithData_whenGettingIsPatientIsProtected_thenResultIsABooleanOnIfPatientIsProtected(self):
+        self.given_patient_in_orthanc_server()
+
+        result = self.orthanc.get_if_patient_is_protected(TestOrthancPatientGetter.A_PATIENT_IDENTIFIER)
+
+        print(result)
+
+        raise NotImplementedError
