@@ -2485,33 +2485,26 @@ class Orthanc:
         """
         return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/series', **kwargs)
 
-    def get_patient_shared_tags(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_patient_shared_tags(self, patient_identifier: str, **kwargs) -> Dict[str, Dict]:
         """Get patient shared tags
 
         Parameters
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        Dict[str, Dict]
             Patient shared tags.
         """
         return self.get_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/shared-tags',
-            params=params,
             **kwargs
         )
 
     def get_patient_shared_tags_in_simplified_version(
             self, patient_identifier: str,
-            params: Dict = None,
             **kwargs) -> Any:
         """Get patient shared tags in a simplified version
 
@@ -2519,8 +2512,6 @@ class Orthanc:
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
@@ -2529,7 +2520,6 @@ class Orthanc:
         """
         return self.get_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/shared-tags?simplify',
-            params=params,
             **kwargs
         )
 

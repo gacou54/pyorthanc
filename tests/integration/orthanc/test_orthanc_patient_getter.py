@@ -252,6 +252,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
 
         self.assertIsInstance(result, dict)
         for dicom_tag, tag in result.items():
+            self.assertTrue(self.is_tag_has_correct_format(dicom_tag))
             self.assertIn('0010,', dicom_tag)
             self.assertIsInstance(tag, str)
 
@@ -293,3 +294,32 @@ class TestOrthancPatientGetter(unittest.TestCase):
             requests.HTTPError,
             lambda: self.orthanc.get_patient_series(A_PATIENT_IDENTIFIER)
         )
+
+    def test_givenOrthancWithAPatient_whenGettingPatientSharedTags_thenResultIsPatientSharedTags(self):
+        self.given_patient_in_orthanc_server()
+
+        result = self.orthanc.get_patient_shared_tags(A_PATIENT_IDENTIFIER)
+
+        self.assertIsInstance(result, dict)
+        for dicom_tag, tag_information in result.items():
+            self.assertTrue(self.is_tag_has_correct_format(dicom_tag))
+
+            self.assertIsInstance(tag_information, dict)
+            for key in tag_information.keys():
+                self.assertIn(key, ('Name', 'Value', 'Type'))
+
+    def test_givenOrthancWithoutData_whenGettingSharedTags_thenRaiseHTTPError(self):
+        self.assertRaises(
+            requests.HTTPError,
+            lambda: self.orthanc.get_patient_shared_tags(A_PATIENT_IDENTIFIER)
+        )
+
+    def is_tag_has_correct_format(self, dicom_tag: str) -> bool:
+        self.assertIsInstance(dicom_tag, str)
+
+        for tag_segment in dicom_tag.split(','):
+            if len(tag_segment) != 4:
+
+                return False
+
+        return True
