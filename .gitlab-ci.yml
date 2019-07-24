@@ -11,5 +11,4 @@ test:
   stage: test
   script:
     - ./venv/bin/python3 setup.py test
-    - ./venv/bin/python3 setup.py integration
-    - ./venv/bin/python3 setup.py lint
+

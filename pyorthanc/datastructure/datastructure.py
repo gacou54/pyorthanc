@@ -2,7 +2,7 @@
 # author: gabriel couture
 import os
 from concurrent.futures import ThreadPoolExecutor
-from typing import List, Dict, Callable
+from typing import List, Dict, Callable, Optional
 
 from pyorthanc.datastructure.tree import Study, Series, Instance
 from pyorthanc.datastructure.tree.patient import Patient
@@ -12,16 +12,16 @@ from pyorthanc.orthanc import Orthanc
 def build_patient_forest(
         orthanc: Orthanc,
         max_nbr_workers: int = 100,
-        patient_filter: Callable = None,
-        study_filter: Callable = None,
-        series_filter: Callable = None,
+        patient_filter: Optional[Callable] = None,
+        study_filter: Optional[Callable] = None,
+        series_filter: Optional[Callable] = None,
         do_trim_forest_after_construction: bool = True) -> List[Patient]:
     """Build a patient forest
 
     Each tree in the forest correspond to a patient. The layers in the
     tree correspond to:
 
-    ```Patient -> Studies -> Series -> Instances```
+    `Patient -> Studies -> Series -> Instances`
 
     Note that trees are build concurrently. You may want to change the
     default values. Increase this number could improve performance,
@@ -72,9 +72,9 @@ def build_patient_forest(
 def _build_patient(
         patient_identifier: str,
         orthanc: Orthanc,
-        patient_filter: Callable,
-        study_filter: Callable,
-        series_filter: Callable) -> Patient:
+        patient_filter: Optional[Callable],
+        study_filter: Optional[Callable],
+        series_filter: Optional[Callable]) -> Patient:
     study_information = orthanc.get_patient_study_information(patient_identifier)
 
     patient = Patient(patient_identifier, orthanc)
@@ -91,8 +91,8 @@ def _build_patient(
 def _build_study(
         study_information: Dict,
         orthanc: Orthanc,
-        study_filter: Callable,
-        series_filter: Callable) -> Study:
+        study_filter: Optional[Callable],
+        series_filter: Optional[Callable]) -> Study:
     series_information = orthanc.get_study_series_information(study_information['ID'])
 
     study = Study(study_information['ID'], orthanc, study_information)
@@ -109,7 +109,7 @@ def _build_study(
 def _build_series(
         series_information: Dict,
         orthanc: Orthanc,
-        series_filter: Callable) -> Series:
+        series_filter: Optional[Callable]) -> Series:
     instance_information = orthanc.get_series_instance_information(series_information['ID'])
 
     series = Series(series_information['ID'], orthanc, series_information)
@@ -124,7 +124,7 @@ def _build_series(
 
 
 def trim_patient_forest(patient_forest: List[Patient]) -> List[Patient]:
-    """
+    """Trim Patient forest (list of patients)
 
     Parameters
     ----------
@@ -167,7 +167,7 @@ def retrieve_and_write_patients_forest_to_given_path(
         else:
             patient_path = os.path.join(path, patient.get_id())
 
-        used_study_paths = []  # Sometime there are many studies with the same "ID" name.
+        used_study_paths: List[str] = []  # Sometime there are many studies with the same "ID" name.
 
         for j, study in enumerate(patient.get_studies()):
             study_path = os.path.join(patient_path, 'anonymized-study' if study.get_id() == '' else study.get_id())
