@@ -263,6 +263,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
 
     def test_givenOrthancWithUnprotectedPatient_whenGettingIfPatientIsProtected_thenResultIsFalse(self):
         self.given_patient_in_orthanc_server()
+        self.orthanc.set_patient_to_not_protected(A_PATIENT_IDENTIFIER)
 
         result = self.orthanc.get_if_patient_is_protected(A_PATIENT_IDENTIFIER)
 
@@ -275,3 +276,20 @@ class TestOrthancPatientGetter(unittest.TestCase):
         result = self.orthanc.get_if_patient_is_protected(A_PATIENT_IDENTIFIER)
 
         self.assertTrue(result)
+
+    def test_givenOrthancWithAPatient_whenGettingPatientSeries_thenResultIsAListOfPatientSeriesMainInformation(self):
+        self.given_patient_in_orthanc_server()
+
+        result = self.orthanc.get_patient_series(A_PATIENT_IDENTIFIER)
+
+        self.assertIsInstance(result, list)
+        for series in result:
+            self.assertIsInstance(series, dict)
+            self.assertEqual(series['Type'], 'Series')
+            self.assertIn(series['ParentStudy'], A_PATIENT_STUDIES)
+
+    def test_givenOrthancWithoutData_whenGettingPatientSeries_thenRaiseHTTPError(self):
+        self.assertRaises(
+            requests.HTTPError,
+            lambda: self.orthanc.get_patient_series(A_PATIENT_IDENTIFIER)
+        )

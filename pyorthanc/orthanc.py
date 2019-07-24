@@ -2468,10 +2468,7 @@ class Orthanc:
         """
         return self.post_request(f'{self._orthanc_url}/patients/{patient_identifier}/reconstruct', data=data, **kwargs)
 
-    def get_patient_series(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_patient_series(self, patient_identifier: str, **kwargs) -> List[Dict]:
         """Get patient series
 
         Retrieve all the series of this patient in a single REST call.
@@ -2480,15 +2477,13 @@ class Orthanc:
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        List[Dict]
             List of series main information.
         """
-        return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/series', params=params, **kwargs)
+        return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/series', **kwargs)
 
     def get_patient_shared_tags(
             self, patient_identifier: str,
