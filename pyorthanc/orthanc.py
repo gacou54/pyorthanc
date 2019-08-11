@@ -2503,9 +2503,7 @@ class Orthanc:
             **kwargs
         )
 
-    def get_patient_shared_tags_in_simplified_version(
-            self, patient_identifier: str,
-            **kwargs) -> Any:
+    def get_patient_shared_tags_in_simplified_version(self, patient_identifier: str, **kwargs) -> Dict[str, str]:
         """Get patient shared tags in a simplified version
 
         Parameters
@@ -2515,7 +2513,7 @@ class Orthanc:
 
         Returns
         -------
-        Any
+        Dict[str, str]
             Patient shared tags in a simplified version.
         """
         return self.get_request(
@@ -2523,50 +2521,39 @@ class Orthanc:
             **kwargs
         )
 
-    def get_patient_shared_tags_in_shorter_version(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_patient_shared_tags_in_shorter_version(self, patient_identifier: str, **kwargs) -> Dict[str, Any]:
         """Get patient shared tags in a shorter version
 
         Parameters
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        Dict[str, Any]
             Patient shared tags in a shorter version.
         """
         return self.get_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/shared-tags?short',
-            params=params,
             **kwargs
         )
 
-    def get_patient_statistics(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_patient_statistics(self, patient_identifier: str, **kwargs) -> Dict[str, Union[str, int]]:
         """Get patient statistics
 
         Parameters
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        Dict[str, Union[str, int]]
+            Patient statistics.
         """
         return self.get_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/statistics',
-            params=params,
             **kwargs
         )
 

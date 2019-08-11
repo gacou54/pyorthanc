@@ -48,10 +48,10 @@ class AllTests(TestCommand):
     user_options = []
 
     def run_tests(self):
-        _run_command(FLAKE8_COMMAND)
-        _run_command(MYPY_COMMAND)
         _run_command(UNIT_TESTS_COMMAND)
         _run_command(INTEGRATION_TESTS_COMMAND)
+        _run_command(FLAKE8_COMMAND)
+        _run_command(MYPY_COMMAND)
 
 
 setup(

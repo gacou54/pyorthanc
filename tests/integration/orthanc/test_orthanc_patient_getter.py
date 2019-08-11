@@ -8,33 +8,7 @@ import requests
 
 from pyorthanc import Orthanc
 from tests.integration import setup_server
-
-A_PATIENT_IDENTIFIER = 'e34c28ce-981b0e5c-2a481559-cf0d5fbe-053335f8'
-A_PATIENT_ID = '03HDQ000'
-A_PATIENT_NAME = 'MR-R'
-A_PATIENT_SEX = 'M'
-A_PATIENT_STUDIES = ['118bc493-b3b3172a-082119bd-f6802ec3-81695613']
-A_PATIENT_INFORMATION = {
-    'ID': A_PATIENT_IDENTIFIER,
-    'IsStable': False,
-    'LastUpdate': 'THIS_IS_VARIABLE',
-    'MainDicomTags': {
-        'PatientBirthDate': '',
-        'PatientID': A_PATIENT_ID,
-        'PatientName': A_PATIENT_NAME,
-        'PatientSex': A_PATIENT_SEX
-    },
-    'Studies': A_PATIENT_STUDIES,
-    'Type': 'Patient'
-}
-
-A_LIST_OF_INSTANCE_IDENTIFIERS_OF_A_PATIENT = [
-    'da2024f5-606f9e83-41b012bb-9dced1ea-77bcd599',
-    '348befe7-5be5ff53-70120381-3baa0cc2-e4e04220',
-    '22dcf059-8fd3ade7-efb39ca3-7f46b248-0200abc9'
-]
-
-A_PATIENT_ZIP_FILE_PATH = './tests/integration/data/A_PATIENT_DATA.zip'
+from tests.integration.data import a_patient
 
 
 class TestOrthancPatientGetter(unittest.TestCase):
@@ -68,7 +42,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
         self.assertIsInstance(result, list)
         self.assertNotEqual(len(result), 0)
         for patient_identifier in result:
-            self.assertIn(patient_identifier, [A_PATIENT_IDENTIFIER])
+            self.assertIn(patient_identifier, [a_patient.IDENTIFIER])
 
     def test_givenOrthancWithoutData_whenGettingPatients_thenResultIsAnEmptyList(self):
         result = self.orthanc.get_patients()
@@ -79,247 +53,234 @@ class TestOrthancPatientGetter(unittest.TestCase):
     def test_givenOrthancWithData_whenGettingPatientInformation_thenResultIsADictionaryOfPatientInformation(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patient_information(A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_information(a_patient.IDENTIFIER)
 
         self.assertIsInstance(result, dict)
         # Removing a key that is never the same
         result = {key: value for key, value in result.items() if key != 'LastUpdate'}
-        target = {key: value for key, value in A_PATIENT_INFORMATION.items() if key != 'LastUpdate'}
-        self.assertDictEqual(result, target)
+        expected = {key: value for key, value in a_patient.INFORMATION.items() if key != 'LastUpdate'}
+        self.assertDictEqual(result, expected)
 
     def test_givenOrthancWithoutData_whenGettingPatientInformation_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
-            lambda: self.orthanc.get_patient_information(A_PATIENT_IDENTIFIER)
+            lambda: self.orthanc.get_patient_information(a_patient.IDENTIFIER)
         )
 
     def test_givenOrthancWithData_whenGettingPatientZip_thenResultIsBytesOfAValidZipFile(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patient_zip(A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_zip(a_patient.IDENTIFIER)
 
-        with open(A_PATIENT_ZIP_FILE_PATH, 'wb') as file_handler:
+        with open(a_patient.ZIP_FILE_PATH, 'wb') as file_handler:
             file_handler.write(result)
 
-        a_zip_file = zipfile.ZipFile(A_PATIENT_ZIP_FILE_PATH)
+        a_zip_file = zipfile.ZipFile(a_patient.ZIP_FILE_PATH)
         self.assertIsNone(a_zip_file.testzip())
-        os.remove(A_PATIENT_ZIP_FILE_PATH)
+        os.remove(a_patient.ZIP_FILE_PATH)
 
     def test_givenOrthancWithData_whenGettingPatientZip_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
-            lambda: self.orthanc.get_patient_zip(A_PATIENT_IDENTIFIER)
+            lambda: self.orthanc.get_patient_zip(a_patient.IDENTIFIER)
         )
 
     def test_givenOrthancWithData_whenGettingPatientInstances_thenResultIsAListOfPatientInstanceInformation(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patient_instances(A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_instances(a_patient.IDENTIFIER)
 
         self.assertIsInstance(result, list)
-        for instance_information in result:
-            self.assertIsInstance(instance_information, dict)
-            self.assertIn(instance_information['ID'], A_LIST_OF_INSTANCE_IDENTIFIERS_OF_A_PATIENT)
+        # Removing a key that is never the same
+        result = [{key: value for key, value in elem.items() if key != 'FileUuid'} for elem in result]
+        expected = [{key: value for key, value in elem.items() if key != 'FileUuid'} for elem in a_patient.INSTANCES]
+        self.assertEqual(result, expected)
 
     def test_givenOrthancWithoutData_whenGettingPatientInstances_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
-            lambda: self.orthanc.get_patient_instances(A_PATIENT_IDENTIFIER)
+            lambda: self.orthanc.get_patient_instances(a_patient.IDENTIFIER)
         )
 
     def test_givenOrthancWithData_whenGettingPatientInstancesTags_thenResultIsADictOfPatientInstancesTags(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patient_instances_tags(A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_instances_tags(a_patient.IDENTIFIER)
 
-        self.assertIsInstance(result, dict)
-        for instance_identifier, instance_tags in result.items():
-            self.assertIsInstance(instance_tags, dict)
-
-            for tag, tag_content in instance_tags.items():
-                for key in tag_content.keys():
-                    self.assertIn(key, ('Name', 'Type', 'Value'))
+        self.assertEqual(result, a_patient.INSTANCE_TAGS)
 
     def test_givenOrthancWithoutData_whenGettingPatientInstancesTags_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
-            lambda: self.orthanc.get_patient_instances_tags(A_PATIENT_IDENTIFIER)
+            lambda: self.orthanc.get_patient_instances_tags(a_patient.IDENTIFIER)
         )
 
-    def test_givenOrthancWithData_whenGettingPatientInstancesTagsInSimplifiedVersion_thenResultIsADictOfPatientInstancesTagsInSimplifiedVersion(
-            self):
+    def test_givenOrthancWithData_whenGettingPatientInstancesTagsInSimplifiedVersion_thenResultIsADictOfPatientInstancesTagsInSimplifiedVersion(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patient_instances_tags_in_simplified_version(A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_instances_tags_in_simplified_version(a_patient.IDENTIFIER)
 
-        self.assertIsInstance(result, dict)
-        for instance_identifier, instance_tags in result.items():
-            self.assertIsInstance(instance_tags, dict)
-
-            for tag, tag_content in instance_tags.items():
-                self.assertIsInstance(tag, str)
-                self.assertIn(type(tag_content), (dict, list, str, type(None)))
+        self.assertEqual(result, a_patient.INSTANCE_TAGS_IN_SIMPLIFIED_VERSION)
 
     def test_givenOrthancWithoutData_whenGettingPatientInstancesTagsInSimplifiedVersion_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_instances_tags_in_simplified_version(
-                A_PATIENT_IDENTIFIER
+                a_patient.IDENTIFIER
             )
         )
 
     def test_givenOrthancWithData_whenGettingPatientInstancesTagsInShorterVersion_thenResultIsADictOfPatientInstancesTagsInShorterVersion(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patient_instances_tags_in_shorter_version(A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_instances_tags_in_shorter_version(a_patient.IDENTIFIER)
 
-        self.assertIsInstance(result, dict)
-        for instance_identifier, instance_tags in result.items():
-            self.assertIsInstance(instance_tags, dict)
-
-            for tag, tag_content in instance_tags.items():
-                tag_numbers = tag.split(',')
-                self.assertEqual(len(tag_numbers), 2)
-
-                for tag_number in tag_numbers:
-                    hex(int(tag_number, 16))
-
-                self.assertIn(type(tag_content), (dict, list, str, type(None)))
+        self.assertEqual(result, a_patient.INSTANCE_TAGS_IN_SHORTER_VERSION)
 
     def test_givenOrthancWithoutData_whenGettingPatientInstancesTagsInShorterVersion_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
-            lambda: self.orthanc.get_patient_instances_tags_in_shorter_version(A_PATIENT_IDENTIFIER)
+            lambda: self.orthanc.get_patient_instances_tags_in_shorter_version(a_patient.IDENTIFIER)
         )
 
     def test_givenOrthancWithData_whenGettingPatientArchive_thenResultIsBytesOfAValidZipFileOfPatientArchive(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patient_archive(A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_archive(a_patient.IDENTIFIER)
 
-        with open(A_PATIENT_ZIP_FILE_PATH, 'wb') as file_handler:
+        with open(a_patient.ZIP_FILE_PATH, 'wb') as file_handler:
             file_handler.write(result)
 
-        a_zip_file = zipfile.ZipFile(A_PATIENT_ZIP_FILE_PATH)
+        a_zip_file = zipfile.ZipFile(a_patient.ZIP_FILE_PATH)
         self.assertIsNone(a_zip_file.testzip())
-        os.remove(A_PATIENT_ZIP_FILE_PATH)
+        os.remove(a_patient.ZIP_FILE_PATH)
 
     def test_givenOrthancWithoutData_whenGettingPatientArchive_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
-            lambda: self.orthanc.get_patient_archive(A_PATIENT_IDENTIFIER)
+            lambda: self.orthanc.get_patient_archive(a_patient.IDENTIFIER)
         )
 
-    def test_givenOrthancWithData_whenGettingPatientModule_thenResultIsADictOfDICOMPatientModuleTags(self):
+    def test_givenOrthancWithData_whenGettingPatientModule_thenResultIsExpectedTagInExpectedFormat(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patient_module(A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_module(a_patient.IDENTIFIER)
 
-        self.assertIsInstance(result, dict)
-        for dicom_tag, tag in result.items():
-            self.assertIn('0010,', dicom_tag)
-            self.assertIsInstance(tag, dict)
-
-            for key in tag.keys():
-                self.assertIn(key, ('Name', 'Type', 'Value'))
+        self.assertEqual(result, a_patient.MODULE)
 
     def test_givenOrthancWithoutData_whenGettingPatientModule_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.HTTPError,
-            lambda: self.orthanc.get_patient_module(A_PATIENT_IDENTIFIER)
+            lambda: self.orthanc.get_patient_module(a_patient.IDENTIFIER)
         )
 
-    def test_givenOrthancWithData_whenGettingPatientModuleInSimplifiedVersion_thenResultIsADictOfDICOMPatientModuleTagsInSimplifiedVersion(self):
+    def test_givenOrthancWithData_whenGettingPatientModuleInSimplifiedVersion_thenResultIsExpectedTagInExpectedFormat(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patient_module_in_simplified_version(A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_module_in_simplified_version(a_patient.IDENTIFIER)
 
-        self.assertIsInstance(result, dict)
-        for dicom_simplified_tag, tag in result.items():
-            self.assertIn('Patient', dicom_simplified_tag)
-            self.assertIsInstance(tag, str)
+        self.assertEqual(result, a_patient.MODULE_IN_SIMPLIFIED_VERSION)
 
     def test_givenOrthancWithoutData_whenGettingPatientModuleInSimplifiedVersion_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.HTTPError,
-            lambda: self.orthanc.get_patient_module_in_simplified_version(A_PATIENT_IDENTIFIER)
+            lambda: self.orthanc.get_patient_module_in_simplified_version(a_patient.IDENTIFIER)
         )
 
-    def test_givenOrthancWithData_whenGettingPatientModuleInShorterVersion_thenResultIsADictOfDICOMPatientModuleTagsInShorterVersion(self):
+    def test_givenOrthancWithData_whenGettingPatientModuleInShorterVersion_thenResultIsExpectedTagInExpectedFormat(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patient_module_in_shorter_version(A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_module_in_shorter_version(a_patient.IDENTIFIER)
 
-        self.assertIsInstance(result, dict)
-        for dicom_tag, tag in result.items():
-            self.assertTrue(self.is_tag_has_correct_format(dicom_tag))
-            self.assertIn('0010,', dicom_tag)
-            self.assertIsInstance(tag, str)
+        self.assertEqual(result, a_patient.MODULE_IN_SHORTER_VERSION)
 
     def test_givenOrthancWithoutData_whenGettingPatientModuleInShorterVersion_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.HTTPError,
-            lambda: self.orthanc.get_patient_module_in_shorter_version(A_PATIENT_IDENTIFIER)
+            lambda: self.orthanc.get_patient_module_in_shorter_version(a_patient.IDENTIFIER)
         )
 
     def test_givenOrthancWithUnprotectedPatient_whenGettingIfPatientIsProtected_thenResultIsFalse(self):
         self.given_patient_in_orthanc_server()
-        self.orthanc.set_patient_to_not_protected(A_PATIENT_IDENTIFIER)
+        self.orthanc.set_patient_to_not_protected(a_patient.IDENTIFIER)
 
-        result = self.orthanc.get_if_patient_is_protected(A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_if_patient_is_protected(a_patient.IDENTIFIER)
 
         self.assertFalse(result)
 
     def test_givenOrthancWithProtectedPatient_whenGettingIfPatientIsProtected_thenResultIsTrue(self):
         self.given_patient_in_orthanc_server()
-        self.orthanc.set_patient_to_protected(A_PATIENT_IDENTIFIER)
+        self.orthanc.set_patient_to_protected(a_patient.IDENTIFIER)
 
-        result = self.orthanc.get_if_patient_is_protected(A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_if_patient_is_protected(a_patient.IDENTIFIER)
 
         self.assertTrue(result)
 
     def test_givenOrthancWithAPatient_whenGettingPatientSeries_thenResultIsAListOfPatientSeriesMainInformation(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patient_series(A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_series(a_patient.IDENTIFIER)
 
         self.assertIsInstance(result, list)
-        for series in result:
-            self.assertIsInstance(series, dict)
-            self.assertEqual(series['Type'], 'Series')
-            self.assertIn(series['ParentStudy'], A_PATIENT_STUDIES)
+        # Removing a key that is never the same
+        result = [{key: value for key, value in elem.items() if key != 'LastUpdate'} for elem in result]
+        expected = [{key: value for key, value in elem.items() if key != 'LastUpdate'} for elem in a_patient.SERIES]
+        self.assertEqual(result, expected)
 
     def test_givenOrthancWithoutData_whenGettingPatientSeries_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.HTTPError,
-            lambda: self.orthanc.get_patient_series(A_PATIENT_IDENTIFIER)
+            lambda: self.orthanc.get_patient_series(a_patient.IDENTIFIER)
         )
 
-    def test_givenOrthancWithAPatient_whenGettingPatientSharedTags_thenResultIsPatientSharedTags(self):
+    def test_givenOrthancWithAPatient_whenGettingPatientSharedTags_thenResultIsExpectedTagsInExpectedFormat(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.get_patient_shared_tags(A_PATIENT_IDENTIFIER)
+        result = self.orthanc.get_patient_shared_tags(a_patient.IDENTIFIER)
 
-        self.assertIsInstance(result, dict)
-        for dicom_tag, tag_information in result.items():
-            self.assertTrue(self.is_tag_has_correct_format(dicom_tag))
+        self.assertEqual(result, a_patient.SHARED_TAGS)
 
-            self.assertIsInstance(tag_information, dict)
-            for key in tag_information.keys():
-                self.assertIn(key, ('Name', 'Value', 'Type'))
-
-    def test_givenOrthancWithoutData_whenGettingSharedTags_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutData_whenGettingPatientSharedTags_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.HTTPError,
-            lambda: self.orthanc.get_patient_shared_tags(A_PATIENT_IDENTIFIER)
+            lambda: self.orthanc.get_patient_shared_tags(a_patient.IDENTIFIER)
         )
 
-    def is_tag_has_correct_format(self, dicom_tag: str) -> bool:
-        self.assertIsInstance(dicom_tag, str)
+    def test_givenOrthancWithAPatient_whenGettingPatientSharedTagsInSimplifiedVersion_thenResultIsExpectedTagsInExpectedFormat(self):
+        self.given_patient_in_orthanc_server()
 
-        for tag_segment in dicom_tag.split(','):
-            if len(tag_segment) != 4:
+        result = self.orthanc.get_patient_shared_tags_in_simplified_version(a_patient.IDENTIFIER)
 
-                return False
+        self.assertEqual(result, a_patient.SHARED_TAGS_IN_SIMPLIFIED_VERSION)
 
-        return True
+    def test_givenOrthancWithoutData_whenGettingPatientSharedTagsInSimplifiedVersion_thenRaiseHTTPError(self):
+        self.assertRaises(
+            requests.HTTPError,
+            lambda: self.orthanc.get_patient_shared_tags_in_simplified_version(a_patient.IDENTIFIER)
+            )
+
+    def test_givenOrthancWithAPatient_whenGettingPatientSharedTagsInShorterVersion_thenResultIsExpectedTagsInExpectedFormat(self):
+        self.given_patient_in_orthanc_server()
+
+        result = self.orthanc.get_patient_shared_tags_in_shorter_version(a_patient.IDENTIFIER)
+
+        self.assertEqual(result, a_patient.SHARED_TAGS_IN_SHORTER_VERSION)
+
+    def test_givenOrthancWithoutData_whenGettingPatientSharedTagsInShorterVersion_thenRaiseHTTPError(self):
+        self.assertRaises(
+            requests.HTTPError,
+            lambda: self.orthanc.get_patient_shared_tags_in_shorter_version(a_patient.IDENTIFIER)
+        )
+
+    def test_givenOrthancWithPatient_whenGettingPatientStatistics_thenResultIsExpectedPatientStatistics(self):
+        self.given_patient_in_orthanc_server()
+
+        result = self.orthanc.get_patient_statistics(a_patient.IDENTIFIER)
+
+        self.assertEqual(result, a_patient.STATISTICS)
+
+    def test_givenOrthancWithPatient_whenGettingPatientStatistics_thenRaiseHTTPError(self):
+        self.assertRaises(
+            requests.HTTPError,
+            lambda: self.orthanc.get_patient_statistics(a_patient.IDENTIFIER)
+        )
