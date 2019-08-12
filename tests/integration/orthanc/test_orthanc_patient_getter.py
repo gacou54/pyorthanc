@@ -52,12 +52,11 @@ class TestOrthancPatientGetter(unittest.TestCase):
 
     def test_givenOrthancWithData_whenGettingPatientInformation_thenResultIsADictionaryOfPatientInformation(self):
         self.given_patient_in_orthanc_server()
-        keys_to_remove = ['LastUpdate']
+        keys_to_remove = ['LastUpdate']  # Removing keys that are never the same
 
         result = self.orthanc.get_patient_information(a_patient.IDENTIFIER)
 
         self.assertIsInstance(result, dict)
-        # Removing a key that is never the same
         result = {key: value for key, value in result.items() if key not in keys_to_remove}
         expected = {key: value for key, value in a_patient.INFORMATION.items() if key not in keys_to_remove}
         self.assertDictEqual(result, expected)
@@ -88,12 +87,11 @@ class TestOrthancPatientGetter(unittest.TestCase):
 
     def test_givenOrthancWithData_whenGettingPatientInstances_thenResultIsAListOfPatientInstanceInformation(self):
         self.given_patient_in_orthanc_server()
-        keys_to_remove = ['FileUuid', 'FileSize']
+        keys_to_remove = ['FileUuid', 'FileSize', 'ID']  # Removing keys that are never the same
 
         result = self.orthanc.get_patient_instances(a_patient.IDENTIFIER)
 
         self.assertIsInstance(result, list)
-        # Removing a key that is never the same
         result = [{key: value for key, value in elem.items() if key not in keys_to_remove} for elem in result]
         expected = [{key: value for key, value in elem.items() if key not in keys_to_remove} for elem in a_patient.INSTANCES]
         self.assertEqual(result, expected)
@@ -220,12 +218,11 @@ class TestOrthancPatientGetter(unittest.TestCase):
 
     def test_givenOrthancWithAPatient_whenGettingPatientSeries_thenResultIsAListOfPatientSeriesMainInformation(self):
         self.given_patient_in_orthanc_server()
-        keys_to_remove = ['LastUpdate']
+        keys_to_remove = ['LastUpdate', 'ID']  # Removing keys that are never the same
 
         result = self.orthanc.get_patient_series(a_patient.IDENTIFIER)
 
         self.assertIsInstance(result, list)
-        # Removing a key that is never the same
         result = [{key: value for key, value in elem.items() if key not in keys_to_remove} for elem in result]
         expected = [{key: value for key, value in elem.items() if key not in keys_to_remove} for elem in a_patient.SERIES]
         self.assertEqual(result, expected)
@@ -260,7 +257,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
         self.assertRaises(
             requests.HTTPError,
             lambda: self.orthanc.get_patient_shared_tags_in_simplified_version(a_patient.IDENTIFIER)
-            )
+        )
 
     def test_givenOrthancWithAPatient_whenGettingPatientSharedTagsInShorterVersion_thenResultIsExpectedTagsInExpectedFormat(self):
         self.given_patient_in_orthanc_server()
@@ -277,11 +274,10 @@ class TestOrthancPatientGetter(unittest.TestCase):
 
     def test_givenOrthancWithPatient_whenGettingPatientStatistics_thenResultIsExpectedPatientStatistics(self):
         self.given_patient_in_orthanc_server()
-        keys_to_remove = ['DiskSize', 'UncompressedSize']
+        keys_to_remove = ['DiskSize', 'UncompressedSize']  # Removing keys that are not always the same
 
         result = self.orthanc.get_patient_statistics(a_patient.IDENTIFIER)
 
-        # Removing keys that are not always the same
         result = {key: value for key, value in result.items() if key not in keys_to_remove}
         expected = {key: value for key, value in a_patient.STATISTICS.items() if key not in keys_to_remove}
         self.assertEqual(result, expected)
