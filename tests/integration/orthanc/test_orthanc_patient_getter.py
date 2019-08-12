@@ -87,14 +87,14 @@ class TestOrthancPatientGetter(unittest.TestCase):
 
     def test_givenOrthancWithData_whenGettingPatientInstances_thenResultIsAListOfPatientInstanceInformation(self):
         self.given_patient_in_orthanc_server()
-        keys_to_remove = ['FileUuid', 'FileSize', 'ID']  # Removing keys that are never the same
+        keys_to_remove = ['FileUuid', 'FileSize']  # Removing keys that are never the same
 
         result = self.orthanc.get_patient_instances(a_patient.IDENTIFIER)
 
         self.assertIsInstance(result, list)
-        result = [{key: value for key, value in elem.items() if key not in keys_to_remove} for elem in result]
-        expected = [{key: value for key, value in elem.items() if key not in keys_to_remove} for elem in a_patient.INSTANCES]
-        self.assertEqual(result, expected)
+        result = [{key: value for key, value in i.items() if key not in keys_to_remove} for i in result]
+        expected = [{key: value for key, value in i.items() if key not in keys_to_remove} for i in a_patient.INSTANCES]
+        self.assertListEqual(result, expected)
 
     def test_givenOrthancWithoutData_whenGettingPatientInstances_thenRaiseHTTPError(self):
         self.assertRaises(
@@ -223,9 +223,9 @@ class TestOrthancPatientGetter(unittest.TestCase):
         result = self.orthanc.get_patient_series(a_patient.IDENTIFIER)
 
         self.assertIsInstance(result, list)
-        result = [{key: value for key, value in elem.items() if key not in keys_to_remove} for elem in result]
-        expected = [{key: value for key, value in elem.items() if key not in keys_to_remove} for elem in a_patient.SERIES]
-        self.assertEqual(result, expected)
+        result = [{key: value for key, value in i.items() if key not in keys_to_remove} for i in result]
+        expected = [{key: value for key, value in i.items() if key not in keys_to_remove} for i in a_patient.SERIES]
+        self.assertListEqual(result, expected)
 
     def test_givenOrthancWithoutData_whenGettingPatientSeries_thenRaiseHTTPError(self):
         self.assertRaises(
@@ -278,9 +278,10 @@ class TestOrthancPatientGetter(unittest.TestCase):
 
         result = self.orthanc.get_patient_statistics(a_patient.IDENTIFIER)
 
+        self.assertIsInstance(result, dict)
         result = {key: value for key, value in result.items() if key not in keys_to_remove}
         expected = {key: value for key, value in a_patient.STATISTICS.items() if key not in keys_to_remove}
-        self.assertEqual(result, expected)
+        self.assertDictEqual(result, expected)
 
     def test_givenOrthancWithPatient_whenGettingPatientStatistics_thenRaiseHTTPError(self):
         self.assertRaises(
