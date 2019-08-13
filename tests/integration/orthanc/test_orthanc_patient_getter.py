@@ -94,7 +94,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
         self.assertIsInstance(result, list)
         result = [{key: value for key, value in i.items() if key not in keys_to_remove} for i in result]
         expected = [{key: value for key, value in i.items() if key not in keys_to_remove} for i in a_patient.INSTANCES]
-        self.assertListEqual(result, expected)
+        self.assertCountEqual(result, expected)
 
     def test_givenOrthancWithoutData_whenGettingPatientInstances_thenRaiseHTTPError(self):
         self.assertRaises(
@@ -225,7 +225,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
         self.assertIsInstance(result, list)
         result = [{key: value for key, value in i.items() if key not in keys_to_remove} for i in result]
         expected = [{key: value for key, value in i.items() if key not in keys_to_remove} for i in a_patient.SERIES]
-        self.assertListEqual(result, expected)
+        self.assertCountEqual(result, expected)
 
     def test_givenOrthancWithoutData_whenGettingPatientSeries_thenRaiseHTTPError(self):
         self.assertRaises(
