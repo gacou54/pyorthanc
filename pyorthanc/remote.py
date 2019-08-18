@@ -103,7 +103,7 @@ class RemoteModality:
         ...           'Query': {'QueryRetrieveLevel': 'Study',
         ...                     'Modality':'SR'}}).json()
 
-        >>> remote_modality.retrieve(
+        >>> remote_modality.move(
         ...     query_identifier=query_id['ID'],
         ...     cmove_data={'TargetAET': 'modality'}
         ... )
