@@ -2464,7 +2464,6 @@ class Orthanc:
         Returns
         -------
         Any
-            HTTP status == 200 if no error.
         """
         return self.post_request(f'{self._orthanc_url}/patients/{patient_identifier}/reconstruct', data=data, **kwargs)
 
@@ -2557,10 +2556,9 @@ class Orthanc:
             **kwargs
         )
 
-    def get_patient_study_information(
+    def get_patient_studies(
             self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+            **kwargs) -> List[Dict]:
         """Get patient study main information for all patient studies
 
         Retrieve all the studies of this patient in a single REST call.
@@ -2569,15 +2567,16 @@ class Orthanc:
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        List[Dict]
             List of patient studies information.
         """
-        return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/studies', params=params, **kwargs)
+        return self.get_request(
+            f'{self._orthanc_url}/patients/{patient_identifier}/studies',
+            **kwargs
+        )
 
     def get_peers(self, params: Dict = None, **kwargs) -> Any:
         """Get peers
