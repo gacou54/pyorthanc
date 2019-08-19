@@ -3,6 +3,7 @@
 import os
 import unittest
 import zipfile
+from typing import Dict
 
 import requests
 
@@ -296,9 +297,8 @@ class TestOrthancPatientGetter(unittest.TestCase):
         result = self.orthanc.get_patient_studies(a_patient.IDENTIFIER)
 
         self.assertIsInstance(result, list)
-        result = [{key: value for key, value in i.items() if key not in keys_to_remove} for i in result]
-        expected = [{key: value for key, value in i.items() if key not in keys_to_remove} for i in a_patient.STUDIES]
-        self.maxDiff = None
+        result = [self._sort_dictionary_element({key: value for key, value in i.items() if key not in keys_to_remove}) for i in result]
+        expected = [self._sort_dictionary_element({key: value for key, value in i.items() if key not in keys_to_remove}) for i in a_patient.STUDIES]
         self.assertCountEqual(result, expected)
 
     def test_givenOrthancWithoutPatient_whenGettingPatientStudies_thenRaiseHTTPError(self):
@@ -306,3 +306,13 @@ class TestOrthancPatientGetter(unittest.TestCase):
             requests.HTTPError,
             lambda: self.orthanc.get_patient_studies(a_patient.IDENTIFIER)
         )
+
+    def _sort_dictionary_element(self, dictionary: Dict) -> Dict:
+        for key, value in dictionary.items():
+            if type(value) == list:
+                dictionary[key] = value.sort()
+
+            elif type(value) == dict:
+                dictionary[key] = self._sort_dictionary_element(value)
+
+        return dictionary
