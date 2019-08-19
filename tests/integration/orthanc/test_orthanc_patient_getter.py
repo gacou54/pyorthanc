@@ -44,7 +44,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
         for patient_identifier in result:
             self.assertIn(patient_identifier, [a_patient.IDENTIFIER])
 
-    def test_givenOrthancWithoutData_whenGettingPatients_thenResultIsAnEmptyList(self):
+    def test_givenOrthancWithoutPatient_whenGettingPatients_thenResultIsAnEmptyList(self):
         result = self.orthanc.get_patients()
 
         self.assertIsInstance(result, list)
@@ -61,7 +61,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
         expected = {key: value for key, value in a_patient.INFORMATION.items() if key not in keys_to_remove}
         self.assertDictEqual(result, expected)
 
-    def test_givenOrthancWithoutData_whenGettingPatientInformation_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutPatient_whenGettingPatientInformation_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_information(a_patient.IDENTIFIER)
@@ -96,7 +96,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
         expected = [{key: value for key, value in i.items() if key not in keys_to_remove} for i in a_patient.INSTANCES]
         self.assertCountEqual(result, expected)
 
-    def test_givenOrthancWithoutData_whenGettingPatientInstances_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutPatient_whenGettingPatientInstances_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_instances(a_patient.IDENTIFIER)
@@ -109,7 +109,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
 
         self.assertEqual(result, a_patient.INSTANCE_TAGS)
 
-    def test_givenOrthancWithoutData_whenGettingPatientInstancesTags_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutPatient_whenGettingPatientInstancesTags_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_instances_tags(a_patient.IDENTIFIER)
@@ -122,7 +122,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
 
         self.assertEqual(result, a_patient.INSTANCE_TAGS_IN_SIMPLIFIED_VERSION)
 
-    def test_givenOrthancWithoutData_whenGettingPatientInstancesTagsInSimplifiedVersion_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutPatient_whenGettingPatientInstancesTagsInSimplifiedVersion_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_instances_tags_in_simplified_version(
@@ -137,7 +137,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
 
         self.assertEqual(result, a_patient.INSTANCE_TAGS_IN_SHORTER_VERSION)
 
-    def test_givenOrthancWithoutData_whenGettingPatientInstancesTagsInShorterVersion_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutPatient_whenGettingPatientInstancesTagsInShorterVersion_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_instances_tags_in_shorter_version(a_patient.IDENTIFIER)
@@ -155,7 +155,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
         self.assertIsNone(a_zip_file.testzip())
         os.remove(a_patient.ZIP_FILE_PATH)
 
-    def test_givenOrthancWithoutData_whenGettingPatientArchive_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutPatient_whenGettingPatientArchive_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_archive(a_patient.IDENTIFIER)
@@ -168,7 +168,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
 
         self.assertEqual(result, a_patient.MODULE)
 
-    def test_givenOrthancWithoutData_whenGettingPatientModule_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutPatient_whenGettingPatientModule_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.HTTPError,
             lambda: self.orthanc.get_patient_module(a_patient.IDENTIFIER)
@@ -181,7 +181,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
 
         self.assertEqual(result, a_patient.MODULE_IN_SIMPLIFIED_VERSION)
 
-    def test_givenOrthancWithoutData_whenGettingPatientModuleInSimplifiedVersion_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutPatient_whenGettingPatientModuleInSimplifiedVersion_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.HTTPError,
             lambda: self.orthanc.get_patient_module_in_simplified_version(a_patient.IDENTIFIER)
@@ -194,7 +194,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
 
         self.assertEqual(result, a_patient.MODULE_IN_SHORTER_VERSION)
 
-    def test_givenOrthancWithoutData_whenGettingPatientModuleInShorterVersion_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutPatient_whenGettingPatientModuleInShorterVersion_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.HTTPError,
             lambda: self.orthanc.get_patient_module_in_shorter_version(a_patient.IDENTIFIER)
@@ -227,7 +227,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
         expected = [{key: value for key, value in i.items() if key not in keys_to_remove} for i in a_patient.SERIES]
         self.assertCountEqual(result, expected)
 
-    def test_givenOrthancWithoutData_whenGettingPatientSeries_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutPatient_whenGettingPatientSeries_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.HTTPError,
             lambda: self.orthanc.get_patient_series(a_patient.IDENTIFIER)
@@ -240,7 +240,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
 
         self.assertEqual(result, a_patient.SHARED_TAGS)
 
-    def test_givenOrthancWithoutData_whenGettingPatientSharedTags_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutPatient_whenGettingPatientSharedTags_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.HTTPError,
             lambda: self.orthanc.get_patient_shared_tags(a_patient.IDENTIFIER)
@@ -253,7 +253,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
 
         self.assertEqual(result, a_patient.SHARED_TAGS_IN_SIMPLIFIED_VERSION)
 
-    def test_givenOrthancWithoutData_whenGettingPatientSharedTagsInSimplifiedVersion_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutPatient_whenGettingPatientSharedTagsInSimplifiedVersion_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.HTTPError,
             lambda: self.orthanc.get_patient_shared_tags_in_simplified_version(a_patient.IDENTIFIER)
@@ -266,7 +266,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
 
         self.assertEqual(result, a_patient.SHARED_TAGS_IN_SHORTER_VERSION)
 
-    def test_givenOrthancWithoutData_whenGettingPatientSharedTagsInShorterVersion_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutPatient_whenGettingPatientSharedTagsInShorterVersion_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.HTTPError,
             lambda: self.orthanc.get_patient_shared_tags_in_shorter_version(a_patient.IDENTIFIER)
@@ -282,8 +282,9 @@ class TestOrthancPatientGetter(unittest.TestCase):
         expected = {key: value for key, value in a_patient.STATISTICS.items()}
         self.assertDictEqual(result, expected)
 
-    def test_givenOrthancWithPatient_whenGettingPatientStatistics_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutPatient_whenGettingPatientStatistics_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.HTTPError,
             lambda: self.orthanc.get_patient_statistics(a_patient.IDENTIFIER)
         )
+
