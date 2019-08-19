@@ -274,12 +274,13 @@ class TestOrthancPatientGetter(unittest.TestCase):
 
     def test_givenOrthancWithPatient_whenGettingPatientStatistics_thenResultIsExpectedPatientStatistics(self):
         self.given_patient_in_orthanc_server()
+        keys_to_remove = ['DiskSize', 'UncompressedSize']  # Removing keys that are never the same
 
         result = self.orthanc.get_patient_statistics(a_patient.IDENTIFIER)
 
         self.assertIsInstance(result, dict)
-        result = {key: value for key, value in result.items()}
-        expected = {key: value for key, value in a_patient.STATISTICS.items()}
+        result = {key: value for key, value in result.items() if key not in keys_to_remove}
+        expected = {key: value for key, value in a_patient.STATISTICS.items() if key not in keys_to_remove}
         self.assertDictEqual(result, expected)
 
     def test_givenOrthancWithoutPatient_whenGettingPatientStatistics_thenRaiseHTTPError(self):
@@ -288,7 +289,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
             lambda: self.orthanc.get_patient_statistics(a_patient.IDENTIFIER)
         )
 
-    def test_givenOrthancWithPatient_whenGettingPatientStudiesInformation_thenResultIsExpectedPatientStudiesInformation(self):
+    def test_givenOrthancWithPatient_whenGettingPatientStudies_thenResultIsExpectedPatientStudies(self):
         self.given_patient_in_orthanc_server()
         keys_to_remove = ['LastUpdate']  # Removing keys that are never the same
 
@@ -297,9 +298,10 @@ class TestOrthancPatientGetter(unittest.TestCase):
         self.assertIsInstance(result, list)
         result = [{key: value for key, value in i.items() if key not in keys_to_remove} for i in result]
         expected = [{key: value for key, value in i.items() if key not in keys_to_remove} for i in a_patient.STUDIES]
+        self.maxDiff = None
         self.assertCountEqual(result, expected)
 
-    def test_givenOrthancWithoutPatient_whenGettingPatientStudiesInformation_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutPatient_whenGettingPatientStudies_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.HTTPError,
             lambda: self.orthanc.get_patient_studies(a_patient.IDENTIFIER)

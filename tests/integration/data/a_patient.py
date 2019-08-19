@@ -5,7 +5,6 @@ IDENTIFIER = 'e34c28ce-981b0e5c-2a481559-cf0d5fbe-053335f8'
 ID = '03HDQ000'
 NAME = 'MR-R'
 SEX = 'M'
-STUDIES = ['118bc493-b3b3172a-082119bd-f6802ec3-81695613']
 INFORMATION = {
     'ID': IDENTIFIER,
     'IsStable': False,
@@ -16,7 +15,7 @@ INFORMATION = {
         'PatientName': NAME,
         'PatientSex': SEX
     },
-    'Studies': STUDIES,
+    'Studies': ['118bc493-b3b3172a-082119bd-f6802ec3-81695613'],
     'Type': 'Patient'
 }
 
