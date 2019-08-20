@@ -54,6 +54,10 @@ class AllTests(TestCommand):
         _run_command(MYPY_COMMAND)
 
 
+with open('./README.md', 'r') as file_hanlder:
+    long_description = file_hanlder.read()
+
+
 setup(
     name='pyorthanc',
     version='0.2.1',
@@ -63,6 +67,7 @@ setup(
     author='Gabriel Couture',
     author_email='gacou54@gmail.com',
     description='Orthanc REST API python wrapper with additional utilities',
+    long_description=long_description,
     install_requires=['requests'],
     cmdclass={
         'lint': LintTests,
@@ -70,4 +75,13 @@ setup(
         'integration': IntegrationTests,
         'test': AllTests
     },
+    classifiers=[
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Healthcare Industry',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: 3.7'
+    ]
 )
