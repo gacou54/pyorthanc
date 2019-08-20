@@ -68,6 +68,7 @@ setup(
     author_email='gacou54@gmail.com',
     description='Orthanc REST API python wrapper with additional utilities',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     install_requires=['requests'],
     cmdclass={
         'lint': LintTests,
