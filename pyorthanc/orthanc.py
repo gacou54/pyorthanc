@@ -40,10 +40,7 @@ class Orthanc:
         self._credentials = HTTPBasicAuth(username, password)
         self._credentials_are_set = True
 
-    def get_request(
-            self, route: str,
-            params: Optional[Dict] = None,
-            **kwargs):
+    def get_request(self, route: str, params: Optional[Dict] = None, **kwargs):
         """GET request with specified route
 
         Parameters
@@ -55,7 +52,7 @@ class Orthanc:
 
         Returns
         -------
-        Union[List, Dict, str]
+        Union[List, Dict, str, bytes, int]
             Response of the HTTP GET request converted to json format.
         """
         if self._credentials_are_set:
@@ -76,7 +73,7 @@ class Orthanc:
             try:
                 return response.json()
             except json.JSONDecodeError:
-                return response.text
+                return response.content
 
         raise requests.exceptions.HTTPError(
             f'HTTP code: {response.status_code}, with text: {response.text}'
@@ -108,7 +105,7 @@ class Orthanc:
     def post_request(
             self, route: str,
             data: Optional[Dict] = None,
-            **kwargs) -> Union[List, Dict, str]:
+            **kwargs) -> Union[List, Dict, str, bytes]:
         """POST to specified route
 
         Parameters
@@ -120,7 +117,7 @@ class Orthanc:
 
         Returns
         -------
-        Union[List, Dict, str]
+        Union[List, Dict, str, bytes]
             Response of the HTTP POST request converted to json format.
         """
         json_data = None if data is None else json.dumps(data)
@@ -140,7 +137,7 @@ class Orthanc:
             try:
                 return response.json()
             except json.JSONDecodeError:
-                return response.text
+                return response.content
 
         raise requests.exceptions.HTTPError(
             f'HTTP code: {response.status_code}, with text: {response.text}'
@@ -148,8 +145,8 @@ class Orthanc:
 
     def put_request(
             self, route: str,
-            data: Optional[Dict] = None,
-            **kwargs) -> Union[List, Dict, str]:
+            data: Optional[Union[Dict, str]] = None,
+            **kwargs) -> Union[List, Dict, str, bytes]:
         """PUT to specified route
 
         Parameters
@@ -161,7 +158,7 @@ class Orthanc:
 
         Returns
         -------
-        Union[List, Dict, str]
+        Union[List, Dict, str, bytes]
             Response of the HTTP PUT request converted to json format.
         """
         if self._credentials_are_set:
@@ -179,7 +176,7 @@ class Orthanc:
             try:
                 return response.json()
             except json.JSONDecodeError:
-                return response.text
+                return response.content
 
         raise requests.exceptions.HTTPError(
             f'HTTP code: {response.status_code}, with text: {response.text}'
@@ -2088,7 +2085,7 @@ class Orthanc:
 
     def get_patient_information(
             self, patient_identifier: str) -> Dict:
-        """Get patient mains information
+        """Get patient main information
 
         Parameters
         ----------
@@ -2144,7 +2141,7 @@ class Orthanc:
         )
 
     def get_patient_zip(self, patient_identifier: str) -> Any:
-        """Get the
+        """Get the bytes of the zip file
 
         Get the .zip file.
 
@@ -2155,10 +2152,21 @@ class Orthanc:
 
         Returns
         -------
-        Any
-            Zip file of the patient.
+        bytes
+            Bytes of Zip file of the patient.
+
+        Examples
+        --------
+        >>> from pyorthanc import Orthanc
+        >>> orthanc = Orthanc('http://localhost:8042')
+        >>> a_patient_identifier = orthanc.get_patients()[0]
+        >>> bytes_content = orthanc.get_patient_zip(a_patient_identifier)
+        >>> with open('patient_zip_file_path.zip', 'wb') as file_handler:
+        ...     file_handler.write(bytes_content)
         """
-        return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/archive')
+        return self.get_request(
+            f'{self._orthanc_url}/patients/{patient_identifier}/archive'
+        )
 
     def archive_patient(
             self, patient_identifier: str,
@@ -2250,10 +2258,7 @@ class Orthanc:
         """
         return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/instances-tags?short')
 
-    def get_patient_archive(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_patient_archive(self, patient_identifier: str) -> Any:
         """Get patient zip archive for media storage with DICOMDIR
 
         Create a ZIP archive for media storage with DICOMDIR.
@@ -2262,14 +2267,25 @@ class Orthanc:
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        bytes
+            Bytes of archive zip file
+
+        Examples
+        --------
+        >>> from pyorthanc import Orthanc
+        >>> orthanc = Orthanc('http://localhost:8042')
+        >>> a_patient_identifier = orthanc.get_patients()[0]
+        >>> bytes_content = orthanc.get_patient_archive(a_patient_identifier)
+        >>> with open('patient_archive_zip_file_path.zip', 'wb') as file_handler:
+        ...     file_handler.write(bytes_content)
+
         """
-        return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/media', params=params, **kwargs)
+        return self.get_request(
+            f'{self._orthanc_url}/patients/{patient_identifier}/media',
+        )
 
     def create_patient_archive_for_media_storage(
             self, patient_identifier: str,
@@ -2313,117 +2329,121 @@ class Orthanc:
         """
         return self.post_request(f'{self._orthanc_url}/patients/{patient_identifier}/modify', data=data, **kwargs)
 
-    def get_patient_module(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_patient_module(self, patient_identifier: str) -> Dict:
         """Get patient module
 
+        The method returns the DICOM patient module (PatientName, PatientID, PatientBirthDate, ...)
+
         Parameters
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
-            Patient module.
+        Dict
+            DICOM Patient module.
         """
-        return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/module', params=params, **kwargs)
+        return self.get_request(
+            f'{self._orthanc_url}/patients/{patient_identifier}/module'
+        )
 
-    def get_patient_module_in_simplified_version(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_patient_module_in_simplified_version(self, patient_identifier: str) -> Dict:
         """Get patient module in a simplified version
 
+        The method returns the DICOM patient module (PatientName, PatientID, PatientBirthDate, ...)
+
         Parameters
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        Dict
             Patient module in a simplified version.
         """
         return self.get_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/module?simplify',
-            params=params,
-            **kwargs
         )
 
-    def get_patient_module_in_shorter_version(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_patient_module_in_shorter_version(self, patient_identifier: str) -> Dict:
         """Get patient module in a shorter version
+
+        The method returns the DICOM patient module (PatientName, PatientID, PatientBirthDate, ...)
 
         Parameters
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        Dict
             Patient module in a shorter version.
         """
         return self.get_request(
-            f'{self._orthanc_url}/patients/{patient_identifier}/module?short',
-            params=params,
+            f'{self._orthanc_url}/patients/{patient_identifier}/module?short'
+        )
+
+    def get_if_patient_is_protected(self, patient_identifier: str) -> bool:
+        """Get if patient is protected against recycling
+
+        Protection against recycling: False means unprotected, True protected.
+
+        Parameters
+        ----------
+        patient_identifier
+            Patient identifier.
+
+        Returns
+        -------
+        bool
+            False means unprotected, True means protected.
+        """
+        request_result = self.get_request(
+            f'{self._orthanc_url}/patients/{patient_identifier}/protected'
+        )
+
+        return False if request_result == 0 else True
+
+    def set_patient_to_protected(self, patient_identifier: str, **kwargs) -> Any:
+        """Set patient to protected state
+
+        Parameters
+        ----------
+        patient_identifier
+            Patient identifier.
+
+        Returns
+        -------
+        Any
+            Nothing
+        """
+        return self.put_request(
+            f'{self._orthanc_url}/patients/{patient_identifier}/protected',
+            data='1',
             **kwargs
         )
 
-    def get_if_patient_is_protected(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
-        """Get if patient is protected against recycling
-
-        Protection against recycling: "0" means unprotected, "1" protected.
+    def set_patient_to_not_protected(self, patient_identifier: str, **kwargs) -> Any:
+        """Set patient to not protected state
 
         Parameters
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
         Any
-            Protection against recycling: "0" means unprotected, "1" protected.
+            Nothing
         """
-        return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/protected', params=params, **kwargs)
-
-    def set_patient_protected_or_not(
-            self, patient_identifier: str,
-            data: Dict = None,
-            **kwargs) -> Any:
-        """Set patient as protected or not
-
-        Protection against recycling: "0" means unprotected, "1" protected
-
-        Parameters
-        ----------
-        patient_identifier
-            Patient identifier.
-        data
-            Dictionary to send in the body of request.
-
-        Returns
-        -------
-        Any
-            HTTP status == 200 if no error.
-        """
-        return self.put_request(f'{self._orthanc_url}/patients/{patient_identifier}/protected', data=data, **kwargs)
+        return self.put_request(
+            f'{self._orthanc_url}/patients/{patient_identifier}/protected',
+            data='0',
+            **kwargs
+        )
 
     def reconstruct_main_dicom_tags_of_patient(
             self, patient_identifier: str,
@@ -2444,14 +2464,10 @@ class Orthanc:
         Returns
         -------
         Any
-            HTTP status == 200 if no error.
         """
         return self.post_request(f'{self._orthanc_url}/patients/{patient_identifier}/reconstruct', data=data, **kwargs)
 
-    def get_patient_series(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_patient_series(self, patient_identifier: str, **kwargs) -> List[Dict]:
         """Get patient series
 
         Retrieve all the series of this patient in a single REST call.
@@ -2460,115 +2476,89 @@ class Orthanc:
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        List[Dict]
             List of series main information.
         """
-        return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/series', params=params, **kwargs)
+        return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/series', **kwargs)
 
-    def get_patient_shared_tags(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_patient_shared_tags(self, patient_identifier: str, **kwargs) -> Dict[str, Dict]:
         """Get patient shared tags
 
         Parameters
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        Dict[str, Dict]
             Patient shared tags.
         """
         return self.get_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/shared-tags',
-            params=params,
             **kwargs
         )
 
-    def get_patient_shared_tags_in_simplified_version(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_patient_shared_tags_in_simplified_version(self, patient_identifier: str, **kwargs) -> Dict[str, str]:
         """Get patient shared tags in a simplified version
 
         Parameters
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        Dict[str, str]
             Patient shared tags in a simplified version.
         """
         return self.get_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/shared-tags?simplify',
-            params=params,
             **kwargs
         )
 
-    def get_patient_shared_tags_in_shorter_version(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_patient_shared_tags_in_shorter_version(self, patient_identifier: str, **kwargs) -> Dict[str, Any]:
         """Get patient shared tags in a shorter version
 
         Parameters
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        Dict[str, Any]
             Patient shared tags in a shorter version.
         """
         return self.get_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/shared-tags?short',
-            params=params,
             **kwargs
         )
 
-    def get_patient_statistics(
-            self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_patient_statistics(self, patient_identifier: str, **kwargs) -> Dict[str, Union[str, int]]:
         """Get patient statistics
 
         Parameters
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        Dict[str, Union[str, int]]
+            Patient statistics.
         """
         return self.get_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/statistics',
-            params=params,
             **kwargs
         )
 
-    def get_patient_study_information(
+    def get_patient_studies(
             self, patient_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+            **kwargs) -> List[Dict]:
         """Get patient study main information for all patient studies
 
         Retrieve all the studies of this patient in a single REST call.
@@ -2577,15 +2567,16 @@ class Orthanc:
         ----------
         patient_identifier
             Patient identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        List[Dict]
             List of patient studies information.
         """
-        return self.get_request(f'{self._orthanc_url}/patients/{patient_identifier}/studies', params=params, **kwargs)
+        return self.get_request(
+            f'{self._orthanc_url}/patients/{patient_identifier}/studies',
+            **kwargs
+        )
 
     def get_peers(self, params: Dict = None, **kwargs) -> Any:
         """Get peers
