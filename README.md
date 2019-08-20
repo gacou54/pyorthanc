@@ -21,14 +21,18 @@ on a linux machine.
 
 Installation
 ------------
-If you have `git`:
+```sh
+$ pip install pyorthanc
+```
+
+Or from the repository:
 ```sh
 pip install git+https://gitlab.physmed.chudequebec.ca/gacou54/pyorthanc.git
 ```
 
-If not, clone the repository, unzip and pip install the directory:
+Or, if you do not have git installed, clone the repository:
 ```sh
-pip install -e pyorthanc
+pip install -e pyorthanc.zip
 ```
 
 #### Specific version
