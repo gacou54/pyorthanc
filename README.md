@@ -86,7 +86,7 @@ data = {'Level': 'Study', 'Query': {'PatientID': '*'}}
 query_response = remote_modality.query(data=data)
 
 # Retrieve (C-Move) results of query on a target modality (AET)
-remote_modality.retrieve(query_response['ID'], 'target_modality')
+remote_modality.move(query_response['QUERY_ID'], 'target_modality')
 ```
 
 #### Build a patient tree structure of all patients in Orthanc instance:
