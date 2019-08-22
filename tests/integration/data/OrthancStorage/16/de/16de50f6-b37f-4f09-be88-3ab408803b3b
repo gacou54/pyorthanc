@@ -1,0 +1,322 @@
+{
+	"0008,0012" : 
+	{
+		"Name" : "InstanceCreationDate",
+		"Type" : "String",
+		"Value" : "20100301"
+	},
+	"0008,0013" : 
+	{
+		"Name" : "InstanceCreationTime",
+		"Type" : "String",
+		"Value" : "170155"
+	},
+	"0008,0016" : 
+	{
+		"Name" : "SOPClassUID",
+		"Type" : "String",
+		"Value" : "1.2.840.10008.5.1.4.1.1.481.2"
+	},
+	"0008,0018" : 
+	{
+		"Name" : "SOPInstanceUID",
+		"Type" : "String",
+		"Value" : "2.16.840.1.113669.2.931128.981194414.20100301170155.668389"
+	},
+	"0008,0020" : 
+	{
+		"Name" : "StudyDate",
+		"Type" : "String",
+		"Value" : "20100223"
+	},
+	"0008,0023" : 
+	{
+		"Name" : "ContentDate",
+		"Type" : "String",
+		"Value" : "20100301"
+	},
+	"0008,0030" : 
+	{
+		"Name" : "StudyTime",
+		"Type" : "String",
+		"Value" : ""
+	},
+	"0008,0033" : 
+	{
+		"Name" : "ContentTime",
+		"Type" : "String",
+		"Value" : "170155"
+	},
+	"0008,0050" : 
+	{
+		"Name" : "AccessionNumber",
+		"Type" : "String",
+		"Value" : ""
+	},
+	"0008,0060" : 
+	{
+		"Name" : "Modality",
+		"Type" : "String",
+		"Value" : "RTDOSE"
+	},
+	"0008,0070" : 
+	{
+		"Name" : "Manufacturer",
+		"Type" : "String",
+		"Value" : "ADAC"
+	},
+	"0008,0090" : 
+	{
+		"Name" : "ReferringPhysicianName",
+		"Type" : "String",
+		"Value" : ""
+	},
+	"0008,1010" : 
+	{
+		"Name" : "StationName",
+		"Type" : "String",
+		"Value" : "pinnc-2"
+	},
+	"0008,1090" : 
+	{
+		"Name" : "ManufacturerModelName",
+		"Type" : "String",
+		"Value" : "Pinnacle3"
+	},
+	"0008,1110" : 
+	{
+		"Name" : "ReferencedStudySequence",
+		"Type" : "Sequence",
+		"Value" : 
+		[
+			{
+				"0008,1150" : 
+				{
+					"Name" : "ReferencedSOPClassUID",
+					"Type" : "String",
+					"Value" : "1.2.840.10008.3.1.2.3.2"
+				},
+				"0008,1155" : 
+				{
+					"Name" : "ReferencedSOPInstanceUID",
+					"Type" : "String",
+					"Value" : "1.2.840.113619.2.55.3.671782272.419.1266452812.128"
+				}
+			}
+		]
+	},
+	"0010,0010" : 
+	{
+		"Name" : "PatientName",
+		"Type" : "String",
+		"Value" : "MR-R"
+	},
+	"0010,0020" : 
+	{
+		"Name" : "PatientID",
+		"Type" : "String",
+		"Value" : "03HDQ000"
+	},
+	"0010,0030" : 
+	{
+		"Name" : "PatientBirthDate",
+		"Type" : "String",
+		"Value" : ""
+	},
+	"0010,0040" : 
+	{
+		"Name" : "PatientSex",
+		"Type" : "String",
+		"Value" : "M"
+	},
+	"0018,0050" : 
+	{
+		"Name" : "SliceThickness",
+		"Type" : "String",
+		"Value" : "4"
+	},
+	"0018,1020" : 
+	{
+		"Name" : "SoftwareVersions",
+		"Type" : "String",
+		"Value" : "OCP x.x"
+	},
+	"0020,000d" : 
+	{
+		"Name" : "StudyInstanceUID",
+		"Type" : "String",
+		"Value" : "1.2.840.113619.2.55.3.671782272.419.1266452812.128"
+	},
+	"0020,000e" : 
+	{
+		"Name" : "SeriesInstanceUID",
+		"Type" : "String",
+		"Value" : "2.16.840.1.113669.2.931128.981194414.20100301170148.767969"
+	},
+	"0020,0010" : 
+	{
+		"Name" : "StudyID",
+		"Type" : "String",
+		"Value" : ""
+	},
+	"0020,0011" : 
+	{
+		"Name" : "SeriesNumber",
+		"Type" : "String",
+		"Value" : ""
+	},
+	"0020,0013" : 
+	{
+		"Name" : "InstanceNumber",
+		"Type" : "String",
+		"Value" : "1"
+	},
+	"0020,0032" : 
+	{
+		"Name" : "ImagePositionPatient",
+		"Type" : "String",
+		"Value" : "-223.9880065918\\-158.08148193359\\-117.78499603271"
+	},
+	"0020,0037" : 
+	{
+		"Name" : "ImageOrientationPatient",
+		"Type" : "String",
+		"Value" : "1\\0\\0\\0\\1\\0"
+	},
+	"0020,0052" : 
+	{
+		"Name" : "FrameOfReferenceUID",
+		"Type" : "String",
+		"Value" : "1.2.840.113619.2.55.3.671782272.419.1266452812.130.10825.1"
+	},
+	"0020,1040" : 
+	{
+		"Name" : "PositionReferenceIndicator",
+		"Type" : "String",
+		"Value" : ""
+	},
+	"0028,0002" : 
+	{
+		"Name" : "SamplesPerPixel",
+		"Type" : "String",
+		"Value" : "1"
+	},
+	"0028,0004" : 
+	{
+		"Name" : "PhotometricInterpretation",
+		"Type" : "String",
+		"Value" : "MONOCHROME2"
+	},
+	"0028,0008" : 
+	{
+		"Name" : "NumberOfFrames",
+		"Type" : "String",
+		"Value" : "75"
+	},
+	"0028,0009" : 
+	{
+		"Name" : "FrameIncrementPointer",
+		"Type" : "String",
+		"Value" : "3004,000c"
+	},
+	"0028,0010" : 
+	{
+		"Name" : "Rows",
+		"Type" : "String",
+		"Value" : "88"
+	},
+	"0028,0011" : 
+	{
+		"Name" : "Columns",
+		"Type" : "String",
+		"Value" : "114"
+	},
+	"0028,0030" : 
+	{
+		"Name" : "PixelSpacing",
+		"Type" : "String",
+		"Value" : "4\\4"
+	},
+	"0028,0100" : 
+	{
+		"Name" : "BitsAllocated",
+		"Type" : "String",
+		"Value" : "16"
+	},
+	"0028,0101" : 
+	{
+		"Name" : "BitsStored",
+		"Type" : "String",
+		"Value" : "16"
+	},
+	"0028,0102" : 
+	{
+		"Name" : "HighBit",
+		"Type" : "String",
+		"Value" : "15"
+	},
+	"0028,0103" : 
+	{
+		"Name" : "PixelRepresentation",
+		"Type" : "String",
+		"Value" : "0"
+	},
+	"3004,0002" : 
+	{
+		"Name" : "DoseUnits",
+		"Type" : "String",
+		"Value" : "GY"
+	},
+	"3004,0004" : 
+	{
+		"Name" : "DoseType",
+		"Type" : "String",
+		"Value" : "PHYSICAL"
+	},
+	"3004,000a" : 
+	{
+		"Name" : "DoseSummationType",
+		"Type" : "String",
+		"Value" : "PLAN"
+	},
+	"3004,000c" : 
+	{
+		"Name" : "GridFrameOffsetVector",
+		"Type" : "TooLong",
+		"Value" : null
+	},
+	"3004,000e" : 
+	{
+		"Name" : "DoseGridScaling",
+		"Type" : "String",
+		"Value" : "0.00341018638574"
+	},
+	"300c,0002" : 
+	{
+		"Name" : "ReferencedRTPlanSequence",
+		"Type" : "Sequence",
+		"Value" : 
+		[
+			{
+				"0008,1150" : 
+				{
+					"Name" : "ReferencedSOPClassUID",
+					"Type" : "String",
+					"Value" : "1.2.840.10008.5.1.4.1.1.481.5"
+				},
+				"0008,1155" : 
+				{
+					"Name" : "ReferencedSOPInstanceUID",
+					"Type" : "String",
+					"Value" : "2.16.840.1.113669.2.931128.981194414.20100301170155.103167"
+				}
+			}
+		]
+	},
+	"7fe0,0010" : 
+	{
+		"Name" : "PixelData",
+		"Type" : "Null",
+		"Value" : null
+	}
+}

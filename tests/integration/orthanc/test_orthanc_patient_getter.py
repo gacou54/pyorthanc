@@ -12,7 +12,7 @@ from tests.integration import setup_server
 from tests.integration.data import a_patient
 
 
-class TestOrthancPatientGetter(unittest.TestCase):
+class TestOrthancPatientGetters(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -290,21 +290,21 @@ class TestOrthancPatientGetter(unittest.TestCase):
             lambda: self.orthanc.get_patient_statistics(a_patient.IDENTIFIER)
         )
 
-    def test_givenOrthancWithPatient_whenGettingPatientStudies_thenResultIsExpectedPatientStudies(self):
+    def test_givenOrthancWithPatient_whenGettingPatientStudiesInformation_thenResultIsExpectedPatientStudiesInformation(self):
         self.given_patient_in_orthanc_server()
         keys_to_remove = ['LastUpdate']  # Removing keys that are never the same
 
-        result = self.orthanc.get_patient_studies(a_patient.IDENTIFIER)
+        result = self.orthanc.get_patient_studies_information(a_patient.IDENTIFIER)
 
         self.assertIsInstance(result, list)
         result = [self._sort_dictionary_element({key: value for key, value in i.items() if key not in keys_to_remove}) for i in result]
         expected = [self._sort_dictionary_element({key: value for key, value in i.items() if key not in keys_to_remove}) for i in a_patient.STUDIES]
         self.assertCountEqual(result, expected)
 
-    def test_givenOrthancWithoutPatient_whenGettingPatientStudies_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutPatient_whenGettingPatientStudiesInformation_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.HTTPError,
-            lambda: self.orthanc.get_patient_studies(a_patient.IDENTIFIER)
+            lambda: self.orthanc.get_patient_studies_information(a_patient.IDENTIFIER)
         )
 
     def _sort_dictionary_element(self, dictionary: Dict) -> Dict:

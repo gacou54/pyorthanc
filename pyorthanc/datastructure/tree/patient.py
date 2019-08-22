@@ -102,13 +102,13 @@ class Patient:
     def build_studies(self) -> None:
         """Build a list of the patient's studies
         """
-        study_identifiers = self.orthanc.get_patient_studies(
+        studies_information = self.orthanc.get_patient_studies_information(
             self.patient_identifier
         )
 
         self.studies = list(map(
             lambda i: Study(i['ID'], self.orthanc),
-            study_identifiers
+            studies_information
         ))
 
     def __str__(self):
