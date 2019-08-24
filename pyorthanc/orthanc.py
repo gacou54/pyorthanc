@@ -2209,10 +2209,11 @@ class Orthanc:
     def anonymize_patient(
             self, patient_identifier: str,
             data: Dict = None,
-            **kwargs) -> Any:
+            **kwargs) -> Dict:
         """Anonymize specified patient
 
-        http://book.pyorthanc-server.com/users/anonymization.html
+        If no error is been raise, then it creates a new anonymous patient.
+        Documentation: http://book.pyorthanc-server.com/users/anonymization.html
 
         Parameters
         ----------
@@ -2223,12 +2224,13 @@ class Orthanc:
 
         Returns
         -------
-        Any
-            If HTTP status == 200 then anonymization doesn't encounter error.
+        Dict
+            Dictionary with the Identifier, Path and PatientID of the new
+            anonymous patient.
         """
         return self.post_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/anonymize',
-            data=data,
+            data={} if data is None else data,
             **kwargs
         )
 
