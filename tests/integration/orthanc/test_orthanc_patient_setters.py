@@ -9,7 +9,7 @@ from tests.integration import setup_server
 from tests.integration.data import a_patient
 
 
-class TestOrthancPatientPuters(unittest.TestCase):
+class TestOrthancPatientSetters(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
