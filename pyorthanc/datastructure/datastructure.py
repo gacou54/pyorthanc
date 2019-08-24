@@ -75,7 +75,7 @@ def _build_patient(
         patient_filter: Optional[Callable],
         study_filter: Optional[Callable],
         series_filter: Optional[Callable]) -> Patient:
-    study_information = orthanc.get_patient_studies(patient_identifier)
+    study_information = orthanc.get_patient_studies_information(patient_identifier)
 
     patient = Patient(patient_identifier, orthanc)
 
