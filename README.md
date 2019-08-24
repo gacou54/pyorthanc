@@ -63,7 +63,7 @@ a_patient_identifier = patients_identifiers[0]
 studies_identifiers = orthanc.get_studies(a_patient_identifier)
 
 for study_identifier in studies_identifiers:
-    study_information = orthanc.get_study_information(study_identifier)
+    study_information = orthanc.get_studies_information(study_identifier)
 ```
 
 #### Getting list of remote modalities:
