@@ -20,4 +20,5 @@ docs/build/
 
 *.pyc
 __pycache__/
+OrthancStorage/
 
