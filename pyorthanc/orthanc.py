@@ -75,6 +75,7 @@ class Orthanc:
         if response.status_code == 200:
             try:
                 return response.json()
+
             except json.JSONDecodeError:
                 return response.content
 
@@ -139,6 +140,7 @@ class Orthanc:
         if response.status_code == 200:
             try:
                 return response.json()
+
             except json.JSONDecodeError:
                 return response.content
 
@@ -149,7 +151,7 @@ class Orthanc:
     def put_request(
             self, route: str,
             data: Optional[Union[Dict, str]] = None,
-            **kwargs) -> Union[List, Dict, str, bytes]:
+            **kwargs) -> None:
         """PUT to specified route
 
         Parameters
@@ -161,8 +163,8 @@ class Orthanc:
 
         Returns
         -------
-        Union[List, Dict, str, bytes]
-            Response of the HTTP PUT request converted to json format.
+        None
+            Nothing
         """
         if self._credentials_are_set:
             response = requests.put(
@@ -176,10 +178,7 @@ class Orthanc:
             response = requests.put(route, data, **kwargs)
 
         if response.status_code == 200:
-            try:
-                return response.json()
-            except json.JSONDecodeError:
-                return response.content
+            return None
 
         raise requests.exceptions.HTTPError(
             f'HTTP code: {response.status_code}, with text: {response.text}'
@@ -277,7 +276,7 @@ class Orthanc:
             identifier: str,
             name: str,
             data: Dict = None,
-            **kwargs) -> Any:
+            **kwargs) -> None:
         """Put attachment with given name
 
         Parameters
@@ -293,7 +292,8 @@ class Orthanc:
 
         Returns
         -------
-        Any
+        None
+            Nothing.
         """
         return self.put_request(
             f'{self._orthanc_url}/{resource_type}/{identifier}/attachments/{name}',
@@ -700,7 +700,7 @@ class Orthanc:
             identifier: str,
             name: str,
             data: Dict = None,
-            **kwargs) -> Any:
+            **kwargs) -> None:
         """Put the contents with a specified metadata field/name
 
         Parameters
@@ -716,7 +716,8 @@ class Orthanc:
 
         Returns
         -------
-        Any
+        None
+            Nothing.
         """
         return self.put_request(
             f'{self._orthanc_url}/{resource_type}/{identifier}/metadata/{name}',
@@ -2021,7 +2022,7 @@ class Orthanc:
     def put_modality(
             self, modality: str,
             data: Dict = None,
-            **kwargs) -> Any:
+            **kwargs) -> None:
         """Put remote modality
 
         Parameters
@@ -2033,7 +2034,8 @@ class Orthanc:
 
         Returns
         -------
-        Any
+        None
+            Nothing.
         """
         return self.put_request(
             f'{self._orthanc_url}/modalities/{modality}',
@@ -2522,7 +2524,7 @@ class Orthanc:
 
     def set_patient_to_protected(
             self, patient_identifier: str,
-            **kwargs) -> Any:
+            **kwargs) -> None:
         """Set patient to protected state
 
         Parameters
@@ -2532,8 +2534,8 @@ class Orthanc:
 
         Returns
         -------
-        Any
-            Nothing
+        None
+            Nothing.
         """
         return self.put_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/protected',
@@ -2543,7 +2545,7 @@ class Orthanc:
 
     def set_patient_to_not_protected(
             self, patient_identifier: str,
-            **kwargs) -> Any:
+            **kwargs) -> None:
         """Set patient to not protected state
 
         Parameters
@@ -2553,8 +2555,8 @@ class Orthanc:
 
         Returns
         -------
-        Any
-            Nothing
+        None
+            Nothing.
         """
         return self.put_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/protected',
@@ -2772,7 +2774,7 @@ class Orthanc:
     def put_peer(
             self, peer_identifier: str,
             data: Dict = None,
-            **kwargs) -> Any:
+            **kwargs) -> None:
         """Put peer
 
         Parameters
@@ -2784,7 +2786,8 @@ class Orthanc:
 
         Returns
         -------
-        Any
+        None
+            Nothing.
         """
         return self.put_request(
             f'{self._orthanc_url}/peers/{peer_identifier}',
@@ -4704,7 +4707,7 @@ class Orthanc:
             **kwargs
         )
 
-    def put_default_encoding(self, data: Dict = None, **kwargs) -> Any:
+    def put_default_encoding(self, data: Dict = None, **kwargs) -> None:
         """Change the default encoding
 
         Temporarily change the default encoding until the next restart.
@@ -4716,7 +4719,8 @@ class Orthanc:
 
         Returns
         -------
-        Any
+        None
+            Nothing.
         """
         return self.put_request(
             f'{self._orthanc_url}/tools/default_encoding',
@@ -4868,7 +4872,7 @@ class Orthanc:
             **kwargs
         )
 
-    def put_metrics(self, data: Dict = None, **kwargs) -> Any:
+    def put_metrics(self, data: Dict = None, **kwargs) -> None:
         """Put method
 
         Enable/disable this collection of metrics
@@ -4880,7 +4884,8 @@ class Orthanc:
 
         Returns
         -------
-        Any
+        None
+            Nothing.
         """
         return self.put_request(
             f'{self._orthanc_url}/tools/metrics',
