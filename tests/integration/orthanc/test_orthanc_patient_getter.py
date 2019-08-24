@@ -12,7 +12,7 @@ from tests.integration import setup_server
 from tests.integration.data import a_patient
 
 
-class TestOrthancPatientGetter(unittest.TestCase):
+class TestOrthancPatientGetters(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -35,7 +35,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
     def given_patient_in_orthanc_server(self):
         setup_server.setup_data()
 
-    def test_givenOrthancWithData_whenGettingPatients_thenResultIsANonEmptyListOfPatientIdentifier(self):
+    def test_givenOrthancWithPatient_whenGettingPatients_thenResultIsANonEmptyListOfPatientIdentifier(self):
         self.given_patient_in_orthanc_server()
 
         result = self.orthanc.get_patients()
@@ -51,7 +51,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 0)
 
-    def test_givenOrthancWithData_whenGettingPatientInformation_thenResultIsADictionaryOfPatientInformation(self):
+    def test_givenOrthancWithPatient_whenGettingPatientInformation_thenResultIsADictionaryOfPatientInformation(self):
         self.given_patient_in_orthanc_server()
         keys_to_remove = ['LastUpdate']  # Removing keys that are never the same
 
@@ -68,7 +68,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
             lambda: self.orthanc.get_patient_information(a_patient.IDENTIFIER)
         )
 
-    def test_givenOrthancWithData_whenGettingPatientZip_thenResultIsBytesOfAValidZipFile(self):
+    def test_givenOrthancWithPatient_whenGettingPatientZip_thenResultIsBytesOfAValidZipFile(self):
         self.given_patient_in_orthanc_server()
 
         result = self.orthanc.get_patient_zip(a_patient.IDENTIFIER)
@@ -80,13 +80,13 @@ class TestOrthancPatientGetter(unittest.TestCase):
         self.assertIsNone(a_zip_file.testzip())
         os.remove(a_patient.ZIP_FILE_PATH)
 
-    def test_givenOrthancWithData_whenGettingPatientZip_thenRaiseHTTPError(self):
+    def test_givenOrthancWithPatient_whenGettingPatientZip_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_zip(a_patient.IDENTIFIER)
         )
 
-    def test_givenOrthancWithData_whenGettingPatientInstances_thenResultIsAListOfPatientInstanceInformation(self):
+    def test_givenOrthancWithPatient_whenGettingPatientInstances_thenResultIsAListOfPatientInstanceInformation(self):
         self.given_patient_in_orthanc_server()
         keys_to_remove = ['FileUuid']  # Removing keys that are never the same
 
@@ -103,7 +103,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
             lambda: self.orthanc.get_patient_instances(a_patient.IDENTIFIER)
         )
 
-    def test_givenOrthancWithData_whenGettingPatientInstancesTags_thenResultIsADictOfPatientInstancesTags(self):
+    def test_givenOrthancWithPatient_whenGettingPatientInstancesTags_thenResultIsADictOfPatientInstancesTags(self):
         self.given_patient_in_orthanc_server()
 
         result = self.orthanc.get_patient_instances_tags(a_patient.IDENTIFIER)
@@ -116,7 +116,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
             lambda: self.orthanc.get_patient_instances_tags(a_patient.IDENTIFIER)
         )
 
-    def test_givenOrthancWithData_whenGettingPatientInstancesTagsInSimplifiedVersion_thenResultIsADictOfPatientInstancesTagsInSimplifiedVersion(self):
+    def test_givenOrthancWithPatient_whenGettingPatientInstancesTagsInSimplifiedVersion_thenResultIsADictOfPatientInstancesTagsInSimplifiedVersion(self):
         self.given_patient_in_orthanc_server()
 
         result = self.orthanc.get_patient_instances_tags_in_simplified_version(a_patient.IDENTIFIER)
@@ -131,7 +131,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
             )
         )
 
-    def test_givenOrthancWithData_whenGettingPatientInstancesTagsInShorterVersion_thenResultIsADictOfPatientInstancesTagsInShorterVersion(self):
+    def test_givenOrthancWithPatient_whenGettingPatientInstancesTagsInShorterVersion_thenResultIsADictOfPatientInstancesTagsInShorterVersion(self):
         self.given_patient_in_orthanc_server()
 
         result = self.orthanc.get_patient_instances_tags_in_shorter_version(a_patient.IDENTIFIER)
@@ -144,7 +144,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
             lambda: self.orthanc.get_patient_instances_tags_in_shorter_version(a_patient.IDENTIFIER)
         )
 
-    def test_givenOrthancWithData_whenGettingPatientArchive_thenResultIsBytesOfAValidZipFileOfPatientArchive(self):
+    def test_givenOrthancWithPatient_whenGettingPatientArchive_thenResultIsBytesOfAValidZipFileOfPatientArchive(self):
         self.given_patient_in_orthanc_server()
 
         result = self.orthanc.get_patient_archive(a_patient.IDENTIFIER)
@@ -162,7 +162,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
             lambda: self.orthanc.get_patient_archive(a_patient.IDENTIFIER)
         )
 
-    def test_givenOrthancWithData_whenGettingPatientModule_thenResultIsExpectedTagInExpectedFormat(self):
+    def test_givenOrthancWithPatient_whenGettingPatientModule_thenResultIsExpectedTagInExpectedFormat(self):
         self.given_patient_in_orthanc_server()
 
         result = self.orthanc.get_patient_module(a_patient.IDENTIFIER)
@@ -175,7 +175,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
             lambda: self.orthanc.get_patient_module(a_patient.IDENTIFIER)
         )
 
-    def test_givenOrthancWithData_whenGettingPatientModuleInSimplifiedVersion_thenResultIsExpectedTagInExpectedFormat(self):
+    def test_givenOrthancWithPatient_whenGettingPatientModuleInSimplifiedVersion_thenResultIsExpectedTagInExpectedFormat(self):
         self.given_patient_in_orthanc_server()
 
         result = self.orthanc.get_patient_module_in_simplified_version(a_patient.IDENTIFIER)
@@ -188,7 +188,7 @@ class TestOrthancPatientGetter(unittest.TestCase):
             lambda: self.orthanc.get_patient_module_in_simplified_version(a_patient.IDENTIFIER)
         )
 
-    def test_givenOrthancWithData_whenGettingPatientModuleInShorterVersion_thenResultIsExpectedTagInExpectedFormat(self):
+    def test_givenOrthancWithPatient_whenGettingPatientModuleInShorterVersion_thenResultIsExpectedTagInExpectedFormat(self):
         self.given_patient_in_orthanc_server()
 
         result = self.orthanc.get_patient_module_in_shorter_version(a_patient.IDENTIFIER)
@@ -290,21 +290,21 @@ class TestOrthancPatientGetter(unittest.TestCase):
             lambda: self.orthanc.get_patient_statistics(a_patient.IDENTIFIER)
         )
 
-    def test_givenOrthancWithPatient_whenGettingPatientStudies_thenResultIsExpectedPatientStudies(self):
+    def test_givenOrthancWithPatient_whenGettingPatientStudiesInformation_thenResultIsExpectedPatientStudiesInformation(self):
         self.given_patient_in_orthanc_server()
         keys_to_remove = ['LastUpdate']  # Removing keys that are never the same
 
-        result = self.orthanc.get_patient_studies(a_patient.IDENTIFIER)
+        result = self.orthanc.get_patient_studies_information(a_patient.IDENTIFIER)
 
         self.assertIsInstance(result, list)
         result = [self._sort_dictionary_element({key: value for key, value in i.items() if key not in keys_to_remove}) for i in result]
         expected = [self._sort_dictionary_element({key: value for key, value in i.items() if key not in keys_to_remove}) for i in a_patient.STUDIES]
         self.assertCountEqual(result, expected)
 
-    def test_givenOrthancWithoutPatient_whenGettingPatientStudies_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutPatient_whenGettingPatientStudiesInformation_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.HTTPError,
-            lambda: self.orthanc.get_patient_studies(a_patient.IDENTIFIER)
+            lambda: self.orthanc.get_patient_studies_information(a_patient.IDENTIFIER)
         )
 
     def _sort_dictionary_element(self, dictionary: Dict) -> Dict:
