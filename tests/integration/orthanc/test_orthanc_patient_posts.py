@@ -46,3 +46,12 @@ class TestOrthancPatientPosts(unittest.TestCase):
             'Anonymized1',
             self.orthanc.get_patient_information(result['ID'])['MainDicomTags']['PatientName']
         )
+
+    def test_givenOrthancWithAPatient_whenArchivingAPatient_thenResultIsTODO(self):
+        self.given_patient_in_orthanc_server()
+
+        result = self.orthanc.archive_patient(a_patient.IDENTIFIER)
+
+        print(result)
+        raise NotImplementedError
+

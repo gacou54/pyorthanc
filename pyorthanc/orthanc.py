@@ -2220,7 +2220,7 @@ class Orthanc:
         patient_identifier
             Patient identifier.
         data
-            Dictionary to send in the body of request.
+            Precision on the anonymization process
 
         Returns
         -------
@@ -2279,12 +2279,10 @@ class Orthanc:
 
         Returns
         -------
-        Any
-            If HTTP status == 200 then anonymization doesn't encounter error.
         """
         return self.post_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/archive',
-            data=data,
+            data={} if data is None else data,
             **kwargs
         )
 
