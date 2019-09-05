@@ -2753,7 +2753,7 @@ class Orthanc:
         return self.get_request(
             f'{self._orthanc_url}/peers/{peer_identifier}', params=params, **kwargs)
 
-    def delete_peers_peer(self, peer_identifier: str, **kwargs) -> bool:
+    def delete_peer(self, peer_identifier: str, **kwargs) -> bool:
         """Delete specified peer
 
         Parameters
