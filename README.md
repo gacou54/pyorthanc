@@ -122,3 +122,22 @@ for patient in patient_forest:
     for study in patient.get_studies():
         ...
 ```
+
+#### Anonymize patient and get file:
+```python
+from pyorthanc import Orthanc
+
+
+orthanc = Orthanc('http://localhost:8042')
+orthanc.setup_credentials('username', 'password')  # If needed
+
+A_PATIENT_IDENTIFIER = orthanc.get_patients()[0]
+
+orthanc.anonymize_patient(A_PATIENT_IDENTIFIER)
+
+# result is: (you can retrieve DICOM file from ID)
+# {'ID': 'dd41f2f1-24838e1e-f01746fc-9715072f-189eb0a2',
+#  'Path': '/patients/dd41f2f1-24838e1e-f01746fc-9715072f-189eb0a2',
+#  'PatientID': 'dd41f2f1-24838e1e-f01746fc-9715072f-189eb0a2',
+#  'Type': 'Patient'}
+```

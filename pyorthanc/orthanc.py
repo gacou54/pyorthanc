@@ -2229,6 +2229,18 @@ class Orthanc:
         Dict
             Dictionary with the Identifier, Path and PatientID of the new
             anonymous patient.
+
+        Examples
+        --------
+        >>> from pyorthanc import Orthanc
+        >>> orthanc = Orthanc('http://localhost:8042')
+        >>> a_patient_identifier = orthanc.get_patients()[0]
+        >>> orthanc.anonymize_patient(a_patient_identifier)
+        {'ID': 'dd41f2f1-24838e1e-f01746fc-9715072f-189eb0a2',
+         'Path': '/patients/dd41f2f1-24838e1e-f01746fc-9715072f-189eb0a2',
+         'PatientID': 'dd41f2f1-24838e1e-f01746fc-9715072f-189eb0a2',
+         'Type': 'Patient'}
+
         """
         return self.post_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/anonymize',
@@ -2259,6 +2271,7 @@ class Orthanc:
         >>> bytes_content = orthanc.get_patient_zip(a_patient_identifier)
         >>> with open('patient_zip_file_path.zip', 'wb') as file_handler:
         ...     file_handler.write(bytes_content)
+
         """
         return self.get_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/archive'
@@ -2290,6 +2303,7 @@ class Orthanc:
         >>> zip_content = orthanc.archive_patient('A_PATIENT_IDENTIFIER')
         >>> with open('file_path', 'wb') as file_handler:
         ...     file_handler.write(zip_content)
+
         """
         return self.post_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/archive',
