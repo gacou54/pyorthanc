@@ -108,7 +108,7 @@ class Orthanc:
 
     def post_request(
             self, route: str,
-            data: Optional[Union[Dict, bytes]] = None,
+            data: Optional[Union[Dict, bytes, str]] = None,
             **kwargs) -> Union[List, Dict, str, bytes]:
         """POST to specified route
 
