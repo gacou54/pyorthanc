@@ -1,6 +1,10 @@
 # coding: utf-8
 # author: gabriel couture
+import os
 import unittest
+import zipfile
+
+import requests
 
 from pyorthanc import Orthanc
 from tests.integration import setup_server
@@ -45,10 +49,27 @@ class TestOrthancPatientPosts(unittest.TestCase):
             self.orthanc.get_patient_information(result['ID'])['MainDicomTags']['PatientName']
         )
 
-    def test_givenOrthancWithAPatient_whenArchivingAPatient_thenResultIsTODO(self):
+    def test_givenOrthancWithoutAPatient_whenAnonymizeAPatient_thenRaiseHTTPError(self):
+        self.assertRaises(
+            requests.exceptions.HTTPError,
+            lambda: self.orthanc.anonymize_patient(a_patient.IDENTIFIER)
+        )
+
+    def test_givenOrthancWithAPatient_whenArchivingAPatient_thenResultIsBytesOfAValidZipFile(self):
         self.given_patient_in_orthanc_server()
 
         result = self.orthanc.archive_patient(a_patient.IDENTIFIER)
 
-        print(result)
-        raise NotImplementedError
+        self.assertIsInstance(result, bytes)
+        with open(a_patient.ZIP_FILE_PATH, 'wb') as file_handler:
+            file_handler.write(result)
+
+        a_zip_file = zipfile.ZipFile(a_patient.ZIP_FILE_PATH)
+        self.assertIsNone(a_zip_file.testzip())
+        os.remove(a_patient.ZIP_FILE_PATH)
+
+    def test_givenOrthancWithoutAPatient_whenArchivingAPatient_thenRaiseHTTPError(self):
+        self.assertRaises(
+            requests.exceptions.HTTPError,
+            lambda: self.orthanc.archive_patient(a_patient.IDENTIFIER)
+        )

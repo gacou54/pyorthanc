@@ -166,6 +166,8 @@ class Orthanc:
         None
             Nothing
         """
+        data = json.dumps(data) if type(data) == dict else data
+
         if self._credentials_are_set:
             response = requests.put(
                 route,
@@ -178,7 +180,7 @@ class Orthanc:
             response = requests.put(route, data, **kwargs)
 
         if response.status_code == 200:
-            return None
+            return
 
         raise requests.exceptions.HTTPError(
             f'HTTP code: {response.status_code}, with text: {response.text}'
@@ -2265,10 +2267,10 @@ class Orthanc:
     def archive_patient(
             self, patient_identifier: str,
             data: Dict = None,
-            **kwargs) -> Any:
+            **kwargs) -> bytes:
         """Archive patient
 
-        Create ZIP.
+        Create ZIP and return it.
 
         Parameters
         ----------
@@ -2279,6 +2281,15 @@ class Orthanc:
 
         Returns
         -------
+        bytes
+            Bytes of the ZIP file.
+
+        Examples
+        --------
+        >>> orthanc = Orthanc('http://localhost:8042')
+        >>> zip_content = orthanc.archive_patient('A_PATIENT_IDENTIFIER')
+        >>> with open('file_path', 'wb') as file_handler:
+        ...     file_handler.write(zip_content)
         """
         return self.post_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/archive',

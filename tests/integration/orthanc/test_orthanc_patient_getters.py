@@ -73,6 +73,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
         result = self.orthanc.get_patient_zip(a_patient.IDENTIFIER)
 
+        self.assertIsInstance(result, bytes)
         with open(a_patient.ZIP_FILE_PATH, 'wb') as file_handler:
             file_handler.write(result)
 
