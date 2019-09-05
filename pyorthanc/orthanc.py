@@ -108,7 +108,7 @@ class Orthanc:
 
     def post_request(
             self, route: str,
-            data: Optional[Dict] = None,
+            data: Optional[Union[Dict, bytes]] = None,
             **kwargs) -> Union[List, Dict, str, bytes]:
         """POST to specified route
 
@@ -124,18 +124,18 @@ class Orthanc:
         Union[List, Dict, str, bytes]
             Response of the HTTP POST request converted to json format.
         """
-        json_data = None if data is None else json.dumps(data)
+        data = json.dumps(data) if type(data) == dict else data
 
         if self._credentials_are_set:
             response = requests.post(
                 route,
                 auth=self._credentials,
-                data=json_data,
+                data=data,
                 **kwargs
             )
 
         else:
-            response = requests.post(route, data=json_data, **kwargs)
+            response = requests.post(route, data=data, **kwargs)
 
         if response.status_code == 200:
             try:
