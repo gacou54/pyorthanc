@@ -43,7 +43,7 @@ class Orthanc:
     def get_request(
             self, route: str,
             params: Optional[Dict] = None,
-            **kwargs):
+            **kwargs) -> Any:
         """GET request with specified route
 
         Parameters
@@ -58,19 +58,12 @@ class Orthanc:
         Union[List, Dict, str, bytes, int]
             Response of the HTTP GET request converted to json format.
         """
-        if self._credentials_are_set:
-            response = requests.get(
-                route,
-                params=params,
-                auth=self._credentials,
-                **kwargs
-            )
-        else:
-            response = requests.get(
-                route,
-                params=params,
-                **kwargs
-            )
+        response = requests.get(
+            route,
+            params=params,
+            auth=self._credentials if self._credentials_are_set else None,
+            **kwargs
+        )
 
         if response.status_code == 200:
             try:
@@ -98,18 +91,18 @@ class Orthanc:
         bool
             True if the HTTP DELETE request succeeded (HTTP code 200).
         """
-        if self._credentials_are_set:
-            response = requests.delete(route, auth=self._credentials, **kwargs)
-
-        else:
-            response = requests.delete(route, **kwargs)
+        response = requests.delete(
+            route,
+            auth=self._credentials if self._credentials_are_set else None,
+            **kwargs
+        )
 
         return True if response.status_code == 200 else False
 
     def post_request(
             self, route: str,
             data: Optional[Union[Dict, bytes, str]] = None,
-            **kwargs) -> Union[List, Dict, str, bytes]:
+            **kwargs) -> Any:
         """POST to specified route
 
         Parameters
@@ -124,18 +117,15 @@ class Orthanc:
         Union[List, Dict, str, bytes]
             Response of the HTTP POST request converted to json format.
         """
-        data = json.dumps(data) if type(data) == dict else data
+        if type(data) == dict or data is None:
+            data = json.dumps({} if data is None else data)
 
-        if self._credentials_are_set:
-            response = requests.post(
-                route,
-                auth=self._credentials,
-                data=data,
-                **kwargs
-            )
-
-        else:
-            response = requests.post(route, data=data, **kwargs)
+        response = requests.post(
+            route,
+            auth=self._credentials if self._credentials_are_set else None,
+            data=data,
+            **kwargs
+        )
 
         if response.status_code == 200:
             try:
@@ -166,19 +156,18 @@ class Orthanc:
         None
             Nothing
         """
-        if self._credentials_are_set:
-            response = requests.put(
-                route,
-                auth=self._credentials,
-                data=data,
-                **kwargs
-            )
+        if type(data) == dict or data is None:
+            data = json.dumps({} if data is None else data)
 
-        else:
-            response = requests.put(route, data, **kwargs)
+        response = requests.put(
+            route,
+            auth=self._credentials if self._credentials_are_set else None,
+            data=data,
+            **kwargs
+        )
 
         if response.status_code == 200:
-            return None
+            return
 
         raise requests.exceptions.HTTPError(
             f'HTTP code: {response.status_code}, with text: {response.text}'
@@ -2209,22 +2198,36 @@ class Orthanc:
     def anonymize_patient(
             self, patient_identifier: str,
             data: Dict = None,
-            **kwargs) -> Any:
+            **kwargs) -> Dict[str, str]:
         """Anonymize specified patient
 
-        http://book.pyorthanc-server.com/users/anonymization.html
+        If no error is been raise, then it creates a new anonymous patient.
+        Documentation: http://book.pyorthanc-server.com/users/anonymization.html
 
         Parameters
         ----------
         patient_identifier
             Patient identifier.
         data
-            Dictionary to send in the body of request.
+            Precision on the anonymization process
 
         Returns
         -------
-        Any
-            If HTTP status == 200 then anonymization doesn't encounter error.
+        Dict
+            Dictionary with the Identifier, Path and PatientID of the new
+            anonymous patient.
+
+        Examples
+        --------
+        >>> from pyorthanc import Orthanc
+        >>> orthanc = Orthanc('http://localhost:8042')
+        >>> a_patient_identifier = orthanc.get_patients()[0]
+        >>> orthanc.anonymize_patient(a_patient_identifier)
+        {'ID': 'dd41f2f1-24838e1e-f01746fc-9715072f-189eb0a2',
+         'Path': '/patients/dd41f2f1-24838e1e-f01746fc-9715072f-189eb0a2',
+         'PatientID': 'dd41f2f1-24838e1e-f01746fc-9715072f-189eb0a2',
+         'Type': 'Patient'}
+
         """
         return self.post_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/anonymize',
@@ -2255,6 +2258,7 @@ class Orthanc:
         >>> bytes_content = orthanc.get_patient_zip(a_patient_identifier)
         >>> with open('patient_zip_file_path.zip', 'wb') as file_handler:
         ...     file_handler.write(bytes_content)
+
         """
         return self.get_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/archive'
@@ -2263,10 +2267,10 @@ class Orthanc:
     def archive_patient(
             self, patient_identifier: str,
             data: Dict = None,
-            **kwargs) -> Any:
+            **kwargs) -> bytes:
         """Archive patient
 
-        Create ZIP.
+        Create ZIP and return it.
 
         Parameters
         ----------
@@ -2277,8 +2281,16 @@ class Orthanc:
 
         Returns
         -------
-        Any
-            If HTTP status == 200 then anonymization doesn't encounter error.
+        bytes
+            Bytes of the ZIP file.
+
+        Examples
+        --------
+        >>> orthanc = Orthanc('http://localhost:8042')
+        >>> zip_content = orthanc.archive_patient('A_PATIENT_IDENTIFIER')
+        >>> with open('file_path', 'wb') as file_handler:
+        ...     file_handler.write(zip_content)
+
         """
         return self.post_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/archive',
@@ -2753,7 +2765,7 @@ class Orthanc:
         return self.get_request(
             f'{self._orthanc_url}/peers/{peer_identifier}', params=params, **kwargs)
 
-    def delete_peers_peer(self, peer_identifier: str, **kwargs) -> bool:
+    def delete_peer(self, peer_identifier: str, **kwargs) -> bool:
         """Delete specified peer
 
         Parameters
