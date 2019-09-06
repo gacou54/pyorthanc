@@ -43,7 +43,7 @@ class Orthanc:
     def get_request(
             self, route: str,
             params: Optional[Dict] = None,
-            **kwargs):
+            **kwargs) -> Any:
         """GET request with specified route
 
         Parameters
@@ -58,19 +58,12 @@ class Orthanc:
         Union[List, Dict, str, bytes, int]
             Response of the HTTP GET request converted to json format.
         """
-        if self._credentials_are_set:
-            response = requests.get(
-                route,
-                params=params,
-                auth=self._credentials,
-                **kwargs
-            )
-        else:
-            response = requests.get(
-                route,
-                params=params,
-                **kwargs
-            )
+        response = requests.get(
+            route,
+            params=params,
+            auth=self._credentials if self._credentials_are_set else None,
+            **kwargs
+        )
 
         if response.status_code == 200:
             try:
@@ -98,18 +91,18 @@ class Orthanc:
         bool
             True if the HTTP DELETE request succeeded (HTTP code 200).
         """
-        if self._credentials_are_set:
-            response = requests.delete(route, auth=self._credentials, **kwargs)
-
-        else:
-            response = requests.delete(route, **kwargs)
+        response = requests.delete(
+            route,
+            auth=self._credentials if self._credentials_are_set else None,
+            **kwargs
+        )
 
         return True if response.status_code == 200 else False
 
     def post_request(
             self, route: str,
             data: Optional[Union[Dict, bytes, str]] = None,
-            **kwargs) -> Union[List, Dict, str, bytes]:
+            **kwargs) -> Any:
         """POST to specified route
 
         Parameters
@@ -124,18 +117,15 @@ class Orthanc:
         Union[List, Dict, str, bytes]
             Response of the HTTP POST request converted to json format.
         """
-        data = json.dumps(data) if type(data) == dict else data
+        if type(data) == dict or data is None:
+            data = json.dumps({} if data is None else data)
 
-        if self._credentials_are_set:
-            response = requests.post(
-                route,
-                auth=self._credentials,
-                data=data,
-                **kwargs
-            )
-
-        else:
-            response = requests.post(route, data=data, **kwargs)
+        response = requests.post(
+            route,
+            auth=self._credentials if self._credentials_are_set else None,
+            data=data,
+            **kwargs
+        )
 
         if response.status_code == 200:
             try:
@@ -166,18 +156,15 @@ class Orthanc:
         None
             Nothing
         """
-        data = json.dumps(data) if type(data) == dict else data
+        if type(data) == dict or data is None:
+            data = json.dumps({} if data is None else data)
 
-        if self._credentials_are_set:
-            response = requests.put(
-                route,
-                auth=self._credentials,
-                data=data,
-                **kwargs
-            )
-
-        else:
-            response = requests.put(route, data, **kwargs)
+        response = requests.put(
+            route,
+            auth=self._credentials if self._credentials_are_set else None,
+            data=data,
+            **kwargs
+        )
 
         if response.status_code == 200:
             return
@@ -2211,7 +2198,7 @@ class Orthanc:
     def anonymize_patient(
             self, patient_identifier: str,
             data: Dict = None,
-            **kwargs) -> Dict:
+            **kwargs) -> Dict[str, str]:
         """Anonymize specified patient
 
         If no error is been raise, then it creates a new anonymous patient.
@@ -2244,7 +2231,7 @@ class Orthanc:
         """
         return self.post_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/anonymize',
-            data={} if data is None else data,
+            data=data,
             **kwargs
         )
 
@@ -2307,7 +2294,7 @@ class Orthanc:
         """
         return self.post_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/archive',
-            data={} if data is None else data,
+            data=data,
             **kwargs
         )
 
