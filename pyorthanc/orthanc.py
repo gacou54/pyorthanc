@@ -3,6 +3,7 @@ import json
 from typing import List, Dict, Union, Any, Optional
 
 import requests
+import simplejson
 from requests.auth import HTTPBasicAuth
 
 
@@ -69,7 +70,7 @@ class Orthanc:
             try:
                 return response.json()
 
-            except json.JSONDecodeError:
+            except (json.JSONDecodeError, simplejson.JSONDecodeError):
                 return response.content
 
         raise requests.exceptions.HTTPError(
@@ -131,7 +132,7 @@ class Orthanc:
             try:
                 return response.json()
 
-            except json.JSONDecodeError:
+            except (json.JSONDecodeError, simplejson.JSONDecodeError):
                 return response.content
 
         raise requests.exceptions.HTTPError(
