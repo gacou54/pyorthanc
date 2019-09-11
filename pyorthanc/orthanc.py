@@ -70,7 +70,7 @@ class Orthanc:
             try:
                 return response.json()
 
-            except json.JSONDecodeError or simplejson.errors.JSONDecodeError:
+            except (json.JSONDecodeError, simplejson.JSONDecodeError):
                 return response.content
 
         raise requests.exceptions.HTTPError(
@@ -132,7 +132,7 @@ class Orthanc:
             try:
                 return response.json()
 
-            except json.JSONDecodeError:
+            except (json.JSONDecodeError, simplejson.JSONDecodeError):
                 return response.content
 
         raise requests.exceptions.HTTPError(
