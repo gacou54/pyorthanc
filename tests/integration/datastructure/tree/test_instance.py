@@ -8,7 +8,7 @@ from tests.integration import setup_server
 from tests.integration.data import a_patient
 
 
-class TestPatient(unittest.TestCase):
+class TestInstance(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -22,15 +22,19 @@ class TestPatient(unittest.TestCase):
         del orthanc_subprocess
 
     def setUp(self) -> None:
-        setup_server.setup_data()
+        self.given_patient_in_orthanc_server()
         self.patient = Patient(
             a_patient.IDENTIFIER,
             Orthanc(setup_server.ORTHANC_URL)
         )
 
     def tearDown(self) -> None:
+        self.orthanc = None
         self.patient = None
         setup_server.clear_data()
+
+    def given_patient_in_orthanc_server(self):
+        setup_server.setup_data()
 
     def test_givenAPatient_whenGettingIdentifier_thenResultIsExpectedIdentifier(self):
         result = self.patient.get_identifier()

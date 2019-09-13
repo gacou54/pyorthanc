@@ -7,7 +7,7 @@ from pyorthanc.orthanc import Orthanc
 
 
 class Study:
-    """Represent an series that is in an Orthanc server
+    """Represent an study that is in an Orthanc server
 
     This object has many getters that allow the user to retrieve metadata
     or the entire DICOM file of the Series
@@ -60,6 +60,16 @@ class Study:
 
         return self.study_information
 
+    def get_referring_physician_name(self) -> str:
+        """Get referring physician name
+
+        Returns
+        -------
+        str
+            Referring physician Name.
+        """
+        return self.get_main_information()['MainDicomTags']['ReferringPhysicianName']
+
     def get_date(self) -> str:
         """Get study date
 
@@ -90,15 +100,25 @@ class Study:
         """
         return self.get_main_information()['MainDicomTags']['StudyID']
 
-    def get_description(self) -> str:
-        """Get study description
+    def get_parent_patient_identifier(self) -> str:
+        """Get the Orthanc identifier of the parent patient
 
         Returns
         -------
         str
-            Study description
+            Parent patient's identifier.
         """
-        return self.get_main_information()['MainDicomTags']['StudyDescription']
+        return self.get_main_information()['ParentPatient']
+
+    def get_patient_information(self) -> Dict:
+        """Get patient information
+
+        Returns
+        -------
+        Dict
+            Patient general information.
+        """
+        return self.get_main_information()['PatientMainDicomTags']
 
     def get_series(self) -> List[Series]:
         """Get Study series
@@ -108,7 +128,7 @@ class Study:
         List[Series]
             List of study's Series
         """
-        return list(self.series)
+        return self.series
 
     def build_series(self) -> None:
         """Build a list of the study's series
