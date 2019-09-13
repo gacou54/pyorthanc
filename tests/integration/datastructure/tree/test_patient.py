@@ -42,13 +42,13 @@ class TestOrthancPatientDeleters(unittest.TestCase):
         self.assertEqual(result, a_patient.IDENTIFIER)
 
     def test_givenAPatient_whenGettingMainInformation_thenResultIsExpectedPatientInformation(self):
-        keys_to_excluded = {'LastUpdate'}
+        keys_to_exclude = {'LastUpdate'}
 
         result = self.patient.get_main_information()
 
         self.assertEqual(
-            {key: value for key, value in result.items() if key not in keys_to_excluded},
-            {key: value for key, value in a_patient.INFORMATION.items() if key not in keys_to_excluded},
+            {key: value for key, value in result.items() if key not in keys_to_exclude},
+            {key: value for key, value in a_patient.INFORMATION.items() if key not in keys_to_exclude},
         )
 
     def test_givenAPatient_whenGettingPatientID_thenResultIsExpectedPatientID(self):
@@ -75,7 +75,7 @@ class TestOrthancPatientDeleters(unittest.TestCase):
         )
 
     def test_givenAPatientWithEmptyStudies_whenTrimPatient_thenEmptyStudiesGetsDeleted(self):
-        self.patient.build_studies()
+        self.patient.build_studies()  # When getting building, studies do not get built by default
         expected_number_of_study = 0
 
         self.patient.trim()
