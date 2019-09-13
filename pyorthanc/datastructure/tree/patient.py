@@ -55,7 +55,8 @@ class Patient:
         """
         if self.patient_information is None:
             self.patient_information = self.orthanc.get_patient_information(
-                self.patient_identifier)
+                self.patient_identifier
+            )
 
         return self.patient_information
 
@@ -97,7 +98,7 @@ class Patient:
         List[Study]
             List of the patient's studies
         """
-        return list(self.studies)
+        return self.studies
 
     def build_studies(self) -> None:
         """Build a list of the patient's studies
@@ -121,7 +122,7 @@ class Patient:
             study.trim()
 
         self.studies = list(filter(
-            lambda study: not study.is_empty(), self.studies
+            lambda s: not s.is_empty(), self.studies
         ))
 
     def is_empty(self) -> bool:

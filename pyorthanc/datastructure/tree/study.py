@@ -55,7 +55,8 @@ class Study:
         """
         if self.study_information is None:
             self.study_information = self.orthanc.get_study_information(
-                self.study_identifier)
+                self.study_identifier
+            )
 
         return self.study_information
 
