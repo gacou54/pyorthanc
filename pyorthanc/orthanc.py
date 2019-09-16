@@ -2236,7 +2236,7 @@ class Orthanc:
             **kwargs
         )
 
-    def get_patient_zip(self, patient_identifier: str) -> Any:
+    def get_patient_zip(self, patient_identifier: str) -> bytes:
         """Get the bytes of the zip file
 
         Get the .zip file.

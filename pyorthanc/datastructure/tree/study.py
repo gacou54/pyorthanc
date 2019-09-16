@@ -7,7 +7,7 @@ from pyorthanc.orthanc import Orthanc
 
 
 class Study:
-    """Represent an series that is in an Orthanc server
+    """Represent an study that is in an Orthanc server
 
     This object has many getters that allow the user to retrieve metadata
     or the entire DICOM file of the Series
@@ -30,8 +30,8 @@ class Study:
         """
         self.orthanc = orthanc
 
-        self.study_identifier = study_identifier
-        self.study_information = study_information
+        self.identifier = study_identifier
+        self.information = study_information
 
         self.series: List[Series] = []
 
@@ -43,7 +43,7 @@ class Study:
         str
             Study identifier
         """
-        return self.study_identifier
+        return self.identifier
 
     def get_main_information(self) -> Dict:
         """Get Study information
@@ -53,12 +53,22 @@ class Study:
         Dict
             Dictionary of study information
         """
-        if self.study_information is None:
-            self.study_information = self.orthanc.get_study_information(
-                self.study_identifier
+        if self.information is None:
+            self.information = self.orthanc.get_study_information(
+                self.identifier
             )
 
-        return self.study_information
+        return self.information
+
+    def get_referring_physician_name(self) -> str:
+        """Get referring physician name
+
+        Returns
+        -------
+        str
+            Referring physician Name.
+        """
+        return self.get_main_information()['MainDicomTags']['ReferringPhysicianName']
 
     def get_date(self) -> str:
         """Get study date
@@ -90,15 +100,25 @@ class Study:
         """
         return self.get_main_information()['MainDicomTags']['StudyID']
 
-    def get_description(self) -> str:
-        """Get study description
+    def get_parent_patient_identifier(self) -> str:
+        """Get the Orthanc identifier of the parent patient
 
         Returns
         -------
         str
-            Study description
+            Parent patient's identifier.
         """
-        return self.get_main_information()['MainDicomTags']['StudyDescription']
+        return self.get_main_information()['ParentPatient']
+
+    def get_patient_information(self) -> Dict:
+        """Get patient information
+
+        Returns
+        -------
+        Dict
+            Patient general information.
+        """
+        return self.get_main_information()['PatientMainDicomTags']
 
     def get_series(self) -> List[Series]:
         """Get Study series
@@ -108,13 +128,14 @@ class Study:
         List[Series]
             List of study's Series
         """
-        return list(self.series)
+        return self.series
 
     def build_series(self) -> None:
         """Build a list of the study's series
         """
         series_identifiers = self.orthanc.get_study_series_information(
-            self.study_identifier)
+            self.identifier
+        )
 
         self.series = list(map(
             lambda i: Series(i['ID'], self.orthanc),

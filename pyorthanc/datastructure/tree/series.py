@@ -30,8 +30,8 @@ class Series:
         """
         self.orthanc = orthanc
 
-        self.series_identifier = series_identifier
-        self.series_information = series_information
+        self.identifier = series_identifier
+        self.information = series_information
 
         self.instances: List[Instance] = []
 
@@ -43,7 +43,7 @@ class Series:
         List[Instance]
             List of the series's Instance.
         """
-        return list(self.instances)
+        return self.instances
 
     def get_identifier(self) -> str:
         """Get series identifier
@@ -53,7 +53,7 @@ class Series:
         str
             Series identifier.
         """
-        return self.series_identifier
+        return self.identifier
 
     def get_main_information(self) -> Dict:
         """Get series main information
@@ -63,11 +63,31 @@ class Series:
         Dict
             Dictionary of series main information.
         """
-        if self.series_information is None:
-            self.series_information = self.orthanc.get_series_information(
-                self.series_identifier)
+        if self.information is None:
+            self.information = self.orthanc.get_series_information(
+                self.identifier)
 
-        return self.series_information
+        return self.information
+
+    def get_manufacturer(self) -> str:
+        """Get the manufacturer
+
+        Returns
+        -------
+        str
+            The manufacturer.
+        """
+        return self.get_main_information()['MainDicomTags']['Manufacturer']
+
+    def get_parent_study_identifier(self) -> str:
+        """Get the parent study identifier
+
+        Returns
+        -------
+        str
+            The parent study identifier.
+        """
+        return self.get_main_information()['ParentStudy']
 
     def get_modality(self) -> str:
         """Get series modality
@@ -93,7 +113,8 @@ class Series:
         """Build a list of the series's instances
         """
         instance_identifiers = self.orthanc.get_series_instance_information(
-            self.series_identifier)
+            self.identifier
+        )
 
         self.instances = list(map(
             lambda i: Instance(i['ID'], self.orthanc),
