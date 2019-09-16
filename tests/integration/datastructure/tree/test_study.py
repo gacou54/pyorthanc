@@ -39,8 +39,8 @@ class TestStudy(unittest.TestCase):
         result = self.study.get_main_information()
 
         self.assertDictEqual(
-            {key: value for key, value in result.items() if key not in keys_to_exclude},
-            {key: value for key, value in a_study.INFORMATION.items() if key not in keys_to_exclude},
+            {key: value.sort() if type(value) == list else value for key, value in result.items() if key not in keys_to_exclude},
+            {key: value.sort() if type(value) == list else value for key, value in a_study.INFORMATION.items() if key not in keys_to_exclude},
         )
 
     def test_givenAStudy_whenGettingParentPatientIdentifier_thenResultIsExpectedParentPatientIdentifier(self):

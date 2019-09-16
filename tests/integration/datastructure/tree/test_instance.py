@@ -44,10 +44,10 @@ class TestInstance(unittest.TestCase):
             {key: value for key, value in a_instance.INFORMATION.items() if key not in keys_to_exclude},
         )
 
-    def test_givenAInstance_whenGettingFileSize_thenResultIsExpectedFileSize(self):
+    def test_givenAInstance_whenGettingFileSize_thenResultIsAInt(self):
         result = self.instance.get_file_size()
 
-        self.assertEqual(result, a_instance.FILE_SIZE)
+        self.assertIsInstance(result, int)  # The fileSize value depends on the machine where Orthanc run
 
     def test_givenAInstance_whenGettingCreationDate_thenResultIsExpectedCreationDate(self):
         expected_date = datetime(
