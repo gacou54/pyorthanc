@@ -30,8 +30,8 @@ class Instance:
         """
         self.orthanc = orthanc
 
-        self.instance_identifier = instance_identifier
-        self.instance_information = instance_information
+        self.identifier = instance_identifier
+        self.information = instance_information
 
     def get_dicom_file_content(self) -> bytes:
         """Retrieves DICOM file
@@ -51,7 +51,7 @@ class Instance:
         >>> with open('your_path', 'wb') as file_handler:
         ...     file_handler.write(dicom_file_bytes)
         """
-        return self.orthanc.get_instance_file(self.instance_identifier)
+        return self.orthanc.get_instance_file(self.identifier)
 
     def get_identifier(self) -> str:
         """Get instance identifier
@@ -61,7 +61,7 @@ class Instance:
         str
             Instance identifier
         """
-        return self.instance_identifier
+        return self.identifier
 
     def get_main_information(self) -> Dict:
         """Get instance information
@@ -71,12 +71,12 @@ class Instance:
         Dict
             Dictionary with tags as key and information as value
         """
-        if self.instance_information is None:
-            self.instance_information = self.orthanc.get_instance_information(
-                self.instance_identifier
+        if self.information is None:
+            self.information = self.orthanc.get_instance_information(
+                self.identifier
             )
 
-        return self.instance_information
+        return self.information
 
     def get_file_size(self) -> int:
         """Get the file size
@@ -131,7 +131,7 @@ class Instance:
         Any
             First level tags.
         """
-        return self.orthanc.get_instance_first_level_tags(self.instance_identifier)
+        return self.orthanc.get_instance_first_level_tags(self.identifier)
 
     def get_tags(self) -> Dict:
         """Get tags
@@ -141,7 +141,7 @@ class Instance:
         Dict
             Tags in the form of a dictionary.
         """
-        return self.orthanc.get_instance_tags(self.instance_identifier)
+        return self.orthanc.get_instance_tags(self.identifier)
 
     def get_simplified_tags(self) -> Dict:
         """Get simplified tags
@@ -152,7 +152,7 @@ class Instance:
             Simplified tags in the form of a dictionary.
         """
         return self.orthanc.get_instance_simplified_tags(
-            self.instance_identifier
+            self.identifier
         )
 
     def get_content_by_tag(self, tag: str) -> Any:
@@ -169,7 +169,7 @@ class Instance:
             Content corresponding to specified tag.
         """
         return self.orthanc.get_instance_content_by_group_element(
-            instance_identifier=self.instance_identifier,
+            instance_identifier=self.identifier,
             group_element=tag
         )
 
@@ -180,14 +180,14 @@ class Instance:
         ----------
         group_element
             Group element like '0040-a730/1/0040-a730'.
-
+a
         Returns
         -------
         Any
             Content corresponding to specified tag.
         """
         return self.orthanc.get_instance_content_by_group_element(
-            instance_identifier=self.instance_identifier,
+            instance_identifier=self.identifier,
             group_element=group_element
         )
 

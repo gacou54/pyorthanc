@@ -30,8 +30,8 @@ class Study:
         """
         self.orthanc = orthanc
 
-        self.study_identifier = study_identifier
-        self.study_information = study_information
+        self.identifier = study_identifier
+        self.information = study_information
 
         self.series: List[Series] = []
 
@@ -43,7 +43,7 @@ class Study:
         str
             Study identifier
         """
-        return self.study_identifier
+        return self.identifier
 
     def get_main_information(self) -> Dict:
         """Get Study information
@@ -53,12 +53,12 @@ class Study:
         Dict
             Dictionary of study information
         """
-        if self.study_information is None:
-            self.study_information = self.orthanc.get_study_information(
-                self.study_identifier
+        if self.information is None:
+            self.information = self.orthanc.get_study_information(
+                self.identifier
             )
 
-        return self.study_information
+        return self.information
 
     def get_referring_physician_name(self) -> str:
         """Get referring physician name
@@ -134,7 +134,7 @@ class Study:
         """Build a list of the study's series
         """
         series_identifiers = self.orthanc.get_study_series_information(
-            self.study_identifier
+            self.identifier
         )
 
         self.series = list(map(
