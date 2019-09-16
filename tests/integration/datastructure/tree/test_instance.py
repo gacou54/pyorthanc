@@ -35,7 +35,7 @@ class TestInstance(unittest.TestCase):
         setup_server.clear_data()
 
     def test_givenAInstance_whenGettingMainInformation_thenResultIsExpectedPatientInformation(self):
-        keys_to_exclude = {'LastUpdate', 'FileSize'}
+        keys_to_exclude = {'LastUpdate', 'FileSize', 'FileUuid'}
 
         result = self.instance.get_main_information()
 
