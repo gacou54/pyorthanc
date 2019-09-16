@@ -1,11 +1,12 @@
 # coding: utf-8
 # author: Gabriel Couture
 import unittest
+from datetime import datetime
 
 from pyorthanc import Orthanc
-from pyorthanc.datastructure import Patient
+from pyorthanc.datastructure import Instance
 from tests.integration import setup_server
-from tests.integration.data import a_patient
+from tests.integration.data import a_instance
 
 
 class TestInstance(unittest.TestCase):
@@ -22,65 +23,47 @@ class TestInstance(unittest.TestCase):
         del orthanc_subprocess
 
     def setUp(self) -> None:
-        self.given_patient_in_orthanc_server()
-        self.patient = Patient(
-            a_patient.IDENTIFIER,
+        setup_server.setup_data()
+
+        self.instance = Instance(
+            a_instance.IDENTIFIER,
             Orthanc(setup_server.ORTHANC_URL)
         )
 
     def tearDown(self) -> None:
-        self.orthanc = None
-        self.patient = None
+        self.instance = None
         setup_server.clear_data()
 
-    def given_patient_in_orthanc_server(self):
-        setup_server.setup_data()
-
-    def test_givenAPatient_whenGettingIdentifier_thenResultIsExpectedIdentifier(self):
-        result = self.patient.get_identifier()
-
-        self.assertEqual(result, a_patient.IDENTIFIER)
-
-    def test_givenAPatient_whenGettingMainInformation_thenResultIsExpectedPatientInformation(self):
+    def test_givenAInstance_whenGettingMainInformation_thenResultIsExpectedPatientInformation(self):
         keys_to_exclude = {'LastUpdate'}
 
-        result = self.patient.get_main_information()
+        result = self.instance.get_main_information()
 
-        self.assertEqual(
+        self.assertDictEqual(
             {key: value for key, value in result.items() if key not in keys_to_exclude},
-            {key: value for key, value in a_patient.INFORMATION.items() if key not in keys_to_exclude},
+            {key: value for key, value in a_instance.INFORMATION.items() if key not in keys_to_exclude},
         )
 
-    def test_givenAPatient_whenGettingPatientID_thenResultIsExpectedPatientID(self):
-        result = self.patient.get_id()
+    def test_givenAInstance_whenGettingFileSize_thenResultIsExpectedFileSize(self):
+        result = self.instance.get_file_size()
 
-        self.assertEqual(result, a_patient.ID)
+        self.assertEqual(result, a_instance.FILE_SIZE)
 
-    def test_givenAPatient_whenGettingPatientName_thenResultIsExpectedPatientName(self):
-        result = self.patient.get_patient_name()
-
-        self.assertEqual(result, a_patient.NAME)
-
-    def test_givenAPatient_whenGettingPatientSex_thenResultIsExpectedSex(self):
-        result = self.patient.get_patient_sex()
-
-        self.assertEqual(result, a_patient.SEX)
-
-    def test_givenAPatient_whenBuildingStudies_thenPatientHasStudies(self):
-        self.patient.build_studies()
-
-        self.assertEqual(
-            len(self.patient.get_studies()),
-            len(a_patient.STUDIES)
+    def test_givenAInstance_whenGettingCreationDate_thenResultIsExpectedCreationDate(self):
+        expected_date = datetime(
+            year=2010,
+            month=3,
+            day=1,
+            hour=17,
+            minute=1,
+            second=55
         )
 
-    def test_givenAPatientWithEmptyStudies_whenTrimPatient_thenEmptyStudiesGetsDeleted(self):
-        self.patient.build_studies()  # When getting building, studies do not get built by default
-        expected_number_of_study = 0
+        result = self.instance.get_creation_date()
 
-        self.patient.trim()
+        self.assertEqual(result, expected_date)
 
-        self.assertEqual(
-            expected_number_of_study,
-            len(self.patient.get_studies())
-        )
+    def test_givenAInstance_whenGettingParentSeriesIdentifier_thenResultIsExpectedParentSeriesIdentifier(self):
+        result = self.instance.get_parent_series_identifier()
+
+        self.assertEqual(result, a_instance.PARENT_SERIES_IDENTIFIER)

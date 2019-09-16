@@ -33,17 +33,12 @@ class TestStudy(unittest.TestCase):
         self.study = None
         setup_server.clear_data()
 
-    def test_givenAStudy_whenGettingIdentifier_thenResultIsExpectedIdentifier(self):
-        result = self.study.get_identifier()
-
-        self.assertEqual(result, a_study.IDENTIFIER)
-
     def test_givenAStudy_whenGettingMainInformation_thenResultIsExpectedStudyInformation(self):
         keys_to_exclude = {'LastUpdate'}
 
         result = self.study.get_main_information()
 
-        self.assertEqual(
+        self.assertDictEqual(
             {key: value for key, value in result.items() if key not in keys_to_exclude},
             {key: value for key, value in a_study.INFORMATION.items() if key not in keys_to_exclude},
         )
@@ -56,7 +51,7 @@ class TestStudy(unittest.TestCase):
     def test_givenAStudy_whenGettingPatientMainInformation_thenResultIsExpectedPatientMainInformation(self):
         result = self.study.get_patient_information()
 
-        self.assertEqual(result, a_study.PATIENT_MAIN_INFORMATION)
+        self.assertDictEqual(result, a_study.PATIENT_MAIN_INFORMATION)
 
     def test_givenAStudy_whenGettingStudyTime_thenResultIsExpectedTime(self):
         result = self.study.get_time()

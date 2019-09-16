@@ -32,11 +32,6 @@ class TestPatient(unittest.TestCase):
         self.patient = None
         setup_server.clear_data()
 
-    def test_givenAPatient_whenGettingIdentifier_thenResultIsExpectedIdentifier(self):
-        result = self.patient.get_identifier()
-
-        self.assertEqual(result, a_patient.IDENTIFIER)
-
     def test_givenAPatient_whenGettingMainInformation_thenResultIsExpectedPatientInformation(self):
         keys_to_exclude = {'LastUpdate'}
 

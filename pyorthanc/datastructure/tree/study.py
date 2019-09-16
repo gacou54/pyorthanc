@@ -134,7 +134,8 @@ class Study:
         """Build a list of the study's series
         """
         series_identifiers = self.orthanc.get_study_series_information(
-            self.study_identifier)
+            self.study_identifier
+        )
 
         self.series = list(map(
             lambda i: Series(i['ID'], self.orthanc),
