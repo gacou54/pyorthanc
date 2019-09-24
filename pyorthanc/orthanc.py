@@ -4131,24 +4131,20 @@ class Orthanc:
 
     def get_study_archive(
             self, study_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+            **kwargs) -> bytes:
         """Get study archive
 
         Parameters
         ----------
         study_identifier
             studies identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        bytes
         """
         return self.get_request(
             f'{self._orthanc_url}/studies/{study_identifier}/media',
-            params=params,
             **kwargs
         )
 

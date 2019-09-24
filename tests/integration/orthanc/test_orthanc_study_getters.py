@@ -160,4 +160,3 @@ class TestOrthancStudyGetters(unittest.TestCase):
             requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_archive(a_study.IDENTIFIER)
         )
-
