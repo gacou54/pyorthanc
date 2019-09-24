@@ -3920,48 +3920,36 @@ class Orthanc:
             **kwargs
         )
 
-    def get_studies(self, params: Dict = None, **kwargs) -> Any:
+    def get_studies(self, **kwargs) -> List[str]:
         """Get studies identifiers
 
         "since" and "limit" arguments + "expand" argument to retrieve the content of the studies.
 
-        Parameters
-        ----------
-        params
-            GET HTTP request's params.
-
         Returns
         -------
-        Any
+        List[str]
             List of the studies identifiers.
         """
         return self.get_request(
             f'{self._orthanc_url}/studies',
-            params=params,
             **kwargs
         )
 
-    def get_study_information(
-            self, study_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+    def get_study_information(self, study_identifier: str, **kwargs) -> Dict:
         """Get study information
 
         Parameters
         ----------
         study_identifier
             studies identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        Dict
             Study main information in the form of a dictionary.
         """
         return self.get_request(
             f'{self._orthanc_url}/studies/{study_identifier}',
-            params=params,
             **kwargs
         )
 
