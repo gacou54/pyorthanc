@@ -143,3 +143,21 @@ class TestOrthancStudyGetters(unittest.TestCase):
             lambda: self.orthanc.get_study_instances_tags_in_shorter_version(a_study.IDENTIFIER)
         )
 
+    def test_givenOrthancWithPatient_whenGettingStudyArchive_thenResultIsBytesOfAValidZipFileOfStudyArchive(self):
+        self.given_patient_in_orthanc_server()
+
+        result = self.orthanc.get_patient_archive(a_study.IDENTIFIER)
+
+        with open(a_study.ZIP_FILE_PATH, 'wb') as file_handler:
+            file_handler.write(result)
+
+        a_zip_file = zipfile.ZipFile(a_study.ZIP_FILE_PATH)
+        self.assertIsNone(a_zip_file.testzip())
+        os.remove(a_study.ZIP_FILE_PATH)
+
+    def test_givenOrthancWithoutPatient_whenGettingStudyArchive_thenRaiseHTTPError(self):
+        self.assertRaises(
+            requests.exceptions.HTTPError,
+            lambda: self.orthanc.get_patient_archive(a_study.IDENTIFIER)
+        )
+

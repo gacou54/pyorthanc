@@ -3998,8 +3998,7 @@ class Orthanc:
 
     def get_study_zip_file(
             self, study_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+            **kwargs) -> bytes:
         """Get study zip file
 
         Get ZIP file
@@ -4008,16 +4007,14 @@ class Orthanc:
         ----------
         study_identifier
             studies identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        bytes
+            Bytes of the zip file.
         """
         return self.get_request(
             f'{self._orthanc_url}/studies/{study_identifier}/archive',
-            params=params,
             **kwargs
         )
 
@@ -4074,73 +4071,61 @@ class Orthanc:
 
     def get_study_instances_tags(
             self, study_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+            **kwargs) -> Dict:
         """Get study instances tags
 
         Parameters
         ----------
         study_identifier
             studies identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        Dict
             Study instances tags
         """
         return self.get_request(
             f'{self._orthanc_url}/studies/{study_identifier}/instances-tags',
-            params=params,
             **kwargs
         )
 
     def get_study_instances_tags_in_simplified_version(
             self, study_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+            **kwargs) -> Dict:
         """Get study instances tags in a simplified version
 
         Parameters
         ----------
         study_identifier
             studies identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        Dict
             Study instances tags in a simplified version.
         """
         return self.get_request(
             f'{self._orthanc_url}/studies/{study_identifier}/instances-tags?simplify',
-            params=params,
             **kwargs
         )
 
     def get_study_instances_tags_in_shorter_version(
             self, study_identifier: str,
-            params: Dict = None,
-            **kwargs) -> Any:
+            **kwargs) -> Dict:
         """Get study instances tags in a shorter version
 
         Parameters
         ----------
         study_identifier
             studies identifier.
-        params
-            GET HTTP request's params.
 
         Returns
         -------
-        Any
+        Dict
             Study instances tags in a shorter version.
         """
         return self.get_request(
             f'{self._orthanc_url}/studies/{study_identifier}/instances-tags?short',
-            params=params,
             **kwargs
         )
 
