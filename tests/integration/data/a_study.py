@@ -1,5 +1,6 @@
 # coding: utf-8
 # author: Gabriel Couture
+from datetime import datetime
 
 IDENTIFIER = '118bc493-b3b3172a-082119bd-f6802ec3-81695613'
 PARENT_PATIENT_IDENTIFIER = 'e34c28ce-981b0e5c-2a481559-cf0d5fbe-053335f8'
@@ -9,10 +10,9 @@ PATIENT_MAIN_INFORMATION = {
     'PatientName': 'MR-R',
     'PatientSex': 'M'
 }
-DATE = '20100223'
+DATE = datetime(year=2010, month=2, day=23)
 REFERRING_PHYSICIAN_NAME = ''
 ID = ''
-TIME = ''
 SERIES = [
     'c4c1fcc9-ae63f793-40cbcf25-fbd3efe5-ad72ff06',
     'e2a7df26-99673e0f-05aa84cd-c89677c0-634a2a96',
@@ -25,10 +25,10 @@ INFORMATION = {
     'MainDicomTags': {
         'AccessionNumber': '',
         'ReferringPhysicianName': '',
-        'StudyDate': DATE,
+        'StudyDate': '20100223',
         'StudyID': ID,
         'StudyInstanceUID': '1.2.840.113619.2.55.3.671782272.419.1266452812.128',
-        'StudyTime': TIME
+        'StudyTime': ''
     },
     'ParentPatient': PARENT_PATIENT_IDENTIFIER,
     'PatientMainDicomTags': PATIENT_MAIN_INFORMATION,
