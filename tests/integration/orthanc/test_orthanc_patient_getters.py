@@ -41,9 +41,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
         result = self.orthanc.get_patients()
 
         self.assertIsInstance(result, list)
-        self.assertNotEqual(len(result), 0)
-        for patient_identifier in result:
-            self.assertIn(patient_identifier, [a_patient.IDENTIFIER])
+        self.assertIn(a_patient.IDENTIFIER, result)
 
     def test_givenOrthancWithoutPatient_whenGettingPatients_thenResultIsAnEmptyList(self):
         result = self.orthanc.get_patients()
@@ -81,7 +79,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
         self.assertIsNone(a_zip_file.testzip())
         os.remove(a_patient.ZIP_FILE_PATH)
 
-    def test_givenOrthancWithPatient_whenGettingPatientZip_thenRaiseHTTPError(self):
+    def test_givenOrthancWithoutPatient_whenGettingPatientZip_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
             lambda: self.orthanc.get_patient_zip(a_patient.IDENTIFIER)
@@ -89,7 +87,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
     def test_givenOrthancWithPatient_whenGettingPatientInstances_thenResultIsAListOfPatientInstanceInformation(self):
         self.given_patient_in_orthanc_server()
-        keys_to_remove = ['FileUuid']  # Removing keys that are never the same
+        keys_to_remove = {'FileUuid'}  # Removing keys that are never the same
 
         result = self.orthanc.get_patient_instances(a_patient.IDENTIFIER)
 
@@ -127,9 +125,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
     def test_givenOrthancWithoutPatient_whenGettingPatientInstancesTagsInSimplifiedVersion_thenRaiseHTTPError(self):
         self.assertRaises(
             requests.exceptions.HTTPError,
-            lambda: self.orthanc.get_patient_instances_tags_in_simplified_version(
-                a_patient.IDENTIFIER
-            )
+            lambda: self.orthanc.get_patient_instances_tags_in_simplified_version(a_patient.IDENTIFIER)
         )
 
     def test_givenOrthancWithPatient_whenGettingPatientInstancesTagsInShorterVersion_thenResultIsADictOfPatientInstancesTagsInShorterVersion(self):

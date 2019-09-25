@@ -53,11 +53,6 @@ class TestStudy(unittest.TestCase):
 
         self.assertDictEqual(result, a_study.PATIENT_MAIN_INFORMATION)
 
-    def test_givenAStudy_whenGettingStudyTime_thenResultIsExpectedTime(self):
-        result = self.study.get_time()
-
-        self.assertEqual(result, a_study.TIME)
-
     def test_givenAStudy_whenGettingStudyDate_thenResultIsExpectedDate(self):
         result = self.study.get_date()
 

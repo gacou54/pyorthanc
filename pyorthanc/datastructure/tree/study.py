@@ -1,5 +1,6 @@
 # coding: utf-8
 # author: gabriel couture
+from datetime import datetime
 from typing import List, Dict
 
 from pyorthanc.datastructure.tree.series import Series
@@ -70,25 +71,34 @@ class Study:
         """
         return self.get_main_information()['MainDicomTags']['ReferringPhysicianName']
 
-    def get_date(self) -> str:
+    def get_date(self) -> datetime:
         """Get study date
 
+        The date have precision to the second (if available).
+
         Returns
         -------
-        str
+        datetime
             Study date
         """
-        return self.get_main_information()['MainDicomTags']['StudyDate']
+        date_string = self.get_main_information()['MainDicomTags']['StudyDate']
+        time_string = self.get_main_information()['MainDicomTags']['StudyTime']
 
-    def get_time(self) -> str:
-        """Get Study time
-
-        Returns
-        -------
-        str
-            Study time
-        """
-        return self.get_main_information()['MainDicomTags']['StudyTime']
+        try:
+            return datetime(
+                year=int(date_string[:4]),
+                month=int(date_string[4:6]),
+                day=int(date_string[6:8]),
+                hour=int(time_string[:2]),
+                minute=int(time_string[2:4]),
+                second=int(time_string[4:6])
+            )
+        except ValueError:
+            return datetime(
+                year=int(date_string[:4]),
+                month=int(date_string[4:6]),
+                day=int(date_string[6:8]),
+            )
 
     def get_id(self) -> str:
         """Get Study ID
