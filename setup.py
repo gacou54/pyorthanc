@@ -60,7 +60,7 @@ with open('./README.md', 'r') as file_hanlder:
 
 setup(
     name='pyorthanc',
-    version='0.2.5',
+    version='0.2.6',
     packages=find_packages(),
     url='https://gitlab.physmed.chudequebec.ca/gacou54/pyorthanc',
     license='MIT',

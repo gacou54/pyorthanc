@@ -2,7 +2,7 @@
 # author: gabriel couture
 from typing import List, Dict
 
-from pyorthanc.datastructure.tree.study import Study
+from pyorthanc.study import Study
 from pyorthanc.orthanc import Orthanc
 
 
