@@ -109,10 +109,10 @@ remote_modality.move(query_response['QUERY_ID'], 'target_modality')
 #### Build a patient tree structure of all patients in Orthanc instance:
 Each patient is a tree. Layers in each tree are `Patient` -> `Study` -> `Series` -> `Instance`.
 ```python
-from pyorthanc import Orthanc, datastructure
+from pyorthanc import Orthanc, build_patient_forest
 
 
-patient_forest = datastructure.build_patient_forest(
+patient_forest = build_patient_forest(
     Orthanc('http://localhost:8042/')
 )    
 
