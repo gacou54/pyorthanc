@@ -4,8 +4,8 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 from typing import List, Dict, Callable, Optional
 
-from pyorthanc.datastructure.tree import Study, Series, Instance
-from pyorthanc.datastructure.tree.patient import Patient
+from pyorthanc import Study, Series, Instance
+from pyorthanc.patient import Patient
 from pyorthanc.orthanc import Orthanc
 
 

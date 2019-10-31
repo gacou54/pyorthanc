@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import List, Dict
 
-from pyorthanc.datastructure.tree.series import Series
+from pyorthanc.series import Series
 from pyorthanc.orthanc import Orthanc
 
 
