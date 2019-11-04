@@ -4,7 +4,7 @@ from pyorthanc.patient import Patient
 from pyorthanc.study import Study
 from pyorthanc.series import Series
 from pyorthanc.instance import Instance
-from pyorthanc.datastructure import build_patient_forest, trim_patient_forest, \
+from pyorthanc.util import build_patient_forest, trim_patient_forest, \
     retrieve_and_write_patients_forest_to_given_path
 
 __all__ = [

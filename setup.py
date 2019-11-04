@@ -54,8 +54,8 @@ class AllTests(TestCommand):
         _run_command(MYPY_COMMAND)
 
 
-with open('./README.md', 'r') as file_hanlder:
-    long_description = file_hanlder.read()
+with open('./README.md', 'r') as file_handler:
+    long_description = file_handler.read()
 
 
 setup(
