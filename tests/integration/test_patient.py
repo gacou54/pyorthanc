@@ -3,7 +3,7 @@
 import unittest
 
 from pyorthanc import Orthanc
-from pyorthanc.datastructure import Patient
+from pyorthanc.util import Patient
 from tests.integration import setup_server
 from tests.integration.data import a_patient
 

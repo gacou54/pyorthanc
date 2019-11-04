@@ -3,7 +3,7 @@
 import unittest
 
 from pyorthanc import Orthanc
-from pyorthanc.datastructure import Series
+from pyorthanc.util import Series
 from tests.integration import setup_server
 from tests.integration.data import a_series
 

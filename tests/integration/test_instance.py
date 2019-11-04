@@ -4,7 +4,7 @@ import unittest
 from datetime import datetime
 
 from pyorthanc import Orthanc
-from pyorthanc.datastructure import Instance
+from pyorthanc.util import Instance
 from tests.integration import setup_server
 from tests.integration.data import a_instance
 
