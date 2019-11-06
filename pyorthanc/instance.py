@@ -152,9 +152,7 @@ class Instance:
         Dict
             Simplified tags in the form of a dictionary.
         """
-        return self.orthanc.get_instance_simplified_tags(
-            self.identifier
-        )
+        return self.orthanc.get_instance_simplified_tags(self.identifier)
 
     def get_content_by_tag(self, tag: str) -> Any:
         """Get content by tag
@@ -162,35 +160,48 @@ class Instance:
         Parameters
         ----------
         tag
-            Tag like '0040-a730'.
+            Tag like 'ManufacturerModelName' or '0008-1090'.
 
         Returns
         -------
         Any
             Content corresponding to specified tag.
         """
-        return self.orthanc.get_instance_content_by_group_element(
+        result = self.orthanc.get_instance_content_by_group_element(
             instance_identifier=self.identifier,
             group_element=tag
         )
 
+        try:
+            return result.decode('utf-8').strip().replace('\x00', '')
+        except UnicodeDecodeError:
+            return result
+
     def get_content_by_group_element(self, group_element: str) -> Any:
-        """Get content by group element like '0040-a730/1/0040-a730'
+        """Get content by group element
+
+        Get content by group element like
+        'ReferencedStudySequence/0/ReferencedSOPClassUID' or '0008-1110/0/0008-1150'.
 
         Parameters
         ----------
         group_element
-            Group element like '0040-a730/1/0040-a730'.
-a
+            Group element like '' or '0008-1110/0/0008-1150'.
+
         Returns
         -------
         Any
             Content corresponding to specified tag.
         """
-        return self.orthanc.get_instance_content_by_group_element(
+        result = self.orthanc.get_instance_content_by_group_element(
             instance_identifier=self.identifier,
             group_element=group_element
         )
+
+        try:
+            return result.decode('utf-8').strip().replace('\x00', '')
+        except UnicodeDecodeError:
+            return result
 
     def __str__(self):
         return f'Instance (identifier={self.get_identifier()})'

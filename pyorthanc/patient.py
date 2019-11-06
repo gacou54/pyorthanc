@@ -70,7 +70,7 @@ class Patient:
         """
         return self.get_main_information()['MainDicomTags']['PatientID']
 
-    def get_patient_name(self) -> str:
+    def get_name(self) -> str:
         """Get patient name
 
         Returns
@@ -80,7 +80,7 @@ class Patient:
         """
         return self.get_main_information()['MainDicomTags']['PatientName']
 
-    def get_patient_sex(self) -> str:
+    def get_sex(self) -> str:
         """Get patient sex
 
         Returns
@@ -102,8 +102,7 @@ class Patient:
 
         Examples
         --------
-        >>> from pyorthanc import Orthanc
-        >>> from pyorthanc import Patient
+        >>> from pyorthanc import Orthanc, Patient
         >>> a_patient = Patient(
         ...     'A_PATIENT_IDENTIFIER',
         ...     Orthanc('http://localhost:8042')
