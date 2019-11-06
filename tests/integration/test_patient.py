@@ -48,12 +48,12 @@ class TestPatient(unittest.TestCase):
         self.assertEqual(result, a_patient.ID)
 
     def test_givenAPatient_whenGettingPatientName_thenResultIsExpectedPatientName(self):
-        result = self.patient.get_patient_name()
+        result = self.patient.get_name()
 
         self.assertEqual(result, a_patient.NAME)
 
     def test_givenAPatient_whenGettingPatientSex_thenResultIsExpectedSex(self):
-        result = self.patient.get_patient_sex()
+        result = self.patient.get_sex()
 
         self.assertEqual(result, a_patient.SEX)
 

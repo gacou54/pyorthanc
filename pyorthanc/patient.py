@@ -102,8 +102,7 @@ class Patient:
 
         Examples
         --------
-        >>> from pyorthanc import Orthanc
-        >>> from pyorthanc import Patient
+        >>> from pyorthanc import Orthanc, Patient
         >>> a_patient = Patient(
         ...     'A_PATIENT_IDENTIFIER',
         ...     Orthanc('http://localhost:8042')
