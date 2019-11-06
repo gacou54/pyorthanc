@@ -67,3 +67,35 @@ class TestInstance(unittest.TestCase):
         result = self.instance.get_parent_series_identifier()
 
         self.assertEqual(result, a_instance.PARENT_SERIES_IDENTIFIER)
+
+    def test_givenAInstanceAndATag_whenGettingTagContent_thenResultIsExpectedContent(self):
+        a_tag = 'ManufacturerModelName'
+        expected_content = 'Pinnacle3'
+
+        result = self.instance.get_content_by_tag(a_tag)
+
+        self.assertEqual(result, expected_content)
+
+    def test_givenAInstanceAndANumberedDICOMTag_whenGettingTagContent_thenResultIsExpectedContent(self):
+        a_tag = '0008-1090'
+        expected_content = 'Pinnacle3'
+
+        result = self.instance.get_content_by_tag(a_tag)
+
+        self.assertEqual(result, expected_content)
+
+    def test_givenAInstanceAndAGroupElement_whenGettingGroupElementContent_thenResultIsExpectedContent(self):
+        a_group_element = 'ReferencedStudySequence/0/ReferencedSOPClassUID'
+        expected_content = '1.2.840.10008.3.1.2.3.2'
+
+        result = self.instance.get_content_by_tag(a_group_element)
+
+        self.assertEqual(result, expected_content)
+
+    def test_givenAInstanceAndAGroupElementWithNumberedDICOMTag_whenGettingGroupElementContent_thenResultIsExpectedContent(self):
+        a_group_element = '0008-1110/0/0008-1150'
+        expected_content = '1.2.840.10008.3.1.2.3.2'
+
+        result = self.instance.get_content_by_tag(a_group_element)
+
+        self.assertEqual(result, expected_content)
