@@ -70,7 +70,7 @@ class Patient:
         """
         return self.get_main_information()['MainDicomTags']['PatientID']
 
-    def get_patient_name(self) -> str:
+    def get_name(self) -> str:
         """Get patient name
 
         Returns
@@ -80,7 +80,7 @@ class Patient:
         """
         return self.get_main_information()['MainDicomTags']['PatientName']
 
-    def get_patient_sex(self) -> str:
+    def get_sex(self) -> str:
         """Get patient sex
 
         Returns

@@ -151,9 +151,7 @@ class Instance:
         Dict
             Simplified tags in the form of a dictionary.
         """
-        return self.orthanc.get_instance_simplified_tags(
-            self.identifier
-        )
+        return self.orthanc.get_instance_simplified_tags(self.identifier)
 
     def get_content_by_tag(self, tag: str) -> Any:
         """Get content by tag

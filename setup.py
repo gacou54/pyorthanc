@@ -60,7 +60,7 @@ with open('./README.md', 'r') as file_handler:
 
 setup(
     name='pyorthanc',
-    version='0.2.6',
+    version='0.2.7',
     packages=find_packages(),
     url='https://gitlab.physmed.chudequebec.ca/gacou54/pyorthanc',
     license='MIT',
@@ -83,6 +83,7 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: 3.6'
         'Programming Language :: Python :: 3.7'
     ]
 )
