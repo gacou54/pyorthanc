@@ -45,6 +45,7 @@ class Instance:
 
         Examples
         --------
+        >>> from pyorthanc import Instance
         >>> instance = Instance('instance_identifier',
         ...                     Orthanc('http://localhost:8042'))
         >>> dicom_file_bytes = instance.get_dicom_file_content()
