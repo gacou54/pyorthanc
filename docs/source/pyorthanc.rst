@@ -6,16 +6,44 @@ Orthanc API wrapper
     :show-inheritance:
 
 
-Remote module
+Remote sub-module
 =============
 .. automodule:: pyorthanc.remote
     :members:
     :undoc-members:
     :show-inheritance:
 
-DataStructure module
+Util sub-module
 ====================
-.. toctree::
-    :maxdepth: 2
+.. automodule:: pyorthanc.util
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
-    datastructure
+Patient sub-module
+====================
+.. automodule:: pyorthanc.patient
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Study sub-module
+====================
+.. automodule:: pyorthanc.study
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Series sub-module
+====================
+.. automodule:: pyorthanc.series
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Instance sub-module
+====================
+.. automodule:: pyorthanc.instance
+    :members:
+    :undoc-members:
+    :show-inheritance:
