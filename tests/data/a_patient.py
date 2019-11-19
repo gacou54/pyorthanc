@@ -25,7 +25,7 @@ LIST_OF_INSTANCE_IDENTIFIERS_OF_A_PATIENT = [
     '22dcf059-8fd3ade7-efb39ca3-7f46b248-0200abc9'
 ]
 
-ZIP_FILE_PATH = './tests/integration/data/A_PATIENT_DATA.zip'
+ZIP_FILE_PATH = './tests/data/A_PATIENT_DATA.zip'
 MODULE = {
     '0010,0010': {'Name': 'PatientName', 'Type': 'String', 'Value': 'MR-R'},
     '0010,0020': {'Name': 'PatientID', 'Type': 'String', 'Value': '03HDQ000'},

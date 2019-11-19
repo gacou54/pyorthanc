@@ -42,7 +42,8 @@ class RemoteModality:
 
         Returns
         -------
-        requests.Response
+        Dict
+            Dictionary with keys {'ID': '...', 'path': '...'}
 
         Examples
         -------
@@ -88,7 +89,7 @@ class RemoteModality:
         query_identifier
             Query identifier.
         cmove_data
-            Ex. {'TargetAET': 'modality_name', "Synchronous": False}
+            Ex. {'TargetAet': 'modality_name', "Synchronous": False}
 
         Returns
         -------
@@ -101,7 +102,7 @@ class RemoteModality:
         >>> query_id = remote_modality.query(
         ...     data={'Level': 'Study',
         ...           'Query': {'QueryRetrieveLevel': 'Study',
-        ...                     'Modality':'SR'}}).json()
+        ...                     'Modality':'SR'}})
 
         >>> remote_modality.move(
         ...     query_identifier=query_id['ID'],

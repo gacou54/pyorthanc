@@ -5,8 +5,8 @@ from datetime import datetime
 
 from pyorthanc import Orthanc
 from pyorthanc.util import Instance
-from tests.integration import setup_server
-from tests.integration.data import a_instance
+from tests import setup_server
+from tests.data import a_instance
 
 
 class TestInstance(unittest.TestCase):

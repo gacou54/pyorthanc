@@ -18,8 +18,8 @@ def setup_orthanc_server() -> subprocess.Popen:
     subprocess.Popen
         Subprocess of the test Orthanc server instance.
     """
-    orthanc_process = subprocess.Popen(['Orthanc', './tests/integration/orthanc_configuration.json'])
-    time.sleep(2)  # Wait to be sure that the process is completely started
+    orthanc_process = subprocess.Popen(['Orthanc', './tests/orthanc_configuration.json'])
+    time.sleep(1)  # Wait to be sure that the process is completely started
 
     return orthanc_process
 
@@ -33,9 +33,9 @@ def stop_orthanc_server_and_remove_data_directory(orthanc_process: subprocess.Po
         Orthanc subprocess.Popen process.
     """
     orthanc_process.kill()
-    time.sleep(2)  # Wait to be sure that the process is completely stopped
+    time.sleep(1)  # Wait to be sure that the process is completely stopped
 
-    shutil.rmtree('./tests/integration/data/OrthancStorage')
+    shutil.rmtree('./tests/data/OrthancStorage')
 
 
 def setup_data() -> None:
@@ -44,8 +44,8 @@ def setup_data() -> None:
     headers = {'content-type': 'application/dicom'}
 
     list_of_dicom_file_paths = [
-        f'./tests/integration/data/dicom_files/{i}'
-        for i in os.listdir('./tests/integration/data/dicom_files/')
+        f'./tests/data/dicom_files/{i}'
+        for i in os.listdir('./tests/data/dicom_files/')
     ]
 
     for file_path in list_of_dicom_file_paths:

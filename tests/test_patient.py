@@ -4,8 +4,8 @@ import unittest
 
 from pyorthanc import Orthanc
 from pyorthanc.util import Patient
-from tests.integration import setup_server
-from tests.integration.data import a_patient
+from tests import setup_server
+from tests.data import a_patient
 
 
 class TestPatient(unittest.TestCase):

@@ -4,11 +4,10 @@ import os
 import unittest
 import zipfile
 
-import requests
-
 from pyorthanc import Orthanc
-from tests.integration import setup_server
-from tests.integration.data import a_study
+from pyorthanc.exceptions import HTTPError
+from tests import setup_server
+from tests.data import a_study
 
 
 class TestOrthancStudyGetters(unittest.TestCase):
@@ -62,7 +61,7 @@ class TestOrthancStudyGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingStudies_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_study_information(a_study.IDENTIFIER)
         )
 
@@ -81,7 +80,7 @@ class TestOrthancStudyGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingStudyZip_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.exceptions.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_study_zip_file(a_study.IDENTIFIER)
         )
 
@@ -98,7 +97,7 @@ class TestOrthancStudyGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingStudyInstances_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.exceptions.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_study_instances(a_study.IDENTIFIER)
         )
 
@@ -111,7 +110,7 @@ class TestOrthancStudyGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingStudyInstancesTags_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.exceptions.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_study_instances_tags(a_study.IDENTIFIER)
         )
 
@@ -124,7 +123,7 @@ class TestOrthancStudyGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingStudyInstancesTagsInSimplifiedVersion_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.exceptions.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_study_instances_tags_in_simplified_version(
                 a_study.IDENTIFIER
             )
@@ -139,7 +138,7 @@ class TestOrthancStudyGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingStudyInstancesTagsInShorterVersion_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.exceptions.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_study_instances_tags_in_shorter_version(a_study.IDENTIFIER)
         )
 
@@ -157,6 +156,6 @@ class TestOrthancStudyGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingStudyArchive_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.exceptions.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_patient_archive(a_study.IDENTIFIER)
         )

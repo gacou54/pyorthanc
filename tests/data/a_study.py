@@ -35,7 +35,7 @@ INFORMATION = {
     'Series': SERIES,
     'Type': 'Study'
 }
-ZIP_FILE_PATH = './tests/integration/data/A_STUDY_DATA.zip'
+ZIP_FILE_PATH = './tests/data/A_STUDY_DATA.zip'
 INSTANCES = [
     {
         'FileSize': 61742,

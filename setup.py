@@ -5,8 +5,7 @@ from setuptools.command.test import test as TestCommand
 
 FLAKE8_COMMAND = ['./venv/bin/flake8', '--ignore=E501', 'pyorthanc', 'tests']
 MYPY_COMMAND = ['./venv/bin/mypy', 'pyorthanc']
-UNIT_TESTS_COMMAND = ['./venv/bin/python', '-m', 'unittest', 'discover', '-s', './tests/unit/']
-INTEGRATION_TESTS_COMMAND = ['./venv/bin/python', '-m', 'unittest', 'discover', '-s', './tests/integration']
+TESTS_COMMAND = ['./venv/bin/python', '-m', 'unittest', 'discover', '-s', './tests/integration']
 
 
 def _run_command(command: str) -> None:
@@ -18,20 +17,12 @@ def _run_command(command: str) -> None:
         exit(error.returncode)
 
 
-class UnitTests(TestCommand):
-    description = 'run unit tests'
+class Tests(TestCommand):
+    description = 'run tests'
     user_options = []
 
     def run_tests(self):
-        _run_command(UNIT_TESTS_COMMAND)
-
-
-class IntegrationTests(TestCommand):
-    description = 'run integration tests'
-    user_options = []
-
-    def run_tests(self):
-        _run_command(INTEGRATION_TESTS_COMMAND)
+        _run_command(TESTS_COMMAND)
 
 
 class LintTests(TestCommand):
@@ -48,8 +39,7 @@ class AllTests(TestCommand):
     user_options = []
 
     def run_tests(self):
-        _run_command(UNIT_TESTS_COMMAND)
-        _run_command(INTEGRATION_TESTS_COMMAND)
+        _run_command(TESTS_COMMAND)
         _run_command(FLAKE8_COMMAND)
         _run_command(MYPY_COMMAND)
 
@@ -60,7 +50,7 @@ with open('./README.md', 'r') as file_handler:
 
 setup(
     name='pyorthanc',
-    version='0.2.7',
+    version='0.2.8',
     packages=find_packages(),
     url='https://gitlab.physmed.chudequebec.ca/gacou54/pyorthanc',
     license='MIT',
@@ -69,11 +59,10 @@ setup(
     description='Orthanc REST API python wrapper with additional utilities',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    install_requires=['requests'],
+    install_requires=['faster_than_requests'],
     cmdclass={
         'lint': LintTests,
-        'unit': UnitTests,
-        'integration': IntegrationTests,
+        'acceptance': Tests,
         'test': AllTests
     },
     classifiers=[
@@ -83,7 +72,7 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.6'
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7'
     ]
 )

@@ -2,11 +2,10 @@
 # author: gabriel couture
 import unittest
 
-import requests
-
 from pyorthanc import Orthanc
-from tests.integration import setup_server
-from tests.integration.data import a_patient
+from pyorthanc.exceptions import HTTPError
+from tests import setup_server
+from tests.data import a_patient
 
 
 class TestOrthancPatientSetters(unittest.TestCase):
@@ -52,12 +51,12 @@ class TestOrthancPatientSetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenSettingPatientToProtected_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.HTTPError,
+            HTTPError,
             lambda: self.orthanc.set_patient_to_protected(a_patient.IDENTIFIER)
         )
 
     def test_givenOrthancWithoutPatient_whenSettingPatientToNotProtected_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.HTTPError,
+            HTTPError,
             lambda: self.orthanc.set_patient_to_not_protected(a_patient.IDENTIFIER)
         )
