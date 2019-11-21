@@ -100,7 +100,7 @@ class Orthanc:
             f'HTTP code: {response.status}, with content: {response}'
         )
 
-    def post_request(self, route: str, data: Union[Dict, bytes, str] = '') -> Any:
+    def post_request(self, route: str, data: Optional[Dict] = None) -> Any:
         """POST to specified route
 
         Parameters
