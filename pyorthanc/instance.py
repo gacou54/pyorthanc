@@ -169,7 +169,7 @@ class Instance:
         """
         result = self.orthanc.get_instance_content_by_group_element(self.identifier, tag)
 
-        return result.strip().replace('\x00', '')
+        return result.decode('utf-8').strip().replace('\x00', '')
 
     def get_content_by_group_element(self, group_element: str) -> Any:
         """Get content by group element

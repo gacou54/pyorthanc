@@ -1,8 +1,8 @@
 # coding: utf-8
 import json
+import urllib3
 from typing import List, Dict, Union, Any, Optional, Tuple
 
-import faster_than_requests
 
 from pyorthanc.exceptions import HTTPError
 
@@ -28,6 +28,8 @@ class Orthanc:
         self._credentials_are_set = False
         self._credentials: Tuple[str, str] = ('', '')
 
+        self.http = urllib3.PoolManager(maxsize=20)
+
     def setup_credentials(self, username: str, password: str) -> None:
         """Set credentials needed for HTTP requests
 
@@ -38,17 +40,10 @@ class Orthanc:
         password
             Password.
         """
-        self._credentials = (username, password)
-        self._credentials_are_set = True
+        self.http.headers = urllib3.util.make_headers(
+            basic_auth='{}:{}'.format(username, password)
+        )
 
-    def _add_credentials_to_route_if_needed(self, route: str) -> str:
-        if self._credentials_are_set:
-            route = route.replace('http://', f'http://{self._credentials[0]}:{self._credentials[1]}@')
-            route = route.replace('https://', f'https://{self._credentials[0]}:{self._credentials[1]}@')
-
-        return route
-
-    # noinspection PyBroadException
     def get_request(self, route: str, params: Optional[Dict] = None) -> Any:
         """GET request with specified route
 
@@ -67,27 +62,19 @@ class Orthanc:
         if params is not None:
             route = f'{route}?' + ''.join([f'{key}={value}&' for key, value in params.items()])[:-1]
 
-        route = self._add_credentials_to_route_if_needed(route)
+        response = self.http.request('GET', route)
 
-        try:
-            response = faster_than_requests.gets(route)
-        # Something the connection seems to close before the end of the requests,
-        # doing this seems to solve the problem ...
-        except Exception:
-            response = faster_than_requests.gets(route)
-
-        if response['status'] == '200 OK':
+        if response.status == 200:
             try:
-                return json.loads(response['body'])
+                return json.loads(response.data.decode('utf-8'))
 
             except (json.JSONDecodeError, UnicodeDecodeError):
-                return response['body']
+                return response.data
 
         raise HTTPError(
-            f'HTTP code: {response["status"]}, with content: {response}'
+            f'HTTP code: {response.status}, with content: {response}'
         )
 
-    # noinspection PyBroadException
     def delete_request(self, route: str) -> bool:
         """DELETE to specified route
 
@@ -101,26 +88,18 @@ class Orthanc:
         bool
             True if the HTTP DELETE request succeeded (HTTP code 200).
         """
-        route = self._add_credentials_to_route_if_needed(route)
+        response = self.http.request('DELETE', route)
 
-        try:
-            response = faster_than_requests.deletes(route)
-            # Something the connection seems to close before the end of the requests,
-            # doing this seems to solve the problem ...
-        except Exception:
-            response = faster_than_requests.deletes(route)
-
-        if response['status'] == '200 OK':
+        if response.status == 200:
             return True
 
-        if response['status'] == '404 Not Found':
+        if response.status == 404:
             return False
 
         raise HTTPError(
-            f'HTTP code: {response["status"]}, with content: {response}'
+            f'HTTP code: {response.status}, with content: {response}'
         )
 
-    # noinspection PyBroadException
     def post_request(self, route: str, data: Union[Dict, bytes, str] = '') -> Any:
         """POST to specified route
 
@@ -136,27 +115,19 @@ class Orthanc:
         Union[List, Dict, str, bytes]
             Response of the HTTP POST request converted to json format.
         """
-        route = self._add_credentials_to_route_if_needed(route)
+        response = self.http.request('POST', route, body=json.dumps(data))
 
-        try:
-            response = faster_than_requests.posts(route, json.dumps(data))
-            # Something the connection seems to close before the end of the requests,
-            # doing this seems to solve the problem ...
-        except Exception:
-            response = faster_than_requests.posts(route, json.dumps(data))
-
-        if response['status'] == '200 OK':
+        if response.status == 200:
             try:
-                return json.loads(response['body'])
+                return json.loads(response.data.decode('utf-8'))
 
             except (json.JSONDecodeError, UnicodeDecodeError):
-                return response['body']
+                return response.data
 
         raise HTTPError(
-            f'HTTP code: {response["status"]}, with text: {response}'
+            f'HTTP code: {response.status}, with text: {response}'
         )
 
-    # noinspection PyBroadException
     def put_request(self, route: str, data: Union[Dict, str, int] = '') -> None:
         """PUT to specified route
 
@@ -172,20 +143,13 @@ class Orthanc:
         None
             Nothing, raise if a problem occurs.
         """
-        route = self._add_credentials_to_route_if_needed(route)
+        response = self.http.request('PUT', route, body=json.dumps(data))
 
-        try:
-            response = faster_than_requests.put(route, json.dumps(data))
-            # Something the connection seems to close before the end of the requests,
-            # doing this seems to solve the problem ...
-        except Exception:
-            response = faster_than_requests.put(route, json.dumps(data))
-
-        if response['status'] == '200 OK':
+        if response.status == 200:
             return
 
         raise HTTPError(
-            f'HTTP code: {response["status"]}, with text: {response}'
+            f'HTTP code: {response.status}, with text: {response}'
         )
 
     def get_attachments(
