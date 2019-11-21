@@ -72,7 +72,7 @@ class Orthanc:
                 return response.data
 
         raise HTTPError(
-            f'HTTP code: {response.status}, with content: {response}'
+            f'HTTP code: {response.status}, with content: {response.data}'
         )
 
     def delete_request(self, route: str) -> bool:
@@ -97,7 +97,7 @@ class Orthanc:
             return False
 
         raise HTTPError(
-            f'HTTP code: {response.status}, with content: {response}'
+            f'HTTP code: {response.status}, with content: {response.data}'
         )
 
     def post_request(self, route: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
@@ -125,7 +125,7 @@ class Orthanc:
                 return response.data
 
         raise HTTPError(
-            f'HTTP code: {response.status}, with text: {response}'
+            f'HTTP code: {response.status}, with text: {response.data}'
         )
 
     def put_request(self, route: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> None:
@@ -149,7 +149,7 @@ class Orthanc:
             return
 
         raise HTTPError(
-            f'HTTP code: {response.status}, with text: {response}'
+            f'HTTP code: {response.status}, with text: {response.data}'
         )
 
     def get_attachments(
@@ -1965,7 +1965,7 @@ class Orthanc:
 
     def anonymize_patient(
             self, patient_identifier: str,
-            data: Optional[Union[Dict, str, int, bytes]] = None) -> Dict[str, str]:
+            data: Optional[Union[Dict, str, int, bytes]] = {}) -> Dict[str, str]:
         """Anonymize specified patient
 
         If no error is been raise, then it creates a new anonymous patient.
