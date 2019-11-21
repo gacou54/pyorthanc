@@ -5,7 +5,7 @@ from setuptools.command.test import test as TestCommand
 
 FLAKE8_COMMAND = ['./venv/bin/flake8', '--ignore=E501', 'pyorthanc', 'tests']
 MYPY_COMMAND = ['./venv/bin/mypy', 'pyorthanc']
-TESTS_COMMAND = ['./venv/bin/python', '-m', 'unittest', 'discover', '-s', './tests/integration']
+TESTS_COMMAND = ['./venv/bin/python', '-m', 'unittest', 'discover', '-s', 'tests']
 
 
 def _run_command(command: str) -> None:
@@ -35,7 +35,7 @@ class LintTests(TestCommand):
 
 
 class AllTests(TestCommand):
-    description = 'run unit tests, integration tests and linters'
+    description = 'run tests and linters'
     user_options = []
 
     def run_tests(self):
