@@ -48,6 +48,7 @@ class Orthanc:
 
         return route
 
+    # noinspection PyBroadException
     def get_request(self, route: str, params: Optional[Dict] = None) -> Any:
         """GET request with specified route
 
@@ -67,7 +68,13 @@ class Orthanc:
             route = f'{route}?' + ''.join([f'{key}={value}&' for key, value in params.items()])[:-1]
 
         route = self._add_credentials_to_route_if_needed(route)
-        response = faster_than_requests.gets(route)
+
+        try:
+            response = faster_than_requests.gets(route)
+        # Something the connection seems to close before the end of the requests,
+        # doing this seems to solve the problem ...
+        except Exception:
+            response = faster_than_requests.gets(route)
 
         if response['status'] == '200 OK':
             try:
@@ -80,6 +87,7 @@ class Orthanc:
             f'HTTP code: {response["status"]}, with content: {response}'
         )
 
+    # noinspection PyBroadException
     def delete_request(self, route: str) -> bool:
         """DELETE to specified route
 
@@ -94,7 +102,13 @@ class Orthanc:
             True if the HTTP DELETE request succeeded (HTTP code 200).
         """
         route = self._add_credentials_to_route_if_needed(route)
-        response = faster_than_requests.deletes(route)
+
+        try:
+            response = faster_than_requests.deletes(route)
+            # Something the connection seems to close before the end of the requests,
+            # doing this seems to solve the problem ...
+        except Exception:
+            response = faster_than_requests.deletes(route)
 
         if response['status'] == '200 OK':
             return True
@@ -106,6 +120,7 @@ class Orthanc:
             f'HTTP code: {response["status"]}, with content: {response}'
         )
 
+    # noinspection PyBroadException
     def post_request(self, route: str, data: Union[Dict, bytes, str] = '') -> Any:
         """POST to specified route
 
@@ -122,7 +137,13 @@ class Orthanc:
             Response of the HTTP POST request converted to json format.
         """
         route = self._add_credentials_to_route_if_needed(route)
-        response = faster_than_requests.posts(route, json.dumps(data))
+
+        try:
+            response = faster_than_requests.posts(route, json.dumps(data))
+            # Something the connection seems to close before the end of the requests,
+            # doing this seems to solve the problem ...
+        except Exception:
+            response = faster_than_requests.posts(route, json.dumps(data))
 
         if response['status'] == '200 OK':
             try:
@@ -135,6 +156,7 @@ class Orthanc:
             f'HTTP code: {response["status"]}, with text: {response}'
         )
 
+    # noinspection PyBroadException
     def put_request(self, route: str, data: Union[Dict, str, int] = '') -> None:
         """PUT to specified route
 
@@ -152,7 +174,12 @@ class Orthanc:
         """
         route = self._add_credentials_to_route_if_needed(route)
 
-        response = faster_than_requests.put(route, json.dumps(data))
+        try:
+            response = faster_than_requests.put(route, json.dumps(data))
+            # Something the connection seems to close before the end of the requests,
+            # doing this seems to solve the problem ...
+        except Exception:
+            response = faster_than_requests.put(route, json.dumps(data))
 
         if response['status'] == '200 OK':
             return
@@ -1713,7 +1740,8 @@ class Orthanc:
         -------
         Any
         """
-        return self.post_request(f'{self._orthanc_url}/jobs/{job_identifier}/resume',
+        return self.post_request(
+            f'{self._orthanc_url}/jobs/{job_identifier}/resume',
             data
         )
 

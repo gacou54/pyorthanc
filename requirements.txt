@@ -5,6 +5,7 @@ certifi==2019.6.16
 chardet==3.0.4
 docutils==0.15.2
 entrypoints==0.3
+faster-than-requests==0.5
 flake8==3.7.8
 idna==2.8
 imagesize==1.1.0
