@@ -100,7 +100,7 @@ class Orthanc:
             f'HTTP code: {response.status}, with content: {response}'
         )
 
-    def post_request(self, route: str, data: Optional[Dict] = None) -> Any:
+    def post_request(self, route: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """POST to specified route
 
         Parameters
@@ -112,7 +112,7 @@ class Orthanc:
 
         Returns
         -------
-        Union[List, Dict, str, bytes]
+        Union[Dict, str, bytes, int]
             Response of the HTTP POST request converted to json format.
         """
         response = self.http.request('POST', route, body=json.dumps(data))
@@ -128,7 +128,7 @@ class Orthanc:
             f'HTTP code: {response.status}, with text: {response}'
         )
 
-    def put_request(self, route: str, data: Union[Dict, str, int] = '') -> None:
+    def put_request(self, route: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> None:
         """PUT to specified route
 
         Parameters
@@ -237,7 +237,7 @@ class Orthanc:
             self, resource_type: str,
             identifier: str,
             name: str,
-            data: Dict = None) -> None:
+            data: Optional[Union[Dict, str, int, bytes]] = None) -> None:
         """Put attachment with given name
 
         Parameters
@@ -265,7 +265,7 @@ class Orthanc:
             self, resource_type: str,
             identifier: str,
             name: str,
-            data: Dict = None) -> Any:
+            data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Compress attachment file
 
         This method should compress the DICOM instance(s).
@@ -501,7 +501,7 @@ class Orthanc:
             self, resource_type: str,
             identifier: str,
             name: str,
-            data: Dict = None) -> Any:
+            data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Post an uncompressed attachment
 
         Parameters
@@ -528,7 +528,7 @@ class Orthanc:
             self, resource_type: str,
             identifier: str,
             name: str,
-            data: Dict = None) -> Any:
+            data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Post that verify that there is no corruption on the disk
 
         Check that there is no corruption on the disk (HTTP status == 200 iff. no error)
@@ -633,7 +633,7 @@ class Orthanc:
             self, resource_type: str,
             identifier: str,
             name: str,
-            data: Dict = None) -> None:
+            data: Optional[Union[Dict, str, int, bytes]] = None) -> None:
         """Put the contents with a specified metadata field/name
 
         Parameters
@@ -728,7 +728,7 @@ class Orthanc:
         """
         return self.get_request(f'{self._orthanc_url}/instances')
 
-    def post_instances(self, data: Dict = None) -> Any:
+    def post_instances(self, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Post instances
 
         Add the new DICOM file given in the POST body.
@@ -780,7 +780,7 @@ class Orthanc:
             f'{self._orthanc_url}/instances/{instance_identifier}'
         )
 
-    def anonymize_specified_instance(self, instance_identifier: str, data: Dict = None) -> Any:
+    def anonymize_specified_instance(self, instance_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Anonymize specified instance
 
         http://book.pyorthanc-server.com/users/anonymization.html
@@ -849,7 +849,7 @@ class Orthanc:
             f'{self._orthanc_url}/instances/{instance_identifier}/content/{group_element}'
         )
 
-    def export_instance_to_filesystem(self, instance_identifier: str, data: Dict = None) -> Any:
+    def export_instance_to_filesystem(self, instance_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Write the DICOM file to filesystem
 
         Write the DICOM file to the filesystem where Orthanc is running.
@@ -1269,7 +1269,7 @@ class Orthanc:
             params
         )
 
-    def modify_instance(self, instance_identifier: str, data: Dict = None) -> Any:
+    def modify_instance(self, instance_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Modify instance
 
         See http://book.pyorthanc-server.com/users/anonymization.html .
@@ -1416,7 +1416,7 @@ class Orthanc:
             params
         )
 
-    def reconstruct_main_dicom_tags_of_instance(self, instance_identifier: str, data: Dict = None) -> Any:
+    def reconstruct_main_dicom_tags_of_instance(self, instance_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Reconstruction of the main DICOM tags of instance
 
         Force reconstruction of the main DICOM tags, JSON summary and metadata.
@@ -1625,7 +1625,7 @@ class Orthanc:
             params
         )
 
-    def cancel_job(self, job_identifier: str, data: Dict = None) -> Any:
+    def cancel_job(self, job_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Cancel specified job
 
         Cancel the job, tag it as failed
@@ -1646,7 +1646,7 @@ class Orthanc:
             data
         )
 
-    def pause_job(self, job_identifier: str, data: Dict = None) -> Any:
+    def pause_job(self, job_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Pause specified job
 
         Pause the specified job.
@@ -1667,7 +1667,7 @@ class Orthanc:
             data
         )
 
-    def resubmit_job(self, job_identifier: str, data: Dict = None) -> Any:
+    def resubmit_job(self, job_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Resubmit job
 
         Resubmit a failed job.
@@ -1688,7 +1688,7 @@ class Orthanc:
             data
         )
 
-    def resume_job(self, job_identifier: str, data: Dict = None) -> Any:
+    def resume_job(self, job_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Resume the specified paused job
 
         Resume a paused job.
@@ -1790,7 +1790,7 @@ class Orthanc:
             f'{self._orthanc_url}/modalities/{modality}'
         )
 
-    def put_modality(self, modality: str, data: Dict = None) -> None:
+    def put_modality(self, modality: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> None:
         """Put remote modality
 
         Parameters
@@ -1831,7 +1831,7 @@ class Orthanc:
 
         return True if result == {} else False
 
-    def move_from_modality(self, modality: str, data: Dict = None) -> bool:
+    def move_from_modality(self, modality: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> bool:
         """Move (C-Move SCU) specified query.
 
         DICOM C-Move SCU (Retrieve).
@@ -1855,7 +1855,7 @@ class Orthanc:
 
         return True if result == {} else False
 
-    def query_on_modality(self, modality: str, data: Dict = None) -> Any:
+    def query_on_modality(self, modality: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Query on remote modalities
 
         DICOM C-Find SCU (Query), with subsequent possibility for Retrieve.
@@ -1889,7 +1889,7 @@ class Orthanc:
             data
         )
 
-    def store_on_modality(self, modality: str, data: Dict = None) -> Any:
+    def store_on_modality(self, modality: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Store data on remote modality (C-Store).
 
         POST body = UUID series, UUID instance, or raw DICOM file.
@@ -1957,7 +1957,7 @@ class Orthanc:
             f'{self._orthanc_url}/patients/{patient_identifier}'
         )
 
-    def anonymize_patient(self, patient_identifier: str, data: Dict = {}) -> Dict[str, str]:
+    def anonymize_patient(self, patient_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = {}) -> Dict[str, str]:
         """Anonymize specified patient
 
         If no error is been raise, then it creates a new anonymous patient.
@@ -2022,7 +2022,7 @@ class Orthanc:
             f'{self._orthanc_url}/patients/{patient_identifier}/archive'
         )
 
-    def archive_patient(self, patient_identifier: str, data: Dict = None) -> bytes:
+    def archive_patient(self, patient_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> bytes:
         """Archive patient
 
         Create ZIP and return it.
@@ -2155,7 +2155,7 @@ class Orthanc:
             f'{self._orthanc_url}/patients/{patient_identifier}/media',
         )
 
-    def create_patient_archive_for_media_storage(self, patient_identifier: str, data: Dict = None) -> Any:
+    def create_patient_archive_for_media_storage(self, patient_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Create patient archive media with DICOMDIR
 
         Create a ZIP archive for media storage with DICOMDIR.
@@ -2176,7 +2176,7 @@ class Orthanc:
             data
         )
 
-    def modify_patient(self, patient_identifier: str, data: Dict = None) -> Any:
+    def modify_patient(self, patient_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Modify patient
 
         http://book.pyorthanc-server.com/users/anonymization.html
@@ -2311,7 +2311,7 @@ class Orthanc:
             0
         )
 
-    def reconstruct_main_dicom_tags_of_patient(self, patient_identifier: str, data: Dict = None) -> Any:
+    def reconstruct_main_dicom_tags_of_patient(self, patient_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Force reconstruction of the main DICOM tags of patient
 
         Force reconstruction of the main DICOM tags,
@@ -2493,7 +2493,7 @@ class Orthanc:
             f'{self._orthanc_url}/peers/{peer_identifier}',
         )
 
-    def put_peer(self, peer_identifier: str, data: Dict = None) -> None:
+    def put_peer(self, peer_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> None:
         """Put peer
 
         Parameters
@@ -2513,7 +2513,7 @@ class Orthanc:
             data
         )
 
-    def store_peer(self, peer_identifier: str, data: Dict = None) -> Any:
+    def store_peer(self, peer_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Post method
 
         POST body = UUID series, UUID instance, or raw DICOM file
@@ -2743,7 +2743,7 @@ class Orthanc:
             params
         )
 
-    def send_resource_to_other_modality(self, query_identifier: str, index: str, data: Dict = None) -> Any:
+    def send_resource_to_other_modality(self, query_identifier: str, index: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """(C-Move) Send resource to another modality with AET in request body
 
         C-Move SCU: Send this resource to another modality whose AET is in the body.
@@ -2766,7 +2766,7 @@ class Orthanc:
             data
         )
 
-    def find_child_dicom_instances_of_answer(self, query_identifier: str, index: str, data: Dict = None) -> Any:
+    def find_child_dicom_instances_of_answer(self, query_identifier: str, index: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Find child dicom instances of answer
 
         Launch another C-Find SCU to find the child DICOM instances of
@@ -2790,7 +2790,7 @@ class Orthanc:
             data
         )
 
-    def find_child_dicom_series_of_answer(self, query_identifier: str, index: str, data: Dict = None) -> Any:
+    def find_child_dicom_series_of_answer(self, query_identifier: str, index: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Find child dicom series of answer
 
         Launch another C-Find SCU to find the child series of the given answer.
@@ -2816,7 +2816,7 @@ class Orthanc:
     def find_child_dicom_studies_of_answer(
             self, query_identifier: str,
             index: str,
-            data: Dict = None) -> Any:
+            data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Find child dicom studies of answer
 
         Launch another C-Find SCU to find the child patient of the given answer.
@@ -2923,7 +2923,7 @@ class Orthanc:
             params
         )
 
-    def move_query_results_to_given_modality(self, query_identifier: str, data: Dict = None) -> bool:
+    def move_query_results_to_given_modality(self, query_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> bool:
         """Move (C-Move) what is in the given query results to another modality
 
         C-Move SCU: Send all the results to another modality whose AET is in the body.
@@ -3018,7 +3018,7 @@ class Orthanc:
             f'{self._orthanc_url}/series/{series_identifier}',
         )
 
-    def anonymize_series(self, series_identifier: str, data: Dict = None) -> Any:
+    def anonymize_series(self, series_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Anonymize series
 
         http://book.pyorthanc-server.com/users/anonymization.html
@@ -3061,7 +3061,7 @@ class Orthanc:
             params
         )
 
-    def create_series_zip_file(self, series_identifier: str, data: Dict = None) -> Any:
+    def create_series_zip_file(self, series_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Create series zip file
 
         Create a ZIP archive for media storage with DICOMDIR.
@@ -3185,7 +3185,7 @@ class Orthanc:
             params
         )
 
-    def create_series_archive_for_media_storage(self, series_identifier: str, data: Dict = None) -> Any:
+    def create_series_archive_for_media_storage(self, series_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Create archive for media storage
 
         Create archives for media storage with DICOMDIR.
@@ -3206,7 +3206,7 @@ class Orthanc:
             data
         )
 
-    def post_series_modify(self, series_identifier: str, data: Dict = None) -> Any:
+    def post_series_modify(self, series_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Modify series
 
         http://book.pyorthanc-server.com/users/anonymization.html
@@ -3330,7 +3330,7 @@ class Orthanc:
             params
         )
 
-    def reconstruct_main_dicom_tags_of_series(self, series_identifier: str, data: Dict = None) -> Any:
+    def reconstruct_main_dicom_tags_of_series(self, series_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Reconstruction of the main DICOM tags of series
 
         Force reconstruction of the main DICOM tags,
@@ -3520,7 +3520,7 @@ class Orthanc:
             f'{self._orthanc_url}/studies/{study_identifier}'
         )
 
-    def anonymize_study(self, study_identifier: str, data: Dict = None) -> Any:
+    def anonymize_study(self, study_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Anonymize study
 
         http://book.pyorthanc-server.com/users/anonymization.html
@@ -3560,7 +3560,7 @@ class Orthanc:
             f'{self._orthanc_url}/studies/{study_identifier}/archive'
         )
 
-    def create_study_zip_file(self, study_identifier: str, data: Dict = None) -> Any:
+    def create_study_zip_file(self, study_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Create study zip file
 
         Create ZIP.
@@ -3670,7 +3670,7 @@ class Orthanc:
             f'{self._orthanc_url}/studies/{study_identifier}/media'
         )
 
-    def create_study_archive_for_media_storage(self, study_identifier: str, data: Dict = None) -> Any:
+    def create_study_archive_for_media_storage(self, study_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Create archive for media storage
 
         Create a ZIP archive for media storage with DICOMDIR.
@@ -3691,7 +3691,7 @@ class Orthanc:
             data
         )
 
-    def merge_study(self, study_identifier: str, data: Dict = None) -> Any:
+    def merge_study(self, study_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Merge study
 
         Merge a study, i.e. move series from another study into this study
@@ -3712,7 +3712,7 @@ class Orthanc:
             data
         )
 
-    def modify_study(self, study_identifier: str, data: Dict = None) -> Any:
+    def modify_study(self, study_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Modify study
 
         http://book.pyorthanc-server.com/users/anonymization.html
@@ -3875,7 +3875,7 @@ class Orthanc:
             params
         )
 
-    def reconstruct_study_main_dicom_tags(self, study_identifier: str, data: Dict = None) -> Any:
+    def reconstruct_study_main_dicom_tags(self, study_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Reconstruct the main DICOM tags of study
 
         Force reconstruction of the main DICOM tags,
@@ -3979,7 +3979,7 @@ class Orthanc:
             params
         )
 
-    def split_study(self, study_identifier: str, data: Dict = None) -> Any:
+    def split_study(self, study_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Split study
 
         Split a study, i.e. create a new study from a subset of its child series.
@@ -4037,7 +4037,7 @@ class Orthanc:
             params
         )
 
-    def create_archive(self, data: Dict = None) -> Any:
+    def create_archive(self, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Create archive (ZIP) from specified set of DICOM objects
 
         Create a ZIP from a set of unrelated DICOM resources
@@ -4056,7 +4056,7 @@ class Orthanc:
             data
         )
 
-    def create_and_store_dicom(self, data: Dict = None) -> Any:
+    def create_and_store_dicom(self, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Create and store new DICOM instance
 
         Create and store a new DICOM instance,
@@ -4076,7 +4076,7 @@ class Orthanc:
             data
         )
 
-    def create_media(self, data: Dict = None) -> Any:
+    def create_media(self, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Create a ZIP with DICOMDIR from specified DICOM objects
 
         Create a ZIP-with-DICOMDIR from a set of unrelated DICOM resources
@@ -4095,7 +4095,7 @@ class Orthanc:
             data
         )
 
-    def create_media_extended_to_type3(self, data: Dict = None) -> Any:
+    def create_media_extended_to_type3(self, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Create a ZIP with DICOMDIR from specified DICOM objects (this include type-3 tags)
 
         Create a ZIP-with-DICOMDIR from a set of unrelated DICOM resources,
@@ -4135,7 +4135,7 @@ class Orthanc:
             params
         )
 
-    def put_default_encoding(self, data: Dict = None) -> None:
+    def put_default_encoding(self, data: Optional[Union[Dict, str, int, bytes]] = None) -> None:
         """Change the default encoding
 
         Temporarily change the default encoding until the next restart.
@@ -4175,7 +4175,7 @@ class Orthanc:
             params
         )
 
-    def execute_given_script(self, data: Dict = None) -> Any:
+    def execute_given_script(self, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Execute given script
 
         Execute the Lua script in the POST body.
@@ -4194,7 +4194,7 @@ class Orthanc:
             data
         )
 
-    def c_find(self, data: Dict = None) -> Any:
+    def c_find(self, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """C-Find call
 
         Runs a C-Find call from the REST API
@@ -4233,7 +4233,7 @@ class Orthanc:
             params
         )
 
-    def invalidate_tags(self, data: Dict = None) -> Any:
+    def invalidate_tags(self, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Invalidate the JSON summary of all DICOM files
 
         Invalidate the JSON summary of all the DICOM files
@@ -4253,7 +4253,7 @@ class Orthanc:
             data
         )
 
-    def lookup(self, data: Dict = None) -> Any:
+    def lookup(self, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Map DICOM UIDs to Orthanc identifiers
 
         Map DICOM UIDs to Orthanc identifiers
@@ -4292,7 +4292,7 @@ class Orthanc:
             params
         )
 
-    def put_metrics(self, data: Dict = None) -> None:
+    def put_metrics(self, data: Optional[Union[Dict, str, int, bytes]] = None) -> None:
         """Put method
 
         Enable/disable this collection of metrics
@@ -4372,7 +4372,7 @@ class Orthanc:
             params
         )
 
-    def reconstruct_main_dicom_tags(self, data: Dict = None) -> Any:
+    def reconstruct_main_dicom_tags(self, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Reconstruct main DICOM tags
 
         Reconstructs the main DICOM tags, the JSON summary and metadata of
@@ -4392,7 +4392,7 @@ class Orthanc:
             data
         )
 
-    def reset_orthanc(self, data: Dict = None) -> Any:
+    def reset_orthanc(self, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Hot restart of Orthanc
 
         Hot restart of Orthanc, the configuration file will be read again
@@ -4411,7 +4411,7 @@ class Orthanc:
             data
         )
 
-    def shutdown_orthanc(self, data: Dict = None) -> Any:
+    def shutdown_orthanc(self, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Shutdown Orthanc
 
         Stop Orthanc.
