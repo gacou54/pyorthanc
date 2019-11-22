@@ -5,11 +5,10 @@ import unittest
 import zipfile
 from typing import Dict
 
-import requests
-
 from pyorthanc import Orthanc
-from tests.integration import setup_server
-from tests.integration.data import a_patient
+from pyorthanc.exceptions import HTTPError
+from tests import setup_server
+from tests.data import a_patient
 
 
 class TestOrthancPatientGetters(unittest.TestCase):
@@ -62,7 +61,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingPatientInformation_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.exceptions.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_patient_information(a_patient.IDENTIFIER)
         )
 
@@ -81,7 +80,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingPatientZip_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.exceptions.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_patient_zip(a_patient.IDENTIFIER)
         )
 
@@ -98,7 +97,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingPatientInstances_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.exceptions.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_patient_instances(a_patient.IDENTIFIER)
         )
 
@@ -111,7 +110,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingPatientInstancesTags_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.exceptions.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_patient_instances_tags(a_patient.IDENTIFIER)
         )
 
@@ -124,7 +123,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingPatientInstancesTagsInSimplifiedVersion_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.exceptions.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_patient_instances_tags_in_simplified_version(a_patient.IDENTIFIER)
         )
 
@@ -137,7 +136,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingPatientInstancesTagsInShorterVersion_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.exceptions.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_patient_instances_tags_in_shorter_version(a_patient.IDENTIFIER)
         )
 
@@ -155,7 +154,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingPatientArchive_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.exceptions.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_patient_archive(a_patient.IDENTIFIER)
         )
 
@@ -168,7 +167,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingPatientModule_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_patient_module(a_patient.IDENTIFIER)
         )
 
@@ -181,7 +180,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingPatientModuleInSimplifiedVersion_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_patient_module_in_simplified_version(a_patient.IDENTIFIER)
         )
 
@@ -194,7 +193,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingPatientModuleInShorterVersion_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_patient_module_in_shorter_version(a_patient.IDENTIFIER)
         )
 
@@ -227,7 +226,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingPatientSeries_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_patient_series(a_patient.IDENTIFIER)
         )
 
@@ -240,7 +239,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingPatientSharedTags_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_patient_shared_tags(a_patient.IDENTIFIER)
         )
 
@@ -253,7 +252,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingPatientSharedTagsInSimplifiedVersion_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_patient_shared_tags_in_simplified_version(a_patient.IDENTIFIER)
         )
 
@@ -266,7 +265,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingPatientSharedTagsInShorterVersion_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_patient_shared_tags_in_shorter_version(a_patient.IDENTIFIER)
         )
 
@@ -283,7 +282,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingPatientStatistics_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_patient_statistics(a_patient.IDENTIFIER)
         )
 
@@ -300,7 +299,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
     def test_givenOrthancWithoutPatient_whenGettingPatientStudiesInformation_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.HTTPError,
+            HTTPError,
             lambda: self.orthanc.get_patient_studies_information(a_patient.IDENTIFIER)
         )
 

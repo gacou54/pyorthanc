@@ -4,11 +4,10 @@ import os
 import unittest
 import zipfile
 
-import requests
-
 from pyorthanc import Orthanc
-from tests.integration import setup_server
-from tests.integration.data import a_patient
+from pyorthanc.exceptions import HTTPError
+from tests import setup_server
+from tests.data import a_patient
 
 
 class TestOrthancPatientPosts(unittest.TestCase):
@@ -51,7 +50,7 @@ class TestOrthancPatientPosts(unittest.TestCase):
 
     def test_givenOrthancWithoutAPatient_whenAnonymizeAPatient_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.exceptions.HTTPError,
+            HTTPError,
             lambda: self.orthanc.anonymize_patient(a_patient.IDENTIFIER)
         )
 
@@ -70,6 +69,6 @@ class TestOrthancPatientPosts(unittest.TestCase):
 
     def test_givenOrthancWithoutAPatient_whenArchivingAPatient_thenRaiseHTTPError(self):
         self.assertRaises(
-            requests.exceptions.HTTPError,
+            HTTPError,
             lambda: self.orthanc.archive_patient(a_patient.IDENTIFIER)
         )

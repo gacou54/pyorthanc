@@ -1,7 +1,8 @@
 before_script:
   - /opt/rh/rh-python36/root/usr/bin/pip3.6 install virtualenv
   - virtualenv -p /opt/rh/rh-python36/root/usr/bin/python3.6 venv
-  - ./venv/bin/pip3 install -r requirements.txt
+  - ./venv/bin/pip install --upgrade pip
+  - ./venv/bin/pip install -r requirements.txt
 
 
 stages:

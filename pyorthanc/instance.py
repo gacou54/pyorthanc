@@ -167,15 +167,9 @@ class Instance:
         Any
             Content corresponding to specified tag.
         """
-        result = self.orthanc.get_instance_content_by_group_element(
-            instance_identifier=self.identifier,
-            group_element=tag
-        )
+        result = self.orthanc.get_instance_content_by_group_element(self.identifier, tag)
 
-        try:
-            return result.decode('utf-8').strip().replace('\x00', '')
-        except UnicodeDecodeError:
-            return result
+        return result.decode('utf-8').strip().replace('\x00', '')
 
     def get_content_by_group_element(self, group_element: str) -> Any:
         """Get content by group element
@@ -193,15 +187,9 @@ class Instance:
         Any
             Content corresponding to specified tag.
         """
-        result = self.orthanc.get_instance_content_by_group_element(
-            instance_identifier=self.identifier,
-            group_element=group_element
-        )
+        result = self.orthanc.get_instance_content_by_group_element(self.identifier, group_element)
 
-        try:
-            return result.decode('utf-8').strip().replace('\x00', '')
-        except UnicodeDecodeError:
-            return result
+        return result.strip().replace('\x00', '')
 
     def __str__(self):
         return f'Instance (identifier={self.get_identifier()})'

@@ -63,10 +63,7 @@ def build_patient_forest(
 
     patient_forest = list(future_patients)
 
-    if do_trim_forest_after_construction:
-        return trim_patient_forest(patient_forest)
-
-    return patient_forest
+    return trim_patient_forest(patient_forest) if do_trim_forest_after_construction else patient_forest
 
 
 def _build_patient(
