@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
 FLAKE8_COMMAND = ['./venv/bin/flake8', '--ignore=E501', 'pyorthanc', 'tests']
-MYPY_COMMAND = ['./venv/bin/mypy', 'pyorthanc']
+MYPY_COMMAND = ['./venv/bin/mypy', '--config-file=./mypy.ini', 'pyorthanc']
 TESTS_COMMAND = ['./venv/bin/python', '-m', 'unittest', 'discover', '-s', 'tests']
 
 

@@ -2,6 +2,7 @@
 
 !.gitignore
 !setup.py
+!mypy.ini
 !requirements.txt
 !gitlab-ci.yml
 !LICENSE.txt

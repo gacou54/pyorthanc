@@ -3,7 +3,6 @@ import json
 import urllib3
 from typing import List, Dict, Union, Any, Optional, Tuple
 
-
 from pyorthanc.exceptions import HTTPError
 
 
