@@ -1836,7 +1836,7 @@ class Orthanc:
 
         return True if result == {} else False
 
-    def move_from_modality(self, modality: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> bool:
+    def move_from_modality(self, modality: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Move (C-Move SCU) specified query.
 
         DICOM C-Move SCU (Retrieve).
@@ -1850,15 +1850,13 @@ class Orthanc:
 
         Returns
         -------
-        bool
-            True if the C-Move operation was sent without problem, else False.
+        Any
+            Result of query in the form of { "ID": "{query-id}", "Path": "/queries/{query-id}" }
         """
-        result = self.post_request(
+        return self.post_request(
             f'{self._orthanc_url}/modalities/{modality}/move',
             data
         )
-
-        return True if result == {} else False
 
     def query_on_modality(self, modality: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Query on remote modalities
@@ -2945,7 +2943,7 @@ class Orthanc:
 
     def move_query_results_to_given_modality(
             self, query_identifier: str,
-            data: Optional[Union[Dict, str, int, bytes]] = None) -> bool:
+            data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
         """Move (C-Move) what is in the given query results to another modality
 
         C-Move SCU: Send all the results to another modality whose AET is in the body.
@@ -2959,8 +2957,8 @@ class Orthanc:
 
         Returns
         -------
-        bool
-            True if the C-Move operation was sent without problem.
+        Any
+            Orthanc Response (probably json)
 
         Examples
         --------
@@ -2976,12 +2974,10 @@ class Orthanc:
         ...         data={'TargetAet': 'modality'})
 
         """
-        json_response = self.post_request(
+        return self.post_request(
             f'{self._orthanc_url}/queries/{query_identifier}/retrieve',
             data
         )
-
-        return True if json_response == {} else False
 
     def get_series(self, params: Dict = None) -> Any:
         """Get series identifiers
