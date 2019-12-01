@@ -109,6 +109,10 @@ class TestRemoteModality(unittest.TestCase):
         query_result = self.remote.query(PAYLOAD)
         result = self.remote.move(query_result['ID'], cmove_data)
 
+        try:
+            del result['Query']  # On some version of Orthanc, A Query field is there
+        except KeyError:
+            pass
         self.assertDictEqual(expected_move_answer, result)
         resulting_patient_information = self.orthanc.get_patient_information(self.orthanc.get_patients()[0])
         self.assertEqual(
