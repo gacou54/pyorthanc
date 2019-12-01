@@ -5,17 +5,17 @@
 
   // The logical name of this instance of Orthanc. This one is
   // displayed in Orthanc Explorer and at the URI "/system".
-  "Name" : "FirstOrthanc",
+  "Name" : "SecondOrthanc",
 
   // Path to the directory that holds the heavyweight files (i.e. the
   // raw DICOM instances). Backslashes must be either escaped by
   // doubling them, or replaced by forward slashes "/".
-  "StorageDirectory" : "./data/FirstOrthancStorage",
+  "StorageDirectory" : "./data/SecondOrthancStorage",
 
   // Path to the directory that holds the SQLite index (if unset, the
   // value of StorageDirectory is used). This index could be stored on
   // a RAM-drive or a SSD device for performance reasons.
-  "IndexDirectory" : "./data/FirstOrthancStorage",
+  "IndexDirectory" : "./data/SecondOrthancStorage",
 
   // Path to the directory where Orthanc stores its large temporary
   // files. The content of this folder can be safely deleted if
@@ -72,7 +72,7 @@
   "HttpServerEnabled" : true,
 
   // HTTP port for the REST services and for the GUI
-  "HttpPort" : 9999,
+  "HttpPort" : 9997,
 
   // When the following option is "true", if an error is encountered
   // while calling the REST API, a JSON message describing the error
@@ -97,14 +97,14 @@
   "DicomServerEnabled" : true,
 
   // The DICOM Application Entity Title
-  "DicomAet" : "FIRSTORTHANC",
+  "DicomAet" : "SECONDORTHANC",
 
   // Check whether the called AET corresponds to the AET of Orthanc
   // during an incoming DICOM SCU request
   "DicomCheckCalledAet" : false,
 
   // The DICOM port
-  "DicomPort" : 9998,
+  "DicomPort" : 9996,
 
   // The default encoding that is assumed for DICOM files without
   // "SpecificCharacterSet" DICOM tag, and that is used when answering
@@ -191,7 +191,7 @@
      * This parameter is case-sensitive.
      **/
     // "clearcanvas" : [ "CLEARCANVAS", "192.168.1.1", 104, "ClearCanvas" ]
-    "SecondOrthanc" : [ "SECONDORTHANC", "localhost", 9996 ]
+    "FirstOrthanc" : [ "FIRSTORTHANC", "localhost", 9998 ]
 
     /**
      * By default, the Orthanc SCP accepts all DICOM commands (C-GET,

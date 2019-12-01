@@ -19,8 +19,8 @@ class RemoteModality:
         modality
             Remote modality.
         """
-        self.orthanc: Orthanc = orthanc
-        self.modality: str = modality
+        self.orthanc = orthanc
+        self.modality = modality
 
     def echo(self) -> bool:
         """C-Echo to remote modality
@@ -64,22 +64,7 @@ class RemoteModality:
         """
         return self.orthanc.query_on_modality(self.modality, data=data)
 
-    def retrieve(self, data: Dict) -> bool:
-        """Retrieve (C-Move) to local modality
-
-        Parameters
-        ----------
-        data
-            Dictionary to send in the body of request.
-
-        Returns
-        -------
-        bool
-            True if the C-Move operation was sent without problem, else False.
-        """
-        return self.orthanc.move_from_modality(self.modality, data=data)
-
-    def move(self, query_identifier: str, cmove_data: Dict) -> bool:
+    def move(self, query_identifier: str, cmove_data: Dict) -> Dict:
         """C-Move query results to another modality
 
         C-Move SCU: Send all the results to another modality whose AET is in the body
@@ -89,28 +74,28 @@ class RemoteModality:
         query_identifier
             Query identifier.
         cmove_data
-            Ex. {'TargetAet': 'modality_name', "Synchronous": False}
+            Ex. {'TargetAet': 'target_modality_name', "Synchronous": False}
 
         Returns
         -------
-        bool
-            True if the C-Move operation was sent without problem, else False.
+        Dict
+            Orthanc Response (probably a Dictionary)
 
         Examples
         --------
         >>> remote_modality = RemoteModality(Orthanc('http://localhost:8042'), 'modality')
         >>> query_id = remote_modality.query(
-        ...     data={'Level': 'Study',
-        ...           'Query': {'QueryRetrieveLevel': 'Study',
+        ...     data={'Level': 'Series',
+        ...           'Query': {'PatientID': '',
         ...                     'Modality':'SR'}})
 
         >>> remote_modality.move(
         ...     query_identifier=query_id['ID'],
-        ...     cmove_data={'TargetAET': 'modality'}
+        ...     cmove_data={'TargetAet': 'TARGETAET'}
         ... )
 
         """
         return self.orthanc.move_query_results_to_given_modality(
             query_identifier,
-            data=cmove_data
+            cmove_data
         )
