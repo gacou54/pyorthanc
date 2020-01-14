@@ -5,8 +5,9 @@ import unittest
 import zipfile
 from typing import Dict
 
+from requests import HTTPError
+
 from pyorthanc import Orthanc
-from pyorthanc.exceptions import HTTPError
 from tests import setup_server
 from tests.data import a_patient
 

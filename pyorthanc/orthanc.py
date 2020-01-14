@@ -1,9 +1,9 @@
 # coding: utf-8
 import json
-import urllib3
-from typing import List, Dict, Union, Any, Optional, Tuple
+from typing import List, Dict, Union, Any, Optional
 
-from pyorthanc.exceptions import HTTPError
+import requests
+from requests.auth import HTTPBasicAuth
 
 
 class Orthanc:
@@ -25,9 +25,7 @@ class Orthanc:
         self._orthanc_url = orthanc_url
 
         self._credentials_are_set = False
-        self._credentials: Tuple[str, str] = ('', '')
-
-        self.http = urllib3.PoolManager(maxsize=20)
+        self._credentials: Optional[HTTPBasicAuth] = None
 
     def setup_credentials(self, username: str, password: str) -> None:
         """Set credentials needed for HTTP requests
@@ -39,9 +37,8 @@ class Orthanc:
         password
             Password.
         """
-        self.http.headers = urllib3.util.make_headers(
-            basic_auth='{}:{}'.format(username, password)
-        )
+        self._credentials = HTTPBasicAuth(username, password)
+        self._credentials_are_set = True
 
     def get_request(self, route: str, params: Optional[Dict] = None) -> Any:
         """GET request with specified route
@@ -58,20 +55,17 @@ class Orthanc:
         Union[List, Dict, str, bytes, int]
             Response of the HTTP GET request converted to json format.
         """
-        if params is not None:
-            route = f'{route}?' + ''.join([f'{key}={value}&' for key, value in params.items()])[:-1]
+        response = requests.get(route, params=params, auth=self._credentials)
 
-        response = self.http.request('GET', route)
-
-        if response.status == 200:
+        if response.status_code == 200:
             try:
-                return json.loads(response.data.decode('utf-8'))
+                return response.json()
 
-            except (json.JSONDecodeError, UnicodeDecodeError):
-                return response.data
+            except ValueError:
+                return response.content
 
-        raise HTTPError(
-            f'HTTP code: {response.status}, with content: {response.data}'
+        raise requests.HTTPError(
+            f'HTTP code: {response.status_code}, with content: {response.text}'
         )
 
     def delete_request(self, route: str) -> bool:
@@ -87,16 +81,16 @@ class Orthanc:
         bool
             True if the HTTP DELETE request succeeded (HTTP code 200).
         """
-        response = self.http.request('DELETE', route)
+        response = requests.delete(route, auth=self._credentials)
 
-        if response.status == 200:
+        if response.status_code == 200:
             return True
 
-        if response.status == 404:
+        if response.status_code == 404:
             return False
 
-        raise HTTPError(
-            f'HTTP code: {response.status}, with content: {response.data}'
+        raise requests.HTTPError(
+            f'HTTP code: {response.status_code}, with content: {response.text}'
         )
 
     def post_request(self, route: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
@@ -114,17 +108,17 @@ class Orthanc:
         Union[Dict, str, bytes, int]
             Response of the HTTP POST request converted to json format.
         """
-        response = self.http.request('POST', route, body=json.dumps(data))
+        response = requests.post(route, data=json.dumps(data), auth=self._credentials)
 
-        if response.status == 200:
+        if response.status_code == 200:
             try:
-                return json.loads(response.data.decode('utf-8'))
+                return response.json()
 
-            except (json.JSONDecodeError, UnicodeDecodeError):
-                return response.data
+            except ValueError:
+                return response.content
 
-        raise HTTPError(
-            f'HTTP code: {response.status}, with text: {response.data}'
+        raise requests.HTTPError(
+            f'HTTP code: {response.status_code}, with text: {response.text}'
         )
 
     def put_request(self, route: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> None:
@@ -142,13 +136,13 @@ class Orthanc:
         None
             Nothing, raise if a problem occurs.
         """
-        response = self.http.request('PUT', route, body=json.dumps(data))
+        response = requests.put(route, data=json.dumps(data), auth=self._credentials)
 
-        if response.status == 200:
+        if response.status_code == 200:
             return
 
-        raise HTTPError(
-            f'HTTP code: {response.status}, with text: {response.data}'
+        raise requests.HTTPError(
+            f'HTTP code: {response.status_code}, with text: {response.text}'
         )
 
     def get_attachments(
