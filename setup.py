@@ -59,7 +59,7 @@ setup(
     description='Orthanc REST API python wrapper with additional utilities',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    install_requires=['urllib3'],
+    install_requires=['urllib3', 'requests'],
     cmdclass={
         'lint': LintTests,
         'acceptance': Tests,
