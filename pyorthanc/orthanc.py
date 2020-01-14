@@ -1,6 +1,6 @@
 # coding: utf-8
 import json
-from typing import List, Dict, Union, Any, Optional, Tuple
+from typing import List, Dict, Union, Any, Optional
 
 import requests
 from requests.auth import HTTPBasicAuth
