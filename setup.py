@@ -50,7 +50,7 @@ with open('./README.md', 'r') as file_handler:
 
 setup(
     name='pyorthanc',
-    version='0.2.9',
+    version='0.2.10',
     packages=find_packages(),
     url='https://gitlab.physmed.chudequebec.ca/gacou54/pyorthanc',
     license='MIT',
