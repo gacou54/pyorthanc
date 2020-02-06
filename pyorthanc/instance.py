@@ -192,7 +192,10 @@ class Instance:
         """
         result = self.orthanc.get_instance_content_by_group_element(self.identifier, group_element)
 
-        return result.strip().replace('\x00', '')
+        try:
+            return result.decode('utf-8').strip().replace('\x00', '')
+        except AttributeError:
+            return result
 
     def __str__(self):
         return f'Instance (identifier={self.get_identifier()})'
