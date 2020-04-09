@@ -11,8 +11,7 @@ $ pip install pyorthanc
 ```
 
 #### Specific version
-If you are looking for a specific version, lookout the version with the desired 
-tag at https://gitlab.physmed.chudequebec.ca/gacou54/pyorthanc/tags.
+If you are looking for a specific version, look here: https://gitlab.physmed.chudequebec.ca/gacou54/pyorthanc/tags.
 
 Example of usage
 ----------------
@@ -127,9 +126,9 @@ from pyorthanc import Orthanc
 orthanc = Orthanc('http://localhost:8042')
 orthanc.setup_credentials('username', 'password')  # If needed
 
-A_PATIENT_IDENTIFIER = orthanc.get_patients()[0]
+a_patient_identifier = orthanc.get_patients()[0]
 
-orthanc.anonymize_patient(A_PATIENT_IDENTIFIER)
+orthanc.anonymize_patient(a_patient_identifier)
 
 # result is: (you can retrieve DICOM file from ID)
 # {'ID': 'dd41f2f1-24838e1e-f01746fc-9715072f-189eb0a2',
