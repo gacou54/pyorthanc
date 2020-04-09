@@ -1,22 +1,7 @@
 PyOrthanc
 =========
-Python library that wrap the Orthanc REST API and facilitate the manipulation of data.
-
-Link to Orthanc web site: https://www.orthanc-server.com/
-
-__Notes__:
-Please note that this is an early version of the wrapper (version < 1.0),
-therefore some methods description (and maybe name) may change because 
-they don't describe adequately the behavior of the corresponding Orthanc REST API route.
-Also note that this librairy is still under development.
-If the description of an `Orthanc` method does not correspond to the planned 
-behavior, please do an issue.
-
-However, 'PyOrthanc' contains objects and functions that may be
-useful for anyone writing python script to interact with Orthanc.
-
-Also note that tests (```python setup.py test```) might only work
-on a linux machine.
+Python library that wraps the Orthanc REST API and facilitates the manipulation
+of data with several cool utilities.
 
 
 Installation
@@ -25,28 +10,17 @@ Installation
 $ pip install pyorthanc
 ```
 
-Or from the repository:
-```sh
-pip install git+https://gitlab.physmed.chudequebec.ca/gacou54/pyorthanc.git
-```
-
-Or, if you do not have git installed, clone the repository:
-```sh
-pip install -e pyorthanc.zip
-```
-
 #### Specific version
 If you are looking for a specific version, lookout the version with the desired 
-tag ar https://gitlab.physmed.chudequebec.ca/gacou54/pyorthanc/tags.
+tag at https://gitlab.physmed.chudequebec.ca/gacou54/pyorthanc/tags.
 
 Example of usage
 ----------------
 Be sure that Orthanc is running. The default URL (if running locally) is `http://localhost:8042`.
 
-#### With Orthanc server:
+#### Getting access to patients, studies, series and instances information:
 ```python
 from pyorthanc import Orthanc
-
 
 orthanc = Orthanc('http://localhost:8042')
 orthanc.setup_credentials('username', 'password')  # If needed
@@ -57,32 +31,71 @@ patients_identifiers = orthanc.get_patients()
 for patient_identifier in patients_identifiers:
     patient_information = orthanc.get_patient_information(patient_identifier)
 
+    patient_name = patient_information['MainDicomTags']['name']
+    ...
+    study_identifiers = patient_information['Studies']    
 
 # To get patient's studies identifier and main information
-a_patient_identifier = patients_identifiers[0]
-studies_identifiers = orthanc.get_studies(a_patient_identifier)
+for study_identifier in study_identifiers:
+    study_information = orthanc.get_study_information(study_identifier)
+    
+    study_date = study_information['MainDicomTags']['StudyDate']
+    ...
+    series_identifiers = study_information['Series']
 
-for study_identifier in studies_identifiers:
-    study_information = orthanc.get_studies_information(study_identifier)
+# To get study's series identifier and main information
+for series_identifier in series_identifiers:
+    series_information = orthanc.get_series_information(series_identifier)
+    
+    modality = series_information['MainDicomTags']['Modality']
+    ...
+    instance_identifiers = series_information['Instances']
+
+# and so on ...
+for instance_identifier in instance_identifiers:
+    instance_information = orthanc.get_instance_information(instance_identifier)
+    ...
 ```
+
+#### Build a patient tree structure of all patients in Orthanc instance:
+Each patient is a tree. Layers in each tree are `Patient` -> `Study` -> `Series` -> `Instance`.
+```python
+from pyorthanc import Orthanc, build_patient_forest
+
+patient_forest = build_patient_forest(
+    Orthanc('http://localhost:8042/')
+)    
+
+for patient in patient_forest:
+    patient_info = patient.get_main_information()
+    patient.get_name()
+    patient.get_zip()
+    ...
+    
+    for study in patient.get_studies():
+        study.get_date()
+        study.get_referring_physician_name()
+        ...
+
+        for series in study.get_series():
+            ...
+```
+
 
 #### Upload DICOM files to Orthanc:
 ```python
 from pyorthanc import Orthanc
-
 
 orthanc = Orthanc('http://localhost:8042')
 orthanc.setup_credentials('username', 'password')  # If needed
 
 with open('A_DICOM_INSTANCE_PATH.dcm', 'rb') as file_handler:
     orthanc.post_instances(file_handler.read())
-
 ```
 
-#### Getting list of remote modalities:
+#### Getting list of connected remote modalities:
 ```python
 from pyorthanc import Orthanc
-
 
 orthanc = Orthanc('http://localhost:8042')
 orthanc.setup_credentials('username', 'password')  # If needed
@@ -94,9 +107,10 @@ orthanc.get_modalities()
 ```python
 from pyorthanc import RemoteModality, Orthanc
 
+orthanc = Orthanc('http://localhost:8042')
+orthanc.setup_credentials('username', 'password')  # If needed
 
-remote_modality = RemoteModality(Orthanc('http://localhost:8042'), 'modality')
-remote_modality.setup_credentials('username', 'password')  # If needed
+remote_modality = RemoteModality(orthanc, 'modality')
 
 # Query (C-Find) on modality
 data = {'Level': 'Study', 'Query': {'PatientID': '*'}}
@@ -106,27 +120,9 @@ query_response = remote_modality.query(data=data)
 remote_modality.move(query_response['QUERY_ID'], 'target_modality')
 ```
 
-#### Build a patient tree structure of all patients in Orthanc instance:
-Each patient is a tree. Layers in each tree are `Patient` -> `Study` -> `Series` -> `Instance`.
-```python
-from pyorthanc import Orthanc, build_patient_forest
-
-
-patient_forest = build_patient_forest(
-    Orthanc('http://localhost:8042/')
-)    
-
-for patient in patient_forest:
-    patient_info = patient.get_main_information()
-    
-    for study in patient.get_studies():
-        ...
-```
-
 #### Anonymize patient and get file:
 ```python
 from pyorthanc import Orthanc
-
 
 orthanc = Orthanc('http://localhost:8042')
 orthanc.setup_credentials('username', 'password')  # If needed
