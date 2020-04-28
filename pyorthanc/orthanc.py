@@ -108,12 +108,10 @@ class Orthanc:
         Union[Dict, str, bytes, int]
             Response of the HTTP POST request converted to json format.
         """
-        try:
+        if type(data) != bytes:
             data = json.dumps(data)
-        except TypeError:
-            pass
 
-        response = requests.post(route, data=data, auth=self._credentials)
+        response = requests.post(route, data=data, auth=self._credentials)  # type: ignore
 
         if response.status_code == 200:
             try:
