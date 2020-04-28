@@ -1,15 +1,11 @@
 # coding: utf-8
 # author: gabriel couture
-import os
 import unittest
-import zipfile
 
 import requests
-from requests import HTTPError
 
 from pyorthanc import Orthanc
 from tests import setup_server
-from tests.data import a_patient
 
 
 class TestOrthancInstancePosts(unittest.TestCase):
@@ -48,6 +44,6 @@ class TestOrthancInstancePosts(unittest.TestCase):
             data = fh.read()
 
         self.assertRaises(
-            requests.exceptions.HTTPError,
+            requests.HTTPError,
             lambda: self.orthanc.post_instances(data)
         )
