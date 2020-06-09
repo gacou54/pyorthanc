@@ -63,6 +63,11 @@ class TestStudy(unittest.TestCase):
 
         self.assertEqual(result, a_study.ID)
 
+    def test_givenAStudy_whenGettingStudyInstanceUID_thenResultIsExpectedUID(self):
+        result = self.study.get_uid()
+
+        self.assertEqual(result, a_study.INFORMATION['MainDicomTags']['StudyInstanceUID'])
+
     def test_givenAStudy_whenGettingReferringPhysicianName_thenResultIsExpectedReferringPhysicianName(self):
         result = self.study.get_referring_physician_name()
 

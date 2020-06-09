@@ -53,6 +53,11 @@ class TestSeries(unittest.TestCase):
 
         self.assertEqual(result, a_series.PARENT_STUDY)
 
+    def test_givenASeries_whenGettingSeriesInstanceUID_thenResultIsExpectedUID(self):
+        result = self.series.get_uid()
+
+        self.assertEqual(result, a_series.INFORMATION['MainDicomTags']['SeriesInstanceUID'])
+
     def test_givenASeries_whenBuildingInstances_thenPatientHasInstances(self):
         self.series.build_instances()
 

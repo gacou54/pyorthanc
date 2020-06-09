@@ -64,6 +64,16 @@ class Instance:
         """
         return self.identifier
 
+    def get_uid(self) -> str:
+        """Get SOPInstanceUID
+
+        Returns
+        -------
+        str
+            SOPInstanceUID
+        """
+        return self.get_main_information()['MainDicomTags']['SOPInstanceUID']
+
     def get_main_information(self) -> Dict:
         """Get instance information
 

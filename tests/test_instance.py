@@ -44,6 +44,11 @@ class TestInstance(unittest.TestCase):
             {key: value for key, value in a_instance.INFORMATION.items() if key not in keys_to_exclude},
         )
 
+    def test_givenAInstance_whenGettingSOPInstanceUID_thenResultIsExpectedUID(self):
+        result = self.instance.get_uid()
+
+        self.assertEqual(result, a_instance.INFORMATION['MainDicomTags']['SOPInstanceUID'])
+
     def test_givenAInstance_whenGettingFileSize_thenResultIsAInt(self):
         result = self.instance.get_file_size()
 

@@ -55,6 +55,16 @@ class Series:
         """
         return self.identifier
 
+    def get_uid(self) -> str:
+        """Get SeriesInstanceUID
+
+        Returns
+        -------
+        str
+            SeriesInstanceUID
+        """
+        return self.get_main_information()['MainDicomTags']['SeriesInstanceUID']
+
     def get_main_information(self) -> Dict:
         """Get series main information
 
