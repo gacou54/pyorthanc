@@ -5,8 +5,8 @@ from concurrent.futures import ThreadPoolExecutor
 from typing import List, Dict, Callable, Optional
 
 from pyorthanc import Study, Series, Instance
-from pyorthanc.patient import Patient
 from pyorthanc.orthanc import Orthanc
+from pyorthanc.patient import Patient
 
 
 def build_patient_forest(
@@ -143,9 +143,7 @@ def trim_patient_forest(patient_forest: List[Patient]) -> List[Patient]:
     return list(patients)
 
 
-def retrieve_and_write_patients_forest_to_given_path(
-        patient_forest: List[Patient],
-        path: str) -> None:
+def retrieve_and_write_patients(patient_forest: List[Patient], path: str) -> None:
     """Retrieve and write patients to given path
 
     Parameters
@@ -155,30 +153,77 @@ def retrieve_and_write_patients_forest_to_given_path(
     path
         Path where you want to write the files.
     """
-    anonymized_patient_counter = 1
+    os.makedirs(path, exist_ok=True)
     for patient in patient_forest:
+        retrieve_patient(patient, path)
 
-        if patient.get_id().strip() == '':
-            patient_path = os.path.join(path, f'anonymized-patient-{anonymized_patient_counter}')
-            anonymized_patient_counter += 1
-        else:
-            patient_path = os.path.join(path, patient.get_id())
 
-        used_study_paths: List[str] = []  # Sometime there are many studies with the same "ID" name.
+def retrieve_patient(patient: Patient, path: str) -> None:
+    patient_path = _make_patient_path(path, patient.get_id())
+    os.makedirs(patient_path, exist_ok=True)
 
-        for j, study in enumerate(patient.get_studies()):
-            study_path = os.path.join(patient_path, 'anonymized-study' if study.get_id() == '' else study.get_id())
+    for study in patient.get_studies():
+        retrieve_study(study, patient_path)
 
-            if study_path in used_study_paths:
-                study_path += str(j + 1)
-            used_study_paths.append(study_path)
 
-            os.makedirs(study_path, exist_ok=True)
+def retrieve_study(study: Study, patient_path: str) -> None:
+    study_path = _make_study_path(patient_path, study.get_id())
+    os.makedirs(study_path, exist_ok=True)
 
-            for series in study.get_series():
-                for k, instance in enumerate(series.get_instances()):
-                    instance_path = os.path.join(study_path, f'{series.get_modality()}-{k+1}.dcm')
+    for series in study.get_series():
+        retrieve_series(series, study_path)
 
-                    dicom_file_bytes = instance.get_dicom_file_content()
-                    with open(instance_path, 'wb') as file_handler:
-                        file_handler.write(dicom_file_bytes)
+
+def retrieve_series(series: Series, study_path: str) -> None:
+    series_path = _make_series_path(study_path, series.get_modality())
+    os.makedirs(series_path, exist_ok=True)
+
+    for instance in series.get_instances():
+        retrieve_instance(instance, series_path)
+
+
+def retrieve_instance(instance: Instance, series_path) -> None:
+    path = os.path.join(series_path, instance.get_uid() + '.dcm')
+
+    dicom_file_bytes = instance.get_dicom_file_content()
+
+    with open(path, 'wb') as file_handler:
+        file_handler.write(dicom_file_bytes)
+
+
+def _make_patient_path(path: str, patient_id: str) -> str:
+    patient_directories = os.listdir(path)
+
+    if patient_id.strip() == '':
+        patient_id = 'anonymous-patient'
+        return os.path.join(path, _make_path_name(patient_id, patient_directories))
+
+    return os.path.join(path, patient_id)
+
+
+def _make_study_path(patient_path: str, study_id: str) -> str:
+    study_directories = os.listdir(patient_path)
+
+    if study_id.strip() == '':
+        study_id = 'anonymous-study'
+
+    return os.path.join(patient_path, _make_path_name(study_id, study_directories))
+
+
+def _make_series_path(study_path: str, modality: str) -> str:
+    series_directories = os.listdir(study_path)
+
+    return os.path.join(study_path, _make_path_name(modality, series_directories))
+
+
+def _make_path_name(name: str, directories: List[str], increment: int = 1, has_increment: bool = False) -> str:
+    if not has_increment:
+        name = f'{name}-{increment}'
+        has_increment = True
+    else:
+        name = '-'.join(name.split('-')[:-1])
+
+    if name in directories:
+        return _make_path_name(name, directories, increment + 1, has_increment)
+
+    return name

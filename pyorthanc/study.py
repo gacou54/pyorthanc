@@ -108,7 +108,20 @@ class Study:
         str
             Study ID
         """
-        return self.get_main_information()['MainDicomTags']['StudyID']
+        try:
+            return self.get_main_information()['MainDicomTags']['StudyID']
+        except KeyError:
+            return ''
+
+    def get_uid(self) -> str:
+        """Get StudyInstanceUID
+
+        Returns
+        -------
+        str
+            StudyInstanceUID
+        """
+        return self.get_main_information()['MainDicomTags']['StudyInstanceUID']
 
     def get_parent_patient_identifier(self) -> str:
         """Get the Orthanc identifier of the parent patient
