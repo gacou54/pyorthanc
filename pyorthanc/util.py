@@ -216,7 +216,7 @@ def _make_series_path(study_path: str, modality: str) -> str:
     return os.path.join(study_path, _make_path_name(modality, series_directories))
 
 
-def _make_path_name(name: str, directories: str, increment: int = 1, has_increment: bool = False) -> str:
+def _make_path_name(name: str, directories: List[str], increment: int = 1, has_increment: bool = False) -> str:
     if not has_increment:
         name = f'{name}-{increment}'
         has_increment = True
@@ -227,4 +227,3 @@ def _make_path_name(name: str, directories: str, increment: int = 1, has_increme
         return _make_path_name(name, directories, increment + 1, has_increment)
 
     return name
-
