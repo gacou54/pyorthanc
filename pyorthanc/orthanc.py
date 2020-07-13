@@ -40,7 +40,7 @@ class Orthanc:
         self._credentials = HTTPBasicAuth(username, password)
         self._credentials_are_set = True
 
-    def get_request(self, route: str, params: Optional[Dict] = None) -> Any:
+    def get_request(self, route: str, params: Optional[Dict] = None, return_as_bytes: bool = False) -> Any:
         """GET request with specified route
 
         Parameters
@@ -49,6 +49,8 @@ class Orthanc:
             HTTP route.
         params
             Params with the HTTP GET request.
+        return_as_bytes
+            If True, returns the content as bytes.
 
         Returns
         -------
@@ -58,6 +60,9 @@ class Orthanc:
         response = requests.get(route, params=params, auth=self._credentials)
 
         if response.status_code == 200:
+            if return_as_bytes:
+                return response.content
+
             try:
                 return response.json()
 
@@ -93,7 +98,7 @@ class Orthanc:
             f'HTTP code: {response.status_code}, with content: {response.text}'
         )
 
-    def post_request(self, route: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
+    def post_request(self, route: str, data: Optional[Union[Dict, str, int, bytes]] = None, return_as_bytes: bool = False) -> Any:
         """POST to specified route
 
         Parameters
@@ -102,6 +107,8 @@ class Orthanc:
             HTTP route.
         data
             Dictionary to send in the body of request.
+        return_as_bytes
+            If True, returns the content as bytes.
 
         Returns
         -------
@@ -114,6 +121,9 @@ class Orthanc:
         response = requests.post(route, data=data, auth=self._credentials)  # type: ignore
 
         if response.status_code == 200:
+            if return_as_bytes:
+                return response.content
+
             try:
                 return response.json()
 
@@ -870,7 +880,7 @@ class Orthanc:
             data
         )
 
-    def get_instance_file(self, instance_identifier: str, params: Dict = None) -> Any:
+    def get_instance_file(self, instance_identifier: str, params: Dict = None) -> bytes:
         """Get instance DICOM file
 
         Retrieve on local computer the instance file in bytes.
@@ -884,7 +894,7 @@ class Orthanc:
 
         Returns
         -------
-        Any
+        bytes
             Bytes corresponding to DICOM file.
 
         Examples
@@ -897,7 +907,8 @@ class Orthanc:
         """
         return self.get_request(
             f'{self._orthanc_url}/instances/{instance_identifier}/file',
-            params
+            params,
+            return_as_bytes=True
         )
 
     def get_instance_frames(self, instance_identifier: str, params: Dict = None) -> Any:
@@ -1959,7 +1970,7 @@ class Orthanc:
 
     def anonymize_patient(
             self, patient_identifier: str,
-            data: Optional[Union[Dict, str, int, bytes]] = {}) -> Dict[str, str]:
+            data: Optional[Union[Dict, str, int, bytes]] = None) -> Dict[str, str]:
         """Anonymize specified patient
 
         If no error is been raise, then it creates a new anonymous patient.
@@ -1990,9 +2001,10 @@ class Orthanc:
          'Type': 'Patient'}
 
         """
+
         return self.post_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/anonymize',
-            data
+            data={} if data is None else data
         )
 
     def get_patient_zip(self, patient_identifier: str) -> bytes:
@@ -2021,7 +2033,8 @@ class Orthanc:
 
         """
         return self.get_request(
-            f'{self._orthanc_url}/patients/{patient_identifier}/archive'
+            f'{self._orthanc_url}/patients/{patient_identifier}/archive',
+            return_as_bytes=True
         )
 
     def archive_patient(self, patient_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> bytes:
@@ -2051,7 +2064,8 @@ class Orthanc:
         """
         return self.post_request(
             f'{self._orthanc_url}/patients/{patient_identifier}/archive',
-            data
+            data,
+            return_as_bytes=True
         )
 
     def get_patient_instances(self, patient_identifier: str) -> List[Dict]:
@@ -3578,7 +3592,8 @@ class Orthanc:
             Bytes of the zip file.
         """
         return self.get_request(
-            f'{self._orthanc_url}/studies/{study_identifier}/archive'
+            f'{self._orthanc_url}/studies/{study_identifier}/archive',
+            return_as_bytes=True
         )
 
     def create_study_zip_file(self, study_identifier: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
@@ -3688,7 +3703,8 @@ class Orthanc:
         bytes
         """
         return self.get_request(
-            f'{self._orthanc_url}/studies/{study_identifier}/media'
+            f'{self._orthanc_url}/studies/{study_identifier}/media',
+            return_as_bytes=True
         )
 
     def create_study_archive_for_media_storage(
