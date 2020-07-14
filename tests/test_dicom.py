@@ -2,7 +2,7 @@
 # author: Gabriel Couture
 import unittest
 
-from pyorthanc import Orthanc, RemoteModality
+from pyorthanc import Orthanc
 from tests import setup_server
 
 MODALITY = 'SecondOrthanc'
@@ -22,7 +22,7 @@ PATIENT_INFORMATION = {
 }
 
 
-class TestRemoteModality(unittest.TestCase):
+class TestDicomMethods(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -42,19 +42,17 @@ class TestRemoteModality(unittest.TestCase):
 
     def setUp(self) -> None:
         self.orthanc = Orthanc(setup_server.ORTHANC_URL)
-        self.remote = RemoteModality(self.orthanc, MODALITY)
 
     def tearDown(self) -> None:
         self.orthanc = None
-        self.remote = None
         setup_server.clear_data()
         setup_server.clear_data_of_second_orthanc()
 
     def given_patient_in_second_orthanc_server(self):
         setup_server.setup_data_for_second_orthanc()
 
-    def test_whenDoingAnEcho_thenResultIsTrue(self):
-        result = self.remote.echo()
+    def test_whenEchoOnModality_thenResultIsTrue(self):
+        result = self.orthanc.echo_to_modality(MODALITY)
 
         self.assertTrue(result)
 
@@ -88,7 +86,7 @@ class TestRemoteModality(unittest.TestCase):
             }
         }
 
-        result = self.remote.query(PAYLOAD)
+        result = self.orthanc.query_on_modality(MODALITY, PAYLOAD)
 
         self.assertIn('ID', result.keys())
         self.assertIn('Path', result.keys())
@@ -106,8 +104,8 @@ class TestRemoteModality(unittest.TestCase):
             'RemoteAet': 'SECONDORTHANC'
         }
 
-        query_result = self.remote.query(PAYLOAD)
-        result = self.remote.move(query_result['ID'], cmove_data)
+        query_result = self.orthanc.query_on_modality(MODALITY, PAYLOAD)
+        result = self.orthanc.move_query_results_to_given_modality(query_result['ID'], cmove_data)
 
         try:
             del result['Query']  # On some version of Orthanc, A Query field is there
@@ -120,11 +118,11 @@ class TestRemoteModality(unittest.TestCase):
             {k: v for k, v in resulting_patient_information.items() if k != 'LastUpdate'}
         )
 
-    def test_givenInstance_whenStoring_thenResultIsExpectedDict(self):
+    def test_givenInstance_whenStoreOnModality_thenResultIsExpectedDict(self):
         setup_server.setup_data()
         an_instance_identifier = self.orthanc.get_instances()[0]
 
-        result = self.remote.store(an_instance_identifier)
+        result = self.orthanc.store_on_modality(MODALITY, data=an_instance_identifier)
 
         self.assertEqual(result, {
             'Description': 'REST API',

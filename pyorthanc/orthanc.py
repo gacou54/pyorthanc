@@ -1900,22 +1900,20 @@ class Orthanc:
             data
         )
 
-    def store_on_modality(self, modality: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Any:
+    def store_on_modality(self, modality: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> Dict:
         """Store data on remote modality (C-Store).
-
-        POST body = UUID series, UUID instance, or raw DICOM file.
 
         Parameters
         ----------
         modality
             Modality (remote PACS server, see pyorthanc.get_modalities()).
         data
-            Dictionary to send in the body of request.
+            Orthanc Identifier of the Series or Instance to be send.
 
         Returns
         -------
-        Any
-            If HTTP status == 200 then C-Move succeeded.
+        Dict
+            Data related to the C-Store operation.
         """
         return self.post_request(
             f'{self._orthanc_url}/modalities/{modality}/store',
