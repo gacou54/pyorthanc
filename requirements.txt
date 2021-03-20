@@ -8,7 +8,7 @@ entrypoints==0.3
 flake8==3.7.9
 idna==2.8
 imagesize==1.1.0
-Jinja2==2.10.1
+Jinja2==2.11.3
 m2r==0.2.1
 MarkupSafe==1.1.1
 mccabe==0.6.1
