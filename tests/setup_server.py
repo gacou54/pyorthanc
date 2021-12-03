@@ -78,10 +78,7 @@ def setup_data() -> None:
     """
     headers = {'content-type': 'application/dicom'}
 
-    list_of_dicom_file_paths = [
-        f'./tests/data/dicom_files/{i}'
-        for i in os.listdir('./tests/data/dicom_files/')
-    ]
+    list_of_dicom_file_paths = [f'./tests/data/dicom_files/{i}' for i in os.listdir('./tests/data/dicom_files/')]
 
     for file_path in list_of_dicom_file_paths:
         with open(file_path, 'rb') as file_handler:
@@ -98,7 +95,7 @@ def setup_data_for_second_orthanc() -> None:
     headers = {'content-type': 'application/dicom'}
 
     list_of_dicom_file_paths = [
-        f'./tests/data/second_dicom_files/RTSTRUCT.dcm'
+        './tests/data/second_dicom_files/RTSTRUCT.dcm'
     ]
 
     for file_path in list_of_dicom_file_paths:

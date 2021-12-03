@@ -99,3 +99,21 @@ class RemoteModality:
             query_identifier,
             cmove_data
         )
+
+    def store(self, instance_or_series_identifier: str) -> Dict:
+        """Store series or instance to remote modality.
+
+        Parameters
+        ----------
+        instance_or_series_identifier
+            Instance or Series Orthanc identifier.
+
+        Returns
+        -------
+        Dict
+            Information related to the C-Store operation.
+        """
+        return self.orthanc.store_on_modality(
+            self.modality,
+            data=instance_or_series_identifier
+        )
