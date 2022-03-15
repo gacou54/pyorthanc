@@ -9,18 +9,25 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    services:
-      orthanc:
-        image: jodogne/orthanc-plugins
-        ports:
-          - 8042:8042
-          - 4242:4242
+#    services:
+#      first-orthanc:
+#        image: jodogne/orthanc-plugins
+#        ports:
+#          - 8042:8042
+#          - 4242:4242
+#      second-orthanc:
+#        image: jodogne/orthanc-plugins
+#        ports:
+#          - 8043:8042
+#          - 4243:4242
     strategy:
       max-parallel: 4
       matrix:
         python-version: [3.7, 3.8, 3.9, 3.10]
     steps:
     - uses: actions/checkout@v2
+    - name: Install Orthanc
+      run: sudo apt-get install -y Orthanc
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
