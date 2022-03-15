@@ -10,9 +10,6 @@ Installation
 $ pip install pyorthanc
 ```
 
-#### Specific version
-If you are looking for a specific version, look here: https://gitlab.physmed.chudequebec.ca/gacou54/pyorthanc/tags.
-
 Example of usage
 ----------------
 Be sure that Orthanc is running. The default URL (if running locally) is `http://localhost:8042`.
