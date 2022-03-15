@@ -59,31 +59,12 @@ class TestDicomMethods(unittest.TestCase):
     def test_givenDataInSecondServerAndPayload_whenQuerying_thenQueryHasExpectingContent(self):
         self.given_patient_in_second_orthanc_server()
         expected_query_answer_content = {
-            '0008,0005': {
-                'Name': 'SpecificCharacterSet',
-                'Type': 'String',
-                'Value': 'ISO_IR 100'
-            },
-            '0008,0050': {
-                'Name': 'AccessionNumber',
-                'Type': 'String',
-                'Value': '20090926001'
-            },
-            '0008,0052': {
-                'Name': 'QueryRetrieveLevel',
-                'Type': 'String',
-                'Value': 'STUDY'
-            },
-            '0010,0020': {
-                'Name': 'PatientID',
-                'Type': 'String',
-                'Value': 'MP15-067'
-            },
-            '0020,000d': {
-                'Name': 'StudyInstanceUID',
-                'Type': 'String',
-                'Value': '1.3.6.1.4.1.22213.2.6291.2.1'
-            }
+            '0008,0005': {'Name': 'SpecificCharacterSet', 'Type': 'String', 'Value': 'ISO_IR 100'},
+            '0008,0050': {'Name': 'AccessionNumber', 'Type': 'String', 'Value': '20090926001'},
+            '0008,0052': {'Name': 'QueryRetrieveLevel', 'Type': 'String', 'Value': 'STUDY'},
+            '0008,0054': {'Name': 'RetrieveAETitle', 'Type': 'String', 'Value': 'SECONDORTHANC'},
+            '0010,0020': {'Name': 'PatientID', 'Type': 'String', 'Value': 'MP15-067'},
+            '0020,000d': {'Name': 'StudyInstanceUID', 'Type': 'String', 'Value': '1.3.6.1.4.1.22213.2.6291.2.1'}
         }
 
         result = self.orthanc.query_on_modality(MODALITY, PAYLOAD)
@@ -124,10 +105,13 @@ class TestDicomMethods(unittest.TestCase):
 
         result = self.orthanc.store_on_modality(MODALITY, data=an_instance_identifier)
 
-        self.assertEqual(result, {
-            'Description': 'REST API',
-            'FailedInstancesCount': 0,
-            'InstancesCount': 1,
-            'LocalAet': 'FIRSTORTHANC',
-            'RemoteAet': 'SECONDORTHANC'
-        })
+        self.assertEqual(
+            {k: v for k, v in result.items() if k != 'ParentResources'},
+            {
+                'Description': 'REST API',
+                'FailedInstancesCount': 0,
+                'InstancesCount': 1,
+                'LocalAet': 'FIRSTORTHANC',
+                'RemoteAet': 'SECONDORTHANC'
+            }
+        )
