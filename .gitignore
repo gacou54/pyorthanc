@@ -1,11 +1,9 @@
 *
 
 !.gitignore
-!setup.py
-!mypy.ini
-!requirements.txt
-!gitlab-ci.yml
 !LICENSE.txt
+!poetry.lock
+!pyproject.toml
 
 !README.md
 
