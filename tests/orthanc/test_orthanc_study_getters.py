@@ -107,7 +107,9 @@ class TestOrthancStudyGetters(unittest.TestCase):
 
         result = self.orthanc.get_study_instances_tags(a_study.IDENTIFIER)
 
-        self.assertEqual(result, a_study.INSTANCE_TAGS)
+        for instance_identifier, instance in result.items():
+            for expected_key in a_study.INSTANCE_TAGS[instance_identifier]:
+                self.assertIn(expected_key, instance)
 
     def test_givenOrthancWithoutPatient_whenGettingStudyInstancesTags_thenRaiseHTTPError(self):
         self.assertRaises(
@@ -120,7 +122,9 @@ class TestOrthancStudyGetters(unittest.TestCase):
 
         result = self.orthanc.get_study_instances_tags_in_simplified_version(a_study.IDENTIFIER)
 
-        self.assertEqual(result, a_study.INSTANCE_TAGS_IN_SIMPLIFIED_VERSION)
+        for instance_identifier, instance in result.items():
+            for expected_key in a_study.INSTANCE_TAGS_IN_SIMPLIFIED_VERSION[instance_identifier]:
+                self.assertIn(expected_key, instance)
 
     def test_givenOrthancWithoutPatient_whenGettingStudyInstancesTagsInSimplifiedVersion_thenRaiseHTTPError(self):
         self.assertRaises(

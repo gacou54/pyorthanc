@@ -72,7 +72,7 @@
   "HttpServerEnabled" : true,
 
   // HTTP port for the REST services and for the GUI
-  "HttpPort" : 9999,
+  "HttpPort" : 8042,
 
   // When the following option is "true", if an error is encountered
   // while calling the REST API, a JSON message describing the error
@@ -104,7 +104,7 @@
   "DicomCheckCalledAet" : false,
 
   // The DICOM port
-  "DicomPort" : 9998,
+  "DicomPort" : 4242,
 
   // The default encoding that is assumed for DICOM files without
   // "SpecificCharacterSet" DICOM tag, and that is used when answering
@@ -191,7 +191,7 @@
      * This parameter is case-sensitive.
      **/
     // "clearcanvas" : [ "CLEARCANVAS", "192.168.1.1", 104, "ClearCanvas" ]
-    "SecondOrthanc" : [ "SECONDORTHANC", "localhost", 9996 ]
+    "SecondOrthanc" : [ "SECONDORTHANC", "localhost", 4243 ]
 
     /**
      * By default, the Orthanc SCP accepts all DICOM commands (C-GET,

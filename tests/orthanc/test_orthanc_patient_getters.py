@@ -107,7 +107,9 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
         result = self.orthanc.get_patient_instances_tags(a_patient.IDENTIFIER)
 
-        self.assertEqual(result, a_patient.INSTANCE_TAGS)
+        for instance_identifier, instance in result.items():
+            for expected_key in a_patient.INSTANCE_TAGS[instance_identifier]:
+                self.assertIn(expected_key, instance)
 
     def test_givenOrthancWithoutPatient_whenGettingPatientInstancesTags_thenRaiseHTTPError(self):
         self.assertRaises(
@@ -120,7 +122,9 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
         result = self.orthanc.get_patient_instances_tags_in_simplified_version(a_patient.IDENTIFIER)
 
-        self.assertEqual(result, a_patient.INSTANCE_TAGS_IN_SIMPLIFIED_VERSION)
+        for instance_identifier, instance in result.items():
+            for expected_key in a_patient.INSTANCE_TAGS_IN_SIMPLIFIED_VERSION[instance_identifier]:
+                self.assertIn(expected_key, instance)
 
     def test_givenOrthancWithoutPatient_whenGettingPatientInstancesTagsInSimplifiedVersion_thenRaiseHTTPError(self):
         self.assertRaises(
@@ -272,7 +276,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
 
     def test_givenOrthancWithPatient_whenGettingPatientStatistics_thenResultIsExpectedPatientStatistics(self):
         self.given_patient_in_orthanc_server()
-        keys_to_remove = ['DiskSize', 'UncompressedSize']  # Removing keys that are never the same
+        keys_to_remove = ['DiskSize', 'UncompressedSize', 'DiskSizeMB', 'UncompressedSizeMB']  # Removing keys that are never the same
 
         result = self.orthanc.get_patient_statistics(a_patient.IDENTIFIER)
 
