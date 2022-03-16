@@ -14,7 +14,7 @@ class Orthanc:
     `setup_credential`.
     """
 
-    def __init__(self, orthanc_url: str) -> None:
+    def __init__(self, orthanc_url: str, username: Optional[str] = None, password: Optional[str] = None):
         """Constructor
 
         Parameters
@@ -26,6 +26,9 @@ class Orthanc:
 
         self._credentials_are_set = False
         self._credentials: Optional[HTTPBasicAuth] = None
+
+        if username and password:
+            self.setup_credentials(username, password)
 
     def setup_credentials(self, username: str, password: str) -> None:
         """Set credentials needed for HTTP requests
@@ -69,9 +72,7 @@ class Orthanc:
             except ValueError:
                 return response.content
 
-        raise requests.HTTPError(
-            f'HTTP code: {response.status_code}, with content: {response.text}'
-        )
+        raise requests.HTTPError(f'HTTP code: {response.status_code}, with content: {response.text}')
 
     def delete_request(self, route: str) -> bool:
         """DELETE to specified route
@@ -94,9 +95,7 @@ class Orthanc:
         if response.status_code == 404:
             return False
 
-        raise requests.HTTPError(
-            f'HTTP code: {response.status_code}, with content: {response.text}'
-        )
+        raise requests.HTTPError(f'HTTP code: {response.status_code}, with content: {response.text}')
 
     def post_request(self, route: str, data: Optional[Union[Dict, str, int, bytes]] = None, return_as_bytes: bool = False) -> Any:
         """POST to specified route
@@ -130,9 +129,7 @@ class Orthanc:
             except ValueError:
                 return response.content
 
-        raise requests.HTTPError(
-            f'HTTP code: {response.status_code}, with text: {response.text}'
-        )
+        raise requests.HTTPError(f'HTTP code: {response.status_code}, with text: {response.text}')
 
     def put_request(self, route: str, data: Optional[Union[Dict, str, int, bytes]] = None) -> None:
         """PUT to specified route
@@ -154,9 +151,7 @@ class Orthanc:
         if response.status_code == 200:
             return
 
-        raise requests.HTTPError(
-            f'HTTP code: {response.status_code}, with text: {response.text}'
-        )
+        raise requests.HTTPError(f'HTTP code: {response.status_code}, with text: {response.text}')
 
     def get_attachments(
             self, resource_type: str,
@@ -850,7 +845,7 @@ class Orthanc:
 
         Examples
         --------
-        >>> o = Orthanc('http://localhost:8080')
+        >>> o = Orthanc('http://localhost:8042')
         >>> o.get_instance_content_by_group_element('0040-a730/6/0040-a730/0/0040-a160')
         """
         return self.get_request(
@@ -3505,7 +3500,7 @@ class Orthanc:
             params
         )
 
-    def get_studies(self) -> List[str]:
+    def get_studies(self, params: Optional[Dict] = None) -> Any:
         """Get studies identifiers
 
         "since" and "limit" arguments + "expand" argument to retrieve the content of the studies.
@@ -3516,7 +3511,8 @@ class Orthanc:
             List of the studies identifiers.
         """
         return self.get_request(
-            f'{self._orthanc_url}/studies'
+            f'{self._orthanc_url}/studies',
+            params
         )
 
     def get_study_information(self, study_identifier: str) -> Dict:

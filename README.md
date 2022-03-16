@@ -133,3 +133,25 @@ orthanc.anonymize_patient(a_patient_identifier)
 #  'PatientID': 'dd41f2f1-24838e1e-f01746fc-9715072f-189eb0a2',
 #  'Type': 'Patient'}
 ```
+
+
+## Contributing
+You can contribute to this project with the following steps:
+1. First, fork the project on Github 
+2. Clone the project
+   ```shell
+   git clone https://github.com/<your-github-username>/pyorthanc
+   cd pyorthanc
+   ```
+3. Enter the project and create a poetry environment 
+   (this project use the [poetry](https://python-poetry.org/) for dependency management)
+   ```shell
+   peotry install 
+   ```
+4. Make a new git branch where you will apply the changes
+   ```shell
+   git checkout -b your-branch-name
+   ```
+   Now you can make your changes
+5. Once done, `git add`, `git commit` and `git push` the changes.
+6. Make a Pull Request from your branch to the https://github.com/gacou54/pyorthanc.
