@@ -25,7 +25,7 @@ class TestPatient(unittest.TestCase):
         setup_server.setup_data()
         self.patient = Patient(
             a_patient.IDENTIFIER,
-            Orthanc(setup_server.ORTHANC_URL)
+            Orthanc(setup_server.ORTHANC_1)
         )
 
     def tearDown(self) -> None:
