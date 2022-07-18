@@ -1,9 +1,7 @@
-# coding: utf-8
-# author: gabriel couture
 from typing import List, Dict
 
 from pyorthanc.study import Study
-from pyorthanc.orthanc import Orthanc
+from pyorthanc.client import Orthanc
 
 
 class Patient:

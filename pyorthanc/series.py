@@ -1,9 +1,7 @@
-# coding: utf-8
-# author: gabriel couture
 from typing import List, Dict
 
 from pyorthanc.instance import Instance
-from pyorthanc.orthanc import Orthanc
+from pyorthanc.client import Orthanc
 
 
 class Series:

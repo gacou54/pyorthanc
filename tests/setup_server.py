@@ -1,137 +1,95 @@
-# coding: utf-8
-# author: gabriel couture
 import os
+import dataclasses
 import time
 import shutil
 import subprocess
 
-import requests
-
-ORTHANC_URL = 'http://localhost:8042'
-SECOND_ORTHANC_URL = 'http://localhost:8043'
+import httpx
 
 
-def setup_orthanc_server() -> subprocess.Popen:
-    """Start an Orthanc server
+@dataclasses.dataclass
+class OrthancServer:
+    url: str
+    AeT: str
+    config_path: str
+    storage_path: str
+    test_data_path: str
+    username: str
+    password: str
 
-    Returns
-    -------
-    subprocess.Popen
-        Subprocess of the test Orthanc server instance.
-    """
-    orthanc_process = subprocess.Popen(['Orthanc', './tests/orthanc_configuration.json'])
-    time.sleep(1)  # Wait to be sure that the process is completely started
-
-    return orthanc_process
-
-
-def setup_second_orthanc_server() -> subprocess.Popen:
-    """Start an second Orthanc server
-
-    Returns
-    -------
-    subprocess.Popen
-        Subprocess of the test Orthanc server instance.
-    """
-    second_orthanc_process = subprocess.Popen(['Orthanc', './tests/orthanc_second_configuration.json'])
-    time.sleep(1)  # Wait to be sure that the process is completely started
-
-    return second_orthanc_process
+    process: subprocess.Popen = None
 
 
-def stop_orthanc_server_and_remove_data_directory(orthanc_process: subprocess.Popen) -> None:
-    """Stop the test orthanc server and remove its data directory
+ORTHANC_1 = OrthancServer(
+    url='http://localhost:8042',
+    AeT='ORTHANC1',
+    storage_path='./tests/data/config/OrthancStorage-1',
+    config_path='./tests/data/config/config-1.json',
+    test_data_path='./tests/data/orthanc_1_test_data',
+    username='orthanc1',
+    password='orthanc1',
+)
 
-    Parameters
-    ----------
-    orthanc_process
-        Orthanc subprocess.Popen process.
-    """
-    orthanc_process.kill()
-    orthanc_process.wait()
+ORTHANC_2 = OrthancServer(
+    url='http://localhost:8043',
+    AeT='ORTHANC2',
+    storage_path='./tests/data/config/OrthancStorage-2',
+    config_path='./tests/data/config/config-2.json',
+    test_data_path='./tests/data/orthanc_2_test_data',
+    username='orthanc2',
+    password='orthanc2',
+)
+
+
+def start_orthanc_server(orthanc: OrthancServer) -> OrthancServer:
+    """Start an Orthanc server."""
+    orthanc.process = subprocess.Popen(['Orthanc', orthanc.config_path], stderr=subprocess.DEVNULL)
+
+    ready = False
+    while not ready:
+        try:
+            httpx.get(f'{orthanc.url}/patients').json()
+            ready = True
+        except httpx.HTTPError:
+            time.sleep(0.1)  # Time to ensure that the server has started
+
+    return orthanc
+
+
+def stop_orthanc_server_and_remove_data_directory(orthanc: OrthancServer) -> None:
+    """Stop the test orthanc server and remove its data directory."""
+    orthanc.process.kill()
+    orthanc.process.wait()
 
     try:
-        shutil.rmtree('./tests/data/FirstOrthancStorage')
+        shutil.rmtree(orthanc.storage_path)
     except FileNotFoundError:
         pass
 
 
-def stop_second_orthanc_server_and_remove_data_directory(second_orthanc_process: subprocess.Popen) -> None:
-    """Stop the test orthanc server and remove its data directory
-
-    Parameters
-    ----------
-    second_orthanc_process
-        Orthanc subprocess.Popen process.
-    """
-    second_orthanc_process.kill()
-    second_orthanc_process.wait()
-
-    try:
-        shutil.rmtree('./tests/data/SecondOrthancStorage')
-    except FileNotFoundError:
-        pass
-
-
-def setup_data() -> None:
-    """Load test dicom files to the test Orthanc server instance
-    """
+def setup_data(orthanc: OrthancServer) -> None:
+    """Load test dicom files to the test Orthanc server instance."""
     headers = {'content-type': 'application/dicom'}
 
-    list_of_dicom_file_paths = [f'./tests/data/dicom_files/{i}' for i in os.listdir('./tests/data/dicom_files/')]
+    dicom_file_paths = [f'{orthanc.test_data_path}/{i}' for i in os.listdir(orthanc.test_data_path)]
 
-    for file_path in list_of_dicom_file_paths:
-        with open(file_path, 'rb') as file_handler:
-            data = file_handler.read()
-
-        requests.post(
-            f'{ORTHANC_URL}/instances',
-            data=data,
-            headers=headers
-        )
+    for file_path in dicom_file_paths:
+        with open(file_path, 'rb') as file:
+            httpx.post(
+                f'{orthanc.url}/instances',
+                content=file.read(),
+                headers=headers
+            )
 
 
-def setup_data_for_second_orthanc() -> None:
-    headers = {'content-type': 'application/dicom'}
-
-    list_of_dicom_file_paths = [
-        './tests/data/second_dicom_files/RTSTRUCT.dcm'
-    ]
-
-    for file_path in list_of_dicom_file_paths:
-        with open(file_path, 'rb') as file_handler:
-            data = file_handler.read()
-
-        requests.post(
-            f'{SECOND_ORTHANC_URL}/instances',
-            data=data,
-            headers=headers
-        )
-
-
-def clear_data() -> None:
-    """Remove all patient data in the test Orthanc instance with API calls
-    """
-    patient_identifiers = requests.get(f'{ORTHANC_URL}/patients').json()
+def clear_data(orthanc: OrthancServer) -> None:
+    """Remove all patient data in the test Orthanc instance with API calls."""
+    patient_identifiers = httpx.get(f'{orthanc.url}/patients').json()
 
     for patient_identifier in patient_identifiers:
-        requests.delete(f'{ORTHANC_URL}/patients/{patient_identifier}')
+        httpx.delete(f'{orthanc.url}/patients/{patient_identifier}')
 
-    query_identifiers = requests.get(f'{ORTHANC_URL}/queries').json()
-
-    for query_identifier in query_identifiers:
-        requests.delete(f'{ORTHANC_URL}/queries/{query_identifier}')
-
-
-def clear_data_of_second_orthanc() -> None:
-    """Remove all patient data in the test Orthanc instance with API calls
-    """
-    patient_identifiers = requests.get(f'{SECOND_ORTHANC_URL}/patients').json()
-
-    for patient_identifier in patient_identifiers:
-        requests.delete(f'{SECOND_ORTHANC_URL}/patients/{patient_identifier}')
-
-    query_identifiers = requests.get(f'{ORTHANC_URL}/queries').json()
+    query_identifiers = httpx.get(f'{orthanc.url}/queries').json()
 
     for query_identifier in query_identifiers:
-        requests.delete(f'{ORTHANC_URL}/queries/{query_identifier}')
+        httpx.delete(f'{orthanc.url}/queries/{query_identifier}')

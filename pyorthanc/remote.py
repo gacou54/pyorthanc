@@ -1,25 +1,25 @@
-# coding: utf-8
-# author: gabriel couture
 from typing import Dict
 
-from pyorthanc import Orthanc
+import httpx
+
+from pyorthanc.client import Orthanc
 
 
 class RemoteModality:
     """Wrapper around Orthanc API when dealing with a (remote) modality.
     """
 
-    def __init__(self, orthanc: Orthanc, modality: str) -> None:
+    def __init__(self, client: Orthanc, modality: str) -> None:
         """Constructor
 
         Parameters
         ----------
-        orthanc
+        client
             Orthanc object.
         modality
             Remote modality.
         """
-        self.orthanc = orthanc
+        self.client = client
         self.modality = modality
 
     def echo(self) -> bool:
@@ -30,7 +30,12 @@ class RemoteModality:
         bool
             True if C-Echo succeeded.
         """
-        return self.orthanc.echo_to_modality(self.modality)
+        try:
+            self.client.post_modalities_id_echo(self.modality)
+            return True
+
+        except httpx.HTTPError:
+            return False
 
     def query(self, data: Dict) -> Dict:
         """C-Find (Querying with data)
@@ -56,13 +61,13 @@ class RemoteModality:
         ... }
 
         >>> remote_modality = RemoteModality(
-        ...     orthanc=Orthanc('http://localhost:8042'),
+        ...     client=Orthanc('http://localhost:8042'),
         ...     modality='sample'
         ... )
 
         >>> remote_modality.query(data)
         """
-        return self.orthanc.query_on_modality(self.modality, data=data)
+        return dict(self.client.post_modalities_id_query(self.modality, json=data))
 
     def move(self, query_identifier: str, cmove_data: Dict) -> Dict:
         """C-Move query results to another modality
@@ -95,17 +100,14 @@ class RemoteModality:
         ... )
 
         """
-        return self.orthanc.move_query_results_to_given_modality(
-            query_identifier,
-            cmove_data
-        )
+        return dict(self.client.post_queries_id_retrieve(query_identifier, json=cmove_data))
 
-    def store(self, instance_or_series_identifier: str) -> Dict:
+    def store(self, instance_or_series_id: str) -> Dict:
         """Store series or instance to remote modality.
 
         Parameters
         ----------
-        instance_or_series_identifier
+        instance_or_series_id
             Instance or Series Orthanc identifier.
 
         Returns
@@ -113,7 +115,18 @@ class RemoteModality:
         Dict
             Information related to the C-Store operation.
         """
-        return self.orthanc.store_on_modality(
+        return dict(self.client.post_modalities_id_store(
             self.modality,
-            data=instance_or_series_identifier
-        )
+            json=instance_or_series_id
+        ))
+
+    def get_query_answers(self) -> Dict:
+        answers = {}
+
+        for query_id in self.client.get_queries():
+            for answer_id in self.client.get_queries_id_answers(query_id):
+                answers[query_id] = self.client.get_queries_id_answers_index_content(query_id, answer_id)
+
+        return answers
+
+

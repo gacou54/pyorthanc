@@ -1,9 +1,7 @@
-# coding: utf-8
-# author: gabriel couture
 from datetime import datetime
 from typing import Dict, Any
 
-from pyorthanc.orthanc import Orthanc
+from pyorthanc.client import Orthanc
 
 
 class Instance:
