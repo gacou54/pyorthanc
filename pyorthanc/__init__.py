@@ -1,4 +1,4 @@
-from pyorthanc.orthanc import Orthanc
+from pyorthanc.client import Orthanc
 from pyorthanc.remote import RemoteModality
 from pyorthanc.patient import Patient
 from pyorthanc.study import Study
