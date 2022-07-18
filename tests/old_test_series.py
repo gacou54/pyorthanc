@@ -26,7 +26,7 @@ class TestSeries(unittest.TestCase):
 
         self.series = Series(
             a_series.IDENTIFIER,
-            Orthanc(setup_server.ORTHANC_URL)
+            Orthanc(setup_server.ORTHANC_1)
         )
 
     def tearDown(self) -> None:

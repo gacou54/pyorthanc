@@ -25,7 +25,7 @@ class TestOrthancPatientPosts(unittest.TestCase):
         del orthanc_subprocess
 
     def setUp(self) -> None:
-        self.orthanc = Orthanc(setup_server.ORTHANC_URL)
+        self.orthanc = Orthanc(setup_server.ORTHANC_1)
 
     def tearDown(self) -> None:
         self.orthanc = None

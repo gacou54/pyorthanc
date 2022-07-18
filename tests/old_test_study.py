@@ -26,7 +26,7 @@ class TestStudy(unittest.TestCase):
 
         self.study = Study(
             a_study.IDENTIFIER,
-            Orthanc(setup_server.ORTHANC_URL)
+            Orthanc(setup_server.ORTHANC_1)
         )
 
     def tearDown(self) -> None:
