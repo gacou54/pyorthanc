@@ -1,11 +1,9 @@
-# coding: utf-8
-# author: gabriel couture
 import os
 from concurrent.futures import ThreadPoolExecutor
 from typing import List, Dict, Callable, Optional
 
 from pyorthanc import Study, Series, Instance
-from pyorthanc.orthanc import Orthanc
+from pyorthanc.client import Orthanc
 from pyorthanc.patient import Patient
 
 
