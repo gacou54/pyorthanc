@@ -16,6 +16,9 @@
 !tests/
 !tests/**
 
+!scripts/
+!scripts/**
+
 !docs/
 !docs/**
 docs/build/
