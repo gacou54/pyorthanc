@@ -27,7 +27,7 @@ class TestInstance(unittest.TestCase):
 
         self.instance = Instance(
             a_instance.IDENTIFIER,
-            Orthanc(setup_server.ORTHANC_URL)
+            Orthanc(setup_server.ORTHANC_1)
         )
 
     def tearDown(self) -> None:
