@@ -41,7 +41,7 @@ ORTHANC_2 = OrthancServer(
 )
 
 
-def start_orthanc_server(orthanc: OrthancServer) -> OrthancServer:
+def start_server(orthanc: OrthancServer) -> OrthancServer:
     """Start an Orthanc server."""
     orthanc.process = subprocess.Popen(['Orthanc', orthanc.config_path], stderr=subprocess.DEVNULL)
 
@@ -56,7 +56,7 @@ def start_orthanc_server(orthanc: OrthancServer) -> OrthancServer:
     return orthanc
 
 
-def stop_orthanc_server_and_remove_data_directory(orthanc: OrthancServer) -> None:
+def stop_server_and_remove_data(orthanc: OrthancServer) -> None:
     """Stop the test orthanc server and remove its data directory."""
     orthanc.process.kill()
     orthanc.process.wait()

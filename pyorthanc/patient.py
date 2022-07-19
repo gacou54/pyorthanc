@@ -5,7 +5,7 @@ from pyorthanc.client import Orthanc
 
 
 class Patient:
-    """Represent an Patient that is in an Orthanc server
+    """Represent a Patient that is in an Orthanc server
 
     This object has many getters that allow the user to retrieve metadata
     or the entire DICOM file of the Patient

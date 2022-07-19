@@ -2,14 +2,14 @@ import httpx
 import pytest
 
 from pyorthanc import Orthanc, RemoteModality
-from tests.setup_server import ORTHANC_1, ORTHANC_2, clear_data, setup_data, start_orthanc_server, \
-    stop_orthanc_server_and_remove_data_directory
+from .setup_server import ORTHANC_1, ORTHANC_2, setup_data, start_server, stop_server_and_remove_data
+
 
 MODALITY = 'Orthanc2'
 PAYLOAD = {'Level': 'Study', 'Query': {'PatientID': 'MP*'}}
 PATIENT_INFORMATION = {
     'ID': '50610f37-9df85809-faaec921-9c829c41-e5261ca2',
-    'IsStable': False,
+    'IsStable': True,
     'LastUpdate': 'THIS_ALWAYS_VARY',
     'MainDicomTags': {
         'PatientBirthDate': '',
@@ -24,13 +24,13 @@ PATIENT_INFORMATION = {
 
 @pytest.fixture
 def client():
-    start_orthanc_server(ORTHANC_1)
-    start_orthanc_server(ORTHANC_2)
+    start_server(ORTHANC_1)
+    start_server(ORTHANC_2)
 
     yield Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
 
-    stop_orthanc_server_and_remove_data_directory(ORTHANC_1)
-    stop_orthanc_server_and_remove_data_directory(ORTHANC_2)
+    stop_server_and_remove_data(ORTHANC_1)
+    stop_server_and_remove_data(ORTHANC_2)
 
 
 @pytest.fixture
@@ -45,7 +45,7 @@ def test_echo(modality):
 
 
 def test_failed_echo(modality):
-    stop_orthanc_server_and_remove_data_directory(ORTHANC_2)
+    stop_server_and_remove_data(ORTHANC_2)
 
     result = modality.echo()
 
@@ -104,8 +104,8 @@ def test_move(modality):
         modality.client.get_patients()[0]
     )
 
-    assert {k: v for k, v in PATIENT_INFORMATION.items() if k not in ['LastUpdate', 'IsStable']} == \
-           {k: v for k, v in resulting_patient_information.items() if k not in ['LastUpdate', 'IsStable']}
+    assert {k: v for k, v in PATIENT_INFORMATION.items() if k not in ['LastUpdate']} == \
+           {k: v for k, v in resulting_patient_information.items() if k not in ['LastUpdate']}
 
 
 def test_store(modality):
