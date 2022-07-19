@@ -1,8 +1,9 @@
 from datetime import datetime
 from typing import List, Dict
 
-from pyorthanc.series import Series
 from pyorthanc.client import Orthanc
+from pyorthanc.series import Series
+from pyorthanc.util import make_datetime_from_dicom_date
 
 
 class Study:
@@ -13,28 +14,30 @@ class Study:
     """
 
     def __init__(
-            self, study_identifier: str,
-            orthanc: Orthanc,
+            self,
+            study_id: str,
+            client: Orthanc,
             study_information: Dict = None) -> None:
         """Constructor
 
         Parameters
         ----------
-        study_identifier
+        study_id
             Orthanc study identifier.
-        orthanc
+        client
             Orthanc object.
         study_information
             Dictionary of study's information.
         """
-        self.orthanc = orthanc
+        self.client = client
 
-        self.identifier = study_identifier
+        self.id_ = study_id
         self.information = study_information
 
-        self.series: List[Series] = []
+        self._series: List[Series] = []
 
-    def get_identifier(self) -> str:
+    @property
+    def identifier(self) -> str:
         """Get Study identifier
 
         Returns
@@ -42,7 +45,7 @@ class Study:
         str
             Study identifier
         """
-        return self.identifier
+        return self.id_
 
     def get_main_information(self) -> Dict:
         """Get Study information
@@ -53,13 +56,12 @@ class Study:
             Dictionary of study information
         """
         if self.information is None:
-            self.information = self.orthanc.get_study_information(
-                self.identifier
-            )
+            self.information = self.client.get_studies_id(self.id_)
 
         return self.information
 
-    def get_referring_physician_name(self) -> str:
+    @property
+    def referring_physician_name(self) -> str:
         """Get referring physician name
 
         Returns
@@ -69,7 +71,8 @@ class Study:
         """
         return self.get_main_information()['MainDicomTags']['ReferringPhysicianName']
 
-    def get_date(self) -> datetime:
+    @property
+    def date(self) -> datetime:
         """Get study date
 
         The date have precision to the second (if available).
@@ -82,23 +85,10 @@ class Study:
         date_string = self.get_main_information()['MainDicomTags']['StudyDate']
         time_string = self.get_main_information()['MainDicomTags']['StudyTime']
 
-        try:
-            return datetime(
-                year=int(date_string[:4]),
-                month=int(date_string[4:6]),
-                day=int(date_string[6:8]),
-                hour=int(time_string[:2]),
-                minute=int(time_string[2:4]),
-                second=int(time_string[4:6])
-            )
-        except ValueError:
-            return datetime(
-                year=int(date_string[:4]),
-                month=int(date_string[4:6]),
-                day=int(date_string[6:8]),
-            )
+        return make_datetime_from_dicom_date(date_string, time_string)
 
-    def get_id(self) -> str:
+    @property
+    def study_id(self) -> str:
         """Get Study ID
 
         Returns
@@ -111,7 +101,8 @@ class Study:
         except KeyError:
             return ''
 
-    def get_uid(self) -> str:
+    @property
+    def uid(self) -> str:
         """Get StudyInstanceUID
 
         Returns
@@ -121,7 +112,8 @@ class Study:
         """
         return self.get_main_information()['MainDicomTags']['StudyInstanceUID']
 
-    def get_parent_patient_identifier(self) -> str:
+    @property
+    def patient_identifier(self) -> str:
         """Get the Orthanc identifier of the parent patient
 
         Returns
@@ -131,7 +123,8 @@ class Study:
         """
         return self.get_main_information()['ParentPatient']
 
-    def get_patient_information(self) -> Dict:
+    @property
+    def patient_information(self) -> Dict:
         """Get patient information
 
         Returns
@@ -141,7 +134,8 @@ class Study:
         """
         return self.get_main_information()['PatientMainDicomTags']
 
-    def get_series(self) -> List[Series]:
+    @property
+    def series(self) -> List[Series]:
         """Get Study series
 
         Returns
@@ -149,37 +143,19 @@ class Study:
         List[Series]
             List of study's Series
         """
-        return self.series
+        return self._series
 
     def build_series(self) -> None:
-        """Build a list of the study's series
-        """
-        series_identifiers = self.orthanc.get_study_series_information(
-            self.identifier
-        )
+        """Build a list of the study's series."""
+        series_identifiers = self.client.get_studies_id_series(self.id_)
+        self._series = [Series(i['ID'], self.client) for i in series_identifiers]
 
-        self.series = list(map(
-            lambda i: Series(i['ID'], self.orthanc),
-            series_identifiers
+    def remove_empty_series(self) -> None:
+        """Delete empty series."""
+        self._series = list(filter(
+            lambda series: series.instances != [],
+            self._series
         ))
 
-    def __str__(self):
-        return f'Study (id={self.get_id()}, identifier={self.get_identifier()})'
-
-    def trim(self) -> None:
-        """Delete empty series
-        """
-        self.series = list(filter(
-            lambda series: not series.is_empty(),
-            self.series
-        ))
-
-    def is_empty(self) -> bool:
-        """Check if series is empty
-
-        Returns
-        -------
-        bool
-            True if study has no instance
-        """
-        return self.series == []
+    def __repr__(self):
+        return f'Study(StudyId={self.study_id}, identifier={self.id_})'

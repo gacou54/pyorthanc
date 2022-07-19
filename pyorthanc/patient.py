@@ -205,7 +205,7 @@ class Patient:
         """Delete empty studies
         """
         for study in self.get_studies():
-            study.trim()
+            study.remove_empty_series()
 
         self.studies = list(filter(
             lambda s: not s.is_empty(), self.studies

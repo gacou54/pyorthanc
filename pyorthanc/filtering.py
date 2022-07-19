@@ -96,7 +96,7 @@ def _build_study(
         if not study_filter(study):
             return study
 
-    study.series = [_build_series(i, orthanc, series_filter) for i in series_information]
+    study._series = [_build_series(i, orthanc, series_filter) for i in series_information]
 
     return study
 
@@ -165,10 +165,10 @@ def retrieve_patient(patient: Patient, path: str) -> None:
 
 
 def retrieve_study(study: Study, patient_path: str) -> None:
-    study_path = _make_study_path(patient_path, study.get_id())
+    study_path = _make_study_path(patient_path, study.study_id())
     os.makedirs(study_path, exist_ok=True)
 
-    for series in study.get_series():
+    for series in study.series():
         retrieve_series(series, study_path)
 
 
