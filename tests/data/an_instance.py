@@ -1,10 +1,8 @@
-# coding: utf-8
-# author: Gabriel Couture
 IDENTIFIER = '22dcf059-8fd3ade7-efb39ca3-7f46b248-0200abc9'
 FILE_SIZE = 1506520
 CREATION_DATE = '20100301'
 CREATION_TIME = '170155'
-PARENT_SERIES_IDENTIFIER = 'c4c1fcc9-ae63f793-40cbcf25-fbd3efe5-ad72ff06'
+SERIES_ID = 'b683c81e-a16cfb32-2e400920-646370ab-01232e29'
 
 INFORMATION = {
     'FileSize': FILE_SIZE,
@@ -18,8 +16,8 @@ INFORMATION = {
         'InstanceCreationTime': CREATION_TIME,
         'InstanceNumber': '1',
         'NumberOfFrames': '75',
-        'SOPInstanceUID': '2.16.840.1.113669.2.931128.981194414.20100301170155.668389'
+        'SOPInstanceUID': '1.3.6.1.4.1.9590.100.1.2.190412154112665448311421049960007953738'
     },
-    'ParentSeries': PARENT_SERIES_IDENTIFIER,
+    'ParentSeries': SERIES_ID,
     'Type': 'Instance'
 }

@@ -35,7 +35,7 @@ class TestDicomMethods(unittest.TestCase):
     def tearDownClass(cls) -> None:
         global orthanc_subprocess
         global second_orthanc_subprocess
-        setup_server.stop_orthanc_server_and_remove_data_directory(orthanc_subprocess)
+        setup_server.stop_server_and_remove_data(orthanc_subprocess)
         setup_server.stop_second_orthanc_server_and_remove_data_directory(second_orthanc_subprocess)
         del orthanc_subprocess
         del second_orthanc_subprocess
