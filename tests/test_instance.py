@@ -7,12 +7,12 @@ from .data import an_instance
 from .setup_server import ORTHANC_1, setup_data, start_server, stop_server_and_remove_data
 
 EXPECTED_DATE = datetime(
-    year=2014,
-    month=10,
-    day=10,
-    hour=14,
-    minute=18,
-    second=54
+    year=2010,
+    month=3,
+    day=1,
+    hour=17,
+    minute=1,
+    second=55
 )
 
 
@@ -35,8 +35,8 @@ def test_attributes(instance):
     assert instance.creation_date == EXPECTED_DATE
     assert instance.series_id == an_instance.SERIES_ID
 
-    assert '0008,0005' in instance.tags.keys()
-    assert 'Value' in instance.tags['0008,0005'].keys()
+    assert '0008,0012' in instance.tags.keys()
+    assert 'Value' in instance.tags['0008,0012'].keys()
 
 
 def test_get_tag_content(instance):

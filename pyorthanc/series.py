@@ -12,38 +12,41 @@ class Series:
     """
 
     def __init__(
-            self, series_identifier: str,
-            orthanc: Orthanc,
+            self,
+            series_id: str,
+            client: Orthanc,
             series_information: Dict = None) -> None:
         """Constructor
 
         Parameters
         ----------
-        series_identifier
+        series_id
             Orthanc series identifier.
-        orthanc
+        client
             Orthanc object.
         series_information
             Dictionary of series information.
         """
-        self.orthanc = orthanc
+        self.client = client
 
-        self.identifier = series_identifier
+        self.id_ = series_id
         self.information = series_information
 
-        self.instances: List[Instance] = []
+        self._instances: List[Instance] = []
 
-    def get_instances(self) -> List[Instance]:
+    @property
+    def instances(self) -> List[Instance]:
         """Get series instance
 
         Returns
         -------
         List[Instance]
-            List of the series's Instance.
+            List of the series' Instance.
         """
-        return self.instances
+        return self._instances
 
-    def get_identifier(self) -> str:
+    @property
+    def identifier(self) -> str:
         """Get series identifier
 
         Returns
@@ -51,9 +54,10 @@ class Series:
         str
             Series identifier.
         """
-        return self.identifier
+        return self.id_
 
-    def get_uid(self) -> str:
+    @property
+    def uid(self) -> str:
         """Get SeriesInstanceUID
 
         Returns
@@ -72,12 +76,12 @@ class Series:
             Dictionary of series main information.
         """
         if self.information is None:
-            self.information = self.orthanc.get_series_information(
-                self.identifier)
+            self.information = self.client.get_series_id(self.id_)
 
         return self.information
 
-    def get_manufacturer(self) -> str:
+    @property
+    def manufacturer(self) -> str:
         """Get the manufacturer
 
         Returns
@@ -87,7 +91,8 @@ class Series:
         """
         return self.get_main_information()['MainDicomTags']['Manufacturer']
 
-    def get_parent_study_identifier(self) -> str:
+    @property
+    def study_identifier(self) -> str:
         """Get the parent study identifier
 
         Returns
@@ -97,7 +102,8 @@ class Series:
         """
         return self.get_main_information()['ParentStudy']
 
-    def get_modality(self) -> str:
+    @property
+    def modality(self) -> str:
         """Get series modality
 
         Returns
@@ -107,7 +113,8 @@ class Series:
         """
         return self.get_main_information()['MainDicomTags']['Modality']
 
-    def get_series_number(self) -> str:
+    @property
+    def series_number(self) -> str:
         """Get series number
 
         Returns
@@ -118,26 +125,11 @@ class Series:
         return self.get_main_information()['MainDicomTags']['SeriesNumber']
 
     def build_instances(self) -> None:
-        """Build a list of the series's instances
-        """
-        instance_identifiers = self.orthanc.get_series_instance_information(
-            self.identifier
-        )
+        """Build a list of the series' instances."""
 
-        self.instances = list(map(
-            lambda i: Instance(i['ID'], self.orthanc),
-            instance_identifiers
-        ))
+        instance_ids = self.client.get_series_id_instances(self.id_)
+
+        self._instances = [Instance(i['ID'], self.client) for i in instance_ids]
 
     def __str__(self):
-        return f'Series (identifier={self.get_identifier()})'
-
-    def is_empty(self) -> bool:
-        """Check if series is empty
-
-        Returns
-        -------
-        bool
-            True if series has no instance
-        """
-        return self.instances == []
+        return f'Series (identifier={self.id_})'
