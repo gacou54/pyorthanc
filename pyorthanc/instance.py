@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Dict, Any
 
+from pyorthanc import util
 from pyorthanc.client import Orthanc
 
 
@@ -12,7 +13,8 @@ class Instance:
     """
 
     def __init__(
-            self, instance_id: str,
+            self,
+            instance_id: str,
             client: Orthanc,
             instance_information: Dict = None) -> None:
         """Constructor
@@ -115,14 +117,7 @@ class Instance:
         date_string = self.get_main_information()['MainDicomTags']['InstanceCreationDate']
         time_string = self.get_main_information()['MainDicomTags']['InstanceCreationTime']
 
-        return datetime(
-            year=int(date_string[:4]),
-            month=int(date_string[4:6]),
-            day=int(date_string[6:8]),
-            hour=int(time_string[:2]),
-            minute=int(time_string[2:4]),
-            second=int(time_string[4:6])
-        )
+        return util.make_datetime_from_dicom_date(date_string, time_string)
 
     @property
     def series_id(self) -> str:

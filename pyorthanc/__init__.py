@@ -4,8 +4,8 @@ from pyorthanc.patient import Patient
 from pyorthanc.study import Study
 from pyorthanc.series import Series
 from pyorthanc.instance import Instance
-from pyorthanc.util import build_patient_forest, trim_patient_forest, \
-    retrieve_and_write_patients
+from pyorthanc.filtering import build_patient_forest, trim_patient_forest, retrieve_and_write_patients
+
 
 __all__ = [
     'Orthanc',
