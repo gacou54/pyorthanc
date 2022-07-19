@@ -12,23 +12,23 @@ class Instance:
     """
 
     def __init__(
-            self, instance_identifier: str,
-            orthanc: Orthanc,
+            self, instance_id: str,
+            client: Orthanc,
             instance_information: Dict = None) -> None:
         """Constructor
 
         Parameters
         ----------
-        instance_identifier
+        instance_id
             Orthanc instance identifier.
-        orthanc
+        client
             Orthanc object.
         instance_information
             Dictionary of instance's information.
         """
-        self.orthanc = orthanc
+        self.client = client
 
-        self.identifier = instance_identifier
+        self.id_ = instance_id
         self.information = instance_information
 
     def get_dicom_file_content(self) -> bytes:
@@ -50,9 +50,10 @@ class Instance:
         >>> with open('your_path', 'wb') as file_handler:
         ...     file_handler.write(dicom_file_bytes)
         """
-        return self.orthanc.get_instance_file(self.identifier)
+        return self.client.get_instances_id_file(self.id_)
 
-    def get_identifier(self) -> str:
+    @property
+    def identifier(self) -> str:
         """Get instance identifier
 
         Returns
@@ -60,9 +61,10 @@ class Instance:
         str
             Instance identifier
         """
-        return self.identifier
+        return self.id_
 
-    def get_uid(self) -> str:
+    @property
+    def uid(self) -> str:
         """Get SOPInstanceUID
 
         Returns
@@ -81,13 +83,12 @@ class Instance:
             Dictionary with tags as key and information as value
         """
         if self.information is None:
-            self.information = self.orthanc.get_instance_information(
-                self.identifier
-            )
+            self.information = self.client.get_instances_id(self.id_)
 
         return self.information
 
-    def get_file_size(self) -> int:
+    @property
+    def file_size(self) -> int:
         """Get the file size
 
         The output is in bytes. Divide by 1_000_000 to
@@ -100,7 +101,8 @@ class Instance:
         """
         return self.get_main_information()['FileSize']
 
-    def get_creation_date(self) -> datetime:
+    @property
+    def creation_date(self) -> datetime:
         """Get creation date
 
         The date have precision to the second.
@@ -122,7 +124,8 @@ class Instance:
             second=int(time_string[4:6])
         )
 
-    def get_parent_series_identifier(self) -> str:
+    @property
+    def series_id(self) -> str:
         """Get the parent series identifier
 
         Returns
@@ -132,7 +135,8 @@ class Instance:
         """
         return self.get_main_information()['ParentSeries']
 
-    def get_first_level_tags(self) -> Any:
+    @property
+    def first_level_tags(self) -> Any:
         """Get first level tags
 
         Returns
@@ -140,9 +144,10 @@ class Instance:
         Any
             First level tags.
         """
-        return self.orthanc.get_instance_first_level_tags(self.identifier)
+        return self.client.get_instances_id_content_tags_path(self.id_, '')
 
-    def get_tags(self) -> Dict:
+    @property
+    def tags(self) -> Dict:
         """Get tags
 
         Returns
@@ -150,9 +155,10 @@ class Instance:
         Dict
             Tags in the form of a dictionary.
         """
-        return self.orthanc.get_instance_tags(self.identifier)
+        return dict(self.client.get_instances_id_tags(self.id_))
 
-    def get_simplified_tags(self) -> Dict:
+    @property
+    def simplified_tags(self) -> Dict:
         """Get simplified tags
 
         Returns
@@ -160,7 +166,7 @@ class Instance:
         Dict
             Simplified tags in the form of a dictionary.
         """
-        return self.orthanc.get_instance_simplified_tags(self.identifier)
+        return dict(self.client.get_instances_id_tags(self.id_, params={'simplify': True}))
 
     def get_content_by_tag(self, tag: str) -> Any:
         """Get content by tag
@@ -168,42 +174,19 @@ class Instance:
         Parameters
         ----------
         tag
-            Tag like 'ManufacturerModelName' or '0008-1090'.
+            Tag like 'ManufacturerModelName' or '0008-1090' or a group element like '' or '0008-1110/0/0008-1150'.
 
         Returns
         -------
         Any
             Content corresponding to specified tag.
         """
-        result = self.orthanc.get_instance_content_by_group_element(self.identifier, tag)
+        result = self.client.get_instances_id_content_tags_path(id_=self.id_, tags_path=tag)
 
         try:
             return result.decode('utf-8').strip().replace('\x00', '')
         except AttributeError:
             return result
 
-    def get_content_by_group_element(self, group_element: str) -> Any:
-        """Get content by group element
-
-        Get content by group element like
-        'ReferencedStudySequence/0/ReferencedSOPClassUID' or '0008-1110/0/0008-1150'.
-
-        Parameters
-        ----------
-        group_element
-            Group element like '' or '0008-1110/0/0008-1150'.
-
-        Returns
-        -------
-        Any
-            Content corresponding to specified tag.
-        """
-        result = self.orthanc.get_instance_content_by_group_element(self.identifier, group_element)
-
-        try:
-            return result.decode('utf-8').strip().replace('\x00', '')
-        except AttributeError:
-            return result
-
-    def __str__(self):
-        return f'Instance (identifier={self.get_identifier()})'
+    def __repr__(self):
+        return f'Instance(identifier={self.id_})'

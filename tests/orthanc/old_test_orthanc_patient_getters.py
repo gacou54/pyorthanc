@@ -22,7 +22,7 @@ class TestOrthancPatientGetters(unittest.TestCase):
     @classmethod
     def tearDownClass(cls) -> None:
         global orthanc_subprocess
-        setup_server.stop_orthanc_server_and_remove_data_directory(orthanc_subprocess)
+        setup_server.stop_server_and_remove_data(orthanc_subprocess)
         del orthanc_subprocess
 
     def setUp(self) -> None:
