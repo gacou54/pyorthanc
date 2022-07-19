@@ -1,5 +1,3 @@
-# coding: utf-8
-# author: Gabriel Couture
 from datetime import datetime
 
 IDENTIFIER = '118bc493-b3b3172a-082119bd-f6802ec3-81695613'
@@ -15,8 +13,8 @@ REFERRING_PHYSICIAN_NAME = ''
 ID = ''
 SERIES = [
     'c4c1fcc9-ae63f793-40cbcf25-fbd3efe5-ad72ff06',
+    '60108266-ece4d8f7-7b028286-a7b61f25-c6d33f0b',
     'e2a7df26-99673e0f-05aa84cd-c89677c0-634a2a96',
-    '60108266-ece4d8f7-7b028286-a7b61f25-c6d33f0b'
 ]
 INFORMATION = {
     'ID': IDENTIFIER,

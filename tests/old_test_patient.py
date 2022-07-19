@@ -43,7 +43,7 @@ class TestPatient(unittest.TestCase):
         )
 
     def test_givenAPatient_whenGettingPatientID_thenResultIsExpectedPatientID(self):
-        result = self.patient.get_id()
+        result = self.patient.study_id()
 
         self.assertEqual(result, a_patient.ID)
 
@@ -69,7 +69,7 @@ class TestPatient(unittest.TestCase):
         self.patient.build_studies()  # When getting building, studies do not get built by default
         expected_number_of_study = 0
 
-        self.patient.trim()
+        self.patient.remove_empty_series()
 
         self.assertEqual(
             expected_number_of_study,
