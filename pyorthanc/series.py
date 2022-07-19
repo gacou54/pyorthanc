@@ -128,8 +128,7 @@ class Series:
         """Build a list of the series' instances."""
 
         instance_ids = self.client.get_series_id_instances(self.id_)
-
         self._instances = [Instance(i['ID'], self.client) for i in instance_ids]
 
-    def __str__(self):
-        return f'Series (identifier={self.id_})'
+    def __repr__(self):
+        return f'Series(identifier={self.id_})'

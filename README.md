@@ -55,26 +55,27 @@ for instance_identifier in instance_identifiers:
 
 #### Build a patient tree structure of all patients in Orthanc instance:
 Each patient is a tree. Layers in each tree are `Patient` -> `Study` -> `Series` -> `Instance`.
+
 ```python
 from pyorthanc import Orthanc, build_patient_forest
 
 patient_forest = build_patient_forest(
-    Orthanc('http://localhost:8042/')
-)    
+   Orthanc('http://localhost:8042/')
+)
 
 for patient in patient_forest:
-    patient_info = patient.get_main_information()
-    patient.get_name()
-    patient.get_zip()
-    ...
-    
-    for study in patient.get_studies():
-        study.get_date()
-        study.get_referring_physician_name()
-        ...
+   patient_info = patient.get_main_information()
+   patient.get_name()
+   patient.get_zip()
+   ...
 
-        for series in study.get_series():
-            ...
+   for study in patient.get_studies():
+      study.date()
+      study.get_referring_physician_name()
+      ...
+
+      for series in study.series():
+         ...
 ```
 
 
