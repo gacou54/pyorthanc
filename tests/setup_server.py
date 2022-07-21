@@ -51,7 +51,7 @@ def start_server(orthanc: OrthancServer) -> OrthancServer:
             httpx.get(f'{orthanc.url}/patients').json()
             ready = True
         except httpx.HTTPError:
-            time.sleep(0.1)  # Time to ensure that the server has started
+            time.sleep(0.05)  # Time to ensure that the server has started
 
     return orthanc
 

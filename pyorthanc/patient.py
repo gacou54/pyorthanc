@@ -12,28 +12,30 @@ class Patient:
     """
 
     def __init__(
-            self, patient_identifier: str,
-            orthanc: Orthanc,
+            self,
+            patient_id: str,
+            client: Orthanc,
             patient_information: Dict = None) -> None:
         """Constructor
 
         Parameters
         ----------
-        patient_identifier
+        patient_id
             Orthanc patient identifier.
-        orthanc
+        client
             Orthanc object.
         patient_information
             Dictionary of patient's information.
         """
-        self.orthanc = orthanc
+        self.client = client
 
-        self.identifier = patient_identifier
+        self.id_ = patient_id
         self.information = patient_information
 
-        self.studies: List[Study] = []
+        self._studies: List[Study] = []
 
-    def get_identifier(self) -> str:
+    @property
+    def identifier(self) -> str:
         """Get patient identifier
 
         Returns
@@ -41,7 +43,7 @@ class Patient:
         str
             Patient identifier
         """
-        return self.identifier
+        return self.id_
 
     def get_main_information(self) -> Dict:
         """Get Patient information
@@ -52,13 +54,12 @@ class Patient:
             Dictionary of patient main information.
         """
         if self.information is None:
-            self.information = self.orthanc.get_patient_information(
-                self.identifier
-            )
+            self.information = self.client.get_patients_id(self.id_)
 
         return self.information
 
-    def get_id(self) -> str:
+    @property
+    def patient_id(self) -> str:
         """Get patient ID
 
         Returns
@@ -68,7 +69,8 @@ class Patient:
         """
         return self.get_main_information()['MainDicomTags']['PatientID']
 
-    def get_name(self) -> str:
+    @property
+    def name(self) -> str:
         """Get patient name
 
         Returns
@@ -78,7 +80,8 @@ class Patient:
         """
         return self.get_main_information()['MainDicomTags']['PatientName']
 
-    def get_sex(self) -> str:
+    @property
+    def sex(self) -> str:
         """Get patient sex
 
         Returns
@@ -110,22 +113,39 @@ class Patient:
         ...     file_handler.write(bytes_content)
 
         """
-        return self.orthanc.get_patient_zip(self.identifier)
+        return self.client.get_patients_id_archive(self.id_)
 
-    def get_patient_module(self) -> Dict:
+    def get_patient_module(self, simplify: bool = False, short: bool = False) -> Dict:
         """Get patient module in a simplified version
 
         The method returns the DICOM patient module
         (PatientName, PatientID, PatientBirthDate, ...)
+
+        Parameters
+        ----------
+        simplify
+            Get the simplified version of the tags
+        short
+            Get the short version of the tags
 
         Returns
         -------
         Dict
             DICOM Patient module.
         """
-        return self.orthanc.get_patient_module_in_simplified_version(
-            self.identifier
-        )
+        if simplify and not short:
+            params = {'simplify': True}
+        elif short and not simplify:
+            params = {'short': True}
+        elif simplify and short:
+            raise ValueError('simplify and short can\'t be both True')
+        else:
+            params = {}
+
+        return dict(self.client.get_patients_id_module(
+            self.id_,
+            params=params
+        ))
 
     def is_protected(self) -> bool:
         """Get if patient is protected against recycling
@@ -137,9 +157,7 @@ class Patient:
         bool
             False means unprotected, True means protected.
         """
-        return self.orthanc.get_if_patient_is_protected(
-            self.identifier
-        )
+        return '1' == self.client.get_patients_id_protected(self.id_)
 
     def set_to_protected(self):
         """Set patient to protected state
@@ -149,7 +167,11 @@ class Patient:
         None
             Nothing.
         """
-        self.orthanc.set_patient_to_protected(self.identifier)
+        # As of version 1.11.1, the Orthanc OPEN API file has missing information
+        self.client._put(
+            f'{self.client.url}/patients/{self.id_}/protected',
+            json=1
+        )
 
     def set_to_unprotected(self):
         """Set patient to unprotected state
@@ -159,9 +181,14 @@ class Patient:
         None
             Nothing.
         """
-        self.orthanc.set_patient_to_not_protected(self.identifier)
+        # As of version 1.11.1, the Orthanc OPEN API file has missing information
+        self.client._put(
+            f'{self.client.url}/patients/{self.id_}/protected',
+            json=0
+        )
 
-    def get_studies(self) -> List[Study]:
+    @property
+    def studies(self) -> List[Study]:
         """Get patient's studies
 
         Returns
@@ -169,54 +196,56 @@ class Patient:
         List[Study]
             List of the patient's studies
         """
-        return self.studies
+        return self._studies
 
     def build_studies(self) -> None:
         """Build a list of the patient's studies
         """
-        studies_information = self.orthanc.get_patient_studies_information(
-            self.identifier
-        )
+        studies_information = self.client.get_patients_id_studies(self.id_)
 
-        self.studies = list(map(
-            lambda i: Study(i['ID'], self.orthanc),
-            studies_information
-        ))
+        self._studies = [Study(i['ID'], self.client) for i in studies_information]
+        for study in self._studies:
+            study.build_series()
 
-    def anonymize(self) -> 'Patient':
+    def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None) -> 'Patient':
         """Anonymize patient
 
-        If no error is been raise, then it creates a new anonymous patient.
-        Documentation: http://book.pyorthanc-server.com/users/anonymization.html
+        If no error has been raise, then it creates a new anonymous patient.
+        Documentation: https://book.pyorthanc-server.com/users/anonymization.html
+
+        Parameters
+        ----------
+        remove
+            List of tag to remove
+        replace
+            Dictionary of {tag: new_content}
+        keep
+            List of tag to keep unchanged
 
         Returns
         -------
         Patient
             A New anonymous patient.
         """
-        new_anonymous_patient = self.orthanc.anonymize_patient(self.identifier)
+        remove = [] if remove is None else remove
+        replace = {} if replace is None else replace
+        keep = [] if keep is None else keep
 
-        return Patient(new_anonymous_patient['ID'], self.orthanc)
+        anonymous_patient = self.client.post_patients_id_anonymize(
+            self.id_,
+            json={'remove': remove, 'Replace': replace, 'Keep': keep}
+        )
+
+        return Patient(anonymous_patient['ID'], self.client)
 
     def __str__(self):
-        return f'Patient (id={self.get_id()}, identifier={self.get_identifier()})'
+        return f'Patient(PatientID={self.patient_id}, identifier={self.identifier})'
 
-    def trim(self) -> None:
-        """Delete empty studies
-        """
-        for study in self.get_studies():
+    def remove_empty_studies(self) -> None:
+        """Delete empty studies."""
+        for study in self._studies:
             study.remove_empty_series()
 
-        self.studies = list(filter(
-            lambda s: not s.is_empty(), self.studies
+        self._studies = list(filter(
+            lambda s: s.series != [], self._studies
         ))
-
-    def is_empty(self) -> bool:
-        """Check if studies is empty
-
-        Returns
-        -------
-        bool
-            True if patient has no instance
-        """
-        return self.studies == []

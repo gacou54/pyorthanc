@@ -78,7 +78,7 @@ def _build_patient(
         if not patient_filter(patient):
             return patient
 
-    patient.studies = [_build_study(i, orthanc, study_filter, series_filter) for i in study_information]
+    patient._studies = [_build_study(i, orthanc, study_filter, series_filter) for i in study_information]
 
     return patient
 

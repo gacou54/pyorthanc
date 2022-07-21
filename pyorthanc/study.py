@@ -147,8 +147,10 @@ class Study:
 
     def build_series(self) -> None:
         """Build a list of the study's series."""
-        series_identifiers = self.client.get_studies_id_series(self.id_)
-        self._series = [Series(i['ID'], self.client) for i in series_identifiers]
+        series_information = self.client.get_studies_id_series(self.id_)
+        self._series = [Series(i['ID'], self.client) for i in series_information]
+        for series in self._series:
+            series.build_instances()
 
     def remove_empty_series(self) -> None:
         """Delete empty series."""
