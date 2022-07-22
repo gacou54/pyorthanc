@@ -1,6 +1,3 @@
-# coding: utf-8
-# author: Gabriel Couture
-
 IDENTIFIER = 'c4c1fcc9-ae63f793-40cbcf25-fbd3efe5-ad72ff06'
 INSTANCES = ['22dcf059-8fd3ade7-efb39ca3-7f46b248-0200abc9']
 MODALITY = 'RTDOSE'

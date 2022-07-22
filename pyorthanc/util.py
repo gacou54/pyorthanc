@@ -1,7 +1,7 @@
 from datetime import datetime
 
 
-def make_datetime_from_dicom_date(date: str, time: str) -> datetime:
+def make_datetime_from_dicom_date(date: str, time: str = None) -> datetime:
     try:
         return datetime(
             year=int(date[:4]),
@@ -11,7 +11,7 @@ def make_datetime_from_dicom_date(date: str, time: str) -> datetime:
             minute=int(time[2:4]),
             second=int(time[4:6])
         )
-    except ValueError:
+    except (ValueError, TypeError):
         return datetime(
             year=int(date[:4]),
             month=int(date[4:6]),

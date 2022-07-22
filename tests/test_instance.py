@@ -1,8 +1,9 @@
+import io
 from datetime import datetime
 
 import pytest
 
-from pyorthanc import Orthanc, Instance
+from pyorthanc import Orthanc, Instance, util
 from .data import an_instance
 from .setup_server import ORTHANC_1, setup_data, start_server, stop_server_and_remove_data
 
@@ -53,3 +54,10 @@ def test_get_tag_content(instance):
     group_element = '0008-1110/0/0008-1150'
     expected_content = '1.2.840.10008.3.1.2.3.2'
     assert instance.get_content_by_tag(group_element) == expected_content
+
+
+def test_anonymize(instance):
+    anonymized_instance = instance.anonymize(remove=['InstanceCreationDate'])
+
+    assert type(anonymized_instance) == bytes
+

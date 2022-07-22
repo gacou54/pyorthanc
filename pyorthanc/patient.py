@@ -211,7 +211,7 @@ class Patient:
         """Anonymize patient
 
         If no error has been raise, then it creates a new anonymous patient.
-        Documentation: https://book.pyorthanc-server.com/users/anonymization.html
+        Documentation: https://book.orthanc-server.com/users/anonymization.html
 
         Parameters
         ----------
@@ -233,7 +233,7 @@ class Patient:
 
         anonymous_patient = self.client.post_patients_id_anonymize(
             self.id_,
-            json={'remove': remove, 'Replace': replace, 'Keep': keep}
+            json={'Remove': remove, 'Replace': replace, 'Keep': keep}
         )
 
         return Patient(anonymous_patient['ID'], self.client)
