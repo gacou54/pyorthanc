@@ -65,21 +65,18 @@ def test_protection(patient):
 def test_anonymize(patient):
     patient.build_studies()
 
-    anonymize_patient = patient.anonymize(remove=['StationName'])
+    anonymize_patient = patient.anonymize(remove=['PatientName'])
     anonymize_patient.build_studies()
-    assert anonymize_patient.name != a_patient.NAME
     assert anonymize_patient.patient_id != a_patient.ID
-    assert patient.studies[0].series[0].instances[0].get_content_by_tag('StationName') == 'pinnc-2'
-    with pytest.raises(httpx.HTTPError):
-        # StationName has been removed
-        anonymize_patient.studies[0].series[0].instances[0].get_content_by_tag('StationName')
+    with pytest.raises(KeyError):
+        anonymize_patient.name
 
-    anonymize_patient = patient.anonymize(replace={'PatientName': 'NewName'})  # Station Name
+    anonymize_patient = patient.anonymize(replace={'PatientName': 'NewName'})
     anonymize_patient.build_studies()
     assert patient.name == a_patient.NAME
     assert anonymize_patient.name == 'NewName'
 
-    anonymize_patient = patient.anonymize(keep=['PatientName'])  # Station Name
+    anonymize_patient = patient.anonymize(keep=['PatientName'])
     anonymize_patient.build_studies()
     assert patient.name == a_patient.NAME
     assert anonymize_patient.name == a_patient.NAME
