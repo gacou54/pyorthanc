@@ -1,6 +1,6 @@
 import pytest
 
-from pyorthanc import Orthanc, Study
+from pyorthanc import Orthanc, Study, util
 from .data import a_study
 from .setup_server import start_server, stop_server_and_remove_data, setup_data, ORTHANC_1
 
@@ -39,3 +39,23 @@ def test_remote_empty_series(study):
 
     study.remove_empty_series()
     assert study.series == []
+
+
+def test_anonymize(study):
+    study.build_series()
+
+    anonymized_study = study.anonymize(remove=['StudyDate'])
+    anonymized_study.build_series()
+    assert anonymized_study.uid != a_study.INFORMATION['MainDicomTags']['StudyInstanceUID']
+    with pytest.raises(KeyError):
+        anonymized_study.date
+
+    anonymized_study = study.anonymize(replace={'StudyDate': '20220101'})
+    anonymized_study.build_series()
+    assert study.date == a_study.DATE
+    assert anonymized_study.date == util.make_datetime_from_dicom_date('20220101')
+
+    anonymized_study = study.anonymize(keep=['StudyDate'])
+    anonymized_study.build_series()
+    assert study.date == a_study.DATE
+    assert anonymized_study.date == a_study.DATE

@@ -145,6 +145,37 @@ class Study:
         """
         return self._series
 
+    def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None) -> 'Study':
+        """Anonymize Study
+
+        If no error has been raise, then it creates a new anonymous study.
+        Documentation: https://book.orthanc-server.com/users/anonymization.html
+
+        Parameters
+        ----------
+        remove
+            List of tag to remove
+        replace
+            Dictionary of {tag: new_content}
+        keep
+            List of tag to keep unchanged
+
+        Returns
+        -------
+        Study
+            A new anonymous Study.
+        """
+        remove = [] if remove is None else remove
+        replace = {} if replace is None else replace
+        keep = [] if keep is None else keep
+
+        anonymous_study = self.client.post_studies_id_anonymize(
+            self.id_,
+            json={'Remove': remove, 'Replace': replace, 'Keep': keep}
+        )
+
+        return Study(anonymous_study['ID'], self.client)
+
     def build_series(self) -> None:
         """Build a list of the study's series."""
         series_information = self.client.get_studies_id_series(self.id_)

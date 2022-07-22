@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 from pyorthanc import util
 from pyorthanc.client import Orthanc
@@ -182,6 +182,35 @@ class Instance:
             return result.decode('utf-8').strip().replace('\x00', '')
         except AttributeError:
             return result
+
+    def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None) -> 'Study':
+        """Anonymize Instance
+
+        If no error has been raise, then it creates a new anonymous series.
+        Documentation: https://book.orthanc-server.com/users/anonymization.html
+
+        Parameters
+        ----------
+        remove
+            List of tag to remove
+        replace
+            Dictionary of {tag: new_content}
+        keep
+            List of tag to keep unchanged
+
+        Returns
+        -------
+        bytes
+            Raw bytes of the anonymized instance.
+        """
+        remove = [] if remove is None else remove
+        replace = {} if replace is None else replace
+        keep = [] if keep is None else keep
+
+        return self.client.post_instances_id_anonymize(
+            self.id_,
+            json={'Remove': remove, 'Replace': replace, 'Keep': keep}
+        )
 
     def __repr__(self):
         return f'Instance(identifier={self.id_})'
