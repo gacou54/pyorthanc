@@ -1,14 +1,14 @@
-import openapi_client
+import simple_openapi_client
 
 ORTHANC_API_URL = 'https://api.orthanc-server.com/orthanc-openapi.json'
 
 
 def generate_client(path: str):
-    config = openapi_client.Config(client_name='Orthanc')
+    config = simple_openapi_client.Config(client_name='Orthanc')
 
-    document = openapi_client.parse_openapi(ORTHANC_API_URL)
+    document = simple_openapi_client.parse_openapi(ORTHANC_API_URL)
     document = _apply_corrections_to_documents(document)
-    client_str = openapi_client.make_client(document, config)
+    client_str = simple_openapi_client.make_client(document, config)
 
     with open(path, 'w') as file:
         file.write(client_str)

@@ -138,23 +138,6 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
-name = "openapi-client"
-version = "0.1.0"
-description = "OpenAPI Python client generator that follows the KISS principle."
-category = "dev"
-optional = false
-python-versions = "^3.8"
-develop = false
-
-[package.dependencies]
-httpx = "^0.23.0"
-Jinja2 = "^3.1.2"
-
-[package.source]
-type = "directory"
-url = "../openapi-client"
-
-[[package]]
 name = "packaging"
 version = "21.3"
 description = "Core utilities for Python packages"
@@ -232,6 +215,18 @@ idna = {version = "*", optional = true, markers = "extra == \"idna2008\""}
 idna2008 = ["idna"]
 
 [[package]]
+name = "simple-openapi-client"
+version = "0.1.2"
+description = "OpenAPI Python client generator that follows the KISS principle."
+category = "dev"
+optional = false
+python-versions = ">=3.8,<4.0"
+
+[package.dependencies]
+httpx = ">=0.23.0,<0.24.0"
+Jinja2 = ">=3.1.2,<4.0.0"
+
+[[package]]
 name = "sniffio"
 version = "1.2.0"
 description = "Sniff out which async library your code is running under"
@@ -250,7 +245,7 @@ python-versions = ">=3.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "b3213f58107b10c53c2aa9551e851c23151233a42542b233855ee8493fa2507e"
+content-hash = "afd98860038b3aa0c9683012d39dce61e7070273a7c691378fb5cba0822a66be"
 
 [metadata.files]
 anyio = [
@@ -339,7 +334,6 @@ markupsafe = [
     {file = "MarkupSafe-2.1.1-cp39-cp39-win_amd64.whl", hash = "sha256:46d00d6cfecdde84d40e572d63735ef81423ad31184100411e6e3388d405e247"},
     {file = "MarkupSafe-2.1.1.tar.gz", hash = "sha256:7f91197cc9e48f989d12e4e6fbc46495c446636dfc81b9ccf50bb0ec74b91d4b"},
 ]
-openapi-client = []
 packaging = [
     {file = "packaging-21.3-py3-none-any.whl", hash = "sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522"},
     {file = "packaging-21.3.tar.gz", hash = "sha256:dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb"},
@@ -364,6 +358,7 @@ rfc3986 = [
     {file = "rfc3986-1.5.0-py2.py3-none-any.whl", hash = "sha256:a86d6e1f5b1dc238b218b012df0aa79409667bb209e58da56d0b94704e712a97"},
     {file = "rfc3986-1.5.0.tar.gz", hash = "sha256:270aaf10d87d0d4e095063c65bf3ddbc6ee3d0b226328ce21e036f946e421835"},
 ]
+simple-openapi-client = []
 sniffio = [
     {file = "sniffio-1.2.0-py3-none-any.whl", hash = "sha256:471b71698eac1c2112a40ce2752bb2f4a4814c22a54a3eed3676bc0f5ca9f663"},
     {file = "sniffio-1.2.0.tar.gz", hash = "sha256:c4666eecec1d3f50960c6bdf61ab7bc350648da6c126e3cf6898d8cd4ddcd3de"},
