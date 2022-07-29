@@ -1,23 +1,21 @@
 import io
 from zipfile import ZipFile
 
-import httpx
 import pytest
 
 from pyorthanc import Orthanc, Patient
-from .data import a_patient, a_series
-from .setup_server import ORTHANC_1, setup_data, start_server, stop_server_and_remove_data
+from .data import a_patient
+from .setup_server import ORTHANC_1, clear_data, setup_data, stop_server_and_remove_data
 
 
 @pytest.fixture
 def patient():
-    start_server(ORTHANC_1)
     setup_data(ORTHANC_1)
 
     client = Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
     yield Patient(client=client, patient_id=client.get_patients()[0])
 
-    stop_server_and_remove_data(ORTHANC_1)
+    clear_data(ORTHANC_1)
 
 
 def test_attributes(patient):

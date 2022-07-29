@@ -1,11 +1,10 @@
-import io
 from datetime import datetime
 
 import pytest
 
-from pyorthanc import Orthanc, Instance, util
+from pyorthanc import Orthanc, Instance
 from .data import an_instance
-from .setup_server import ORTHANC_1, setup_data, start_server, stop_server_and_remove_data
+from .setup_server import ORTHANC_1, setup_data, clear_data
 
 EXPECTED_DATE = datetime(
     year=2010,
@@ -19,13 +18,12 @@ EXPECTED_DATE = datetime(
 
 @pytest.fixture
 def instance():
-    start_server(ORTHANC_1)
     setup_data(ORTHANC_1)
 
     client = Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
     yield Instance(client=client, instance_id=client.get_instances()[0])
 
-    stop_server_and_remove_data(ORTHANC_1)
+    clear_data(ORTHANC_1)
 
 
 def test_attributes(instance):
@@ -60,4 +58,3 @@ def test_anonymize(instance):
     anonymized_instance = instance.anonymize(remove=['InstanceCreationDate'])
 
     assert type(anonymized_instance) == bytes
-
