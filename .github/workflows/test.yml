@@ -18,6 +18,25 @@ jobs:
       matrix:
         python-version: [3.7, 3.8, 3.9, '3.10']
 
+    services:
+      orthanc1:
+        image: osimis/orthanc
+        ports:
+          - 8042:8042
+          - 4242:4242
+        env:
+          ORTHANC__JSON: |
+            {
+              "Name" : "Orthanc1",
+              "HttpPort" : 8042,
+              "DicomAet" : "ORTHANC1",
+              "DicomPort" : 4242,
+              "RegisteredUsers" : {"orthanc1" : "orthanc1"},
+              "DicomModalities" : {
+                "Orthanc2" : [ "ORTHANC2", "localhost", 4243 ]
+              },
+              "OrthancExplorerEnabled" : false
+            }
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
