@@ -2,8 +2,7 @@ import httpx
 import pytest
 
 from pyorthanc import Orthanc, RemoteModality
-from .setup_server import ORTHANC_1, ORTHANC_2, setup_data, start_server, stop_server_and_remove_data
-
+from .setup_server import ORTHANC_1, ORTHANC_2, clear_data, setup_data
 
 MODALITY = 'Orthanc2'
 PAYLOAD = {'Level': 'Study', 'Query': {'PatientID': 'MP*'}}
@@ -24,13 +23,9 @@ PATIENT_INFORMATION = {
 
 @pytest.fixture
 def client():
-    start_server(ORTHANC_1)
-    start_server(ORTHANC_2)
-
     yield Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
-
-    stop_server_and_remove_data(ORTHANC_1)
-    stop_server_and_remove_data(ORTHANC_2)
+    clear_data(ORTHANC_1)
+    clear_data(ORTHANC_2)
 
 
 @pytest.fixture
@@ -42,14 +37,6 @@ def test_echo(modality):
     result = modality.echo()
 
     assert result
-
-
-def test_failed_echo(modality):
-    stop_server_and_remove_data(ORTHANC_2)
-
-    result = modality.echo()
-
-    assert not result
 
 
 def test_query(modality):

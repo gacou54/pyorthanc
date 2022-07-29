@@ -2,18 +2,17 @@ import pytest
 
 from pyorthanc import Orthanc, Series
 from .data import a_series
-from .setup_server import ORTHANC_1, start_server, stop_server_and_remove_data, setup_data
+from .setup_server import ORTHANC_1, clear_data, setup_data
 
 
 @pytest.fixture
 def series():
-    start_server(ORTHANC_1)
     setup_data(ORTHANC_1)
 
     client = Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
     yield Series(client=client, series_id=client.get_series()[0])
 
-    stop_server_and_remove_data(ORTHANC_1)
+    clear_data(ORTHANC_1)
 
 
 def test_attributes(series):
@@ -46,5 +45,7 @@ def test_anonymize(series):
 
     anonymized_series = series.anonymize(keep=['StationName'])
     anonymized_series.build_instances()
-    assert series.get_main_information()['MainDicomTags']['StationName'] == a_series.INFORMATION['MainDicomTags']['StationName']
-    assert anonymized_series.get_main_information()['MainDicomTags']['StationName'] == a_series.INFORMATION['MainDicomTags']['StationName']
+    assert series.get_main_information()['MainDicomTags']['StationName'] == a_series.INFORMATION['MainDicomTags'][
+        'StationName']
+    assert anonymized_series.get_main_information()['MainDicomTags']['StationName'] == \
+           a_series.INFORMATION['MainDicomTags']['StationName']

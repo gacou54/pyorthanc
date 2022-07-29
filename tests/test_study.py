@@ -2,18 +2,17 @@ import pytest
 
 from pyorthanc import Orthanc, Study, util
 from .data import a_study
-from .setup_server import start_server, stop_server_and_remove_data, setup_data, ORTHANC_1
+from .setup_server import clear_data, setup_data, ORTHANC_1
 
 
 @pytest.fixture
 def study():
-    start_server(ORTHANC_1)
     setup_data(ORTHANC_1)
 
     client = Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
     yield Study(client=client, study_id=client.get_studies()[0])
 
-    stop_server_and_remove_data(ORTHANC_1)
+    clear_data(ORTHANC_1)
 
 
 def test_attributes(study):
