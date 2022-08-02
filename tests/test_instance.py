@@ -36,7 +36,6 @@ def test_attributes(instance):
     assert instance.uid == an_instance.INFORMATION['MainDicomTags']['SOPInstanceUID']
     assert type(instance.file_size) == int
     assert instance.creation_date == EXPECTED_DATE
-    assert instance.series_id == an_instance.SERIES_ID
 
     assert '0008,0012' in instance.tags.keys()
     assert 'Value' in instance.tags['0008,0012'].keys()
