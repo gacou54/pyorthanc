@@ -1,7 +1,3 @@
-import os
-
-import pydicom as pydicom
-
 IDENTIFIER = '22dcf059-8fd3ade7-efb39ca3-7f46b248-0200abc9'
 FILE_SIZE = 1506520
 CREATION_DATE = '20100301'
@@ -25,8 +21,3 @@ INFORMATION = {
     'ParentSeries': SERIES_ID,
     'Type': 'Instance'
 }
-
-SOPINSTANCEUIDS = []
-for path in [f'./tests/data/orthanc_1_test_data/{i}' for i in os.listdir('tests/data/orthanc_1_test_data')]:
-    _ds = pydicom.dcmread(path)
-    SOPINSTANCEUIDS.append(_ds.SOPInstanceUID)

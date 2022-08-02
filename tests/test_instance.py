@@ -17,11 +17,15 @@ EXPECTED_DATE = datetime(
 
 
 @pytest.fixture
-def instance():
+def client():
+    return Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
+
+
+@pytest.fixture
+def instance(client):
     setup_data(ORTHANC_1)
 
-    client = Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
-    yield Instance(client=client, instance_id=client.get_instances()[0])
+    yield Instance(client=client, instance_id=an_instance.IDENTIFIER)
 
     clear_data(ORTHANC_1)
 
@@ -29,7 +33,7 @@ def instance():
 def test_attributes(instance):
     assert instance.get_main_information().keys() == an_instance.INFORMATION.keys()
 
-    assert instance.uid in an_instance.SOPINSTANCEUIDS
+    assert instance.uid == an_instance.INFORMATION['MainDicomTags']['SOPInstanceUID']
     assert type(instance.file_size) == int
     assert instance.creation_date == EXPECTED_DATE
     assert instance.series_id == an_instance.SERIES_ID
