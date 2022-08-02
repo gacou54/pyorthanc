@@ -14,36 +14,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 4
+      max-parallel: 1
       matrix:
-        python-version: [ 3.7, 3.8, 3.9, '3.10' ]
+        python-version: [ 3.8 ]
 
-    services:
-      orthanc1:
-        image: osimis/orthanc
-        ports:
-          - 8042:8042
-          - 4242:4242
-        env:
-          ORTHANC__NAME: Orthanc1
-          ORTHANC__AET: ORTHANC1
-          ORTHANC__REGISTERED_USERS: |
-            {"orthanc1" : "orthanc1"}
-          ORTHANC__MODALITIES: |
-            {
-              "Orthanc2" : [ "ORTHANC2", "localhost", 4243 ]
-            }
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install Dependencies
+      - name: Build
         run: |
-          python -m pip install --upgrade pip
-          pip install poetry
-          poetry install
+          docker-compose build --no-cache
+      - name: Start services
+        run: |
+          docker-compose up -d orthanc1 orthanc2
       - name: Run Tests
         run: |
-          poetry run pytest
+          docker-compose run --rm test
