@@ -1,0 +1,15 @@
+version: '3.3'
+services:
+  orthanc1:
+    image: jodogne/orthanc
+    depends_on:
+      - orthanc2
+  orthanc2:
+    image: jodogne/orthanc
+  test:
+    build:
+      context: .
+      dockerfile: pytest.Dockerfile
+    depends_on:
+      - orthanc1
+      - orthanc2
