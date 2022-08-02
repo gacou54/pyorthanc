@@ -2,7 +2,7 @@ import httpx
 import pytest
 
 from pyorthanc import Orthanc, RemoteModality
-from .setup_server import ORTHANC_1, ORTHANC_2, clear_data, setup_data
+from .setup_server import ORTHANC_1, ORTHANC_2, clear_data, setup_data, add_modality
 
 MODALITY = 'Orthanc2'
 PAYLOAD = {'Level': 'Study', 'Query': {'PatientID': 'MP*'}}
@@ -23,6 +23,7 @@ PATIENT_INFORMATION = {
 
 @pytest.fixture
 def client():
+
     yield Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
     clear_data(ORTHANC_1)
     clear_data(ORTHANC_2)
@@ -30,7 +31,11 @@ def client():
 
 @pytest.fixture
 def modality(client):
-    return RemoteModality(client, 'Orthanc2')
+    if ORTHANC_2.AeT not in client.get_modalities():
+        add_modality(ORTHANC_1, ORTHANC_2.AeT, 'orthanc2', 4242)
+        add_modality(ORTHANC_2, ORTHANC_1.AeT, 'orthanc1', 4242)
+
+    return RemoteModality(client, ORTHANC_2.AeT)
 
 
 def test_echo(modality):
@@ -45,7 +50,7 @@ def test_query(modality):
         '0008,0005': {'Name': 'SpecificCharacterSet', 'Type': 'String', 'Value': 'ISO_IR 100'},
         '0008,0050': {'Name': 'AccessionNumber', 'Type': 'String', 'Value': '20090926001'},
         '0008,0052': {'Name': 'QueryRetrieveLevel', 'Type': 'String', 'Value': 'STUDY'},
-        '0008,0054': {'Name': 'RetrieveAETitle', 'Type': 'String', 'Value': 'ORTHANC2'},
+        '0008,0054': {'Name': 'RetrieveAETitle', 'Type': 'String', 'Value': 'ORTHANC'},
         '0010,0020': {'Name': 'PatientID', 'Type': 'String', 'Value': 'MP15-067'},
         '0020,000d': {'Name': 'StudyInstanceUID', 'Type': 'String', 'Value': '1.3.6.1.4.1.22213.2.6291.2.1'}
     }

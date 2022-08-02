@@ -1,18 +1,8 @@
 {
   "Name" : "Orthanc2",
-  "StorageDirectory" : "./OrthancStorage-2",
-  "HttpPort" : 8043,
-
   "DicomAet" : "ORTHANC2",
-  "DicomPort" : 4243,
-
-  "RegisteredUsers" : {
-     "orthanc2" : "orthanc2"
-  },
-
   "DicomModalities" : {
-    "Orthanc1" : [ "ORTHANC1", "localhost", 4242 ]
+    "Orthanc1" : [ "ORTHANC1", "orthanc1", 4242 ]
   },
-
   "OrthancExplorerEnabled" : false
 }
