@@ -27,7 +27,7 @@ def test_attributes(study):
     assert study.date == a_study.DATE
     assert study.patient_identifier == a_study.PARENT_PATIENT_IDENTIFIER
     assert study.patient_information.keys() == a_study.PATIENT_MAIN_INFORMATION.keys()
-    assert [s.identifier for s in study.series] == a_study.SERIES
+    assert study.series != []
 
 
 def test_remote_empty_series(study):
