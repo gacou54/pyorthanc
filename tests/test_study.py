@@ -10,7 +10,7 @@ def study():
     setup_data(ORTHANC_1)
 
     client = Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
-    yield Study(client=client, study_id=client.get_studies()[0])
+    yield Study(client=client, study_id=a_study.IDENTIFIER)
 
     clear_data(ORTHANC_1)
 
