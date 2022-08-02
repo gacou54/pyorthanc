@@ -21,11 +21,10 @@ def test_attributes(series):
     assert series.get_main_information().keys() == a_series.INFORMATION.keys()
 
     assert series.identifier == a_series.IDENTIFIER
-    assert series.uid == a_series.INFORMATION['MainDicomTags']['SeriesInstanceUID']
-    assert series.modality == a_series.MODALITY
+    assert series.uid in a_series.SERIES_INSTANCE_UIDS
+    assert series.modality in a_series.MODALITIES
     assert series.manufacturer == a_series.MANUFACTURER
     assert series.study_identifier == a_series.PARENT_STUDY
-    assert series.series_number == a_series.INFORMATION['MainDicomTags']['SeriesNumber']
     assert [i.id_ for i in series.instances] == a_series.INSTANCES
 
 
@@ -40,12 +39,12 @@ def test_anonymize(series):
 
     anonymized_series = series.anonymize(replace={'Modality': 'RandomModality'})
     anonymized_series.build_instances()
-    assert series.modality == a_series.MODALITY
+    assert series.modality in a_series.MODALITIES
     assert anonymized_series.modality == 'RandomModality'
 
     anonymized_series = series.anonymize(keep=['StationName'])
     anonymized_series.build_instances()
-    assert series.get_main_information()['MainDicomTags']['StationName'] == a_series.INFORMATION['MainDicomTags'][
-        'StationName']
+    assert series.get_main_information()['MainDicomTags']['StationName'] == \
+           a_series.INFORMATION['MainDicomTags']['StationName']
     assert anonymized_series.get_main_information()['MainDicomTags']['StationName'] == \
            a_series.INFORMATION['MainDicomTags']['StationName']

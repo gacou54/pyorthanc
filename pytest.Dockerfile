@@ -6,7 +6,7 @@ COPY . /app
 
 RUN python -m venv ./venv
 RUN ./venv/bin/pip install --upgrade pip
-RUN ./venv/bin/pip install pytest httpx
+RUN ./venv/bin/pip install pytest httpx pydicom
 
 ENTRYPOINT [ "venv/bin/pytest", "-vv" ]
 
