@@ -6,11 +6,15 @@ from .setup_server import ORTHANC_1, clear_data, setup_data
 
 
 @pytest.fixture
-def series():
+def client():
+    return Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
+
+
+@pytest.fixture
+def series(client):
     setup_data(ORTHANC_1)
 
-    client = Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
-    yield Series(client=client, series_id=client.get_series()[0])
+    yield Series(client=client, series_id=a_series.IDENTIFIER)
 
     clear_data(ORTHANC_1)
 
@@ -21,8 +25,8 @@ def test_attributes(series):
     assert series.get_main_information().keys() == a_series.INFORMATION.keys()
 
     assert series.identifier == a_series.IDENTIFIER
-    assert series.uid in a_series.SERIES_INSTANCE_UIDS
-    assert series.modality in a_series.MODALITIES
+    assert series.uid == a_series.INFORMATION['MainDicomTags']['SeriesInstanceUID']
+    assert series.modality == a_series.MODALITY
     assert series.manufacturer == a_series.MANUFACTURER
     assert series.study_identifier == a_series.PARENT_STUDY
     assert [i.id_ for i in series.instances] == a_series.INSTANCES
@@ -39,7 +43,7 @@ def test_anonymize(series):
 
     anonymized_series = series.anonymize(replace={'Modality': 'RandomModality'})
     anonymized_series.build_instances()
-    assert series.modality in a_series.MODALITIES
+    assert series.modality in a_series.MODALITY
     assert anonymized_series.modality == 'RandomModality'
 
     anonymized_series = series.anonymize(keep=['StationName'])
