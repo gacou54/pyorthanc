@@ -29,7 +29,7 @@ def instance():
 def test_attributes(instance):
     assert instance.get_main_information().keys() == an_instance.INFORMATION.keys()
 
-    assert instance.uid == an_instance.INFORMATION['MainDicomTags']['SOPInstanceUID']
+    assert instance.uid in an_instance.SOPINSTANCEUIDS
     assert type(instance.file_size) == int
     assert instance.creation_date == EXPECTED_DATE
     assert instance.series_id == an_instance.SERIES_ID
