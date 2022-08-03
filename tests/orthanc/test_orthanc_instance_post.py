@@ -1,38 +1,24 @@
-# coding: utf-8
-# author: gabriel couture
 import unittest
 
-import requests
+import httpx
 
 from pyorthanc import Orthanc
-from tests import setup_server
+from tests.setup_server import ORTHANC_1, clear_data, setup_data
 
 
 class TestOrthancInstancePosts(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls) -> None:
-        global orthanc_subprocess
-        orthanc_subprocess = setup_server.setup_orthanc_server()
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-        global orthanc_subprocess
-        setup_server.stop_server_and_remove_data(orthanc_subprocess)
-        del orthanc_subprocess
-
     def setUp(self) -> None:
-        self.orthanc = Orthanc(setup_server.ORTHANC_1)
+        self.orthanc = Orthanc(ORTHANC_1.url, username=ORTHANC_1.username, password=ORTHANC_1.password)
 
     def tearDown(self) -> None:
-        self.orthanc = None
-        setup_server.clear_data()
+        clear_data(ORTHANC_1)
 
     def given_data_in_orthanc_server(self):
-        setup_server.setup_data()
+        setup_data(ORTHANC_1)
 
     def test_givenRawDicomData_whenPostingInstances_thenInstancesIsStored(self):
-        with open('./tests/data/dicom_files/RTSTRUCT.dcm', 'rb') as fh:
+        with open('tests/data/orthanc_1_test_data/RTSTRUCT.dcm', 'rb') as fh:
             data = fh.read()
 
         self.orthanc.post_instances(data)
@@ -44,6 +30,6 @@ class TestOrthancInstancePosts(unittest.TestCase):
             data = fh.read()
 
         self.assertRaises(
-            requests.HTTPError,
+            httpx.HTTPError,
             lambda: self.orthanc.post_instances(data)
         )
