@@ -23,7 +23,6 @@ PATIENT_INFORMATION = {
 
 @pytest.fixture
 def client():
-
     yield Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
     clear_data(ORTHANC_1)
     clear_data(ORTHANC_2)
