@@ -1,67 +1,89 @@
+import asyncio
 import os
-from concurrent.futures import ThreadPoolExecutor
-from typing import List, Dict, Callable, Optional
+import warnings
+from typing import List, Dict, Callable, Optional, Union
 
-from pyorthanc import Study, Series, Instance
+from pyorthanc.study import Study
+from pyorthanc.series import Series
+from pyorthanc.instance import Instance
+from pyorthanc.async_client import AsyncOrthanc
 from pyorthanc.client import Orthanc
 from pyorthanc.patient import Patient
 
 
 def build_patient_forest(
         orthanc: Orthanc,
-        max_nbr_workers: int = 100,
         patient_filter: Optional[Callable] = None,
         study_filter: Optional[Callable] = None,
-        series_filter: Optional[Callable] = None,
-        do_trim_forest_after_construction: bool = True) -> List[Patient]:
-    """Build a patient forest
+        series_filter: Optional[Callable] = None) -> List[Patient]:
+    warnings.warn(
+        'Function "build_patient_forest" is deprecated and will be removed in a future release. '
+        'Please use "find" instead',
+        DeprecationWarning,
+        stacklevel=2
+    )
+    return find(orthanc, patient_filter, study_filter, series_filter)
 
-    Each tree in the forest correspond to a patient. The layers in the
+
+def find(orthanc: Union[Orthanc, AsyncOrthanc],
+         patient_filter: Optional[Callable] = None,
+         study_filter: Optional[Callable] = None,
+         series_filter: Optional[Callable] = None) -> List[Patient]:
+    """Find desired patients/Study/Series/Instance in an Orthanc server
+
+    This function builds a series of tree structure.
+    Each tree correspond to a patient. The layers in the
     tree correspond to:
 
     `Patient -> Studies -> Series -> Instances`
-
-    Note that trees are build concurrently. You may want to change the
-    default values. Increase this number could improve performance,
-    but it will take more memory.
 
     Parameters
     ----------
     orthanc
         Orthanc object.
-    max_nbr_workers
-        Number of workers for to build the concurrent tree.
     patient_filter
         Patient filter (e.g. lambda patient: patient.get_id() == '03HDQ99*')
     study_filter
         Study filter (e.g. lambda study: study.get_id() == '*pros*')
     series_filter
         Series filter (e.g. lambda series: series.get_modality() == 'SR')
-    do_trim_forest_after_construction
-        If True, trim the forest after its construction.
 
     Returns
     -------
     List[Patient]
-        List of patient tree representation.
+        List of patient.
     """
-    patient_identifiers = orthanc.get_patients()
+    if isinstance(orthanc, Orthanc):
+        patient_identifiers = orthanc.get_patients()
+        patients = []
 
-    with ThreadPoolExecutor(max_workers=max_nbr_workers) as patient_executor:
-        future_patients = patient_executor.map(
-            lambda patient_identifier: _build_patient(
-                patient_identifier,
+        for patient_id in patient_identifiers:  # This ID is the Orthanc's ID, and not the PatientID
+            patients.append(_build_patient(
+                patient_id,
                 orthanc,
                 patient_filter,
                 study_filter,
                 series_filter
-            ),
-            patient_identifiers
-        )
+            ))
 
-    patient_forest = list(future_patients)
+        return trim_patient(patients)
 
-    return trim_patient_forest(patient_forest) if do_trim_forest_after_construction else patient_forest
+    elif isinstance(orthanc, AsyncOrthanc):
+        tasks = []
+        for patient_id in patient_identifiers:  # This ID is the Orthanc's ID, and not the PatientID
+            task = _async_build_patient(
+                patient_id,
+                orthanc,
+                patient_filter,
+                study_filter,
+                series_filter
+            )
+            tasks.append(task)
+
+        patients = await asyncio.gather(*tasks)
+
+    else:
+        raise TypeError(f'"orthanc" parameter is of the wrong type ({type(orthanc)}).')
 
 
 def _build_patient(
@@ -70,14 +92,32 @@ def _build_patient(
         patient_filter: Optional[Callable],
         study_filter: Optional[Callable],
         series_filter: Optional[Callable]) -> Patient:
-    study_information = orthanc.get_patient_studies_information(patient_identifier)
-
     patient = Patient(patient_identifier, orthanc)
 
     if patient_filter is not None:
         if not patient_filter(patient):
             return patient
 
+    study_information = orthanc.get_patients_id_studies(patient_identifier)
+    patient._studies = [_build_study(i, orthanc, study_filter, series_filter) for i in study_information]
+
+    return patient
+
+
+async def _async_build_patient(
+        patient_identifier: str,
+        orthanc: Orthanc,
+        patient_filter: Optional[Callable],
+        study_filter: Optional[Callable],
+        series_filter: Optional[Callable]) -> Patient:
+    raise NotImplementedError('TODO')
+    patient = Patient(patient_identifier, orthanc)
+
+    if patient_filter is not None:
+        if not patient_filter(patient):
+            return patient
+
+    study_information = orthanc.get_patients_id_studies(patient_identifier)
     patient._studies = [_build_study(i, orthanc, study_filter, series_filter) for i in study_information]
 
     return patient
@@ -88,14 +128,13 @@ def _build_study(
         orthanc: Orthanc,
         study_filter: Optional[Callable],
         series_filter: Optional[Callable]) -> Study:
-    series_information = orthanc.get_study_series_information(study_information['ID'])
-
     study = Study(study_information['ID'], orthanc, study_information)
 
     if study_filter is not None:
         if not study_filter(study):
             return study
 
+    series_information = orthanc.get_studies_id_series(study_information['ID'])
     study._series = [_build_series(i, orthanc, series_filter) for i in series_information]
 
     return study
@@ -105,7 +144,6 @@ def _build_series(
         series_information: Dict,
         orthanc: Orthanc,
         series_filter: Optional[Callable]) -> Series:
-    instance_information = orthanc.get_series_instance_information(series_information['ID'])
 
     series = Series(series_information['ID'], orthanc, series_information)
 
@@ -113,17 +151,18 @@ def _build_series(
         if not series_filter(series):
             return series
 
+    instance_information = orthanc.get_series_id_instances(series_information['ID'])
     series._instances = [Instance(i['ID'], orthanc, i) for i in instance_information]
 
     return series
 
 
-def trim_patient_forest(patient_forest: List[Patient]) -> List[Patient]:
+def trim_patient(patients: List[Patient]) -> List[Patient]:
     """Trim Patient forest (list of patients)
 
     Parameters
     ----------
-    patient_forest
+    patients
         Patient forest.
 
     Returns
@@ -131,57 +170,55 @@ def trim_patient_forest(patient_forest: List[Patient]) -> List[Patient]:
     List[Patient]
         Pruned patient forest.
     """
-    for patient in patient_forest:
-        patient.trim()
+    for patient in patients:
+        patient.remove_empty_studies()
 
-    patients = filter(
-        lambda p: not p.is_empty(), patient_forest
-    )
+    patients = [p for p in patients if p.studies != []]
 
     return list(patients)
 
 
-def retrieve_and_write_patients(patient_forest: List[Patient], path: str) -> None:
+def retrieve_and_write_patients(patients: List[Patient], path: str) -> None:
     """Retrieve and write patients to given path
 
     Parameters
     ----------
-    patient_forest
+    patients
         Patient forest.
     path
         Path where you want to write the files.
     """
     os.makedirs(path, exist_ok=True)
-    for patient in patient_forest:
+    for patient in patients:
         retrieve_patient(patient, path)
 
 
 def retrieve_patient(patient: Patient, path: str) -> None:
-    patient_path = _make_patient_path(path, patient.get_id())
+    patient_path = _make_patient_path(path, patient.id_)
     os.makedirs(patient_path, exist_ok=True)
 
-    for study in patient.get_studies():
+    for study in patient.studies:
         retrieve_study(study, patient_path)
 
 
 def retrieve_study(study: Study, patient_path: str) -> None:
-    study_path = _make_study_path(patient_path, study.study_id())
+    study_path = _make_study_path(patient_path, study.id_)
     os.makedirs(study_path, exist_ok=True)
 
-    for series in study.series():
+    for series in study.series:
         retrieve_series(series, study_path)
 
 
 def retrieve_series(series: Series, study_path: str) -> None:
-    series_path = _make_series_path(study_path, series.get_modality())
+    series_path = _make_series_path(study_path, series.modality)
     os.makedirs(series_path, exist_ok=True)
 
-    for instance in series.get_instances():
+    for instance in series.instances:
         retrieve_instance(instance, series_path)
 
 
 def retrieve_instance(instance: Instance, series_path) -> None:
-    path = os.path.join(series_path, instance.get_uid() + '.dcm')
+    path = os.path.join(series_path, instance.uid + '.dcm')
 
     dicom_file_bytes = instance.get_dicom_file_content()
 

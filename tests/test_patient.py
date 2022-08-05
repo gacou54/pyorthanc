@@ -5,7 +5,7 @@ import pytest
 
 from pyorthanc import Orthanc, Patient
 from .data import a_patient
-from .setup_server import ORTHANC_1, clear_data, setup_data, stop_server_and_remove_data
+from .setup_server import ORTHANC_1, clear_data, setup_data
 
 
 @pytest.fixture
