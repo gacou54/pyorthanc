@@ -1,11 +1,9 @@
-# coding: utf-8
-# author: Gabriel Couture
 import unittest
 
 from pyorthanc import Orthanc
-from tests import setup_server
+from tests.setup_server import ORTHANC_1, ORTHANC_2, add_modality, clear_data, setup_data
 
-MODALITY = 'SecondOrthanc'
+MODALITY = ORTHANC_1.AeT
 PAYLOAD = {'Level': 'Study', 'Query': {'PatientID': 'MP*'}}
 PATIENT_INFORMATION = {
     'ID': '50610f37-9df85809-faaec921-9c829c41-e5261ca2',
@@ -24,37 +22,25 @@ PATIENT_INFORMATION = {
 
 class TestDicomMethods(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls) -> None:
-        global orthanc_subprocess
-        global second_orthanc_subprocess
-        orthanc_subprocess = setup_server.setup_orthanc_server()
-        second_orthanc_subprocess = setup_server.setup_second_orthanc_server()
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-        global orthanc_subprocess
-        global second_orthanc_subprocess
-        setup_server.stop_server_and_remove_data(orthanc_subprocess)
-        setup_server.stop_second_orthanc_server_and_remove_data_directory(second_orthanc_subprocess)
-        del orthanc_subprocess
-        del second_orthanc_subprocess
-
     def setUp(self) -> None:
-        self.orthanc = Orthanc(setup_server.ORTHANC_1)
+        self.orthanc = Orthanc(ORTHANC_1.url, username=ORTHANC_1.username, password=ORTHANC_1.password)
+        if ORTHANC_2.AeT not in self.orthanc.get_modalities():
+            add_modality(ORTHANC_1, ORTHANC_2.AeT, 'orthanc2', 4242)
+            add_modality(ORTHANC_2, ORTHANC_1.AeT, 'orthanc1', 4242)
 
     def tearDown(self) -> None:
-        self.orthanc = None
-        setup_server.clear_data()
-        setup_server.clear_data_of_second_orthanc()
+        clear_data(ORTHANC_1)
+        clear_data(ORTHANC_2)
+
+    def given_patient_in_orthanc_server(self):
+        setup_data(ORTHANC_1)
 
     def given_patient_in_second_orthanc_server(self):
-        setup_server.setup_data_for_second_orthanc()
+        setup_data(ORTHANC_2)
 
     def test_whenEchoOnModality_thenResultIsTrue(self):
-        result = self.orthanc.echo_to_modality(MODALITY)
-
-        self.assertTrue(result)
+        # Assert not throw
+        self.orthanc.post_modalities_id_echo(MODALITY)
 
     def test_givenDataInSecondServerAndPayload_whenQuerying_thenQueryHasExpectingContent(self):
         self.given_patient_in_second_orthanc_server()
@@ -62,48 +48,48 @@ class TestDicomMethods(unittest.TestCase):
             '0008,0005': {'Name': 'SpecificCharacterSet', 'Type': 'String', 'Value': 'ISO_IR 100'},
             '0008,0050': {'Name': 'AccessionNumber', 'Type': 'String', 'Value': '20090926001'},
             '0008,0052': {'Name': 'QueryRetrieveLevel', 'Type': 'String', 'Value': 'STUDY'},
-            '0008,0054': {'Name': 'RetrieveAETitle', 'Type': 'String', 'Value': 'SECONDORTHANC'},
+            '0008,0054': {'Name': 'RetrieveAETitle', 'Type': 'String', 'Value': ORTHANC_2.AeT},
             '0010,0020': {'Name': 'PatientID', 'Type': 'String', 'Value': 'MP15-067'},
             '0020,000d': {'Name': 'StudyInstanceUID', 'Type': 'String', 'Value': '1.3.6.1.4.1.22213.2.6291.2.1'}
         }
 
-        result = self.orthanc.query_on_modality(MODALITY, PAYLOAD)
+        result = self.orthanc.post_modalities_id_query(MODALITY, PAYLOAD)
 
         self.assertIn('ID', result.keys())
         self.assertIn('Path', result.keys())
         self.assertEqual(
             expected_query_answer_content,
-            self.orthanc.get_content_of_specified_query_answer(result['ID'], 0)
+            self.orthanc.get_queries_id_answers_index_content(result['ID'], 0)
         )
 
     def test_givenDataInSecondServerAndQuery_whenMoving_thenDataInSecondServerIsInFirstOrthancServer(self):
         self.given_patient_in_second_orthanc_server()
-        cmove_data = {'TargetAet': 'FirstOrthanc'}
+        cmove_data = {'TargetAet': ORTHANC_1.AeT}
         expected_move_answer = {
             'Description': 'REST API',
-            'LocalAet': 'FIRSTORTHANC',
-            'RemoteAet': 'SECONDORTHANC'
+            'LocalAet': ORTHANC_1.AeT,
+            'RemoteAet': ORTHANC_2.AeT
         }
 
-        query_result = self.orthanc.query_on_modality(MODALITY, PAYLOAD)
-        result = self.orthanc.move_query_results_to_given_modality(query_result['ID'], cmove_data)
+        query_result = self.orthanc.post_modalities_id_query(MODALITY, PAYLOAD)
+        result = self.orthanc.post_queries_id_retrieve(query_result['ID'], json=cmove_data)
 
         try:
             del result['Query']  # On some version of Orthanc, A Query field is there
         except KeyError:
             pass
         self.assertDictEqual(expected_move_answer, result)
-        resulting_patient_information = self.orthanc.get_patient_information(self.orthanc.get_patients()[0])
+        resulting_patient_information = self.orthanc.get_patients_id(self.orthanc.get_patients()[0])
         self.assertEqual(
             {k: v for k, v in PATIENT_INFORMATION.items() if k != 'LastUpdate'},
             {k: v for k, v in resulting_patient_information.items() if k != 'LastUpdate'}
         )
 
     def test_givenInstance_whenStoreOnModality_thenResultIsExpectedDict(self):
-        setup_server.setup_data()
+        self.given_patient_in_orthanc_server()
         an_instance_identifier = self.orthanc.get_instances()[0]
 
-        result = self.orthanc.store_on_modality(MODALITY, data=an_instance_identifier)
+        result = self.orthanc.post_modalities_id_store(MODALITY, data=an_instance_identifier)
 
         self.assertEqual(
             {k: v for k, v in result.items() if k != 'ParentResources'},
@@ -111,7 +97,7 @@ class TestDicomMethods(unittest.TestCase):
                 'Description': 'REST API',
                 'FailedInstancesCount': 0,
                 'InstancesCount': 1,
-                'LocalAet': 'FIRSTORTHANC',
-                'RemoteAet': 'SECONDORTHANC'
+                'LocalAet': ORTHANC_1.AeT,
+                'RemoteAet': ORTHANC_2.AeT
             }
         )

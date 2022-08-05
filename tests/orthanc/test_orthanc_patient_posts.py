@@ -1,64 +1,50 @@
-# coding: utf-8
-# author: gabriel couture
 import os
 import unittest
 import zipfile
 
-from requests import HTTPError
+import httpx
 
 from pyorthanc import Orthanc
-from tests import setup_server
 from tests.data import a_patient
+from tests.setup_server import ORTHANC_1, clear_data, setup_data
 
 
 class TestOrthancPatientPosts(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls) -> None:
-        global orthanc_subprocess
-        orthanc_subprocess = setup_server.setup_orthanc_server()
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-        global orthanc_subprocess
-        setup_server.stop_server_and_remove_data(orthanc_subprocess)
-        del orthanc_subprocess
-
     def setUp(self) -> None:
-        self.orthanc = Orthanc(setup_server.ORTHANC_1)
+        self.orthanc = Orthanc(ORTHANC_1.url, username=ORTHANC_1.username, password=ORTHANC_1.password)
 
     def tearDown(self) -> None:
-        self.orthanc = None
-        setup_server.clear_data()
+        clear_data(ORTHANC_1)
 
     def given_patient_in_orthanc_server(self):
-        setup_server.setup_data()
+        setup_data(ORTHANC_1)
 
     def test_givenOrthancWithAPatient_whenAnonymizeAPatient_thenResultIsIdentifiersOfNewAnonymousPatientAndANewAnonymousPatientIsCreated(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.anonymize_patient(a_patient.IDENTIFIER)
+        result = self.orthanc.post_patients_id_anonymize(a_patient.IDENTIFIER)
 
         self.assertIsInstance(result, dict)
         self.assertIn('ID', result.keys())
         self.assertIn('Path', result.keys())
         self.assertIn('PatientID', result.keys())
         self.assertIn(result['ID'], self.orthanc.get_patients())
-        self.assertEqual(
-            'Anonymized1',
-            self.orthanc.get_patient_information(result['ID'])['MainDicomTags']['PatientName']
+        self.assertIn(
+            'Anonymized',
+            self.orthanc.get_patients_id(result['ID'])['MainDicomTags']['PatientName']
         )
 
     def test_givenOrthancWithoutAPatient_whenAnonymizeAPatient_thenRaiseHTTPError(self):
         self.assertRaises(
-            HTTPError,
-            lambda: self.orthanc.anonymize_patient(a_patient.IDENTIFIER)
+            httpx.HTTPError,
+            lambda: self.orthanc.post_patients_id_anonymize(a_patient.IDENTIFIER)
         )
 
     def test_givenOrthancWithAPatient_whenArchivingAPatient_thenResultIsBytesOfAValidZipFile(self):
         self.given_patient_in_orthanc_server()
 
-        result = self.orthanc.archive_patient(a_patient.IDENTIFIER)
+        result = self.orthanc.post_patients_id_archive(a_patient.IDENTIFIER)
 
         self.assertIsInstance(result, bytes)
         with open(a_patient.ZIP_FILE_PATH, 'wb') as file_handler:
@@ -70,6 +56,6 @@ class TestOrthancPatientPosts(unittest.TestCase):
 
     def test_givenOrthancWithoutAPatient_whenArchivingAPatient_thenRaiseHTTPError(self):
         self.assertRaises(
-            HTTPError,
-            lambda: self.orthanc.archive_patient(a_patient.IDENTIFIER)
+            httpx.HTTPError,
+            lambda: self.orthanc.post_patients_id_archive(a_patient.IDENTIFIER)
         )
