@@ -1,6 +1,3 @@
-# coding: utf-8
-# author: gabriel couture
-
 IDENTIFIER = 'e34c28ce-981b0e5c-2a481559-cf0d5fbe-053335f8'
 ID = '03HDQ000'
 NAME = 'MR-R'
