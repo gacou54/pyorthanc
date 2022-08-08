@@ -7,7 +7,7 @@ from pyorthanc.util import make_datetime_from_dicom_date
 
 
 class Study:
-    """Represent an study that is in an Orthanc server
+    """Represent a study that is in an Orthanc server
 
     This object has many getters that allow the user to retrieve metadata
     or the entire DICOM file of the Series
@@ -38,7 +38,7 @@ class Study:
 
     @property
     def identifier(self) -> str:
-        """Get Study identifier
+        """Get Study Orthanc's identifier
 
         Returns
         -------
