@@ -18,5 +18,6 @@ __all__ = [
     'Instance',
     'build_patient_forest',
     'trim_patient',
-    'retrieve_and_write_patients'
+    'retrieve_and_write_patients',
+    'find',
 ]

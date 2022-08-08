@@ -23,8 +23,20 @@ def async_client():
     clear_data(ORTHANC_1)
 
 
-def test_find(client):
-    patients = filtering.find(client)
+@pytest.mark.parametrize('async_mode, series_filter, expected_nbr_of_series', [
+    (False, None, 3),
+    (False, lambda s: s.modality == 'RTDOSE', 1),
+    (True, None, 3),
+    (True, lambda s: s.modality == 'RTDOSE', 1),
+]
+                         )
+def test_find(client, async_mode, series_filter, expected_nbr_of_series):
+    patients = filtering.find(
+        orthanc_url=client.url,
+        auth=(ORTHANC_1.username, ORTHANC_1.password),
+        async_mode=async_mode,
+        series_filter=series_filter
+    )
 
     assert type(patients) == list
     assert type(patients[0]) == Patient
@@ -32,23 +44,7 @@ def test_find(client):
 
     assert type(patients[0].studies[0]) == Study
     assert patients[0].studies[0].uid == a_study.INFORMATION['MainDicomTags']['StudyInstanceUID']
-
-    assert type(patients[0].studies[0].series[0]) == Series
-    assert patients[0].studies[0].series[0].uid == a_series.INFORMATION['MainDicomTags']['SeriesInstanceUID']
-
-    assert type(patients[0].studies[0].series[0].instances[0]) == Instance
-    assert patients[0].studies[0].series[0].instances[0].uid == an_instance.INFORMATION['MainDicomTags']['SOPInstanceUID']
-
-
-def test_async_find(async_client):
-    patients = filtering.find(async_client)
-
-    assert type(patients) == list
-    assert type(patients[0]) == Patient
-    assert patients[0].patient_id == a_patient.ID
-
-    assert type(patients[0].studies[0]) == Study
-    assert patients[0].studies[0].uid == a_study.INFORMATION['MainDicomTags']['StudyInstanceUID']
+    assert len(patients[0].studies[0].series) == expected_nbr_of_series
 
     assert type(patients[0].studies[0].series[0]) == Series
     assert patients[0].studies[0].series[0].uid == a_series.INFORMATION['MainDicomTags']['SeriesInstanceUID']
