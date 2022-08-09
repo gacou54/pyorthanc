@@ -47,7 +47,8 @@ def test_find(client, async_mode, series_filter, expected_nbr_of_series):
     assert len(patients[0].studies[0].series) == expected_nbr_of_series
 
     assert type(patients[0].studies[0].series[0]) == Series
-    assert patients[0].studies[0].series[0].uid == a_series.INFORMATION['MainDicomTags']['SeriesInstanceUID']
+    series = [s for s in patients[0].studies[0].series if s.modality == 'RTDOSE'][0]
+    assert series.uid == a_series.INFORMATION['MainDicomTags']['SeriesInstanceUID']
 
-    assert type(patients[0].studies[0].series[0].instances[0]) == Instance
-    assert patients[0].studies[0].series[0].instances[0].uid == an_instance.INFORMATION['MainDicomTags']['SOPInstanceUID']
+    assert type(series.instances[0]) == Instance
+    assert series.instances[0].uid == an_instance.INFORMATION['MainDicomTags']['SOPInstanceUID']
