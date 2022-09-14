@@ -207,7 +207,7 @@ class Patient:
         for study in self._studies:
             study.build_series()
 
-    def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None) -> 'Patient':
+    def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None, force: bool = False) -> 'Patient':
         """Anonymize patient
 
         If no error has been raise, then it creates a new anonymous patient.
@@ -221,6 +221,8 @@ class Patient:
             Dictionary of {tag: new_content}
         keep
             List of tag to keep unchanged
+        force
+            Some tags can't be change without forcing it (e.g. PatientID) for security reason
 
         Returns
         -------
@@ -233,7 +235,7 @@ class Patient:
 
         anonymous_patient = self.client.post_patients_id_anonymize(
             self.id_,
-            json={'Remove': remove, 'Replace': replace, 'Keep': keep}
+            json={'Remove': remove, 'Replace': replace, 'Keep': keep, 'Force': force}
         )
 
         return Patient(anonymous_patient['ID'], self.client)

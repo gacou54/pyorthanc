@@ -183,7 +183,7 @@ class Instance:
         except AttributeError:
             return result
 
-    def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None) -> 'Study':
+    def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None, force: bool = False) -> bytes:
         """Anonymize Instance
 
         If no error has been raise, then it creates a new anonymous series.
@@ -197,6 +197,8 @@ class Instance:
             Dictionary of {tag: new_content}
         keep
             List of tag to keep unchanged
+        force
+            Some tags can't be change without forcing it (e.g. PatientID) for security reason
 
         Returns
         -------
@@ -209,7 +211,7 @@ class Instance:
 
         return self.client.post_instances_id_anonymize(
             self.id_,
-            json={'Remove': remove, 'Replace': replace, 'Keep': keep}
+            json={'Remove': remove, 'Replace': replace, 'Keep': keep, 'Force': force}
         )
 
     def __repr__(self):

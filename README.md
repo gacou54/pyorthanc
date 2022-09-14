@@ -46,7 +46,7 @@ for patient_identifier in patients_identifiers:
    # To get patient information
    patient_info = orthanc.get_patients_id(patient_identifier)
 
-   patient_name = patient_info['MainDicomTags']['name']
+   patient_name = patient_info['MainDicomTags']['PatientName']
    ...
    study_identifiers = patient_info['Studies']
 
@@ -75,7 +75,8 @@ for instance_identifier in instance_identifiers:
 ```
 
 #### Find patients with certain characteristics in an Orthanc instance:
-Each patient is a tree. Layers in each tree are `Patient` -> `Study` -> `Series` -> `Instance`
+Each patient is a tree. Layers in each tree have the following structure 
+`Patient` -> `Study` -> `Series` -> `Instance`
 that correspond to the provided filter functions.
 
 ```python
@@ -96,8 +97,8 @@ for patient in patients:
    
    anonymized_patient_1 = patient.anonymize()  # New patient that was anonymized by Orthanc
    anonymized_patient_2 = patient.anonymize(
-      keep=['PatientID'],   # You can keep/remove/replace the DICOM tags you want
-      replace={'PatientName': 'TheNewPatient_name'},
+      keep=['PatientName'],   # You can keep/remove/replace the DICOM tags you want
+      replace={'PatientID': 'TheNewPatientID'},
       remove=['ReferringPhysicianName']
    )  
    ...
@@ -133,30 +134,36 @@ orthanc.get_modalities()
 ```
 
 #### Query (C-Find) and Retrieve (C-Move) from remote modality:
+
 ```python
 from pyorthanc import RemoteModality, Orthanc
 
 orthanc = Orthanc('http://localhost:8042', 'username', 'password')
 
-remote_modality = RemoteModality(orthanc, 'modality')
+modality = RemoteModality(orthanc, 'modality')
 
 # Query (C-Find) on modality
 data = {'Level': 'Study', 'Query': {'PatientID': '*'}}
-query_response = remote_modality.query(data=data)
+query_response = modality.query(data=data)
+
+answer = modality.get_query_answers()[query_response['ID']]
+print(answer)
 
 # Retrieve (C-Move) results of query on a target modality (AET)
-remote_modality.move(query_response['QUERY_ID'], 'target_modality')
+modality.move(query_response['ID'], {'TargetAet': 'target_modality'})
 ```
 
 #### Anonymize patient and get file:
 ```python
-from pyorthanc import Orthanc
+from pyorthanc import Orthanc, Patient
 
 orthanc = Orthanc('http://localhost:8042', 'username', 'password')
 
-a_patient_identifier = orthanc.get_patients()[0]
+patient_identifier = orthanc.get_patients()[0]
 
-orthanc.post_patients_id_anonymize(a_patient_identifier)
+anonymized_patient = Patient(patient_identifier, orthanc).anonymize()
+# Or directly with
+orthanc.post_patients_id_anonymize(patient_identifier)
 
 # result is: (you can retrieve DICOM file from ID)
 # {'ID': 'dd41f2f1-24838e1e-f01746fc-9715072f-189eb0a2',

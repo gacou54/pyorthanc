@@ -145,7 +145,7 @@ class Study:
         """
         return self._series
 
-    def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None) -> 'Study':
+    def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None, force: bool = False) -> 'Study':
         """Anonymize Study
 
         If no error has been raise, then it creates a new anonymous study.
@@ -159,6 +159,8 @@ class Study:
             Dictionary of {tag: new_content}
         keep
             List of tag to keep unchanged
+        force
+            Some tags can't be change without forcing it (e.g. PatientID) for security reason
 
         Returns
         -------
@@ -171,7 +173,7 @@ class Study:
 
         anonymous_study = self.client.post_studies_id_anonymize(
             self.id_,
-            json={'Remove': remove, 'Replace': replace, 'Keep': keep}
+            json={'Remove': remove, 'Replace': replace, 'Keep': keep, 'Force': force}
         )
 
         return Study(anonymous_study['ID'], self.client)
