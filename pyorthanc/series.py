@@ -124,7 +124,7 @@ class Series:
         """
         return self.get_main_information()['MainDicomTags']['SeriesNumber']
 
-    def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None) -> 'Study':
+    def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None, force: bool = False) -> 'Series':
         """Anonymize Series
 
         If no error has been raise, then it creates a new anonymous series.
@@ -138,6 +138,8 @@ class Series:
             Dictionary of {tag: new_content}
         keep
             List of tag to keep unchanged
+        force
+            Some tags can't be change without forcing it (e.g. PatientID) for security reason
 
         Returns
         -------
@@ -150,7 +152,7 @@ class Series:
 
         anonymous_series = self.client.post_series_id_anonymize(
             self.id_,
-            json={'Remove': remove, 'Replace': replace, 'Keep': keep}
+            json={'Remove': remove, 'Replace': replace, 'Keep': keep, 'Force': force}
         )
 
         return Series(anonymous_series['ID'], self.client)
