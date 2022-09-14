@@ -5,12 +5,12 @@ import pytest
 
 from pyorthanc import Orthanc, Patient
 from .data import a_patient
-from .setup_server import ORTHANC_1, clear_data, setup_data
+from .setup_server import ORTHANC_1, clear_data, add_data
 
 
 @pytest.fixture
 def patient():
-    setup_data(ORTHANC_1)
+    add_data(ORTHANC_1)
 
     client = Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
     yield Patient(client=client, patient_id=client.get_patients()[0])

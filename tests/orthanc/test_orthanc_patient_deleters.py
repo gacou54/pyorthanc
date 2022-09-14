@@ -4,7 +4,7 @@ import httpx
 
 from pyorthanc import Orthanc
 from tests.data import a_patient
-from tests.setup_server import ORTHANC_1, clear_data, setup_data
+from tests.setup_server import ORTHANC_1, clear_data, add_data
 
 
 class TestOrthancPatientDeleters(unittest.TestCase):
@@ -16,7 +16,7 @@ class TestOrthancPatientDeleters(unittest.TestCase):
         clear_data(ORTHANC_1)
 
     def given_patient_in_orthanc_server(self):
-        setup_data(ORTHANC_1)
+        add_data(ORTHANC_1)
 
     def test_givenOrthancWithPatient_whenDeletingPatientData_thenResultIsTrue(self):
         self.given_patient_in_orthanc_server()

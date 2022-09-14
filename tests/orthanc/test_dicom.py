@@ -1,7 +1,7 @@
 import unittest
 
 from pyorthanc import Orthanc
-from tests.setup_server import ORTHANC_1, ORTHANC_2, add_modality, clear_data, setup_data
+from tests.setup_server import ORTHANC_1, ORTHANC_2, add_modality, clear_data, add_data
 
 MODALITY = ORTHANC_1.AeT
 PAYLOAD = {'Level': 'Study', 'Query': {'PatientID': 'MP*'}}
@@ -33,10 +33,10 @@ class TestDicomMethods(unittest.TestCase):
         clear_data(ORTHANC_2)
 
     def given_patient_in_orthanc_server(self):
-        setup_data(ORTHANC_1)
+        add_data(ORTHANC_1)
 
     def given_patient_in_second_orthanc_server(self):
-        setup_data(ORTHANC_2)
+        add_data(ORTHANC_2)
 
     def test_whenEchoOnModality_thenResultIsTrue(self):
         # Assert not throw

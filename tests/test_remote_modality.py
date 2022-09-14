@@ -2,7 +2,7 @@ import httpx
 import pytest
 
 from pyorthanc import Orthanc, RemoteModality
-from .setup_server import ORTHANC_1, ORTHANC_2, clear_data, setup_data, add_modality
+from .setup_server import ORTHANC_1, ORTHANC_2, clear_data, add_data, add_modality
 
 MODALITY = 'Orthanc2'
 PAYLOAD = {'Level': 'Study', 'Query': {'PatientID': 'MP*'}}
@@ -44,7 +44,7 @@ def test_echo(modality):
 
 
 def test_query(modality):
-    setup_data(ORTHANC_2)
+    add_data(ORTHANC_2)
     expected_query_answer = {
         '0008,0005': {'Name': 'SpecificCharacterSet', 'Type': 'String', 'Value': 'ISO_IR 100'},
         '0008,0050': {'Name': 'AccessionNumber', 'Type': 'String', 'Value': '20090926001'},
@@ -84,7 +84,7 @@ def test_move(modality):
             '0020,000d': '1.3.6.1.4.1.22213.2.6291.2.1'
         }],
     }
-    setup_data(ORTHANC_2)
+    add_data(ORTHANC_2)
 
     query_result = modality.query(PAYLOAD)
     result = modality.move(query_result['ID'], cmove_data)
@@ -100,7 +100,7 @@ def test_move(modality):
 
 
 def test_store(modality):
-    setup_data(ORTHANC_1)
+    add_data(ORTHANC_1)
     an_instance_identifier = modality.client.get_instances()[0]
 
     result = modality.store(an_instance_identifier)

@@ -2,12 +2,12 @@ import pytest
 
 from pyorthanc import AsyncOrthanc, Instance, Orthanc, Patient, Series, Study, filtering
 from tests.data import a_patient, a_series, a_study, an_instance
-from tests.setup_server import ORTHANC_1, clear_data, setup_data
+from tests.setup_server import ORTHANC_1, clear_data, add_data
 
 
 @pytest.fixture
 def client():
-    setup_data(ORTHANC_1)
+    add_data(ORTHANC_1)
 
     yield Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
 
@@ -16,7 +16,7 @@ def client():
 
 @pytest.fixture
 def async_client():
-    setup_data(ORTHANC_1)
+    add_data(ORTHANC_1)
 
     yield AsyncOrthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
 

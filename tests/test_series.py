@@ -2,7 +2,7 @@ import pytest
 
 from pyorthanc import Orthanc, Series
 from .data import a_series
-from .setup_server import ORTHANC_1, clear_data, setup_data
+from .setup_server import ORTHANC_1, clear_data, add_data
 
 
 @pytest.fixture
@@ -12,7 +12,7 @@ def client():
 
 @pytest.fixture
 def series(client):
-    setup_data(ORTHANC_1)
+    add_data(ORTHANC_1)
 
     yield Series(client=client, series_id=a_series.IDENTIFIER)
 

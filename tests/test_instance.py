@@ -4,7 +4,7 @@ import pytest
 
 from pyorthanc import Orthanc, Instance
 from .data import an_instance
-from .setup_server import ORTHANC_1, setup_data, clear_data
+from .setup_server import ORTHANC_1, add_data, clear_data
 
 EXPECTED_DATE = datetime(
     year=2010,
@@ -23,7 +23,7 @@ def client():
 
 @pytest.fixture
 def instance(client):
-    setup_data(ORTHANC_1)
+    add_data(ORTHANC_1)
 
     yield Instance(client=client, instance_id=an_instance.IDENTIFIER)
 

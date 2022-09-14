@@ -63,7 +63,7 @@ def stop_server_and_remove_data(orthanc: OrthancServer) -> None:
         pass
 
 
-def setup_data(orthanc: OrthancServer) -> None:
+def add_data(orthanc: OrthancServer) -> None:
     """Load test dicom files to the test Orthanc server instance."""
     headers = {'content-type': 'application/dicom'}
 

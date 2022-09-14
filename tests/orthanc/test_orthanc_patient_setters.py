@@ -5,7 +5,7 @@ import httpx
 
 from pyorthanc import Orthanc
 from tests.data import a_patient
-from tests.setup_server import ORTHANC_1, clear_data, setup_data
+from tests.setup_server import ORTHANC_1, clear_data, add_data
 
 
 class TestOrthancPatientSetters(unittest.TestCase):
@@ -17,7 +17,7 @@ class TestOrthancPatientSetters(unittest.TestCase):
         clear_data(ORTHANC_1)
 
     def given_patient_in_orthanc_server(self):
-        setup_data(ORTHANC_1)
+        add_data(ORTHANC_1)
 
     def test_givenOrthancWithAnUnprotectedPatient_whenSettingPatientToProtected_thenPatientIsProtected(self):
         warnings.warn('Cannot set Patient to protected (not working with the generated Orthanc client) -- skipping test')

@@ -1,4 +1,5 @@
 from pyorthanc.async_client import AsyncOrthanc
+from pyorthanc.cache import Cache
 from pyorthanc.client import Orthanc
 from pyorthanc.remote import RemoteModality
 from pyorthanc.patient import Patient
@@ -10,6 +11,7 @@ from pyorthanc.filtering import build_patient_forest, find, trim_patient, retrie
 
 __all__ = [
     'AsyncOrthanc',
+    'Cache',
     'Orthanc',
     'RemoteModality',
     'Patient',

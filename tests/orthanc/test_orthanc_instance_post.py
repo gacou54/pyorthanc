@@ -3,7 +3,7 @@ import unittest
 import httpx
 
 from pyorthanc import Orthanc
-from tests.setup_server import ORTHANC_1, clear_data, setup_data
+from tests.setup_server import ORTHANC_1, clear_data, add_data
 
 
 class TestOrthancInstancePosts(unittest.TestCase):
@@ -15,7 +15,7 @@ class TestOrthancInstancePosts(unittest.TestCase):
         clear_data(ORTHANC_1)
 
     def given_data_in_orthanc_server(self):
-        setup_data(ORTHANC_1)
+        add_data(ORTHANC_1)
 
     def test_givenRawDicomData_whenPostingInstances_thenInstancesIsStored(self):
         with open('tests/data/orthanc_1_test_data/RTSTRUCT.dcm', 'rb') as fh:

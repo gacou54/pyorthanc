@@ -2,12 +2,12 @@ import pytest
 
 from pyorthanc import Orthanc, Study, util
 from .data import a_study
-from .setup_server import clear_data, setup_data, ORTHANC_1
+from .setup_server import clear_data, add_data, ORTHANC_1
 
 
 @pytest.fixture
 def study():
-    setup_data(ORTHANC_1)
+    add_data(ORTHANC_1)
 
     client = Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
     yield Study(client=client, study_id=a_study.IDENTIFIER)

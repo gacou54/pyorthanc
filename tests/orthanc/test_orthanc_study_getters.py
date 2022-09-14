@@ -6,7 +6,7 @@ import httpx
 
 from pyorthanc import Orthanc
 from tests.data import a_study
-from tests.setup_server import ORTHANC_1, clear_data, setup_data
+from tests.setup_server import ORTHANC_1, clear_data, add_data
 
 
 class TestOrthancStudyGetters(unittest.TestCase):
@@ -18,7 +18,7 @@ class TestOrthancStudyGetters(unittest.TestCase):
         clear_data(ORTHANC_1)
 
     def given_patient_in_orthanc_server(self):
-        setup_data(ORTHANC_1)
+        add_data(ORTHANC_1)
 
     def test_givenOrthancWithPatient_whenGettingStudies_thenResultIsANonEmptyListOfStudyIdentifiers(self):
         self.given_patient_in_orthanc_server()
