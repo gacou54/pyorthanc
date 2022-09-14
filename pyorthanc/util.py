@@ -1,10 +1,12 @@
 from datetime import datetime
+from typing import Optional
 
 from pyorthanc.async_client import AsyncOrthanc
 from pyorthanc.client import Orthanc
 
 
-def make_datetime_from_dicom_date(date: str, time: str = None) -> datetime:
+def make_datetime_from_dicom_date(date: str, time: str = None) -> Optional[datetime]:
+    """Attempt to decode date"""
     try:
         return datetime(
             year=int(date[:4]),
@@ -15,11 +17,14 @@ def make_datetime_from_dicom_date(date: str, time: str = None) -> datetime:
             second=int(time[4:6])
         )
     except (ValueError, TypeError):
-        return datetime(
-            year=int(date[:4]),
-            month=int(date[4:6]),
-            day=int(date[6:8]),
-        )
+        try:
+            return datetime(
+                year=int(date[:4]),
+                month=int(date[4:6]),
+                day=int(date[6:8]),
+            )
+        except (ValueError, TypeError):
+            return None
 
 
 def async_to_sync(orthanc: AsyncOrthanc) -> Orthanc:
