@@ -99,7 +99,8 @@ for patient in patients:
    anonymized_patient_2 = patient.anonymize(
       keep=['PatientName'],   # You can keep/remove/replace the DICOM tags you want
       replace={'PatientID': 'TheNewPatientID'},
-      remove=['ReferringPhysicianName']
+      remove=['ReferringPhysicianName'],
+      force=True  # Needed when changing PatientID/StudyInstanceUID/SeriesInstanceUID/SOPInstanceUID
    )  
    ...
 
