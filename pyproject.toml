@@ -1,9 +1,10 @@
 [tool.poetry]
 name = "pyorthanc"
-version = "1.0.0"
+version = "1.11.1"
 description = "Orthanc REST API python wrapper with additional utilities"
 authors = ["Gabriel Couture <gacou54@gmail.com>"]
 license = "MIT"
+readme = 'README.md'
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -12,7 +13,7 @@ pydicom = "^2.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.0"
-simple-openapi-client = "^0.1.2"
+simple-openapi-client = "^0.2.0"
 pydicom = "^2.3.0"
 
 [build-system]
