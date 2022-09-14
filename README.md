@@ -6,7 +6,7 @@ of data with several cool utilities.
 
 Breaking changes
 ----------------
-PyOrthanc has been rewritten almost entirely.
+PyOrthanc has been rewritten almost entirely from `0.*.*`.
 The new `Orthanc` client is now automatically generated from `https://api.orthanc-server.com/`.
 The version `*.*.` of PyOrthanc will follow Orthanc version 
 (e.g. `pyorthanc 1.11.*` is generated from the API specification of Orthanc `1.11.*`).
@@ -110,6 +110,7 @@ for patient in patients:
       ...
 
       for series in study.series:
+         series.modality  # Should be 'RTDOSE' because of the series_filter parameters
          ...
 ```
 
