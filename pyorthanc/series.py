@@ -157,6 +157,30 @@ class Series:
 
         return Series(anonymous_series['ID'], self.client)
 
+    def get_zip(self) -> bytes:
+        """Get the bytes of the zip file
+
+        Get the .zip file.
+
+        Returns
+        -------
+        bytes
+            Bytes of Zip file of the series.
+
+        Examples
+        --------
+        >>> from pyorthanc import Orthanc, Series
+        >>> a_series = Series(
+        ...     'SERIES_IDENTIFIER',
+        ...     Orthanc('http://localhost:8042')
+        ... )
+        >>> bytes_content = a_series.get_zip()
+        >>> with open('series_zip_file_path.zip', 'wb') as file_handler:
+        ...     file_handler.write(bytes_content)
+
+        """
+        return self.client.get_series_id_archive(self.id_)
+
     def build_instances(self) -> None:
         """Build a list of the series' instances."""
 

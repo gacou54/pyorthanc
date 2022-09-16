@@ -178,6 +178,30 @@ class Study:
 
         return Study(anonymous_study['ID'], self.client)
 
+    def get_zip(self) -> bytes:
+        """Get the bytes of the zip file
+
+        Get the .zip file.
+
+        Returns
+        -------
+        bytes
+            Bytes of Zip file of the study.
+
+        Examples
+        --------
+        >>> from pyorthanc import Orthanc, Study
+        >>> a_study = Study(
+        ...     'STUDY_IDENTIFIER',
+        ...     Orthanc('http://localhost:8042')
+        ... )
+        >>> bytes_content = a_study.get_zip()
+        >>> with open('study_zip_file_path.zip', 'wb') as file_handler:
+        ...     file_handler.write(bytes_content)
+
+        """
+        return self.client.get_studies_id_archive(self.id_)
+
     def build_series(self) -> None:
         """Build a list of the study's series."""
         series_information = self.client.get_studies_id_series(self.id_)
