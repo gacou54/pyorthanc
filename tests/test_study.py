@@ -1,3 +1,6 @@
+import io
+from zipfile import ZipFile
+
 import pytest
 
 from pyorthanc import Orthanc, Study, util
@@ -38,6 +41,14 @@ def test_remote_empty_series(study):
 
     study.remove_empty_series()
     assert study.series == []
+
+
+def test_zip(study):
+    result = study.get_zip()
+
+    assert type(result) == bytes
+    zip = ZipFile(io.BytesIO(result))
+    assert zip.testzip() is None  # Verify that zip files are valid (if it is, returns None)
 
 
 def test_anonymize(study):

@@ -1,3 +1,6 @@
+import io
+from zipfile import ZipFile
+
 import pytest
 
 from pyorthanc import Orthanc, Series
@@ -30,6 +33,14 @@ def test_attributes(series):
     assert series.manufacturer == a_series.MANUFACTURER
     assert series.study_identifier == a_series.PARENT_STUDY
     assert series.instances != []
+
+
+def test_zip(series):
+    result = series.get_zip()
+
+    assert type(result) == bytes
+    zip = ZipFile(io.BytesIO(result))
+    assert zip.testzip() is None  # Verify that zip files are valid (if it is, returns None)
 
 
 def test_anonymize(series):
