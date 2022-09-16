@@ -155,7 +155,7 @@ print(answer)
 modality.move(query_response['ID'], {'TargetAet': 'target_modality'})
 ```
 
-#### Anonymize patient and get file:
+#### Anonymize patient:
 ```python
 from pyorthanc import Orthanc, Patient
 
@@ -163,7 +163,12 @@ orthanc = Orthanc('http://localhost:8042', 'username', 'password')
 
 patient_identifier = orthanc.get_patients()[0]
 
-anonymized_patient = Patient(patient_identifier, orthanc).anonymize()
+anonymized_patient = Patient(patient_identifier, orthanc).anonymize(
+    keep=['PatientName'],   # You can keep/remove/replace the DICOM tags you want
+    replace={'PatientID': 'TheNewPatientID'},
+    remove=['ReferringPhysicianName'],
+    force=True  # Needed when changing PatientID/StudyInstanceUID/SeriesInstanceUID/SOPInstanceUID
+)
 # Or directly with
 orthanc.post_patients_id_anonymize(patient_identifier)
 
@@ -173,6 +178,10 @@ orthanc.post_patients_id_anonymize(patient_identifier)
 #  'PatientID': 'dd41f2f1-24838e1e-f01746fc-9715072f-189eb0a2',
 #  'Type': 'Patient'}
 ```
+
+## Citation
+If you publish using PyOrthanc, we kindly ask that you credit us. PyOrthanc can be found on Zenodo :
+https://zenodo.org/record/7086219 .
 
 
 ## Contributing
@@ -194,4 +203,4 @@ You can contribute to this project with the following steps:
    ```
    Now you can make your changes
 5. Once done, `git add`, `git commit` and `git push` the changes.
-6. Make a Pull Request from your branch to the https://github.com/gacou54/pyorthanc.
+6. Make a Pull Request from your branch to the https://github.com/ulaval-rs/pyorthanc.
