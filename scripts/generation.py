@@ -3,12 +3,12 @@ import simple_openapi_client
 ORTHANC_API_URL = 'https://api.orthanc-server.com/orthanc-openapi.json'
 
 
-def generate_client(path: str):
-    config = simple_openapi_client.Config(client_name='Orthanc')
+def generate_client(path: str, async_mode: bool = False):
+    config = simple_openapi_client.Config(client_name='AsyncOrthanc' if async_mode else 'Orthanc')
 
     document = simple_openapi_client.parse_openapi(ORTHANC_API_URL)
     document = _apply_corrections_to_documents(document)
-    client_str = simple_openapi_client.make_client(document, config)
+    client_str = simple_openapi_client.make_client(document, config, async_mode=async_mode)
 
     with open(path, 'w') as file:
         file.write(client_str)
@@ -40,4 +40,5 @@ def _apply_corrections_to_documents(document):
 
 
 if __name__ == '__main__':
-    generate_client('../pyorthanc/client.py')
+    generate_client('../pyorthanc/client.py', async_mode=False)
+    generate_client('../pyorthanc/async_client.py', async_mode=True)
