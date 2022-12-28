@@ -1,5 +1,8 @@
 from datetime import datetime
-from typing import Optional
+from io import BytesIO
+from typing import Optional, io
+
+import pydicom
 
 from pyorthanc.async_client import AsyncOrthanc
 from pyorthanc.client import Orthanc
@@ -39,3 +42,12 @@ def sync_to_async(orthanc: Orthanc) -> AsyncOrthanc:
     async_orthanc._auth = orthanc.auth
 
     return async_orthanc
+
+
+def get_pydicom(orthanc: Orthanc, instance_identifier: str) -> pydicom.FileDataset:
+    """Get a pydicom.FileDataset from the instance's Orthanc identifier"""
+    dicom_bytes = orthanc.get_instances_id_file(instance_identifier)
+
+    return pydicom.dcmread(BytesIO(dicom_bytes))
+
+

@@ -105,13 +105,22 @@ for patient in patients:
    ...
 
    for study in patient.studies:
-      study.date  # Date as a datetime object
-      study.referring_physician_name
-      ...
+       study.date  # Date as a datetime object
+       study.referring_physician_name
+       ...
 
-      for series in study.series:
-         series.modality  # Should be 'RTDOSE' because of the series_filter parameters
-         ...
+       for series in study.series:
+           series.modality  # Should be 'RTDOSE' because of the series_filter parameters
+           ...
+           for instance in series.instances:
+               # Getting content by tag
+               instance.get_content_by_tag('ManufacturerModelName')  # == 'Pinnable3'
+               # Or
+               instance.get_content_by_tag('0008-1090')  # == 'Pinnable3'
+
+               pydicom_dataset = instance.get_pydicom()  # Retrieve the DICOM file and make a pydicom.FileDataset
+               pydicom_dataset.pixel_array  # You can access the pydicom.FileDataset attribute
+        
 ```
 
 
