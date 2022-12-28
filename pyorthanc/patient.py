@@ -241,7 +241,7 @@ class Patient:
         return Patient(anonymous_patient['ID'], self.client)
 
     def __str__(self):
-        return f'Patient(PatientID={self.patient_id}, identifier={self.identifier})'
+        return f'Patient(PatientID={self.patient_id}, identifier={self.id_})'
 
     def remove_empty_studies(self) -> None:
         """Delete empty studies."""
@@ -251,3 +251,6 @@ class Patient:
         self._studies = list(filter(
             lambda s: s.series != [], self._studies
         ))
+
+    def __repr__(self):
+        return f'Patient(PatientID={self.patient_id}, identifier={self.id_})'

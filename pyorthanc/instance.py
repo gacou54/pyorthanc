@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import Dict, Any, List
 
+import pydicom
+
 from pyorthanc import util
 from pyorthanc.client import Orthanc
 
@@ -213,6 +215,10 @@ class Instance:
             self.id_,
             json={'Remove': remove, 'Replace': replace, 'Keep': keep, 'Force': force}
         )
+
+    def get_pydicom(self) -> pydicom.FileDataset:
+        """Retrieve a pydicom.FileDataset object corresponding to the instance."""
+        return util.get_pydicom(self.client, self.id_)
 
     def __repr__(self):
         return f'Instance(identifier={self.id_})'

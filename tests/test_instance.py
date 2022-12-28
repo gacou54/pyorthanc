@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import pydicom
 import pytest
 
 from pyorthanc import Orthanc, Instance
@@ -61,3 +62,10 @@ def test_anonymize(instance):
     anonymized_instance = instance.anonymize(remove=['InstanceCreationDate'])
 
     assert type(anonymized_instance) == bytes
+
+
+def test_pydicom(instance):
+    result = instance.get_pydicom()
+
+    assert isinstance(result, pydicom.FileDataset)
+    assert result.SOPInstanceUID == an_instance.INFORMATION['MainDicomTags']['SOPInstanceUID']
