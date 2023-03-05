@@ -1,8 +1,7 @@
 import asyncio
-import copy
 import os
 import warnings
-from typing import List, Dict, Callable, Optional, Tuple, Union
+from typing import List, Dict, Callable, Optional, Union
 
 from pyorthanc.study import Study
 from pyorthanc.series import Series
@@ -27,12 +26,11 @@ def build_patient_forest(
     return find(orthanc, patient_filter, study_filter, series_filter)
 
 
-def find(orthanc_url: str,
-         auth: Tuple[str, str] = None,
-         async_mode: bool = False,
+def find(orthanc: Union[Orthanc, AsyncOrthanc],
          patient_filter: Optional[Callable] = None,
          study_filter: Optional[Callable] = None,
-         series_filter: Optional[Callable] = None) -> List[Patient]:
+         series_filter: Optional[Callable] = None,
+         instance_filter: Optional[Callable] = None) -> List[Patient]:
     """Find desired patients/Study/Series/Instance in an Orthanc server
 
     This function builds a series of tree structure.
@@ -43,44 +41,34 @@ def find(orthanc_url: str,
 
     Parameters
     ----------
-    orthanc_url
-        Orthanc server url.
-    auth
-        Tuple of username and password, if needed.
-    async_mode
+    orthanc
+        Orthanc and AsyncOrthanc object.
     patient_filter
         Patient filter (e.g. lambda patient: patient.id_ == '03HDQ99*')
     study_filter
         Study filter (e.g. lambda study: study.study_id == '*pros*')
     series_filter
         Series filter (e.g. lambda series: series.modality == 'SR')
+    instance_filter
+        Instance filter (e.g. lambda instance: instance.SOPInstance == '...')
 
     Returns
     -------
     List[Patient]
         List of patient.
     """
-    if async_mode:
-        if auth:
-            orthanc = AsyncOrthanc(url=orthanc_url, username=auth[0], password=auth[1])
-        else:
-            orthanc = AsyncOrthanc(url=orthanc_url)
-
+    if isinstance(orthanc, AsyncOrthanc):
         patients = asyncio.run(
             _async_find(
                 orthanc,
                 patient_filter,
                 study_filter,
-                series_filter
+                series_filter,
+                instance_filter
             )
         )
 
         return trim_patient(patients)
-
-    if auth:
-        orthanc = Orthanc(url=orthanc_url, username=auth[0], password=auth[1])
-    else:
-        orthanc = Orthanc(url=orthanc_url)
 
     patient_identifiers = orthanc.get_patients()
     patients = []
@@ -91,35 +79,39 @@ def find(orthanc_url: str,
             orthanc,
             patient_filter,
             study_filter,
-            series_filter
+            series_filter,
+            instance_filter
         ))
 
     return trim_patient(patients)
 
 
 async def _async_find(
-        orthanc: AsyncOrthanc,
+        async_orthanc: AsyncOrthanc,
         patient_filter: Optional[Callable] = None,
         study_filter: Optional[Callable] = None,
-        series_filter: Optional[Callable] = None) -> List[Patient]:
-    patient_identifiers = await orthanc.get_patients()
+        series_filter: Optional[Callable] = None,
+        instance_filter: Optional[Callable] = None) -> List[Patient]:
+    patient_identifiers = await async_orthanc.get_patients()
     tasks = []
 
     for patient_id in patient_identifiers:  # This ID is the Orthanc's ID, and not the PatientID
         task = asyncio.create_task(
             _async_build_patient(
                 patient_id,
-                orthanc,
+                async_orthanc,
                 patient_filter,
                 study_filter,
-                series_filter
+                series_filter,
+                instance_filter
             )
         )
         tasks.append(task)
 
     patients = await asyncio.gather(*tasks)
+    patients = list(patients)
 
-    return patients
+    return trim_patient(patients)
 
 
 def _build_patient(
@@ -127,7 +119,8 @@ def _build_patient(
         orthanc: Orthanc,
         patient_filter: Optional[Callable],
         study_filter: Optional[Callable],
-        series_filter: Optional[Callable]) -> Patient:
+        series_filter: Optional[Callable],
+        instance_filter: Optional[Callable]) -> Patient:
     patient = Patient(patient_identifier, orthanc)
 
     if patient_filter is not None:
@@ -135,28 +128,29 @@ def _build_patient(
             return patient
 
     study_information = orthanc.get_patients_id_studies(patient_identifier)
-    patient._studies = [_build_study(i, orthanc, study_filter, series_filter) for i in study_information]
+    patient._studies = [_build_study(i, orthanc, study_filter, series_filter, instance_filter) for i in study_information]
 
     return patient
 
 
 async def _async_build_patient(
         patient_identifier: str,
-        orthanc: AsyncOrthanc,
+        async_orthanc: AsyncOrthanc,
         patient_filter: Optional[Callable],
         study_filter: Optional[Callable],
-        series_filter: Optional[Callable]) -> Patient:
-    patient = Patient(patient_identifier, async_to_sync(orthanc))
+        series_filter: Optional[Callable],
+        instance_filter: Optional[Callable]) -> Patient:
+    patient = Patient(patient_identifier, async_to_sync(async_orthanc))
 
     if patient_filter is not None:
         if not patient_filter(patient):
             return patient
 
-    study_information = await orthanc.get_patients_id_studies(patient_identifier)
+    study_information = await async_orthanc.get_patients_id_studies(patient_identifier)
 
     tasks = []
     for info in study_information:
-        task = asyncio.create_task(_async_build_study(info, orthanc, study_filter, series_filter))
+        task = asyncio.create_task(_async_build_study(info, async_orthanc, study_filter, series_filter, instance_filter))
         tasks.append(task)
 
     patient._studies = await asyncio.gather(*tasks)
@@ -168,7 +162,8 @@ def _build_study(
         study_information: Dict,
         orthanc: Orthanc,
         study_filter: Optional[Callable],
-        series_filter: Optional[Callable]) -> Study:
+        series_filter: Optional[Callable],
+        instance_filter: Optional[Callable]) -> Study:
     study = Study(study_information['ID'], orthanc, study_information)
 
     if study_filter is not None:
@@ -176,7 +171,7 @@ def _build_study(
             return study
 
     series_information = orthanc.get_studies_id_series(study_information['ID'])
-    study._series = [_build_series(i, orthanc, series_filter) for i in series_information]
+    study._series = [_build_series(i, orthanc, series_filter, instance_filter) for i in series_information]
 
     return study
 
@@ -185,7 +180,8 @@ async def _async_build_study(
         study_information: Dict,
         async_orthanc: AsyncOrthanc,
         study_filter: Optional[Callable],
-        series_filter: Optional[Callable]) -> Study:
+        series_filter: Optional[Callable],
+        instance_filter: Optional[Callable]) -> Study:
     study = Study(study_information['ID'], async_to_sync(async_orthanc), study_information)
 
     if study_filter is not None:
@@ -196,7 +192,7 @@ async def _async_build_study(
 
     tasks = []
     for info in series_information:
-        task = asyncio.create_task(_async_build_series(info, async_orthanc, series_filter))
+        task = asyncio.create_task(_async_build_series(info, async_orthanc, series_filter, instance_filter))
         tasks.append(task)
 
     study._series = await asyncio.gather(*tasks)
@@ -207,7 +203,8 @@ async def _async_build_study(
 def _build_series(
         series_information: Dict,
         orthanc: Orthanc,
-        series_filter: Optional[Callable]) -> Series:
+        series_filter: Optional[Callable],
+        instance_filter: Optional[Callable]) -> Series:
     series = Series(series_information['ID'], orthanc, series_information)
 
     if series_filter is not None:
@@ -215,25 +212,39 @@ def _build_series(
             return series
 
     instance_information = orthanc.get_series_id_instances(series_information['ID'])
-    series._instances = [Instance(i['ID'], orthanc, i) for i in instance_information]
+    series._instances = [_build_instance(i, orthanc, instance_filter) for i in instance_information]
 
     return series
 
 
 async def _async_build_series(
         series_information: Dict,
-        orthanc: AsyncOrthanc,
-        series_filter: Optional[Callable]) -> Series:
-    series = Series(series_information['ID'], async_to_sync(orthanc), series_information)
+        async_orthanc: AsyncOrthanc,
+        series_filter: Optional[Callable],
+        instance_filter: Optional[Callable]) -> Series:
+    series = Series(series_information['ID'], async_to_sync(async_orthanc), series_information)
 
     if series_filter is not None:
         if not series_filter(series):
             return series
 
-    instance_information = await orthanc.get_series_id_instances(series_information['ID'])
-    series._instances = [Instance(i['ID'], async_to_sync(orthanc), i) for i in instance_information]
+    instance_information = await async_orthanc.get_series_id_instances(series_information['ID'])
+    series._instances = [_build_instance(i, async_to_sync(async_orthanc), instance_filter) for i in instance_information]
 
     return series
+
+
+def _build_instance(
+        instance_information: Dict,
+        orthanc: Orthanc,
+        instance_filter: Optional[Callable]) -> Optional[Instance]:
+    instance = Instance(instance_information['ID'], orthanc, instance_information)
+
+    if instance_filter is not None:
+        if not instance_filter(instance):
+            return  # Means that the instance did not pass the filter criteria.
+
+    return instance
 
 
 def trim_patient(patients: List[Patient]) -> List[Patient]:
@@ -254,7 +265,7 @@ def trim_patient(patients: List[Patient]) -> List[Patient]:
 
     patients = [p for p in patients if p.studies != []]
 
-    return list(patients)
+    return patients
 
 
 def retrieve_and_write_patients(patients: List[Patient], path: str) -> None:

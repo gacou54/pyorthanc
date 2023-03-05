@@ -63,3 +63,13 @@ def test_anonymize(series):
            a_series.INFORMATION['MainDicomTags']['StationName']
     assert anonymized_series.get_main_information()['MainDicomTags']['StationName'] == \
            a_series.INFORMATION['MainDicomTags']['StationName']
+
+
+def test_remote_empty_instances(series):
+    series.build_instances()
+
+    # Putting an empty instance
+    series._instances = [None]
+
+    series.remove_empty_instances()
+    assert series.instances == []
