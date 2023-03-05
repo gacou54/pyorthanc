@@ -58,7 +58,7 @@ def test_find(client, patient_filter, study_filter, series_filter, instance_filt
         assert len(study.series) == expected_nbr_of_series
 
         assert len(study.series) != 0
-        series = patients[0].studies[0].series[0]
+        series = [s for s in patients[0].studies[0].series if s.modality == 'RTDOSE'][0]  # Ensure that the correct series is selected
         assert type(series) == Series
         assert series.uid == a_series.INFORMATION['MainDicomTags']['SeriesInstanceUID']
 
@@ -102,7 +102,7 @@ def test_find_async(async_client, patient_filter, study_filter, series_filter, i
         assert len(study.series) == expected_nbr_of_series
 
         assert len(study.series) != 0
-        series = patients[0].studies[0].series[0]
+        series = [s for s in patients[0].studies[0].series if s.modality == 'RTDOSE'][0]  # Ensure that the correct series is selected
         assert type(series) == Series
         assert series.uid == a_series.INFORMATION['MainDicomTags']['SeriesInstanceUID']
 
