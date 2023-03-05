@@ -80,11 +80,11 @@ Each patient is a tree. Layers in each tree have the following structure
 that correspond to the provided filter functions.
 
 ```python
-from pyorthanc import find
+from pyorthanc import find, Orthanc
 
+orthanc = Orthanc(url='http://localhost:8042/', username='username', password='password')
 patients = find(
-    orthanc_url='http://localhost:8042/',
-    auth=('username', 'password'),
+    orthanc=orthanc,
     series_filter=lambda s: s.modality == 'RTDOSE'  # Optional: filter with pyorthanc.Series object
 )
 
