@@ -211,6 +211,9 @@ class Study:
 
     def remove_empty_series(self) -> None:
         """Delete empty series."""
+        for series in self._series:
+            series.remove_empty_instances()
+
         self._series = list(filter(
             lambda series: series.instances != [],
             self._series

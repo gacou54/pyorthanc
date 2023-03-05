@@ -189,3 +189,7 @@ class Series:
 
     def __repr__(self):
         return f'Series(identifier={self.id_})'
+
+    def remove_empty_instances(self) -> None:
+        self._instances = [i for i in self._instances if i is not None]
+
