@@ -15,7 +15,7 @@ from httpx._types import (
 class Orthanc(httpx.Client):
     """Orthanc API
 
-    version 1.11.2
+    version 1.11.3
     This is the full documentation of the [REST API](https://book.orthanc-server.com/users/rest.html) of Orthanc.<p>This reference is automatically generated from the source code of Orthanc. A [shorter cheat sheet](https://book.orthanc-server.com/users/rest-cheatsheet.html) is part of the Orthanc Book.<p>An earlier, manually crafted version from August 2019, is [still available](2019-08-orthanc-openapi.html), but is not up-to-date anymore ([source](https://groups.google.com/g/orthanc-users/c/NUiJTEICSl8/m/xKeqMrbqAAAJ)).
     
     """
@@ -29,7 +29,7 @@ class Orthanc(httpx.Client):
         """
         super().__init__()
         self.url = url
-        self.version = '1.11.2'
+        self.version = '1.11.3'
 
         if username and password:
             self.setup_credentials(username, password)
@@ -407,6 +407,7 @@ class Orthanc(httpx.Client):
             "PrivateCreator": The private creator to be used for private tags in `Replace`
             "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
             "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -2634,10 +2635,13 @@ class Orthanc(httpx.Client):
         json
             Dictionary with the following keys:
             "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
+            "CalledAet": Called AET that is used for this commands, defaults to `AET` configuration option. Allows you to overwrite the destination AET for a specific operation.
+            "Host": Host that is used for this commands, defaults to `Host` configuration option. Allows you to overwrite the destination host for a specific operation.
             "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option. Ignored if `DicomModalities` already sets `LocalAet` for this modality.
             "MoveOriginatorAet": Move originator AET that is used for this commands, in order to fake a C-MOVE SCU
             "MoveOriginatorID": Move originator ID that is used for this commands, in order to fake a C-MOVE SCU
             "Permissive": If `true`, ignore errors during the individual steps of the job.
+            "Port": Port that is used for this commands, defaults to `Port` configuration option. Allows you to overwrite the destination port for a specific operation.
             "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
             "Resources": List of the Orthanc identifiers of all the DICOM resources to be sent
             "StorageCommitment": Whether to chain C-STORE with DICOM storage commitment to validate the success of the transmission: https://book.orthanc-server.com/users/storage-commitment.html#chaining-c-store-with-storage-commitment
@@ -2799,6 +2803,7 @@ class Orthanc(httpx.Client):
             "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
             "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
             "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+            "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -4673,6 +4678,7 @@ class Orthanc(httpx.Client):
             "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
             "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
             "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+            "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -5909,6 +5915,7 @@ class Orthanc(httpx.Client):
             "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
             "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
             "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+            "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -7135,6 +7142,7 @@ class Orthanc(httpx.Client):
             "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
             "Resources": List of the Orthanc identifiers of the patients/studies/series/instances of interest.
             "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+            "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
