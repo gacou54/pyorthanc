@@ -15,7 +15,7 @@ from httpx._types import (
 class Orthanc(httpx.Client):
     """Orthanc API
 
-    version 1.11.3
+    version 1.12.1
     This is the full documentation of the [REST API](https://book.orthanc-server.com/users/rest.html) of Orthanc.<p>This reference is automatically generated from the source code of Orthanc. A [shorter cheat sheet](https://book.orthanc-server.com/users/rest-cheatsheet.html) is part of the Orthanc Book.<p>An earlier, manually crafted version from August 2019, is [still available](2019-08-orthanc-openapi.html), but is not up-to-date anymore ([source](https://groups.google.com/g/orthanc-users/c/NUiJTEICSl8/m/xKeqMrbqAAAJ)).
     
     """
@@ -29,7 +29,7 @@ class Orthanc(httpx.Client):
         """
         super().__init__()
         self.url = url
-        self.version = '1.11.3'
+        self.version = '1.12.1'
 
         if username and password:
             self.setup_credentials(username, password)
@@ -890,7 +890,7 @@ class Orthanc(httpx.Client):
             ) -> Union[Dict, List, str, bytes, int]:
         """Write DICOM onto filesystem
 
-        Write the DICOM file onto the filesystem where Orthanc is running
+        Write the DICOM file onto the filesystem where Orthanc is running.  This is insecure for Orthanc servers that are remotely accessible since one could overwrite any system file.  Since Orthanc 1.12.0, this route is disabled by default, but can be enabled using the `RestApiWriteToFileSystemEnabled` configuration option.
         Tags: Instances
 
         Parameters
@@ -1443,6 +1443,109 @@ class Orthanc(httpx.Client):
             headers=headers,
             )
 
+    def get_instances_id_labels(
+            self,
+            id_: str,
+            ) -> Union[Dict, List, str, bytes, int]:
+        """List labels
+
+        Get the labels that are associated with the given instance (new in Orthanc 1.12.0)
+        Tags: Instances
+
+        Parameters
+        ----------
+        id_
+            Orthanc identifier of the instance of interest
+        
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int]
+            JSON array containing the names of the labels
+        """
+        return self._get(
+            route=f'{self.url}/instances/{id_}/labels',
+            )
+
+    def delete_instances_id_labels_label(
+            self,
+            id_: str,
+            label: str,
+            ) -> None:
+        """Remove label
+
+        Remove a label associated with a instance
+        Tags: Instances
+
+        Parameters
+        ----------
+        label
+            The label to be removed
+        id_
+            Orthanc identifier of the instance of interest
+        
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int]
+        """
+        return self._delete(
+            route=f'{self.url}/instances/{id_}/labels/{label}',
+            )
+
+    def get_instances_id_labels_label(
+            self,
+            id_: str,
+            label: str,
+            ) -> Union[Dict, List, str, bytes, int]:
+        """Test label
+
+        Test whether the instance is associated with the given label
+        Tags: Instances
+
+        Parameters
+        ----------
+        label
+            The label of interest
+        id_
+            Orthanc identifier of the instance of interest
+        
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int]
+            Empty string is returned in the case of presence, error 404 in the case of absence
+        """
+        return self._get(
+            route=f'{self.url}/instances/{id_}/labels/{label}',
+            )
+
+    def put_instances_id_labels_label(
+            self,
+            id_: str,
+            label: str,
+            ) -> None:
+        """Add label
+
+        Associate a label with a instance
+        Tags: Instances
+
+        Parameters
+        ----------
+        label
+            The label to be added
+        id_
+            Orthanc identifier of the instance of interest
+        
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int]
+        """
+        return self._put(
+            route=f'{self.url}/instances/{id_}/labels/{label}',
+            )
+
     def get_instances_id_matlab(
             self,
             id_: str,
@@ -1484,6 +1587,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
             "expand" (str): If present, also retrieve the value of the individual metadata
+            "numeric" (str): If present, use the numeric identifier of the metadata instead of its symbolic name
 
         Returns
         -------
@@ -2137,6 +2241,32 @@ class Orthanc(httpx.Client):
             route=f'{self.url}/jobs/{id_}/resume',
             )
 
+    def delete_jobs_id_key(
+            self,
+            id_: str,
+            key: str,
+            ) -> None:
+        """Delete a job output
+
+        Delete the output produced by a job. As of Orthanc 1.12.1, only the jobs that generate a DICOMDIR media or a ZIP archive provide such an output (with `key` equals to `archive`).
+        Tags: Jobs
+
+        Parameters
+        ----------
+        key
+            Name of the output of interest
+        id_
+            Identifier of the job of interest
+        
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int]
+        """
+        return self._delete(
+            route=f'{self.url}/jobs/{id_}/{key}',
+            )
+
     def get_jobs_id_key(
             self,
             id_: str,
@@ -2641,7 +2771,7 @@ class Orthanc(httpx.Client):
             "MoveOriginatorAet": Move originator AET that is used for this commands, in order to fake a C-MOVE SCU
             "MoveOriginatorID": Move originator ID that is used for this commands, in order to fake a C-MOVE SCU
             "Permissive": If `true`, ignore errors during the individual steps of the job.
-            "Port": Port that is used for this commands, defaults to `Port` configuration option. Allows you to overwrite the destination port for a specific operation.
+            "Port": Port that is used for this command, defaults to `Port` configuration option. Allows you to overwrite the destination port for a specific operation.
             "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
             "Resources": List of the Orthanc identifiers of all the DICOM resources to be sent
             "StorageCommitment": Whether to chain C-STORE with DICOM storage commitment to validate the success of the transmission: https://book.orthanc-server.com/users/storage-commitment.html#chaining-c-store-with-storage-commitment
@@ -3402,6 +3532,109 @@ class Orthanc(httpx.Client):
             params=params,
             )
 
+    def get_patients_id_labels(
+            self,
+            id_: str,
+            ) -> Union[Dict, List, str, bytes, int]:
+        """List labels
+
+        Get the labels that are associated with the given patient (new in Orthanc 1.12.0)
+        Tags: Patients
+
+        Parameters
+        ----------
+        id_
+            Orthanc identifier of the patient of interest
+        
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int]
+            JSON array containing the names of the labels
+        """
+        return self._get(
+            route=f'{self.url}/patients/{id_}/labels',
+            )
+
+    def delete_patients_id_labels_label(
+            self,
+            id_: str,
+            label: str,
+            ) -> None:
+        """Remove label
+
+        Remove a label associated with a patient
+        Tags: Patients
+
+        Parameters
+        ----------
+        label
+            The label to be removed
+        id_
+            Orthanc identifier of the patient of interest
+        
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int]
+        """
+        return self._delete(
+            route=f'{self.url}/patients/{id_}/labels/{label}',
+            )
+
+    def get_patients_id_labels_label(
+            self,
+            id_: str,
+            label: str,
+            ) -> Union[Dict, List, str, bytes, int]:
+        """Test label
+
+        Test whether the patient is associated with the given label
+        Tags: Patients
+
+        Parameters
+        ----------
+        label
+            The label of interest
+        id_
+            Orthanc identifier of the patient of interest
+        
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int]
+            Empty string is returned in the case of presence, error 404 in the case of absence
+        """
+        return self._get(
+            route=f'{self.url}/patients/{id_}/labels/{label}',
+            )
+
+    def put_patients_id_labels_label(
+            self,
+            id_: str,
+            label: str,
+            ) -> None:
+        """Add label
+
+        Associate a label with a patient
+        Tags: Patients
+
+        Parameters
+        ----------
+        label
+            The label to be added
+        id_
+            Orthanc identifier of the patient of interest
+        
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int]
+        """
+        return self._put(
+            route=f'{self.url}/patients/{id_}/labels/{label}',
+            )
+
     def get_patients_id_media(
             self,
             id_: str,
@@ -3484,6 +3717,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
             "expand" (str): If present, also retrieve the value of the individual metadata
+            "numeric" (str): If present, use the numeric identifier of the metadata instead of its symbolic name
 
         Returns
         -------
@@ -5277,6 +5511,109 @@ class Orthanc(httpx.Client):
             params=params,
             )
 
+    def get_series_id_labels(
+            self,
+            id_: str,
+            ) -> Union[Dict, List, str, bytes, int]:
+        """List labels
+
+        Get the labels that are associated with the given series (new in Orthanc 1.12.0)
+        Tags: Series
+
+        Parameters
+        ----------
+        id_
+            Orthanc identifier of the series of interest
+        
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int]
+            JSON array containing the names of the labels
+        """
+        return self._get(
+            route=f'{self.url}/series/{id_}/labels',
+            )
+
+    def delete_series_id_labels_label(
+            self,
+            id_: str,
+            label: str,
+            ) -> None:
+        """Remove label
+
+        Remove a label associated with a series
+        Tags: Series
+
+        Parameters
+        ----------
+        label
+            The label to be removed
+        id_
+            Orthanc identifier of the series of interest
+        
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int]
+        """
+        return self._delete(
+            route=f'{self.url}/series/{id_}/labels/{label}',
+            )
+
+    def get_series_id_labels_label(
+            self,
+            id_: str,
+            label: str,
+            ) -> Union[Dict, List, str, bytes, int]:
+        """Test label
+
+        Test whether the series is associated with the given label
+        Tags: Series
+
+        Parameters
+        ----------
+        label
+            The label of interest
+        id_
+            Orthanc identifier of the series of interest
+        
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int]
+            Empty string is returned in the case of presence, error 404 in the case of absence
+        """
+        return self._get(
+            route=f'{self.url}/series/{id_}/labels/{label}',
+            )
+
+    def put_series_id_labels_label(
+            self,
+            id_: str,
+            label: str,
+            ) -> None:
+        """Add label
+
+        Associate a label with a series
+        Tags: Series
+
+        Parameters
+        ----------
+        label
+            The label to be added
+        id_
+            Orthanc identifier of the series of interest
+        
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int]
+        """
+        return self._put(
+            route=f'{self.url}/series/{id_}/labels/{label}',
+            )
+
     def get_series_id_media(
             self,
             id_: str,
@@ -5359,6 +5696,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
             "expand" (str): If present, also retrieve the value of the individual metadata
+            "numeric" (str): If present, use the numeric identifier of the metadata instead of its symbolic name
 
         Returns
         -------
@@ -6514,6 +6852,109 @@ class Orthanc(httpx.Client):
             params=params,
             )
 
+    def get_studies_id_labels(
+            self,
+            id_: str,
+            ) -> Union[Dict, List, str, bytes, int]:
+        """List labels
+
+        Get the labels that are associated with the given study (new in Orthanc 1.12.0)
+        Tags: Studies
+
+        Parameters
+        ----------
+        id_
+            Orthanc identifier of the study of interest
+        
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int]
+            JSON array containing the names of the labels
+        """
+        return self._get(
+            route=f'{self.url}/studies/{id_}/labels',
+            )
+
+    def delete_studies_id_labels_label(
+            self,
+            id_: str,
+            label: str,
+            ) -> None:
+        """Remove label
+
+        Remove a label associated with a study
+        Tags: Studies
+
+        Parameters
+        ----------
+        label
+            The label to be removed
+        id_
+            Orthanc identifier of the study of interest
+        
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int]
+        """
+        return self._delete(
+            route=f'{self.url}/studies/{id_}/labels/{label}',
+            )
+
+    def get_studies_id_labels_label(
+            self,
+            id_: str,
+            label: str,
+            ) -> Union[Dict, List, str, bytes, int]:
+        """Test label
+
+        Test whether the study is associated with the given label
+        Tags: Studies
+
+        Parameters
+        ----------
+        label
+            The label of interest
+        id_
+            Orthanc identifier of the study of interest
+        
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int]
+            Empty string is returned in the case of presence, error 404 in the case of absence
+        """
+        return self._get(
+            route=f'{self.url}/studies/{id_}/labels/{label}',
+            )
+
+    def put_studies_id_labels_label(
+            self,
+            id_: str,
+            label: str,
+            ) -> None:
+        """Add label
+
+        Associate a label with a study
+        Tags: Studies
+
+        Parameters
+        ----------
+        label
+            The label to be added
+        id_
+            Orthanc identifier of the study of interest
+        
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int]
+        """
+        return self._put(
+            route=f'{self.url}/studies/{id_}/labels/{label}',
+            )
+
     def get_studies_id_media(
             self,
             id_: str,
@@ -6631,6 +7072,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
             "expand" (str): If present, also retrieve the value of the individual metadata
+            "numeric" (str): If present, use the numeric identifier of the metadata instead of its symbolic name
 
         Returns
         -------
@@ -7297,7 +7739,7 @@ class Orthanc(httpx.Client):
         ----------
         json
             Dictionary with the following keys:
-            "Content": This field can be used to embed an image (pixel data) or a PDF inside the created DICOM instance. The PNG image, the JPEG image or the PDF file must be provided using their [data URI scheme encoding](https://en.wikipedia.org/wiki/Data_URI_scheme). This field can possibly contain a JSON array, in which case a DICOM series is created containing one DICOM instance for each item in the `Content` field.
+            "Content": This field can be used to embed an image (pixel data encoded as PNG or JPEG), a PDF, or a 3D manufactoring model (MTL/OBJ/STL) inside the created DICOM instance. The file to be encapsulated must be provided using its [data URI scheme encoding](https://en.wikipedia.org/wiki/Data_URI_scheme). This field can possibly contain a JSON array, in which case a DICOM series is created containing one DICOM instance for each item in the `Content` field.
             "Force": Avoid the consistency checks for the DICOM tags that enforce the DICOM model of the real-world. You can notably use this flag if you need to manually set the tags `StudyInstanceUID`, `SeriesInstanceUID`, or `SOPInstanceUID`. Be careful with this feature.
             "InterpretBinaryTags": If some value in the `Tags` associative array is formatted according to some [data URI scheme encoding](https://en.wikipedia.org/wiki/Data_URI_scheme), whether this value is decoded to a binary value or kept as such (`true` by default)
             "Parent": If present, the newly created instance will be attached to the parent DICOM resource whose Orthanc identifier is contained in this field. The DICOM tags of the parent modules in the DICOM hierarchy will be automatically copied to the newly created instance.
@@ -7487,7 +7929,7 @@ class Orthanc(httpx.Client):
             ) -> Union[Dict, List, str, bytes, int]:
         """Execute Lua script
 
-        Execute the provided Lua script by the Orthanc server. This is very insecure for Orthanc servers that are remotely accessible, cf. configuration option `ExecuteLuaEnabled`
+        Execute the provided Lua script by the Orthanc server. This is very insecure for Orthanc servers that are remotely accessible.  Since Orthanc 1.5.8, this route is disabled by default and can be enabled thanks to the `ExecuteLuaEnabled` configuration.
         Tags: System
 
         Parameters
@@ -7523,6 +7965,8 @@ class Orthanc(httpx.Client):
             "CaseSensitive": Enable case-sensitive search for PN value representations (defaults to configuration option `CaseSensitivePN`)
             "Expand": Also retrieve the content of the matching resources, not only their Orthanc identifiers
             "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "Labels": List of strings specifying which labels to look for in the resources (new in Orthanc 1.12.0)
+            "LabelsConstraint": Constraint on the labels, can be `All`, `Any`, or `None` (defaults to `All`, new in Orthanc 1.12.0)
             "Level": Level of the query (`Patient`, `Study`, `Series` or `Instance`)
             "Limit": Limit the number of reported resources
             "Query": Associative array containing the filter on the values of the DICOM tags
@@ -7585,6 +8029,27 @@ class Orthanc(httpx.Client):
         """
         return self._post(
             route=f'{self.url}/tools/invalid_ate-tags',
+            )
+
+    def get_tools_labels(
+            self,
+            ) -> Union[Dict, List, str, bytes, int]:
+        """Get all the used labels
+
+        List all the labels that are associated with any resource of the Orthanc database
+        Tags: System
+
+        Parameters
+        ----------
+        
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int]
+            JSON array containing the labels
+        """
+        return self._get(
+            route=f'{self.url}/tools/labels',
             )
 
     def get_tools_log_level(
