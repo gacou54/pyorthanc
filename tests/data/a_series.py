@@ -12,6 +12,7 @@ INFORMATION = {
     'ID': IDENTIFIER,
     'Instances': INSTANCES,
     'IsStable': False,
+    'Labels': [],
     'LastUpdate': '20190916T131815',
     'MainDicomTags': {
         'ImageOrientationPatient': '1\\0\\0\\0\\1\\0',

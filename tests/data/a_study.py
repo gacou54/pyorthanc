@@ -22,6 +22,7 @@ SERIES = [
 INFORMATION = {
     'ID': IDENTIFIER,
     'IsStable': False,
+    'Labels': [],
     'LastUpdate': '20190913T185658',
     'MainDicomTags': {
         'AccessionNumber': '',
@@ -43,6 +44,7 @@ INSTANCES = [
         'FileUuid': '6b20abc4-67af-4d2b-b537-b0ee3b35b4df',
         'ID': 'da2024f5-606f9e83-41b012bb-9dced1ea-77bcd599',
         'IndexInSeries': None,
+        'Labels': [],
         'MainDicomTags': {
             'InstanceCreationDate': '20100301',
             'InstanceCreationTime': '170155',
@@ -56,6 +58,7 @@ INSTANCES = [
         'FileUuid': '89b19e2c-9bfb-4751-a539-d54ac9a3d912',
         'ID': '348befe7-5be5ff53-70120381-3baa0cc2-e4e04220',
         'IndexInSeries': None,
+        'Labels': [],
         'MainDicomTags': {
             'InstanceCreationDate': '20100301',
             'InstanceCreationTime': '170155',
@@ -69,6 +72,7 @@ INSTANCES = [
         'FileUuid': '0aa5b638-7531-4863-a23f-7695aa1577ef',
         'ID': '22dcf059-8fd3ade7-efb39ca3-7f46b248-0200abc9',
         'IndexInSeries': 1,
+        'Labels': [],
         'MainDicomTags': {
             'ImageOrientationPatient': '1\\0\\0\\0\\1\\0',
             'ImagePositionPatient': '-223.9880065918\\-158.08148193359\\-117.78499603271',

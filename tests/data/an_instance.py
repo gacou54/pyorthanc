@@ -8,6 +8,7 @@ INFORMATION = {
     'FileSize': FILE_SIZE,
     'FileUuid': '3fd3d1c3-0a10-4832-b20a-d48ca7116835',
     'ID': IDENTIFIER,
+    'Labels': [],
     'IndexInSeries': 1,
     'MainDicomTags': {
         'ImageOrientationPatient': '1\\0\\0\\0\\1\\0',
