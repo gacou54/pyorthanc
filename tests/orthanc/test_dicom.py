@@ -8,6 +8,7 @@ PAYLOAD = {'Level': 'Study', 'Query': {'PatientID': 'MP*'}}
 PATIENT_INFORMATION = {
     'ID': '50610f37-9df85809-faaec921-9c829c41-e5261ca2',
     'IsStable': False,
+    'Labels': [],
     'LastUpdate': 'THIS_ALWAYS_VARY',
     'MainDicomTags': {
         'PatientBirthDate': '',
