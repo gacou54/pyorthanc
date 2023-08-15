@@ -1,35 +1,29 @@
-import unittest
-
 import httpx
-
-from pyorthanc import Orthanc
-from tests.setup_server import ORTHANC_1, clear_data, setup_data
+import pytest
 
 
-class TestOrthancInstancePosts(unittest.TestCase):
+@pytest.fixture
+def instance_bytes():
+    with open('tests/data/orthanc_1_test_data/RTSTRUCT.dcm', 'rb') as fh:
+        return fh.read()
 
-    def setUp(self) -> None:
-        self.orthanc = Orthanc(ORTHANC_1.url, username=ORTHANC_1.username, password=ORTHANC_1.password)
 
-    def tearDown(self) -> None:
-        clear_data(ORTHANC_1)
+@pytest.fixture
+def bad_instance_bytes():
+    with open('tests/__init__.py', 'rb') as fh:
+        return fh.read()
 
-    def given_data_in_orthanc_server(self):
-        setup_data(ORTHANC_1)
 
-    def test_givenRawDicomData_whenPostingInstances_thenInstancesIsStored(self):
-        with open('tests/data/orthanc_1_test_data/RTSTRUCT.dcm', 'rb') as fh:
-            data = fh.read()
+def test_post_instance(client, instance_bytes):
+    result = client.post_instances(instance_bytes)
 
-        self.orthanc.post_instances(data)
+    assert 'ID' in result
+    assert 'ParentPatient' in result
+    assert 'ParentStudy' in result
+    assert 'ParentSeries' in result
+    assert len(client.get_instances()) == 1
 
-        self.assertEqual(len(self.orthanc.get_instances()), 1)
 
-    def test_givenBadDicomData_whenPostingInstances_thenInstancesIsStored(self):
-        with open('./tests/__init__.py', 'rb') as fh:
-            data = fh.read()
-
-        self.assertRaises(
-            httpx.HTTPError,
-            lambda: self.orthanc.post_instances(data)
-        )
+def test_post_instance_with_bad_data(client, bad_instance_bytes):
+    with pytest.raises(httpx.HTTPError):
+        client.post_instances(bad_instance_bytes)
