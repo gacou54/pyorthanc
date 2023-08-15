@@ -1,7 +1,5 @@
 import os
 import dataclasses
-import time
-import shutil
 import subprocess
 
 import httpx
@@ -35,32 +33,6 @@ ORTHANC_2 = OrthancServer(
     config_path='./tests/data/config/config-2.json',
     test_data_path='./tests/data/orthanc_2_test_data',
 )
-
-
-def start_server(orthanc: OrthancServer) -> OrthancServer:
-    """Start an Orthanc server."""
-    orthanc.process = subprocess.Popen(['Orthanc', orthanc.config_path], stderr=subprocess.DEVNULL)
-
-    ready = False
-    while not ready:
-        try:
-            httpx.get(f'{orthanc.url}/patients').json()
-            ready = True
-        except httpx.HTTPError:
-            time.sleep(0.05)  # Time to ensure that the server has started
-
-    return orthanc
-
-
-def stop_server_and_remove_data(orthanc: OrthancServer) -> None:
-    """Stop the test orthanc server and remove its data directory."""
-    orthanc.process.kill()
-    orthanc.process.wait()
-
-    try:
-        shutil.rmtree(orthanc.storage_path)
-    except FileNotFoundError:
-        pass
 
 
 def setup_data(orthanc: OrthancServer) -> None:
