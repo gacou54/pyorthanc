@@ -1,8 +1,8 @@
 import pytest
 
-from pyorthanc import Orthanc, AsyncOrthanc
+from pyorthanc import Orthanc, AsyncOrthanc, RemoteModality
 
-from .setup_server import ORTHANC_1, setup_data, clear_data, ORTHANC_2
+from .setup_server import ORTHANC_1, setup_data, clear_data, ORTHANC_2, add_modality
 
 
 @pytest.fixture
@@ -45,3 +45,13 @@ def async_client_with_data(async_client):
     setup_data(ORTHANC_1)
 
     return async_client
+
+
+@pytest.fixture
+def modality(client, second_client):
+    if ORTHANC_2.AeT not in client.get_modalities():
+        add_modality(ORTHANC_1, ORTHANC_2.AeT, 'orthanc2', 4242)
+        add_modality(ORTHANC_2, ORTHANC_1.AeT, 'orthanc1', 4242)
+
+    return RemoteModality(client, ORTHANC_2.AeT)
+
