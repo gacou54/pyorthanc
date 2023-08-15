@@ -3,19 +3,13 @@ from zipfile import ZipFile
 
 import pytest
 
-from pyorthanc import Orthanc, Patient
+from pyorthanc import Patient
 from .data import a_patient
-from .setup_server import ORTHANC_1, clear_data, setup_data
 
 
 @pytest.fixture
-def patient():
-    setup_data(ORTHANC_1)
-
-    client = Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
-    yield Patient(client=client, patient_id=client.get_patients()[0])
-
-    clear_data(ORTHANC_1)
+def patient(client_with_data):
+    return Patient(client=client_with_data, patient_id=client_with_data.get_patients()[0])
 
 
 def test_attributes(patient):
@@ -35,8 +29,8 @@ def test_zip(patient):
     result = patient.get_zip()
 
     assert type(result) == bytes
-    zip = ZipFile(io.BytesIO(result))
-    assert zip.testzip() is None  # Verify that zip files are valid (if it is, returns None)
+    zipfile = ZipFile(io.BytesIO(result))
+    assert zipfile.testzip() is None  # Verify that zip files are valid (if it is, returns None)
 
 
 def test_patient_module(patient):

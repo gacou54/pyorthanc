@@ -3,23 +3,13 @@ from zipfile import ZipFile
 
 import pytest
 
-from pyorthanc import Orthanc, Series
+from pyorthanc import Series
 from .data import a_series
-from .setup_server import ORTHANC_1, clear_data, setup_data
 
 
 @pytest.fixture
-def client():
-    return Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
-
-
-@pytest.fixture
-def series(client):
-    setup_data(ORTHANC_1)
-
-    yield Series(client=client, series_id=a_series.IDENTIFIER)
-
-    clear_data(ORTHANC_1)
+def series(client_with_data):
+    return Series(client=client_with_data, series_id=a_series.IDENTIFIER)
 
 
 def test_attributes(series):
@@ -39,8 +29,8 @@ def test_zip(series):
     result = series.get_zip()
 
     assert type(result) == bytes
-    zip = ZipFile(io.BytesIO(result))
-    assert zip.testzip() is None  # Verify that zip files are valid (if it is, returns None)
+    zipfile = ZipFile(io.BytesIO(result))
+    assert zipfile.testzip() is None  # Verify that zip files are valid (if it is, returns None)
 
 
 def test_anonymize(series):

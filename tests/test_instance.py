@@ -3,9 +3,8 @@ from datetime import datetime
 import pydicom
 import pytest
 
-from pyorthanc import Orthanc, Instance
+from pyorthanc import Instance
 from .data import an_instance
-from .setup_server import ORTHANC_1, setup_data, clear_data
 
 EXPECTED_DATE = datetime(
     year=2010,
@@ -18,17 +17,8 @@ EXPECTED_DATE = datetime(
 
 
 @pytest.fixture
-def client():
-    return Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
-
-
-@pytest.fixture
-def instance(client):
-    setup_data(ORTHANC_1)
-
-    yield Instance(client=client, instance_id=an_instance.IDENTIFIER)
-
-    clear_data(ORTHANC_1)
+def instance(client_with_data):
+    return Instance(client=client_with_data, instance_id=an_instance.IDENTIFIER)
 
 
 def test_attributes(instance):

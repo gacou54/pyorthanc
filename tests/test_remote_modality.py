@@ -1,8 +1,8 @@
 import httpx
 import pytest
 
-from pyorthanc import Orthanc, RemoteModality
-from .setup_server import ORTHANC_1, ORTHANC_2, clear_data, setup_data, add_modality
+from pyorthanc import RemoteModality
+from .setup_server import ORTHANC_1, ORTHANC_2, setup_data, add_modality
 
 MODALITY = 'Orthanc2'
 PAYLOAD = {'Level': 'Study', 'Query': {'PatientID': 'MP*'}}
@@ -23,14 +23,7 @@ PATIENT_INFORMATION = {
 
 
 @pytest.fixture
-def client():
-    yield Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
-    clear_data(ORTHANC_1)
-    clear_data(ORTHANC_2)
-
-
-@pytest.fixture
-def modality(client):
+def modality(client, second_client):
     if ORTHANC_2.AeT not in client.get_modalities():
         add_modality(ORTHANC_1, ORTHANC_2.AeT, 'orthanc2', 4242)
         add_modality(ORTHANC_2, ORTHANC_1.AeT, 'orthanc1', 4242)

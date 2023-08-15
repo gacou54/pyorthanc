@@ -4,32 +4,17 @@ import pydicom
 import pytest
 
 from pyorthanc import Orthanc, AsyncOrthanc, util
-from tests.setup_server import ORTHANC_1, setup_data, clear_data
 from tests.data import an_instance
 
 
-@pytest.fixture
-def orthanc() -> Orthanc:
-    setup_data(ORTHANC_1)
-
-    yield Orthanc(url=ORTHANC_1.url, username=ORTHANC_1.username, password=ORTHANC_1.password)
-
-    clear_data(ORTHANC_1)
-
-
-@pytest.fixture
-def async_orthanc() -> AsyncOrthanc:
-    return AsyncOrthanc(url=ORTHANC_1.url)
-
-
-def test_async_to_sync(async_orthanc):
-    result = util.async_to_sync(async_orthanc)
+def test_async_to_sync(async_client):
+    result = util.async_to_sync(async_client)
 
     assert isinstance(result, Orthanc)
 
 
-def test_sync_to_async(orthanc):
-    result = util.sync_to_async(orthanc)
+def test_sync_to_async(client_with_data):
+    result = util.sync_to_async(client_with_data)
 
     assert isinstance(result, AsyncOrthanc)
 
@@ -46,8 +31,8 @@ def test_make_datetime_from_dicom_date(date_str, time_str, expected):
     assert result == expected
 
 
-def test_get_pydicom(orthanc):
-    result = util.get_pydicom(orthanc, an_instance.IDENTIFIER)
+def test_get_pydicom(client_with_data):
+    result = util.get_pydicom(client_with_data, an_instance.IDENTIFIER)
 
     assert isinstance(result, pydicom.FileDataset)
     assert result.SOPInstanceUID == an_instance.INFORMATION['MainDicomTags']['SOPInstanceUID']
