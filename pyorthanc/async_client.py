@@ -20,16 +20,25 @@ class AsyncOrthanc(httpx.AsyncClient):
     
     """
 
-    def __init__(self, url: str, username: Optional[str] = None, password: Optional[str] = None, headers: Optional[HeaderTypes] = None):
+    def __init__(self, url: str, username: Optional[str] = None, password: Optional[str] = None, headers: Optional[HeaderTypes] = None, return_raw_response: bool = False):
         """
         Parameters
         ----------
         url
             server's URL
+        username
+            Orthanc's username
+        password
+            Orthanc's password
+        headers
+            Headers that will be share in all requests
+        return_raw_response
+            All Orthanc's methods will return que raw httpx.Response rather than the serialized
         """
         super().__init__()
         self.url = url
         self.version = '1.12.1'
+        self.return_raw_response = return_raw_response
 
         if username and password:
             self.setup_credentials(username, password)
@@ -45,7 +54,7 @@ class AsyncOrthanc(httpx.AsyncClient):
                    route: str,
                    params: Optional[QueryParamTypes] = None,
                    headers: Optional[HeaderTypes] = None,
-                   cookies: Optional[CookieTypes] = None) -> Union[Dict, List, str, bytes, int]:
+                   cookies: Optional[CookieTypes] = None) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """GET request with specified route
 
         Parameters
@@ -60,10 +69,13 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
-            Serialized response of the HTTP GET request.
+        Union[Dict, List, str, bytes, int, httpx.Response]
+            Serialized response of the HTTP GET request or httpx.Response.
         """
         response = await self.get(url=route, params=params, headers=headers, cookies=cookies)
+
+        if self.return_raw_response:
+            return response
 
         if 200 <= response.status_code < 300:
             if 'application/json' in response.headers['content-type']:
@@ -79,7 +91,7 @@ class AsyncOrthanc(httpx.AsyncClient):
                       route: str,
                       params: Optional[QueryParamTypes] = None,
                       headers: Optional[HeaderTypes] = None,
-                      cookies: Optional[CookieTypes] = None) -> None:
+                      cookies: Optional[CookieTypes] = None) -> Optional[httpx.Response]:
         """DELETE to specified route
 
         Parameters
@@ -94,10 +106,13 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        None
-            If the HTTP DELETE request fails, HTTPError is raised.
+        Optional[httpx.Response]
+            If the HTTP DELETE request fails, HTTPError is raised, or return httpx.Response.
         """
         response = await self.delete(route, params=params, headers=headers, cookies=cookies)
+
+        if self.return_raw_response:
+            return response
 
         if 200 <= response.status_code < 300:
             return
@@ -112,7 +127,7 @@ class AsyncOrthanc(httpx.AsyncClient):
                     json: Optional[Any] = None,
                     params: Optional[QueryParamTypes] = None,
                     headers: Optional[HeaderTypes] = None,
-                    cookies: Optional[CookieTypes] = None) -> Union[Dict, List, str, bytes, int]:
+                    cookies: Optional[CookieTypes] = None) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """POST to specified route
 
         Parameters
@@ -130,10 +145,13 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
-            Serialized response of the HTTP POST request.
+        Union[Dict, List, str, bytes, int, httpx.Response]
+            Serialized response of the HTTP POST request or httpx.Response.
         """
         response = await self.post(route, content=content, data=data, files=files, json=json, params=params, headers=headers, cookies=cookies)
+
+        if self.return_raw_response:
+            return response
 
         if 200 <= response.status_code < 300:
             if 'application/json' in response.headers['content-type']:
@@ -153,7 +171,7 @@ class AsyncOrthanc(httpx.AsyncClient):
                    json: Optional[Any] = None,
                    params: Optional[QueryParamTypes] = None,
                    headers: Optional[HeaderTypes] = None,
-                   cookies: Optional[CookieTypes] = None) -> None:
+                   cookies: Optional[CookieTypes] = None) -> Optional[httpx.Response]:
         """PUT to specified route
 
         Parameters
@@ -171,10 +189,13 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        None
-            If the HTTP PUT request fails, HTTPError is raised.
+        Optional[httpx.Response]
+            If the HTTP PUT request fails, HTTPError is raised, or return httpx.Response.
         """
         response = await self.put(route, content=content, data=data, files=files, json=json, params=params, headers=headers, cookies=cookies)
+
+        if self.return_raw_response:
+            return response
 
         if 200 <= response.status_code < 300:
             return
@@ -183,7 +204,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def delete_changes(
             self,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Clear changes
 
         Clear the full history stored in the changes log
@@ -195,7 +216,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/changes',
@@ -204,7 +225,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_changes(
             self,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List changes
 
         Whenever Orthanc receives a new DICOM instance, this event is recorded in the so-called _Changes Log_. This enables remote scripts to react to the arrival of new DICOM resources. A typical application is auto-routing, where an external script waits for a new DICOM instance to arrive into Orthanc, then forward this instance to another modality.
@@ -219,7 +240,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The list of changes
         """
         return await self._get(
@@ -229,7 +250,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def delete_exports(
             self,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Clear exports
 
         Clear the full history stored in the exports log
@@ -241,7 +262,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/exports',
@@ -250,7 +271,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_exports(
             self,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List exports
 
         For medical traceability, Orthanc can be configured to store a log of all the resources that have been exported to remote modalities. In auto-routing scenarios, it is important to prevent this log to grow indefinitely as incoming instances are routed. You can either disable this logging by setting the option `LogExportedResources` to `false` in the configuration file, or periodically clear this log by `DELETE`-ing this URI. This route might be removed in future versions of Orthanc.
@@ -265,7 +286,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The list of exports
         """
         return await self._get(
@@ -276,7 +297,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_instances(
             self,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List the available instances
 
         List the Orthanc identifiers of all the available DICOM instances
@@ -295,7 +316,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing either the Orthanc identifiers, or detailed information about the reported instances (if `expand` argument is provided)
         """
         return await self._get(
@@ -306,7 +327,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def post_instances(
             self,
             content: RequestContent = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Upload DICOM instances
 
         Upload DICOM instances
@@ -322,7 +343,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Information about the uploaded instance, or list of information for each uploaded instance in the case of ZIP archive
         """
         return await self._post(
@@ -333,7 +354,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def delete_instances_id(
             self,
             id_: str,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Delete some instance
 
         Delete the DICOM instance whose Orthanc identifier is provided in the URL
@@ -347,7 +368,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/instances/{id_}',
@@ -357,7 +378,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get information about some instance
 
         Get detailed information about the DICOM instance whose Orthanc identifier is provided in the URL
@@ -375,7 +396,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Information about the DICOM instance
         """
         return await self._get(
@@ -387,7 +408,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Anonymize instance
 
         Download an anonymized version of the DICOM instance whose Orthanc identifier is provided in the URL: https://book.orthanc-server.com/users/anonymization.html#anonymization-of-a-single-instance
@@ -411,7 +432,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The anonymized DICOM instance
         """
         if json is None:
@@ -425,7 +446,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List attachments
 
         Get the list of attachments that are associated with the given instance
@@ -441,7 +462,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the names of the attachments
         """
         return await self._get(
@@ -454,7 +475,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Delete attachment
 
         Delete an attachment associated with the given DICOM instance. This call will fail if trying to delete a system attachment (i.e. whose index is < 1024).
@@ -473,7 +494,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/instances/{id_}/attachments/{name}',
@@ -485,7 +506,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List operations on attachments
 
         Get the list of the operations that are available for attachments associated with the given instance
@@ -504,7 +525,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             List of the available operations
         """
         return await self._get(
@@ -518,7 +539,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             name: str,
             content: RequestContent = None,
             headers: HeaderTypes = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Set attachment
 
         Attach a file to the given DICOM instance. This call will fail if trying to modify a system attachment (i.e. whose index is < 1024).
@@ -539,7 +560,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
             Empty JSON object in the case of a success
         """
         return await self._put(
@@ -552,7 +573,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             name: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Compress attachment
 
         Change the compression scheme that is used to store an attachment.
@@ -568,7 +589,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._post(
             route=f'{self.url}/instances/{id_}/attachments/{name}/compress',
@@ -579,7 +600,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get attachment (no decompression)
 
         Get the (binary) content of one attachment associated with the given instance. The attachment will not be decompressed if `StorageCompression` is `true`.
@@ -598,7 +619,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The attachment
         """
         return await self._get(
@@ -611,7 +632,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get MD5 of attachment on disk
 
         Get the MD5 hash of one attachment associated with the given instance, as stored on the disk. This is different from `.../md5` iff `EnableStorage` is `true`.
@@ -630,7 +651,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The MD5 of the attachment, as stored on the disk
         """
         return await self._get(
@@ -643,7 +664,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get size of attachment on disk
 
         Get the size of one attachment associated with the given instance, as stored on the disk. This is different from `.../size` iff `EnableStorage` is `true`.
@@ -662,7 +683,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The size of the attachment, as stored on the disk
         """
         return await self._get(
@@ -675,7 +696,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get attachment
 
         Get the (binary) content of one attachment associated with the given instance
@@ -694,7 +715,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The attachment
         """
         return await self._get(
@@ -707,7 +728,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get info about the attachment
 
         Get all the information about the attachment associated with the given instance
@@ -726,7 +747,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON object containing the information about the attachment
         """
         return await self._get(
@@ -739,7 +760,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Is attachment compressed?
 
         Test whether the attachment has been stored as a compressed file on the disk.
@@ -758,7 +779,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             `0` if the attachment was stored uncompressed, `1` if it was compressed
         """
         return await self._get(
@@ -771,7 +792,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get MD5 of attachment
 
         Get the MD5 hash of one attachment associated with the given instance
@@ -790,7 +811,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The MD5 of the attachment
         """
         return await self._get(
@@ -803,7 +824,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get size of attachment
 
         Get the size of one attachment associated with the given instance
@@ -822,7 +843,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The size of the attachment
         """
         return await self._get(
@@ -834,7 +855,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             name: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Uncompress attachment
 
         Change the compression scheme that is used to store an attachment.
@@ -850,7 +871,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._post(
             route=f'{self.url}/instances/{id_}/attachments/{name}/uncompress',
@@ -860,7 +881,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             name: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Verify attachment
 
         Verify that the attachment is not corrupted, by validating its MD5 hash
@@ -876,7 +897,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             On success, a valid JSON object is returned
         """
         return await self._post(
@@ -887,7 +908,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             data: RequestData = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Write DICOM onto filesystem
 
         Write the DICOM file onto the filesystem where Orthanc is running.  This is insecure for Orthanc servers that are remotely accessible since one could overwrite any system file.  Since Orthanc 1.12.0, this route is disabled by default, but can be enabled using the `RestApiWriteToFileSystemEnabled` configuration option.
@@ -904,7 +925,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._post(
             route=f'{self.url}/instances/{id_}/export',
@@ -915,7 +936,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Download DICOM
 
         Download one DICOM instance
@@ -932,7 +953,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The DICOM instance
             The DICOM instance, in DICOMweb JSON format
             The DICOM instance, in DICOMweb XML format
@@ -945,7 +966,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_instances_id_frames(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List available frames
 
         List the frames that are available in the DICOM instance of interest
@@ -959,7 +980,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The list of the indices of the available frames
         """
         return await self._get(
@@ -970,7 +991,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             frame: str,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List operations
 
         List the available operations under URI `/instances/{id}/frames/{frame}/`
@@ -986,7 +1007,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             List of the available operations
         """
         return await self._get(
@@ -999,7 +1020,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             params: QueryParamTypes = None,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Decode a frame (int16)
 
         Decode one frame of interest from the given DICOM instance. Pixels of grayscale images are truncated to the [-32768,32767] range. Negative values must be interpreted according to two's complement.
@@ -1021,7 +1042,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JPEG image
             PNG image
             PAM image (Portable Arbitrary Map)
@@ -1038,7 +1059,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             params: QueryParamTypes = None,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Decode a frame (uint16)
 
         Decode one frame of interest from the given DICOM instance. Pixels of grayscale images are truncated to the [0,65535] range.
@@ -1060,7 +1081,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JPEG image
             PNG image
             PAM image (Portable Arbitrary Map)
@@ -1077,7 +1098,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             params: QueryParamTypes = None,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Decode a frame (uint8)
 
         Decode one frame of interest from the given DICOM instance. Pixels of grayscale images are truncated to the [0,255] range.
@@ -1099,7 +1120,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JPEG image
             PNG image
             PAM image (Portable Arbitrary Map)
@@ -1114,7 +1135,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             frame: float,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Decode frame for Matlab
 
         Decode one frame of interest from the given DICOM instance, and export this frame as a Octave/Matlab matrix to be imported with `eval()`: https://book.orthanc-server.com/faq/matlab.html
@@ -1130,7 +1151,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Octave/Matlab matrix
         """
         return await self._get(
@@ -1142,7 +1163,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             frame: float,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Decode frame for numpy
 
         Decode one frame of interest from the given DICOM instance, for use with numpy in Python. The numpy array has 3 dimensions: (height, width, color channel).
@@ -1161,7 +1182,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Numpy file: https://numpy.org/devdocs/reference/generated/numpy.lib.format.html
         """
         return await self._get(
@@ -1175,7 +1196,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             params: QueryParamTypes = None,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Decode a frame (preview)
 
         Decode one frame of interest from the given DICOM instance. The full dynamic range of grayscale images is rescaled to the [0,255] range.
@@ -1197,7 +1218,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JPEG image
             PNG image
             PAM image (Portable Arbitrary Map)
@@ -1212,7 +1233,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             frame: float,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Access raw frame
 
         Access the raw content of one individual frame of the DICOM instance of interest, bypassing image decoding. This is notably useful to access the source files in compressed transfer syntaxes.
@@ -1228,7 +1249,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The raw frame
         """
         return await self._get(
@@ -1239,7 +1260,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             frame: float,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Access raw frame (compressed)
 
         Access the raw content of one individual frame of the DICOM instance of interest, bypassing image decoding. This is notably useful to access the source files in compressed transfer syntaxes. The image is compressed using gzip
@@ -1255,7 +1276,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The raw frame, compressed using gzip
         """
         return await self._get(
@@ -1268,7 +1289,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             params: QueryParamTypes = None,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Render a frame
 
         Render one frame of interest from the given DICOM instance. This function takes scaling into account (`RescaleSlope` and `RescaleIntercept` tags), as well as the default windowing stored in the DICOM file (`WindowCenter` and `WindowWidth`tags), and can be used to resize the resulting image. Color images are not affected by windowing.
@@ -1295,7 +1316,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JPEG image
             PNG image
             PAM image (Portable Arbitrary Map)
@@ -1310,7 +1331,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get DICOM meta-header
 
         Get the DICOM tags in the meta-header of the DICOM instance. By default, the `full` format is used, which combines hexadecimal tags with human-readable description.
@@ -1327,7 +1348,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON object containing the DICOM tags and their associated value
         """
         return await self._get(
@@ -1340,7 +1361,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             params: QueryParamTypes = None,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Decode an image (int16)
 
         Decode the first frame of the given DICOM instance. Pixels of grayscale images are truncated to the [-32768,32767] range. Negative values must be interpreted according to two's complement.
@@ -1360,7 +1381,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JPEG image
             PNG image
             PAM image (Portable Arbitrary Map)
@@ -1376,7 +1397,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             params: QueryParamTypes = None,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Decode an image (uint16)
 
         Decode the first frame of the given DICOM instance. Pixels of grayscale images are truncated to the [0,65535] range.
@@ -1396,7 +1417,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JPEG image
             PNG image
             PAM image (Portable Arbitrary Map)
@@ -1412,7 +1433,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             params: QueryParamTypes = None,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Decode an image (uint8)
 
         Decode the first frame of the given DICOM instance. Pixels of grayscale images are truncated to the [0,255] range.
@@ -1432,7 +1453,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JPEG image
             PNG image
             PAM image (Portable Arbitrary Map)
@@ -1446,7 +1467,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_instances_id_labels(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List labels
 
         Get the labels that are associated with the given instance (new in Orthanc 1.12.0)
@@ -1460,7 +1481,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the names of the labels
         """
         return await self._get(
@@ -1471,7 +1492,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Remove label
 
         Remove a label associated with a instance
@@ -1487,7 +1508,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/instances/{id_}/labels/{label}',
@@ -1497,7 +1518,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Test label
 
         Test whether the instance is associated with the given label
@@ -1513,7 +1534,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Empty string is returned in the case of presence, error 404 in the case of absence
         """
         return await self._get(
@@ -1524,7 +1545,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Add label
 
         Associate a label with a instance
@@ -1540,7 +1561,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/instances/{id_}/labels/{label}',
@@ -1549,7 +1570,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_instances_id_matlab(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Decode frame for Matlab
 
         Decode the first frame of the given DICOM instance., and export this frame as a Octave/Matlab matrix to be imported with `eval()`: https://book.orthanc-server.com/faq/matlab.html
@@ -1563,7 +1584,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Octave/Matlab matrix
         """
         return await self._get(
@@ -1574,7 +1595,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List metadata
 
         Get the list of metadata that are associated with the given instance
@@ -1591,7 +1612,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the names of the available metadata, or JSON associative array mapping metadata to their values (if `expand` argument is provided)
         """
         return await self._get(
@@ -1604,7 +1625,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Delete metadata
 
         Delete some metadata associated with the given DICOM instance. This call will fail if trying to delete a system metadata (i.e. whose index is < 1024).
@@ -1623,7 +1644,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/instances/{id_}/metadata/{name}',
@@ -1635,7 +1656,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get metadata
 
         Get the value of a metadata that is associated with the given instance
@@ -1654,7 +1675,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Value of the metadata
         """
         return await self._get(
@@ -1668,7 +1689,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             name: str,
             data: RequestData = None,
             headers: HeaderTypes = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Set metadata
 
         Set the value of some metadata in the given DICOM instance. This call will fail if trying to modify a system metadata (i.e. whose index is < 1024).
@@ -1690,7 +1711,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/instances/{id_}/metadata/{name}',
@@ -1702,7 +1723,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Modify instance
 
         Download a modified version of the DICOM instance whose Orthanc identifier is provided in the URL: https://book.orthanc-server.com/users/anonymization.html#modification-of-a-single-instance
@@ -1725,7 +1746,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The modified DICOM instance
         """
         if json is None:
@@ -1739,7 +1760,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get instance module
 
         Get the instance module of the DICOM instance whose Orthanc identifier is provided in the URL
@@ -1757,7 +1778,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Information about the DICOM instance
         """
         return await self._get(
@@ -1769,7 +1790,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Decode instance for numpy
 
         Decode the given DICOM instance, for use with numpy in Python. The numpy array has 4 dimensions: (frame, height, width, color channel).
@@ -1786,7 +1807,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Numpy file: https://numpy.org/devdocs/reference/generated/numpy.lib.format.html
         """
         return await self._get(
@@ -1798,7 +1819,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get parent patient
 
         Get detailed information about the parent patient of the DICOM instance whose Orthanc identifier is provided in the URL
@@ -1816,7 +1837,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Information about the parent DICOM patient
         """
         return await self._get(
@@ -1827,7 +1848,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_instances_id_pdf(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get embedded PDF
 
         Get the PDF file that is embedded in one DICOM instance. If the DICOM instance doesn't contain the `EncapsulatedDocument` tag or if the `MIMETypeOfEncapsulatedDocument` tag doesn't correspond to the PDF type, a `404` HTTP error is raised.
@@ -1841,7 +1862,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             PDF file
         """
         return await self._get(
@@ -1853,7 +1874,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             params: QueryParamTypes = None,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Decode an image (preview)
 
         Decode the first frame of the given DICOM instance. The full dynamic range of grayscale images is rescaled to the [0,255] range.
@@ -1873,7 +1894,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JPEG image
             PNG image
             PAM image (Portable Arbitrary Map)
@@ -1888,7 +1909,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Reconstruct tags & optionally files of instance
 
         Reconstruct the main DICOM tags in DB of the instance whose Orthanc identifier is provided in the URL. This is useful if child studies/series/instances have inconsistent values for higher-level tags, in order to force Orthanc to use the value from the resource of interest. Beware that this is a time-consuming operation, as all the children DICOM instances will be parsed again, and the Orthanc index will be updated accordingly.
@@ -1904,7 +1925,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         if json is None:
             json = {}
@@ -1918,7 +1939,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             params: QueryParamTypes = None,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Render an image
 
         Render the first frame of the given DICOM instance. This function takes scaling into account (`RescaleSlope` and `RescaleIntercept` tags), as well as the default windowing stored in the DICOM file (`WindowCenter` and `WindowWidth`tags), and can be used to resize the resulting image. Color images are not affected by windowing.
@@ -1943,7 +1964,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JPEG image
             PNG image
             PAM image (Portable Arbitrary Map)
@@ -1958,7 +1979,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get parent series
 
         Get detailed information about the parent series of the DICOM instance whose Orthanc identifier is provided in the URL
@@ -1976,7 +1997,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Information about the parent DICOM series
         """
         return await self._get(
@@ -1988,7 +2009,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get human-readable tags
 
         Get the DICOM tags in human-readable format (same as the `/instances/{id}/tags?simplify` route)
@@ -2004,7 +2025,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON object containing the DICOM tags and their associated value
         """
         return await self._get(
@@ -2015,7 +2036,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_instances_id_statistics(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get instance statistics
 
         Get statistics about the given instance
@@ -2029,7 +2050,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         return await self._get(
@@ -2040,7 +2061,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get parent study
 
         Get detailed information about the parent study of the DICOM instance whose Orthanc identifier is provided in the URL
@@ -2058,7 +2079,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Information about the parent DICOM study
         """
         return await self._get(
@@ -2070,7 +2091,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get DICOM tags
 
         Get the DICOM tags in the specified format. By default, the `full` format is used, which combines hexadecimal tags with human-readable description.
@@ -2088,7 +2109,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON object containing the DICOM tags and their associated value
         """
         return await self._get(
@@ -2099,7 +2120,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_jobs(
             self,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List jobs
 
         List all the available jobs
@@ -2113,7 +2134,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing either the jobs identifiers, or detailed information about the reported jobs (if `expand` argument is provided)
         """
         return await self._get(
@@ -2124,7 +2145,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_jobs_id(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get job
 
         Retrieve detailed information about the job whose identifier is provided in the URL: https://book.orthanc-server.com/users/advanced-rest.html#jobs
@@ -2138,7 +2159,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON object detailing the job
         """
         return await self._get(
@@ -2148,7 +2169,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def post_jobs_id_cancel(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Cancel job
 
         Cancel the job whose identifier is provided in the URL. Check out the Orthanc Book for more information about the state machine applicable to jobs: https://book.orthanc-server.com/users/advanced-rest.html#jobs
@@ -2162,7 +2183,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Empty JSON object in the case of a success
         """
         return await self._post(
@@ -2172,7 +2193,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def post_jobs_id_pause(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Pause job
 
         Pause the job whose identifier is provided in the URL. Check out the Orthanc Book for more information about the state machine applicable to jobs: https://book.orthanc-server.com/users/advanced-rest.html#jobs
@@ -2186,7 +2207,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Empty JSON object in the case of a success
         """
         return await self._post(
@@ -2196,7 +2217,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def post_jobs_id_resubmit(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Resubmit job
 
         Resubmit the job whose identifier is provided in the URL. Check out the Orthanc Book for more information about the state machine applicable to jobs: https://book.orthanc-server.com/users/advanced-rest.html#jobs
@@ -2210,7 +2231,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Empty JSON object in the case of a success
         """
         return await self._post(
@@ -2220,7 +2241,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def post_jobs_id_resume(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Resume job
 
         Resume the job whose identifier is provided in the URL. Check out the Orthanc Book for more information about the state machine applicable to jobs: https://book.orthanc-server.com/users/advanced-rest.html#jobs
@@ -2234,7 +2255,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Empty JSON object in the case of a success
         """
         return await self._post(
@@ -2245,7 +2266,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             key: str,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Delete a job output
 
         Delete the output produced by a job. As of Orthanc 1.12.1, only the jobs that generate a DICOMDIR media or a ZIP archive provide such an output (with `key` equals to `archive`).
@@ -2261,7 +2282,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/jobs/{id_}/{key}',
@@ -2271,7 +2292,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             key: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get job output
 
         Retrieve some output produced by a job. As of Orthanc 1.8.2, only the jobs that generate a DICOMDIR media or a ZIP archive provide such an output (with `key` equals to `archive`).
@@ -2287,7 +2308,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Content of the output of the job
         """
         return await self._get(
@@ -2297,7 +2318,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_modalities(
             self,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List DICOM modalities
 
         List all the DICOM modalities that are known to Orthanc. This corresponds either to the content of the `DicomModalities` configuration option, or to the information stored in the database if `DicomModalitiesInDatabase` is `true`.
@@ -2311,7 +2332,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing either the identifiers of the modalities, or detailed information about the modalities (if `expand` argument is provided)
         """
         return await self._get(
@@ -2322,7 +2343,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def delete_modalities_id(
             self,
             id_: str,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Delete DICOM modality
 
         Delete one DICOM modality. This change is permanent iff. `DicomModalitiesInDatabase` is `true`, otherwise it is lost at the next restart of Orthanc.
@@ -2336,7 +2357,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/modalities/{id_}',
@@ -2345,7 +2366,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_modalities_id(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List operations on modality
 
         List the operations that are available for a DICOM modality.
@@ -2359,7 +2380,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             List of the available operations
         """
         return await self._get(
@@ -2370,7 +2391,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Update DICOM modality
 
         Define a new DICOM modality, or update an existing one. This change is permanent iff. `DicomModalitiesInDatabase` is `true`, otherwise it is lost at the next restart of Orthanc.
@@ -2398,7 +2419,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         if json is None:
             json = {}
@@ -2410,7 +2431,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_modalities_id_configuration(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get modality configuration
 
         Get detailed information about the configuration of some DICOM modality
@@ -2424,7 +2445,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Configuration of the modality
         """
         return await self._get(
@@ -2435,7 +2456,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Trigger C-ECHO SCU
 
         Trigger C-ECHO SCU command against the DICOM modality whose identifier is provided in URL: https://book.orthanc-server.com/users/rest.html#performing-c-echo
@@ -2452,7 +2473,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         if json is None:
             json = {}
@@ -2465,7 +2486,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Hierarchical C-FIND SCU
 
         Trigger a sequence of C-FIND SCU commands against the DICOM modality whose identifier is provided in URL, in order to discover a hierarchy of matching patients/studies/series. Deprecated in favor of `/modalities/{id}/query`.
@@ -2480,7 +2501,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array describing the DICOM tags of the matching patients, embedding the matching studies, then the matching series.
         """
         warnings.warn('This method is deprecated.', DeprecationWarning, stacklevel=2)
@@ -2495,7 +2516,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) C-FIND SCU for instances
 
         Trigger C-FIND SCU command against the DICOM modality whose identifier is provided in URL, in order to find an instance. Deprecated in favor of `/modalities/{id}/query`.
@@ -2510,7 +2531,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array describing the DICOM tags of the matching instances
         """
         warnings.warn('This method is deprecated.', DeprecationWarning, stacklevel=2)
@@ -2525,7 +2546,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) C-FIND SCU for patients
 
         Trigger C-FIND SCU command against the DICOM modality whose identifier is provided in URL, in order to find a patient. Deprecated in favor of `/modalities/{id}/query`.
@@ -2540,7 +2561,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array describing the DICOM tags of the matching patients
         """
         warnings.warn('This method is deprecated.', DeprecationWarning, stacklevel=2)
@@ -2555,7 +2576,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) C-FIND SCU for series
 
         Trigger C-FIND SCU command against the DICOM modality whose identifier is provided in URL, in order to find a series. Deprecated in favor of `/modalities/{id}/query`.
@@ -2570,7 +2591,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array describing the DICOM tags of the matching series
         """
         warnings.warn('This method is deprecated.', DeprecationWarning, stacklevel=2)
@@ -2585,7 +2606,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) C-FIND SCU for studies
 
         Trigger C-FIND SCU command against the DICOM modality whose identifier is provided in URL, in order to find a study. Deprecated in favor of `/modalities/{id}/query`.
@@ -2600,7 +2621,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array describing the DICOM tags of the matching studies
         """
         warnings.warn('This method is deprecated.', DeprecationWarning, stacklevel=2)
@@ -2615,7 +2636,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) C-FIND SCU for worklist
 
         Trigger C-FIND SCU command against the remote worklists of the DICOM modality whose identifier is provided in URL
@@ -2633,7 +2654,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array describing the DICOM tags of the matching worklists
         """
         if json is None:
@@ -2647,7 +2668,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Trigger C-MOVE SCU
 
         Start a C-MOVE SCU command as a job, in order to drive the execution of a sequence of C-STORE commands by some remote DICOM modality whose identifier is provided in the URL: https://book.orthanc-server.com/users/rest.html#performing-c-move
@@ -2671,7 +2692,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         if json is None:
@@ -2685,7 +2706,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Trigger C-FIND SCU
 
         Trigger C-FIND SCU command against the DICOM modality whose identifier is provided in URL: https://book.orthanc-server.com/users/rest.html#performing-query-retrieve-c-find-and-find-with-rest
@@ -2705,7 +2726,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         if json is None:
@@ -2719,7 +2740,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Trigger storage commitment request
 
         Trigger a storage commitment request to some remote DICOM modality whose identifier is provided in the URL: https://book.orthanc-server.com/users/storage-commitment.html#storage-commitment-scu
@@ -2737,7 +2758,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         if json is None:
@@ -2752,7 +2773,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             data: RequestData = None,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Trigger C-STORE SCU
 
         Start a C-STORE SCU command as a job, in order to send DICOM resources stored locally to some remote DICOM modality whose identifier is provided in the URL: https://book.orthanc-server.com/users/rest.html#rest-store-scu
@@ -2783,7 +2804,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         if json is None:
@@ -2798,7 +2819,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             content: RequestContent = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Straight C-STORE SCU
 
         Synchronously send the DICOM instance in the POST body to the remote DICOM modality whose identifier is provided in URL, without having to first store it locally within Orthanc. This is an alternative to command-line tools such as `storescu` from DCMTK or dcm4che.
@@ -2814,7 +2835,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         return await self._post(
@@ -2825,7 +2846,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_patients(
             self,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List the available patients
 
         List the Orthanc identifiers of all the available DICOM patients
@@ -2844,7 +2865,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing either the Orthanc identifiers, or detailed information about the reported patients (if `expand` argument is provided)
         """
         return await self._get(
@@ -2855,7 +2876,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def delete_patients_id(
             self,
             id_: str,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Delete some patient
 
         Delete the DICOM patient whose Orthanc identifier is provided in the URL
@@ -2869,7 +2890,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/patients/{id_}',
@@ -2879,7 +2900,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get information about some patient
 
         Get detailed information about the DICOM patient whose Orthanc identifier is provided in the URL
@@ -2897,7 +2918,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Information about the DICOM patient
         """
         return await self._get(
@@ -2909,7 +2930,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Anonymize patient
 
         Start a job that will anonymize all the DICOM instances within the patient whose identifier is provided in the URL. The modified DICOM instances will be stored into a brand new patient, whose Orthanc identifiers will be returned by the job. https://book.orthanc-server.com/users/anonymization.html#anonymization-of-patients-studies-or-series
@@ -2937,7 +2958,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         if json is None:
@@ -2951,7 +2972,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Create ZIP archive
 
         Synchronously create a ZIP archive containing the DICOM patient whose Orthanc identifier is provided in the URL. This flavor is synchronous, which might *not* be desirable to archive large amount of data, as it might lead to network timeouts. Prefer the asynchronous version using `POST` method.
@@ -2968,7 +2989,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             ZIP file containing the archive
         """
         return await self._get(
@@ -2980,7 +3001,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Create ZIP archive
 
         Create a ZIP archive containing the DICOM patient whose Orthanc identifier is provided in the URL
@@ -2999,7 +3020,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             In asynchronous mode, information about the job that has been submitted to generate the archive: https://book.orthanc-server.com/users/advanced-rest.html#jobs
             In synchronous mode, the ZIP file containing the archive
         """
@@ -3014,7 +3035,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List attachments
 
         Get the list of attachments that are associated with the given patient
@@ -3030,7 +3051,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the names of the attachments
         """
         return await self._get(
@@ -3043,7 +3064,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Delete attachment
 
         Delete an attachment associated with the given DICOM patient. This call will fail if trying to delete a system attachment (i.e. whose index is < 1024).
@@ -3062,7 +3083,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/patients/{id_}/attachments/{name}',
@@ -3074,7 +3095,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List operations on attachments
 
         Get the list of the operations that are available for attachments associated with the given patient
@@ -3093,7 +3114,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             List of the available operations
         """
         return await self._get(
@@ -3107,7 +3128,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             name: str,
             content: RequestContent = None,
             headers: HeaderTypes = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Set attachment
 
         Attach a file to the given DICOM patient. This call will fail if trying to modify a system attachment (i.e. whose index is < 1024).
@@ -3128,7 +3149,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
             Empty JSON object in the case of a success
         """
         return await self._put(
@@ -3141,7 +3162,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             name: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Compress attachment
 
         Change the compression scheme that is used to store an attachment.
@@ -3157,7 +3178,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._post(
             route=f'{self.url}/patients/{id_}/attachments/{name}/compress',
@@ -3168,7 +3189,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get attachment (no decompression)
 
         Get the (binary) content of one attachment associated with the given patient. The attachment will not be decompressed if `StorageCompression` is `true`.
@@ -3187,7 +3208,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The attachment
         """
         return await self._get(
@@ -3200,7 +3221,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get MD5 of attachment on disk
 
         Get the MD5 hash of one attachment associated with the given patient, as stored on the disk. This is different from `.../md5` iff `EnableStorage` is `true`.
@@ -3219,7 +3240,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The MD5 of the attachment, as stored on the disk
         """
         return await self._get(
@@ -3232,7 +3253,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get size of attachment on disk
 
         Get the size of one attachment associated with the given patient, as stored on the disk. This is different from `.../size` iff `EnableStorage` is `true`.
@@ -3251,7 +3272,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The size of the attachment, as stored on the disk
         """
         return await self._get(
@@ -3264,7 +3285,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get attachment
 
         Get the (binary) content of one attachment associated with the given patient
@@ -3283,7 +3304,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The attachment
         """
         return await self._get(
@@ -3296,7 +3317,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get info about the attachment
 
         Get all the information about the attachment associated with the given patient
@@ -3315,7 +3336,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON object containing the information about the attachment
         """
         return await self._get(
@@ -3328,7 +3349,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Is attachment compressed?
 
         Test whether the attachment has been stored as a compressed file on the disk.
@@ -3347,7 +3368,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             `0` if the attachment was stored uncompressed, `1` if it was compressed
         """
         return await self._get(
@@ -3360,7 +3381,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get MD5 of attachment
 
         Get the MD5 hash of one attachment associated with the given patient
@@ -3379,7 +3400,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The MD5 of the attachment
         """
         return await self._get(
@@ -3392,7 +3413,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get size of attachment
 
         Get the size of one attachment associated with the given patient
@@ -3411,7 +3432,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The size of the attachment
         """
         return await self._get(
@@ -3423,7 +3444,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             name: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Uncompress attachment
 
         Change the compression scheme that is used to store an attachment.
@@ -3439,7 +3460,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._post(
             route=f'{self.url}/patients/{id_}/attachments/{name}/uncompress',
@@ -3449,7 +3470,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             name: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Verify attachment
 
         Verify that the attachment is not corrupted, by validating its MD5 hash
@@ -3465,7 +3486,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             On success, a valid JSON object is returned
         """
         return await self._post(
@@ -3476,7 +3497,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get child instances
 
         Get detailed information about the child instances of the DICOM patient whose Orthanc identifier is provided in the URL
@@ -3494,7 +3515,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing information about the child DICOM instances
         """
         return await self._get(
@@ -3506,7 +3527,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get tags of instances
 
         Get the tags of all the child instances of the DICOM patient whose Orthanc identifier is provided in the URL
@@ -3524,7 +3545,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON object associating the Orthanc identifiers of the instances, with the values of their DICOM tags
         """
         return await self._get(
@@ -3535,7 +3556,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_patients_id_labels(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List labels
 
         Get the labels that are associated with the given patient (new in Orthanc 1.12.0)
@@ -3549,7 +3570,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the names of the labels
         """
         return await self._get(
@@ -3560,7 +3581,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Remove label
 
         Remove a label associated with a patient
@@ -3576,7 +3597,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/patients/{id_}/labels/{label}',
@@ -3586,7 +3607,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Test label
 
         Test whether the patient is associated with the given label
@@ -3602,7 +3623,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Empty string is returned in the case of presence, error 404 in the case of absence
         """
         return await self._get(
@@ -3613,7 +3634,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Add label
 
         Associate a label with a patient
@@ -3629,7 +3650,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/patients/{id_}/labels/{label}',
@@ -3639,7 +3660,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Create DICOMDIR media
 
         Synchronously create a DICOMDIR media containing the DICOM patient whose Orthanc identifier is provided in the URL. This flavor is synchronous, which might *not* be desirable to archive large amount of data, as it might lead to network timeouts. Prefer the asynchronous version using `POST` method.
@@ -3657,7 +3678,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             ZIP file containing the archive
         """
         return await self._get(
@@ -3669,7 +3690,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Create DICOMDIR media
 
         Create a DICOMDIR media containing the DICOM patient whose Orthanc identifier is provided in the URL
@@ -3689,7 +3710,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             In asynchronous mode, information about the job that has been submitted to generate the archive: https://book.orthanc-server.com/users/advanced-rest.html#jobs
             In synchronous mode, the ZIP file containing the archive
         """
@@ -3704,7 +3725,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List metadata
 
         Get the list of metadata that are associated with the given patient
@@ -3721,7 +3742,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the names of the available metadata, or JSON associative array mapping metadata to their values (if `expand` argument is provided)
         """
         return await self._get(
@@ -3734,7 +3755,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Delete metadata
 
         Delete some metadata associated with the given DICOM patient. This call will fail if trying to delete a system metadata (i.e. whose index is < 1024).
@@ -3753,7 +3774,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/patients/{id_}/metadata/{name}',
@@ -3765,7 +3786,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get metadata
 
         Get the value of a metadata that is associated with the given patient
@@ -3784,7 +3805,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Value of the metadata
         """
         return await self._get(
@@ -3798,7 +3819,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             name: str,
             data: RequestData = None,
             headers: HeaderTypes = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Set metadata
 
         Set the value of some metadata in the given DICOM patient. This call will fail if trying to modify a system metadata (i.e. whose index is < 1024).
@@ -3820,7 +3841,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/patients/{id_}/metadata/{name}',
@@ -3832,7 +3853,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Modify patient
 
         Start a job that will modify all the DICOM instances within the patient whose identifier is provided in the URL. The modified DICOM instances will be stored into a brand new patient, whose Orthanc identifiers will be returned by the job. https://book.orthanc-server.com/users/anonymization.html#modification-of-studies-or-series
@@ -3859,7 +3880,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         if json is None:
@@ -3873,7 +3894,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get patient module
 
         Get the patient module of the DICOM patient whose Orthanc identifier is provided in the URL
@@ -3891,7 +3912,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Information about the DICOM patient
         """
         return await self._get(
@@ -3902,7 +3923,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_patients_id_protected(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Is the patient protected against recycling?
 
         Is the patient protected against recycling?
@@ -3916,7 +3937,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             `1` if protected, `0` if not protected
         """
         return await self._get(
@@ -3926,7 +3947,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_patients_id_protected(
             self,
             id_: str,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Protect one patient against recycling
 
         Check out configuration options `MaximumStorageSize` and `MaximumPatientCount`
@@ -3940,7 +3961,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/patients/{id_}/protected',
@@ -3950,7 +3971,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Reconstruct tags & optionally files of patient
 
         Reconstruct the main DICOM tags in DB of the patient whose Orthanc identifier is provided in the URL. This is useful if child studies/series/instances have inconsistent values for higher-level tags, in order to force Orthanc to use the value from the resource of interest. Beware that this is a time-consuming operation, as all the children DICOM instances will be parsed again, and the Orthanc index will be updated accordingly.
@@ -3966,7 +3987,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         if json is None:
             json = {}
@@ -3979,7 +4000,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get child series
 
         Get detailed information about the child series of the DICOM patient whose Orthanc identifier is provided in the URL
@@ -3997,7 +4018,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing information about the child DICOM series
         """
         return await self._get(
@@ -4009,7 +4030,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get shared tags
 
         Extract the DICOM tags whose value is constant across all the child instances of the DICOM patient whose Orthanc identifier is provided in the URL
@@ -4026,7 +4047,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON object containing the values of the DICOM tags
         """
         return await self._get(
@@ -4037,7 +4058,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_patients_id_statistics(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get patient statistics
 
         Get statistics about the given patient
@@ -4051,7 +4072,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         return await self._get(
@@ -4062,7 +4083,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get child studies
 
         Get detailed information about the child studies of the DICOM patient whose Orthanc identifier is provided in the URL
@@ -4080,7 +4101,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing information about the child DICOM studies
         """
         return await self._get(
@@ -4091,7 +4112,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_peers(
             self,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List Orthanc peers
 
         List all the Orthanc peers that are known to Orthanc. This corresponds either to the content of the `OrthancPeers` configuration option, or to the information stored in the database if `OrthancPeersInDatabase` is `true`.
@@ -4105,7 +4126,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing either the identifiers of the peers, or detailed information about the peers (if `expand` argument is provided)
         """
         return await self._get(
@@ -4116,7 +4137,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def delete_peers_id(
             self,
             id_: str,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Delete Orthanc peer
 
         Delete one Orthanc peer. This change is permanent iff. `OrthancPeersInDatabase` is `true`, otherwise it is lost at the next restart of Orthanc.
@@ -4130,7 +4151,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/peers/{id_}',
@@ -4139,7 +4160,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_peers_id(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List operations on peer
 
         List the operations that are available for an Orthanc peer.
@@ -4153,7 +4174,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             List of the available operations
         """
         return await self._get(
@@ -4164,7 +4185,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Update Orthanc peer
 
         Define a new Orthanc peer, or update an existing one. This change is permanent iff. `OrthancPeersInDatabase` is `true`, otherwise it is lost at the next restart of Orthanc.
@@ -4186,7 +4207,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         if json is None:
             json = {}
@@ -4198,7 +4219,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_peers_id_configuration(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get peer configuration
 
         Get detailed information about the configuration of some Orthanc peer
@@ -4212,7 +4233,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Configuration of the peer
         """
         return await self._get(
@@ -4224,7 +4245,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             data: RequestData = None,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Send to Orthanc peer
 
         Send DICOM resources stored locally to some remote Orthanc peer whose identifier is provided in the URL: https://book.orthanc-server.com/users/rest.html#sending-one-resource
@@ -4249,7 +4270,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         if json is None:
@@ -4264,7 +4285,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             content: RequestContent = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Straight store to peer
 
         Synchronously send the DICOM instance in the POST body to the Orthanc peer whose identifier is provided in URL, without having to first store it locally within Orthanc. This is an alternative to command-line tools such as `curl`.
@@ -4280,7 +4301,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         return await self._post(
@@ -4291,7 +4312,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_peers_id_system(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get peer system information
 
         Get system information about some Orthanc peer. This corresponds to doing a `GET` request against the `/system` URI of the remote peer. This route can be used to test connectivity.
@@ -4305,7 +4326,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             System information about the peer
         """
         return await self._get(
@@ -4314,7 +4335,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_plugins(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List plugins
 
         List all the installed plugins
@@ -4326,7 +4347,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the identifiers of the installed plugins
         """
         return await self._get(
@@ -4335,7 +4356,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_plugins_explorer_js(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) JavaScript extensions to Orthanc Explorer
 
         Get the JavaScript extensions that are installed by all the plugins using the `OrthancPluginExtendOrthancExplorer()` function of the plugin SDK. This route is for internal use of Orthanc Explorer.
@@ -4347,7 +4368,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The JavaScript extensions
         """
         return await self._get(
@@ -4357,7 +4378,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_plugins_id(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get plugin
 
         Get system information about the plugin whose identifier is provided in the URL
@@ -4371,7 +4392,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON object containing information about the plugin
         """
         return await self._get(
@@ -4380,7 +4401,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_queries(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List query/retrieve operations
 
         List the identifiers of all the query/retrieve operations on DICOM modalities, as initiated by calls to `/modalities/{id}/query`. The length of this list is bounded by the `QueryRetrieveSize` configuration option of Orthanc. https://book.orthanc-server.com/users/rest.html#performing-query-retrieve-c-find-and-find-with-rest
@@ -4392,7 +4413,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the identifiers
         """
         return await self._get(
@@ -4402,7 +4423,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def delete_queries_id(
             self,
             id_: str,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Delete a query
 
         Delete the query/retrieve operation whose identifier is provided in the URL
@@ -4416,7 +4437,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/queries/{id_}',
@@ -4425,7 +4446,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_queries_id(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List operations on a query
 
         List the available operations for the query/retrieve operation whose identifier is provided in the URL
@@ -4439,7 +4460,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the list of operations
         """
         return await self._get(
@@ -4450,7 +4471,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List answers to a query
 
         List the indices of all the available answers resulting from a query/retrieve operation on some DICOM modality, whose identifier is provided in the URL
@@ -4468,7 +4489,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the indices of the answers, or detailed information about the reported answers (if `expand` argument is provided)
         """
         return await self._get(
@@ -4480,7 +4501,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             index: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List operations on an answer
 
         List the available operations on an answer associated with the query/retrieve operation whose identifier is provided in the URL
@@ -4496,7 +4517,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the list of operations
         """
         return await self._get(
@@ -4508,7 +4529,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             index: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get one answer
 
         Get the content (DICOM tags) of one answer associated with the query/retrieve operation whose identifier is provided in the URL
@@ -4527,7 +4548,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON object containing the DICOM tags of the answer
         """
         return await self._get(
@@ -4540,7 +4561,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             index: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Query the child instances of an answer
 
         Issue a second DICOM C-FIND operation, in order to query the child instances associated with one answer to some query/retrieve operation whose identifiers are provided in the URL
@@ -4559,7 +4580,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         if json is None:
@@ -4574,7 +4595,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             index: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Query the child series of an answer
 
         Issue a second DICOM C-FIND operation, in order to query the child series associated with one answer to some query/retrieve operation whose identifiers are provided in the URL
@@ -4593,7 +4614,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         if json is None:
@@ -4608,7 +4629,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             index: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Query the child studies of an answer
 
         Issue a second DICOM C-FIND operation, in order to query the child studies associated with one answer to some query/retrieve operation whose identifiers are provided in the URL
@@ -4627,7 +4648,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         if json is None:
@@ -4643,7 +4664,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             index: str,
             data: RequestData = None,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Retrieve one answer
 
         Start a C-MOVE SCU command as a job, in order to retrieve one answer associated with the query/retrieve operation whose identifiers are provided in the URL: https://book.orthanc-server.com/users/rest.html#performing-retrieve-c-move
@@ -4671,7 +4692,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         if json is None:
@@ -4685,7 +4706,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_queries_id_level(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get level of original query
 
         Get the query level (value of the `QueryRetrieveLevel` tag) of the query/retrieve operation whose identifier is provided in the URL
@@ -4699,7 +4720,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The level
         """
         return await self._get(
@@ -4709,7 +4730,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_queries_id_modality(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get modality of original query
 
         Get the identifier of the DICOM modality that was targeted by the query/retrieve operation whose identifier is provided in the URL
@@ -4723,7 +4744,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The identifier of the DICOM modality
         """
         return await self._get(
@@ -4734,7 +4755,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get original query arguments
 
         Get the original DICOM filter associated with the query/retrieve operation whose identifier is provided in the URL
@@ -4751,7 +4772,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Content of the original query
         """
         return await self._get(
@@ -4764,7 +4785,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             data: RequestData = None,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Retrieve all answers
 
         Start a C-MOVE SCU command as a job, in order to retrieve all the answers associated with the query/retrieve operation whose identifier is provided in the URL: https://book.orthanc-server.com/users/rest.html#performing-retrieve-c-move
@@ -4790,7 +4811,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         if json is None:
@@ -4804,7 +4825,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_series(
             self,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List the available series
 
         List the Orthanc identifiers of all the available DICOM series
@@ -4823,7 +4844,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing either the Orthanc identifiers, or detailed information about the reported series (if `expand` argument is provided)
         """
         return await self._get(
@@ -4834,7 +4855,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def delete_series_id(
             self,
             id_: str,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Delete some series
 
         Delete the DICOM series whose Orthanc identifier is provided in the URL
@@ -4848,7 +4869,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/series/{id_}',
@@ -4858,7 +4879,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get information about some series
 
         Get detailed information about the DICOM series whose Orthanc identifier is provided in the URL
@@ -4876,7 +4897,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Information about the DICOM series
         """
         return await self._get(
@@ -4888,7 +4909,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Anonymize series
 
         Start a job that will anonymize all the DICOM instances within the series whose identifier is provided in the URL. The modified DICOM instances will be stored into a brand new series, whose Orthanc identifiers will be returned by the job. https://book.orthanc-server.com/users/anonymization.html#anonymization-of-patients-studies-or-series
@@ -4916,7 +4937,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         if json is None:
@@ -4930,7 +4951,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Create ZIP archive
 
         Synchronously create a ZIP archive containing the DICOM series whose Orthanc identifier is provided in the URL. This flavor is synchronous, which might *not* be desirable to archive large amount of data, as it might lead to network timeouts. Prefer the asynchronous version using `POST` method.
@@ -4947,7 +4968,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             ZIP file containing the archive
         """
         return await self._get(
@@ -4959,7 +4980,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Create ZIP archive
 
         Create a ZIP archive containing the DICOM series whose Orthanc identifier is provided in the URL
@@ -4978,7 +4999,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             In asynchronous mode, information about the job that has been submitted to generate the archive: https://book.orthanc-server.com/users/advanced-rest.html#jobs
             In synchronous mode, the ZIP file containing the archive
         """
@@ -4993,7 +5014,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List attachments
 
         Get the list of attachments that are associated with the given series
@@ -5009,7 +5030,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the names of the attachments
         """
         return await self._get(
@@ -5022,7 +5043,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Delete attachment
 
         Delete an attachment associated with the given DICOM series. This call will fail if trying to delete a system attachment (i.e. whose index is < 1024).
@@ -5041,7 +5062,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/series/{id_}/attachments/{name}',
@@ -5053,7 +5074,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List operations on attachments
 
         Get the list of the operations that are available for attachments associated with the given series
@@ -5072,7 +5093,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             List of the available operations
         """
         return await self._get(
@@ -5086,7 +5107,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             name: str,
             content: RequestContent = None,
             headers: HeaderTypes = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Set attachment
 
         Attach a file to the given DICOM series. This call will fail if trying to modify a system attachment (i.e. whose index is < 1024).
@@ -5107,7 +5128,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
             Empty JSON object in the case of a success
         """
         return await self._put(
@@ -5120,7 +5141,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             name: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Compress attachment
 
         Change the compression scheme that is used to store an attachment.
@@ -5136,7 +5157,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._post(
             route=f'{self.url}/series/{id_}/attachments/{name}/compress',
@@ -5147,7 +5168,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get attachment (no decompression)
 
         Get the (binary) content of one attachment associated with the given series. The attachment will not be decompressed if `StorageCompression` is `true`.
@@ -5166,7 +5187,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The attachment
         """
         return await self._get(
@@ -5179,7 +5200,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get MD5 of attachment on disk
 
         Get the MD5 hash of one attachment associated with the given series, as stored on the disk. This is different from `.../md5` iff `EnableStorage` is `true`.
@@ -5198,7 +5219,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The MD5 of the attachment, as stored on the disk
         """
         return await self._get(
@@ -5211,7 +5232,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get size of attachment on disk
 
         Get the size of one attachment associated with the given series, as stored on the disk. This is different from `.../size` iff `EnableStorage` is `true`.
@@ -5230,7 +5251,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The size of the attachment, as stored on the disk
         """
         return await self._get(
@@ -5243,7 +5264,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get attachment
 
         Get the (binary) content of one attachment associated with the given series
@@ -5262,7 +5283,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The attachment
         """
         return await self._get(
@@ -5275,7 +5296,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get info about the attachment
 
         Get all the information about the attachment associated with the given series
@@ -5294,7 +5315,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON object containing the information about the attachment
         """
         return await self._get(
@@ -5307,7 +5328,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Is attachment compressed?
 
         Test whether the attachment has been stored as a compressed file on the disk.
@@ -5326,7 +5347,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             `0` if the attachment was stored uncompressed, `1` if it was compressed
         """
         return await self._get(
@@ -5339,7 +5360,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get MD5 of attachment
 
         Get the MD5 hash of one attachment associated with the given series
@@ -5358,7 +5379,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The MD5 of the attachment
         """
         return await self._get(
@@ -5371,7 +5392,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get size of attachment
 
         Get the size of one attachment associated with the given series
@@ -5390,7 +5411,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The size of the attachment
         """
         return await self._get(
@@ -5402,7 +5423,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             name: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Uncompress attachment
 
         Change the compression scheme that is used to store an attachment.
@@ -5418,7 +5439,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._post(
             route=f'{self.url}/series/{id_}/attachments/{name}/uncompress',
@@ -5428,7 +5449,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             name: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Verify attachment
 
         Verify that the attachment is not corrupted, by validating its MD5 hash
@@ -5444,7 +5465,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             On success, a valid JSON object is returned
         """
         return await self._post(
@@ -5455,7 +5476,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get child instances
 
         Get detailed information about the child instances of the DICOM series whose Orthanc identifier is provided in the URL
@@ -5473,7 +5494,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing information about the child DICOM instances
         """
         return await self._get(
@@ -5485,7 +5506,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get tags of instances
 
         Get the tags of all the child instances of the DICOM series whose Orthanc identifier is provided in the URL
@@ -5503,7 +5524,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON object associating the Orthanc identifiers of the instances, with the values of their DICOM tags
         """
         return await self._get(
@@ -5514,7 +5535,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_series_id_labels(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List labels
 
         Get the labels that are associated with the given series (new in Orthanc 1.12.0)
@@ -5528,7 +5549,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the names of the labels
         """
         return await self._get(
@@ -5539,7 +5560,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Remove label
 
         Remove a label associated with a series
@@ -5555,7 +5576,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/series/{id_}/labels/{label}',
@@ -5565,7 +5586,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Test label
 
         Test whether the series is associated with the given label
@@ -5581,7 +5602,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Empty string is returned in the case of presence, error 404 in the case of absence
         """
         return await self._get(
@@ -5592,7 +5613,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Add label
 
         Associate a label with a series
@@ -5608,7 +5629,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/series/{id_}/labels/{label}',
@@ -5618,7 +5639,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Create DICOMDIR media
 
         Synchronously create a DICOMDIR media containing the DICOM series whose Orthanc identifier is provided in the URL. This flavor is synchronous, which might *not* be desirable to archive large amount of data, as it might lead to network timeouts. Prefer the asynchronous version using `POST` method.
@@ -5636,7 +5657,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             ZIP file containing the archive
         """
         return await self._get(
@@ -5648,7 +5669,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Create DICOMDIR media
 
         Create a DICOMDIR media containing the DICOM series whose Orthanc identifier is provided in the URL
@@ -5668,7 +5689,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             In asynchronous mode, information about the job that has been submitted to generate the archive: https://book.orthanc-server.com/users/advanced-rest.html#jobs
             In synchronous mode, the ZIP file containing the archive
         """
@@ -5683,7 +5704,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List metadata
 
         Get the list of metadata that are associated with the given series
@@ -5700,7 +5721,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the names of the available metadata, or JSON associative array mapping metadata to their values (if `expand` argument is provided)
         """
         return await self._get(
@@ -5713,7 +5734,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Delete metadata
 
         Delete some metadata associated with the given DICOM series. This call will fail if trying to delete a system metadata (i.e. whose index is < 1024).
@@ -5732,7 +5753,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/series/{id_}/metadata/{name}',
@@ -5744,7 +5765,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get metadata
 
         Get the value of a metadata that is associated with the given series
@@ -5763,7 +5784,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Value of the metadata
         """
         return await self._get(
@@ -5777,7 +5798,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             name: str,
             data: RequestData = None,
             headers: HeaderTypes = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Set metadata
 
         Set the value of some metadata in the given DICOM series. This call will fail if trying to modify a system metadata (i.e. whose index is < 1024).
@@ -5799,7 +5820,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/series/{id_}/metadata/{name}',
@@ -5811,7 +5832,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Modify series
 
         Start a job that will modify all the DICOM instances within the series whose identifier is provided in the URL. The modified DICOM instances will be stored into a brand new series, whose Orthanc identifiers will be returned by the job. https://book.orthanc-server.com/users/anonymization.html#modification-of-studies-or-series
@@ -5838,7 +5859,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         if json is None:
@@ -5852,7 +5873,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get series module
 
         Get the series module of the DICOM series whose Orthanc identifier is provided in the URL
@@ -5870,7 +5891,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Information about the DICOM series
         """
         return await self._get(
@@ -5882,7 +5903,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Decode series for numpy
 
         Decode the given DICOM series, for use with numpy in Python. The numpy array has 4 dimensions: (frame, height, width, color channel).
@@ -5899,7 +5920,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Numpy file: https://numpy.org/devdocs/reference/generated/numpy.lib.format.html
         """
         return await self._get(
@@ -5910,7 +5931,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_series_id_ordered_slices(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Order the slices
 
         Sort the instances and frames (slices) of the DICOM series whose Orthanc identifier is provided in the URL. This URI is essentially used by the Orthanc Web viewer and by the Osimis Web viewer.
@@ -5924,7 +5945,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         warnings.warn('This method is deprecated.', DeprecationWarning, stacklevel=2)
@@ -5936,7 +5957,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get parent patient
 
         Get detailed information about the parent patient of the DICOM series whose Orthanc identifier is provided in the URL
@@ -5954,7 +5975,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Information about the parent DICOM patient
         """
         return await self._get(
@@ -5966,7 +5987,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Reconstruct tags & optionally files of series
 
         Reconstruct the main DICOM tags in DB of the series whose Orthanc identifier is provided in the URL. This is useful if child studies/series/instances have inconsistent values for higher-level tags, in order to force Orthanc to use the value from the resource of interest. Beware that this is a time-consuming operation, as all the children DICOM instances will be parsed again, and the Orthanc index will be updated accordingly.
@@ -5982,7 +6003,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         if json is None:
             json = {}
@@ -5995,7 +6016,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get shared tags
 
         Extract the DICOM tags whose value is constant across all the child instances of the DICOM series whose Orthanc identifier is provided in the URL
@@ -6012,7 +6033,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON object containing the values of the DICOM tags
         """
         return await self._get(
@@ -6023,7 +6044,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_series_id_statistics(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get series statistics
 
         Get statistics about the given series
@@ -6037,7 +6058,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         return await self._get(
@@ -6048,7 +6069,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get parent study
 
         Get detailed information about the parent study of the DICOM series whose Orthanc identifier is provided in the URL
@@ -6066,7 +6087,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Information about the parent DICOM study
         """
         return await self._get(
@@ -6076,7 +6097,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_statistics(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get database statistics
 
         Get statistics related to the database of Orthanc
@@ -6088,7 +6109,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         return await self._get(
@@ -6098,7 +6119,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_storage_commitment_id(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get storage commitment report
 
         Get the storage commitment report whose identifier is provided in the URL: https://book.orthanc-server.com/users/storage-commitment.html#storage-commitment-scu
@@ -6112,7 +6133,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         return await self._get(
@@ -6122,7 +6143,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def post_storage_commitment_id_remove(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Remove after storage commitment
 
         Remove out of Orthanc, the DICOM instances that have been reported to have been properly received the storage commitment report whose identifier is provided in the URL. This is only possible if the `Status` of the storage commitment report is `Success`. https://book.orthanc-server.com/users/storage-commitment.html#removing-the-instances
@@ -6136,7 +6157,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._post(
             route=f'{self.url}/storage-commitment/{id_}/remove',
@@ -6145,7 +6166,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_studies(
             self,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List the available studies
 
         List the Orthanc identifiers of all the available DICOM studies
@@ -6164,7 +6185,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing either the Orthanc identifiers, or detailed information about the reported studies (if `expand` argument is provided)
         """
         return await self._get(
@@ -6175,7 +6196,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def delete_studies_id(
             self,
             id_: str,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Delete some study
 
         Delete the DICOM study whose Orthanc identifier is provided in the URL
@@ -6189,7 +6210,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/studies/{id_}',
@@ -6199,7 +6220,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get information about some study
 
         Get detailed information about the DICOM study whose Orthanc identifier is provided in the URL
@@ -6217,7 +6238,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Information about the DICOM study
         """
         return await self._get(
@@ -6229,7 +6250,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Anonymize study
 
         Start a job that will anonymize all the DICOM instances within the study whose identifier is provided in the URL. The modified DICOM instances will be stored into a brand new study, whose Orthanc identifiers will be returned by the job. https://book.orthanc-server.com/users/anonymization.html#anonymization-of-patients-studies-or-series
@@ -6257,7 +6278,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         if json is None:
@@ -6271,7 +6292,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Create ZIP archive
 
         Synchronously create a ZIP archive containing the DICOM study whose Orthanc identifier is provided in the URL. This flavor is synchronous, which might *not* be desirable to archive large amount of data, as it might lead to network timeouts. Prefer the asynchronous version using `POST` method.
@@ -6288,7 +6309,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             ZIP file containing the archive
         """
         return await self._get(
@@ -6300,7 +6321,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Create ZIP archive
 
         Create a ZIP archive containing the DICOM study whose Orthanc identifier is provided in the URL
@@ -6319,7 +6340,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             In asynchronous mode, information about the job that has been submitted to generate the archive: https://book.orthanc-server.com/users/advanced-rest.html#jobs
             In synchronous mode, the ZIP file containing the archive
         """
@@ -6334,7 +6355,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List attachments
 
         Get the list of attachments that are associated with the given study
@@ -6350,7 +6371,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the names of the attachments
         """
         return await self._get(
@@ -6363,7 +6384,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Delete attachment
 
         Delete an attachment associated with the given DICOM study. This call will fail if trying to delete a system attachment (i.e. whose index is < 1024).
@@ -6382,7 +6403,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/studies/{id_}/attachments/{name}',
@@ -6394,7 +6415,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List operations on attachments
 
         Get the list of the operations that are available for attachments associated with the given study
@@ -6413,7 +6434,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             List of the available operations
         """
         return await self._get(
@@ -6427,7 +6448,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             name: str,
             content: RequestContent = None,
             headers: HeaderTypes = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Set attachment
 
         Attach a file to the given DICOM study. This call will fail if trying to modify a system attachment (i.e. whose index is < 1024).
@@ -6448,7 +6469,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
             Empty JSON object in the case of a success
         """
         return await self._put(
@@ -6461,7 +6482,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             name: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Compress attachment
 
         Change the compression scheme that is used to store an attachment.
@@ -6477,7 +6498,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._post(
             route=f'{self.url}/studies/{id_}/attachments/{name}/compress',
@@ -6488,7 +6509,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get attachment (no decompression)
 
         Get the (binary) content of one attachment associated with the given study. The attachment will not be decompressed if `StorageCompression` is `true`.
@@ -6507,7 +6528,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The attachment
         """
         return await self._get(
@@ -6520,7 +6541,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get MD5 of attachment on disk
 
         Get the MD5 hash of one attachment associated with the given study, as stored on the disk. This is different from `.../md5` iff `EnableStorage` is `true`.
@@ -6539,7 +6560,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The MD5 of the attachment, as stored on the disk
         """
         return await self._get(
@@ -6552,7 +6573,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get size of attachment on disk
 
         Get the size of one attachment associated with the given study, as stored on the disk. This is different from `.../size` iff `EnableStorage` is `true`.
@@ -6571,7 +6592,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The size of the attachment, as stored on the disk
         """
         return await self._get(
@@ -6584,7 +6605,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get attachment
 
         Get the (binary) content of one attachment associated with the given study
@@ -6603,7 +6624,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The attachment
         """
         return await self._get(
@@ -6616,7 +6637,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get info about the attachment
 
         Get all the information about the attachment associated with the given study
@@ -6635,7 +6656,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON object containing the information about the attachment
         """
         return await self._get(
@@ -6648,7 +6669,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Is attachment compressed?
 
         Test whether the attachment has been stored as a compressed file on the disk.
@@ -6667,7 +6688,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             `0` if the attachment was stored uncompressed, `1` if it was compressed
         """
         return await self._get(
@@ -6680,7 +6701,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get MD5 of attachment
 
         Get the MD5 hash of one attachment associated with the given study
@@ -6699,7 +6720,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The MD5 of the attachment
         """
         return await self._get(
@@ -6712,7 +6733,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get size of attachment
 
         Get the size of one attachment associated with the given study
@@ -6731,7 +6752,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The size of the attachment
         """
         return await self._get(
@@ -6743,7 +6764,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             name: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Uncompress attachment
 
         Change the compression scheme that is used to store an attachment.
@@ -6759,7 +6780,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._post(
             route=f'{self.url}/studies/{id_}/attachments/{name}/uncompress',
@@ -6769,7 +6790,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             name: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Verify attachment
 
         Verify that the attachment is not corrupted, by validating its MD5 hash
@@ -6785,7 +6806,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             On success, a valid JSON object is returned
         """
         return await self._post(
@@ -6796,7 +6817,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get child instances
 
         Get detailed information about the child instances of the DICOM study whose Orthanc identifier is provided in the URL
@@ -6814,7 +6835,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing information about the child DICOM instances
         """
         return await self._get(
@@ -6826,7 +6847,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get tags of instances
 
         Get the tags of all the child instances of the DICOM study whose Orthanc identifier is provided in the URL
@@ -6844,7 +6865,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON object associating the Orthanc identifiers of the instances, with the values of their DICOM tags
         """
         return await self._get(
@@ -6855,7 +6876,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_studies_id_labels(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List labels
 
         Get the labels that are associated with the given study (new in Orthanc 1.12.0)
@@ -6869,7 +6890,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the names of the labels
         """
         return await self._get(
@@ -6880,7 +6901,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Remove label
 
         Remove a label associated with a study
@@ -6896,7 +6917,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/studies/{id_}/labels/{label}',
@@ -6906,7 +6927,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Test label
 
         Test whether the study is associated with the given label
@@ -6922,7 +6943,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Empty string is returned in the case of presence, error 404 in the case of absence
         """
         return await self._get(
@@ -6933,7 +6954,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Add label
 
         Associate a label with a study
@@ -6949,7 +6970,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/studies/{id_}/labels/{label}',
@@ -6959,7 +6980,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Create DICOMDIR media
 
         Synchronously create a DICOMDIR media containing the DICOM study whose Orthanc identifier is provided in the URL. This flavor is synchronous, which might *not* be desirable to archive large amount of data, as it might lead to network timeouts. Prefer the asynchronous version using `POST` method.
@@ -6977,7 +6998,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             ZIP file containing the archive
         """
         return await self._get(
@@ -6989,7 +7010,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Create DICOMDIR media
 
         Create a DICOMDIR media containing the DICOM study whose Orthanc identifier is provided in the URL
@@ -7009,7 +7030,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             In asynchronous mode, information about the job that has been submitted to generate the archive: https://book.orthanc-server.com/users/advanced-rest.html#jobs
             In synchronous mode, the ZIP file containing the archive
         """
@@ -7024,7 +7045,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Merge study
 
         Start a new job so as to move some DICOM resources into the DICOM study whose Orthanc identifier is provided in the URL: https://book.orthanc-server.com/users/anonymization.html#merging
@@ -7045,7 +7066,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         if json is None:
@@ -7059,7 +7080,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List metadata
 
         Get the list of metadata that are associated with the given study
@@ -7076,7 +7097,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the names of the available metadata, or JSON associative array mapping metadata to their values (if `expand` argument is provided)
         """
         return await self._get(
@@ -7089,7 +7110,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Delete metadata
 
         Delete some metadata associated with the given DICOM study. This call will fail if trying to delete a system metadata (i.e. whose index is < 1024).
@@ -7108,7 +7129,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/studies/{id_}/metadata/{name}',
@@ -7120,7 +7141,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get metadata
 
         Get the value of a metadata that is associated with the given study
@@ -7139,7 +7160,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Value of the metadata
         """
         return await self._get(
@@ -7153,7 +7174,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             name: str,
             data: RequestData = None,
             headers: HeaderTypes = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Set metadata
 
         Set the value of some metadata in the given DICOM study. This call will fail if trying to modify a system metadata (i.e. whose index is < 1024).
@@ -7175,7 +7196,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/studies/{id_}/metadata/{name}',
@@ -7187,7 +7208,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Modify study
 
         Start a job that will modify all the DICOM instances within the study whose identifier is provided in the URL. The modified DICOM instances will be stored into a brand new study, whose Orthanc identifiers will be returned by the job. https://book.orthanc-server.com/users/anonymization.html#modification-of-studies-or-series
@@ -7214,7 +7235,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         if json is None:
@@ -7228,7 +7249,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get study module
 
         Get the study module of the DICOM study whose Orthanc identifier is provided in the URL
@@ -7246,7 +7267,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Information about the DICOM study
         """
         return await self._get(
@@ -7258,7 +7279,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get patient module of study
 
         Get the patient module of the DICOM study whose Orthanc identifier is provided in the URL
@@ -7276,7 +7297,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Information about the DICOM study
         """
         return await self._get(
@@ -7288,7 +7309,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get parent patient
 
         Get detailed information about the parent patient of the DICOM study whose Orthanc identifier is provided in the URL
@@ -7306,7 +7327,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Information about the parent DICOM patient
         """
         return await self._get(
@@ -7318,7 +7339,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Reconstruct tags & optionally files of study
 
         Reconstruct the main DICOM tags in DB of the study whose Orthanc identifier is provided in the URL. This is useful if child studies/series/instances have inconsistent values for higher-level tags, in order to force Orthanc to use the value from the resource of interest. Beware that this is a time-consuming operation, as all the children DICOM instances will be parsed again, and the Orthanc index will be updated accordingly.
@@ -7334,7 +7355,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         if json is None:
             json = {}
@@ -7347,7 +7368,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get child series
 
         Get detailed information about the child series of the DICOM study whose Orthanc identifier is provided in the URL
@@ -7365,7 +7386,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing information about the child DICOM series
         """
         return await self._get(
@@ -7377,7 +7398,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get shared tags
 
         Extract the DICOM tags whose value is constant across all the child instances of the DICOM study whose Orthanc identifier is provided in the URL
@@ -7394,7 +7415,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON object containing the values of the DICOM tags
         """
         return await self._get(
@@ -7406,7 +7427,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Split study
 
         Start a new job so as to split the DICOM study whose Orthanc identifier is provided in the URL, by taking some of its children series or instances out of it and putting them into a brand new study (this new study is created by setting the `StudyInstanceUID` tag to a random identifier): https://book.orthanc-server.com/users/anonymization.html#splitting
@@ -7430,7 +7451,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         if json is None:
@@ -7443,7 +7464,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_studies_id_statistics(
             self,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get study statistics
 
         Get statistics about the given study
@@ -7457,7 +7478,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         return await self._get(
@@ -7466,7 +7487,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_system(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get system information
 
         Get system information about Orthanc
@@ -7478,7 +7499,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         return await self._get(
@@ -7487,7 +7508,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_tools(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) List operations
 
         List the available operations under URI `/tools/`
@@ -7499,7 +7520,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             List of the available operations
         """
         return await self._get(
@@ -7508,7 +7529,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_tools_accepted_transfer_syntaxes(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get accepted transfer syntaxes
 
         Get the list of UIDs of the DICOM transfer syntaxes that are accepted by Orthanc C-STORE SCP. This corresponds to the configuration options `AcceptedTransferSyntaxes` and `XXXTransferSyntaxAccepted`.
@@ -7520,7 +7541,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the transfer syntax UIDs
         """
         return await self._get(
@@ -7531,7 +7552,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             data: RequestData = None,
             json: Any = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Set accepted transfer syntaxes
 
         Set the DICOM transfer syntaxes that accepted by Orthanc C-STORE SCP
@@ -7547,7 +7568,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
             JSON array containing the now-accepted transfer syntax UIDs
         """
         if json is None:
@@ -7561,7 +7582,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def post_tools_bulk_anonymize(
             self,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Anonymize a set of resources
 
         Start a job that will anonymize all the DICOM patients, studies, series or instances whose identifiers are provided in the `Resources` field.
@@ -7588,7 +7609,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The list of all the resources that have been created by this anonymization
         """
         if json is None:
@@ -7601,7 +7622,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def post_tools_bulk_content(
             self,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Describe a set of resources
 
         Get the content all the DICOM patients, studies, series or instances whose identifiers are provided in the `Resources` field, in one single call.
@@ -7619,7 +7640,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         if json is None:
             json = {}
@@ -7631,7 +7652,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def post_tools_bulk_delete(
             self,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Delete a set of resources
 
         Delete all the DICOM patients, studies, series or instances whose identifiers are provided in the `Resources` field.
@@ -7645,7 +7666,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         if json is None:
             json = {}
@@ -7657,7 +7678,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def post_tools_bulk_modify(
             self,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Modify a set of resources
 
         Start a job that will modify all the DICOM patients, studies, series or instances whose identifiers are provided in the `Resources` field.
@@ -7684,7 +7705,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The list of all the resources that have been altered by this modification
         """
         if json is None:
@@ -7697,7 +7718,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def post_tools_create_archive(
             self,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Create ZIP archive
 
         Create a ZIP archive containing the DICOM resources (patients, studies, series, or instances) whose Orthanc identifiers are provided in the body
@@ -7715,7 +7736,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             In asynchronous mode, information about the job that has been submitted to generate the archive: https://book.orthanc-server.com/users/advanced-rest.html#jobs
             In synchronous mode, the ZIP file containing the archive
         """
@@ -7729,7 +7750,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def post_tools_create_dicom(
             self,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Create one DICOM instance
 
         Create one DICOM instance, and store it into Orthanc
@@ -7748,7 +7769,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             
         """
         if json is None:
@@ -7761,7 +7782,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def post_tools_create_media(
             self,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Create DICOMDIR media
 
         Create a DICOMDIR media containing the DICOM resources (patients, studies, series, or instances) whose Orthanc identifiers are provided in the body
@@ -7780,7 +7801,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             In asynchronous mode, information about the job that has been submitted to generate the archive: https://book.orthanc-server.com/users/advanced-rest.html#jobs
             In synchronous mode, the ZIP file containing the archive
         """
@@ -7794,7 +7815,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def post_tools_create_media_extended(
             self,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Create DICOMDIR media
 
         Create a DICOMDIR media containing the DICOM resources (patients, studies, series, or instances) whose Orthanc identifiers are provided in the body
@@ -7813,7 +7834,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             In asynchronous mode, information about the job that has been submitted to generate the archive: https://book.orthanc-server.com/users/advanced-rest.html#jobs
             In synchronous mode, the ZIP file containing the archive
         """
@@ -7826,7 +7847,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_tools_default_encoding(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get default encoding
 
         Get the default encoding that is used by Orthanc if parsing a DICOM instance without the `SpecificCharacterEncoding` tag, or during C-FIND. This corresponds to the configuration option `DefaultEncoding`.
@@ -7838,7 +7859,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The name of the encoding
         """
         return await self._get(
@@ -7848,7 +7869,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_default_encoding(
             self,
             data: RequestData = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Set default encoding
 
         Change the default encoding that is used by Orthanc if parsing a DICOM instance without the `SpecificCharacterEncoding` tag, or during C-FIND. This corresponds to the configuration option `DefaultEncoding`.
@@ -7863,7 +7884,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/default-encoding',
@@ -7872,7 +7893,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_tools_dicom_conformance(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get DICOM conformance
 
         Get the DICOM conformance statement of Orthanc
@@ -7884,7 +7905,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The DICOM conformance statement
         """
         return await self._get(
@@ -7894,7 +7915,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def post_tools_dicom_echo(
             self,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Trigger C-ECHO SCU
 
         Trigger C-ECHO SCU command against a DICOM modality described in the POST body, without having to register the modality in some `/modalities/{id}` (new in Orthanc 1.8.1)
@@ -7914,7 +7935,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         if json is None:
             json = {}
@@ -7926,7 +7947,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def post_tools_execute_script(
             self,
             data: RequestData = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Execute Lua script
 
         Execute the provided Lua script by the Orthanc server. This is very insecure for Orthanc servers that are remotely accessible.  Since Orthanc 1.5.8, this route is disabled by default and can be enabled thanks to the `ExecuteLuaEnabled` configuration.
@@ -7941,7 +7962,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Output of the Lua script
         """
         return await self._post(
@@ -7952,7 +7973,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def post_tools_find(
             self,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Look for local resources
 
         This URI can be used to perform a search on the content of the local Orthanc server, in a way that is similar to querying remote DICOM modalities using C-FIND SCU: https://book.orthanc-server.com/users/rest.html#performing-finds-within-orthanc
@@ -7976,7 +7997,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing either the Orthanc identifiers, or detailed information about the reported resources (if `Expand` argument is `true`)
         """
         if json is None:
@@ -7989,7 +8010,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def get_tools_generate_uid(
             self,
             params: QueryParamTypes = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Generate an identifier
 
         Generate a random DICOM identifier
@@ -8003,7 +8024,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The generated identifier
         """
         return await self._get(
@@ -8013,7 +8034,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def post_tools_invalid_ate_tags(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Invalidate DICOM-as-JSON summaries
 
         Remove all the attachments of the type "DICOM-as-JSON" that are associated will all the DICOM instances stored in Orthanc. These summaries will be automatically re-created on the next access. This is notably useful after changes to the `Dictionary` configuration option. https://book.orthanc-server.com/faq/orthanc-storage.html#storage-area
@@ -8025,7 +8046,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._post(
             route=f'{self.url}/tools/invalid_ate-tags',
@@ -8033,7 +8054,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_tools_labels(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get all the used labels
 
         List all the labels that are associated with any resource of the Orthanc database
@@ -8045,7 +8066,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the labels
         """
         return await self._get(
@@ -8054,7 +8075,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_tools_log_level(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get main log level
 
         Get the main log level of Orthanc
@@ -8066,7 +8087,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Possible values: `default`, `verbose` or `trace`
         """
         return await self._get(
@@ -8076,7 +8097,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_log_level(
             self,
             data: RequestData = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Set main log level
 
         Set the main log level of Orthanc
@@ -8091,7 +8112,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/log-level',
@@ -8100,7 +8121,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_tools_log_level_dicom(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get log level for `dicom`
 
         Get the log level of the log category `dicom`
@@ -8112,7 +8133,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Possible values: `default`, `verbose` or `trace`
         """
         return await self._get(
@@ -8122,7 +8143,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_log_level_dicom(
             self,
             data: RequestData = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Set log level for `dicom`
 
         Set the log level of the log category `dicom`
@@ -8137,7 +8158,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/log-level-dicom',
@@ -8146,7 +8167,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_tools_log_level_generic(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get log level for `generic`
 
         Get the log level of the log category `generic`
@@ -8158,7 +8179,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Possible values: `default`, `verbose` or `trace`
         """
         return await self._get(
@@ -8168,7 +8189,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_log_level_generic(
             self,
             data: RequestData = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Set log level for `generic`
 
         Set the log level of the log category `generic`
@@ -8183,7 +8204,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/log-level-generic',
@@ -8192,7 +8213,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_tools_log_level_http(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get log level for `http`
 
         Get the log level of the log category `http`
@@ -8204,7 +8225,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Possible values: `default`, `verbose` or `trace`
         """
         return await self._get(
@@ -8214,7 +8235,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_log_level_http(
             self,
             data: RequestData = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Set log level for `http`
 
         Set the log level of the log category `http`
@@ -8229,7 +8250,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/log-level-http',
@@ -8238,7 +8259,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_tools_log_level_jobs(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get log level for `jobs`
 
         Get the log level of the log category `jobs`
@@ -8250,7 +8271,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Possible values: `default`, `verbose` or `trace`
         """
         return await self._get(
@@ -8260,7 +8281,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_log_level_jobs(
             self,
             data: RequestData = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Set log level for `jobs`
 
         Set the log level of the log category `jobs`
@@ -8275,7 +8296,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/log-level-jobs',
@@ -8284,7 +8305,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_tools_log_level_lua(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get log level for `lua`
 
         Get the log level of the log category `lua`
@@ -8296,7 +8317,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Possible values: `default`, `verbose` or `trace`
         """
         return await self._get(
@@ -8306,7 +8327,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_log_level_lua(
             self,
             data: RequestData = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Set log level for `lua`
 
         Set the log level of the log category `lua`
@@ -8321,7 +8342,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/log-level-lua',
@@ -8330,7 +8351,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_tools_log_level_plugins(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get log level for `plugins`
 
         Get the log level of the log category `plugins`
@@ -8342,7 +8363,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Possible values: `default`, `verbose` or `trace`
         """
         return await self._get(
@@ -8352,7 +8373,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_log_level_plugins(
             self,
             data: RequestData = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Set log level for `plugins`
 
         Set the log level of the log category `plugins`
@@ -8367,7 +8388,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/log-level-plugins',
@@ -8376,7 +8397,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_tools_log_level_sqlite(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get log level for `sqlite`
 
         Get the log level of the log category `sqlite`
@@ -8388,7 +8409,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Possible values: `default`, `verbose` or `trace`
         """
         return await self._get(
@@ -8398,7 +8419,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_log_level_sqlite(
             self,
             data: RequestData = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Set log level for `sqlite`
 
         Set the log level of the log category `sqlite`
@@ -8413,7 +8434,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/log-level-sqlite',
@@ -8423,7 +8444,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def post_tools_lookup(
             self,
             data: RequestData = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Look for DICOM identifiers
 
         This URI can be used to convert one DICOM identifier to a list of matching Orthanc resources
@@ -8438,7 +8459,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing a list of matching Orthanc resources, each item in the list corresponding to a JSON object with the fields `Type`, `ID` and `Path` identifying one DICOM resource that is stored by Orthanc
         """
         return await self._post(
@@ -8448,7 +8469,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_tools_metrics(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Are metrics collected?
 
         Returns a Boolean specifying whether Prometheus metrics are collected and exposed at `/tools/metrics-prometheus`
@@ -8460,7 +8481,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             `1` if metrics are collected, `0` if metrics are disabled
         """
         return await self._get(
@@ -8470,7 +8491,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_metrics(
             self,
             data: RequestData = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Enable collection of metrics
 
         Enable or disable the collection and publication of metrics at `/tools/metrics-prometheus`
@@ -8485,7 +8506,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/metrics',
@@ -8494,7 +8515,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_tools_metrics_prometheus(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get usage metrics
 
         Get usage metrics of Orthanc in the Prometheus file format (OpenMetrics): https://book.orthanc-server.com/users/advanced-rest.html#instrumentation-with-prometheus
@@ -8506,7 +8527,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             No description
         """
         return await self._get(
@@ -8515,7 +8536,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_tools_now(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get UTC time
 
         Get UTC time
@@ -8527,7 +8548,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The UTC time
         """
         return await self._get(
@@ -8536,7 +8557,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_tools_now_local(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get local time
 
         Get local time
@@ -8548,7 +8569,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The local time
         """
         return await self._get(
@@ -8558,7 +8579,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def post_tools_reconstruct(
             self,
             json: Any = None,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Reconstruct all the index
 
         Reconstruct the index of all the tags of all the DICOM instances that are stored in Orthanc. This is notably useful after the deletion of resources whose children resources have inconsistent values with their sibling resources. Beware that this is a highly time-consuming operation, as all the DICOM instances will be parsed again, and as all the Orthanc index will be regenerated. If you have a large database to process, it is advised to use the Housekeeper plugin to perform this action resource by resource
@@ -8572,7 +8593,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         if json is None:
             json = {}
@@ -8583,7 +8604,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def post_tools_reset(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Restart Orthanc
 
         Restart Orthanc
@@ -8595,7 +8616,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._post(
             route=f'{self.url}/tools/reset',
@@ -8603,7 +8624,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def post_tools_shutdown(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Shutdown Orthanc
 
         Shutdown Orthanc
@@ -8615,7 +8636,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._post(
             route=f'{self.url}/tools/shutdown',
@@ -8623,7 +8644,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def get_tools_unknown_sop_class_accepted(
             self,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Is unknown SOP class accepted?
 
         Shall Orthanc C-STORE SCP accept DICOM instances with an unknown SOP class UID?
@@ -8635,7 +8656,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             `1` if accepted, `0` if not accepted
         """
         return await self._get(
@@ -8645,7 +8666,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_unknown_sop_class_accepted(
             self,
             data: RequestData = None,
-            ) -> None:
+            ) -> Optional[httpx.Response]:
         """(async) Set unknown SOP class accepted
 
         Set whether Orthanc C-STORE SCP should accept DICOM instances with an unknown SOP class UID
@@ -8660,7 +8681,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Optional[httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/unknown-sop-class-accepted',
@@ -8671,7 +8692,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             tags_path: str,
             id_: str,
-            ) -> Union[Dict, List, str, bytes, int]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Get raw tag
 
         Get the raw content of one DICOM tag in the hierarchy of DICOM dataset
@@ -8687,7 +8708,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Union[Dict, List, str, bytes, int]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             The raw value of the tag of intereset (binary data, whose memory layout depends on the underlying transfer syntax), or JSON array containing the list of available tags if accessing a dataset
         """
         return await self._get(

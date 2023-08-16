@@ -40,5 +40,5 @@ def _apply_corrections_to_documents(document):
 
 
 if __name__ == '__main__':
-    generate_client('../pyorthanc/client.py', async_mode=False)
-    generate_client('../pyorthanc/async_client.py', async_mode=True)
+    generate_client('./pyorthanc/client.py', async_mode=False)
+    generate_client('./pyorthanc/async_client.py', async_mode=True)
