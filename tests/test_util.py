@@ -4,7 +4,7 @@ import pydicom
 import pytest
 
 from pyorthanc import Orthanc, AsyncOrthanc, util
-from tests.data import an_instance
+from .data import an_instance
 
 
 def test_async_to_sync(async_client):

@@ -1,6 +1,6 @@
 import pytest
 
-from tests.setup_server import ORTHANC_1, ORTHANC_2, setup_data
+from ..setup_server import ORTHANC_1, ORTHANC_2, setup_data
 
 MODALITY = ORTHANC_1.AeT
 PAYLOAD = {'Level': 'Study', 'Query': {'PatientID': 'MP*'}}

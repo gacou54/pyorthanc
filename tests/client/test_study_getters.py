@@ -4,7 +4,7 @@ import zipfile
 import httpx
 import pytest
 
-from tests.data import a_study
+from ..data import a_study
 
 KEYS_TO_EXCLUDE = {'LastUpdate', 'FileUuid', 'FileSize'}  # Removing keys that are never the same
 

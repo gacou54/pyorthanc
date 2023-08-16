@@ -1,5 +1,4 @@
 import os
-import unittest
 import warnings
 import zipfile
 from typing import Dict
@@ -7,10 +6,7 @@ from typing import Dict
 import httpx
 import pytest
 
-from pyorthanc import Orthanc
-from tests.data import a_patient
-from tests.setup_server import ORTHANC_1, clear_data, setup_data
-
+from ..data import a_patient
 
 KEYS_TO_EXCLUDE = {'LastUpdate', 'FileUuid', 'FileSize', 'DiskSize', 'UncompressedSize', 'DiskSizeMB',
                    'UncompressedSizeMB'}  # Removing keys that are never the same
@@ -58,7 +54,8 @@ def test_get_patient_instances(client_with_data):
 
     assert isinstance(result, list)
     for i in [{key: value for key, value in i.items() if key not in KEYS_TO_EXCLUDE} for i in result]:
-        assert i in [{key: value for key, value in i.items() if key not in KEYS_TO_EXCLUDE} for i in a_patient.INSTANCES]
+        assert i in [{key: value for key, value in i.items() if key not in KEYS_TO_EXCLUDE} for i in
+                     a_patient.INSTANCES]
 
 
 @pytest.mark.parametrize('params, expected_tags', [
@@ -145,8 +142,10 @@ def test_get_patient_studies(client_with_data):
     result = client_with_data.get_patients_id_studies(a_patient.IDENTIFIER)
 
     assert isinstance(result, list)
-    for i in [_sort_dictionary_element({key: value for key, value in i.items() if key not in KEYS_TO_EXCLUDE}) for i in result]:
-        assert i in [_sort_dictionary_element({key: value for key, value in i.items() if key not in KEYS_TO_EXCLUDE}) for i in a_patient.STUDIES]
+    for i in [_sort_dictionary_element({key: value for key, value in i.items() if key not in KEYS_TO_EXCLUDE}) for i in
+              result]:
+        assert i in [_sort_dictionary_element({key: value for key, value in i.items() if key not in KEYS_TO_EXCLUDE})
+                     for i in a_patient.STUDIES]
 
 
 def _sort_dictionary_element(dictionary: Dict) -> Dict:
