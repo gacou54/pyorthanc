@@ -12,7 +12,7 @@ Be sure that Orthanc is running. The default URL (if running locally) is `http:/
 
 #### Getting access to patients, studies, series and instances information:
 
-[Doc](../examples/access_informations/README.md)
+[Doc](examples/access_informations/README.md)
 
 #### Find patients with certain characteristics in an Orthanc instance:
 Each patient is a tree. Layers in each tree have the following structure 
