@@ -11,9 +11,7 @@ nav:
     - 'Contacts': 'contacts.md'
 
   - 'Releases & Roadmap':
-    - 'Release':
-      - '1.12.1' : 'releases/releases.md'
-      - '1.11.5': 'releases/release1.11.5.md'
+    - 'Releases': 'releases/releases.md'
     - 'Roadmap' : 'releases/roadmap.md'
 
   - 'Démos': 'demos.md'
