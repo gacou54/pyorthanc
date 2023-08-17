@@ -3,8 +3,8 @@ from typing import Dict, Any, List
 
 import pydicom
 
-from pyorthanc import util
-from pyorthanc.client import Orthanc
+from . import util
+from .client import Orthanc
 
 
 class Instance:
@@ -222,3 +222,6 @@ class Instance:
 
     def __repr__(self):
         return f'Instance(identifier={self.id_})'
+
+    def __eq__(self, other: 'Instance') -> bool:
+        return self.id_ == other.id_

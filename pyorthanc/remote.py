@@ -2,7 +2,7 @@ from typing import Dict
 
 import httpx
 
-from pyorthanc.client import Orthanc
+from .client import Orthanc
 
 
 class RemoteModality:

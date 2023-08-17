@@ -3,13 +3,13 @@ import os
 import warnings
 from typing import List, Dict, Callable, Optional, Union
 
-from pyorthanc.study import Study
-from pyorthanc.series import Series
-from pyorthanc.instance import Instance
-from pyorthanc.async_client import AsyncOrthanc
-from pyorthanc.client import Orthanc
-from pyorthanc.patient import Patient
-from pyorthanc.util import async_to_sync
+from .study import Study
+from .series import Series
+from .instance import Instance
+from .async_client import AsyncOrthanc
+from .client import Orthanc
+from .patient import Patient
+from .util import async_to_sync
 
 
 def build_patient_forest(

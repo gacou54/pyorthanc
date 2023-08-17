@@ -1,12 +1,12 @@
-from pyorthanc.async_client import AsyncOrthanc
-from pyorthanc.client import Orthanc
-from pyorthanc.remote import RemoteModality
-from pyorthanc.patient import Patient
-from pyorthanc.study import Study
-from pyorthanc.series import Series
-from pyorthanc.instance import Instance
-from pyorthanc.filtering import build_patient_forest, find, trim_patient, retrieve_and_write_patients
-
+from .async_client import AsyncOrthanc
+from .client import Orthanc
+from .labels import Labels
+from .remote import RemoteModality
+from .patient import Patient
+from .study import Study
+from .series import Series
+from .instance import Instance
+from .filtering import build_patient_forest, find, trim_patient, retrieve_and_write_patients
 
 __all__ = [
     'AsyncOrthanc',
@@ -20,4 +20,5 @@ __all__ = [
     'trim_patient',
     'retrieve_and_write_patients',
     'find',
+    'Labels',
 ]

@@ -1,11 +1,11 @@
 from typing import List, Dict
 
-from pyorthanc.instance import Instance
-from pyorthanc.client import Orthanc
+from .instance import Instance
+from .client import Orthanc
 
 
 class Series:
-    """Represent an series that is in an Orthanc server
+    """Represent a series that is in an Orthanc server
 
     This object has many getters that allow the user to retrieve metadata
     or the entire DICOM file of the Series
@@ -193,3 +193,5 @@ class Series:
     def remove_empty_instances(self) -> None:
         self._instances = [i for i in self._instances if i is not None]
 
+    def __eq__(self, other: 'Series') -> bool:
+        return self.id_ == other.id_

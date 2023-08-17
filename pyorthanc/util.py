@@ -1,11 +1,11 @@
 from datetime import datetime
 from io import BytesIO
-from typing import Optional, io
+from typing import Optional
 
 import pydicom
 
-from pyorthanc.async_client import AsyncOrthanc
-from pyorthanc.client import Orthanc
+from .async_client import AsyncOrthanc
+from .client import Orthanc
 
 
 def make_datetime_from_dicom_date(date: str, time: str = None) -> Optional[datetime]:
