@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import Dict, List
 
-from pyorthanc import util
 from .instance import Instance
 from .resource import Resource
+from .. import util
 
 
 class Series(Resource):
@@ -172,14 +172,16 @@ class Series(Resource):
 
         Examples
         --------
-        >>> from pyorthanc import Orthanc, Series
-        >>> a_series = Series(
-        ...     'SERIES_IDENTIFIER',
-        ...     Orthanc('http://localhost:8042')
-        ... )
-        >>> bytes_content = a_series.get_zip()
-        >>> with open('series_zip_file_path.zip', 'wb') as file_handler:
-        ...     file_handler.write(bytes_content)
+        ```python
+        from pyorthanc import Orthanc, Series
+        a_series = Series(
+            'SERIES_IDENTIFIER',
+            Orthanc('http://localhost:8042')
+        )
+        bytes_content = a_series.get_zip()
+        with open('series_zip_file_path.zip', 'wb') as file_handler:
+            file_handler.write(bytes_content)
+        ```
 
         """
         return self.client.get_series_id_archive(self.id_)
