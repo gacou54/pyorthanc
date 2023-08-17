@@ -1,0 +1,21 @@
+site_name: PyOrthanc
+site_description: PyOrthanc library
+repo_url: https://github.com/gacou54/pyorthanc
+repo_name: gacou54/pyorthanc
+
+
+nav:
+  - 'General informations':
+    - 'Presentation': 'index.md'
+    - 'Purpose': 'purpose.md'
+    - 'Contacts': 'contacts.md'
+
+  - 'Releases & Roadmap':
+    - 'Release':
+      - '1.12.1' : 'releases/releases.md'
+      - '1.11.5': 'releases/release1.11.5.md'
+    - 'Roadmap' : 'releases/roadmap.md'
+
+  - 'Démos': 'demos.md'
+
+  - 'More information': 'documentation.md'
