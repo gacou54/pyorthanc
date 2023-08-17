@@ -1,0 +1,15 @@
+version: '3.3'
+services:
+  orthanc:
+    image: jodogne/orthanc-plugins:1.12.1
+    command: /run/secrets/  # Path to the configuration files (stored as secrets)
+    ports:
+      - 4242:4242
+      - 8042:8042
+    secrets:
+      - orthanc.json
+    environment:
+      - ORTHANC_NAME=HelloWorld
+secrets:
+  orthanc.json:
+    file: orthanc.json
