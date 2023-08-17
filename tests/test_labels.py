@@ -1,13 +1,22 @@
 import pytest
 
-from pyorthanc import Labels, Patient, Study, Series, Instance
-from .conftest import LABEL_PATIENT, LABEL_STUDY, LABEL_SERIES, LABEL_INSTANCE
-from .data import a_patient, a_study, a_series, an_instance
+from pyorthanc import Instance, Labels, Patient, Series, Study
+from .data import a_patient, a_series, a_study, an_instance
+
+LABEL_PATIENT = 'my_label_patient'
+LABEL_STUDY = 'my_label_study'
+LABEL_SERIES = 'my_label_series'
+LABEL_INSTANCE = 'my_label_instance'
 
 
 @pytest.fixture
-def labels(client_with_data_and_labels):
-    return Labels(client_with_data_and_labels)
+def labels(client_with_data):
+    client_with_data.put_patients_id_labels_label(a_patient.IDENTIFIER, LABEL_PATIENT)
+    client_with_data.put_studies_id_labels_label(a_study.IDENTIFIER, LABEL_STUDY)
+    client_with_data.put_series_id_labels_label(a_series.IDENTIFIER, LABEL_SERIES)
+    client_with_data.put_instances_id_labels_label(an_instance.IDENTIFIER, LABEL_INSTANCE)
+
+    return Labels(client_with_data)
 
 
 @pytest.mark.parametrize('expected', [
