@@ -8,6 +8,7 @@ from .resources import Instance, Patient, Series, Study
 from .retrieve import retrieve_and_write_instance, retrieve_and_write_patient, retrieve_and_write_patients, \
     retrieve_and_write_series, retrieve_and_write_study
 
+
 __all__ = [
     'AsyncOrthanc',
     'Orthanc',

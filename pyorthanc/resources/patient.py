@@ -98,14 +98,16 @@ class Patient(Resource):
 
         Examples
         --------
-        >>> from pyorthanc import Orthanc, Patient
-        >>> a_patient = Patient(
-        ...     'A_PATIENT_IDENTIFIER',
-        ...     Orthanc('http://localhost:8042')
-        ... )
-        >>> bytes_content = a_patient.get_zip()
-        >>> with open('patient_zip_file_path.zip', 'wb') as file_handler:
-        ...     file_handler.write(bytes_content)
+        ```python
+        from pyorthanc import Orthanc, Patient
+        a_patient = Patient(
+            'A_PATIENT_IDENTIFIER',
+            Orthanc('http://localhost:8042')
+        )
+        bytes_content = a_patient.get_zip()
+        with open('patient_zip_file_path.zip', 'wb') as file_handler:
+            file_handler.write(bytes_content)
+        ```
 
         """
         return self.client.get_patients_id_archive(self.id_)

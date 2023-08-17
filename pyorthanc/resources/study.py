@@ -1,10 +1,9 @@
 from datetime import datetime
 from typing import Dict, List
 
-from pyorthanc import util
-from pyorthanc.util import make_datetime_from_dicom_date
 from .resource import Resource
 from .series import Series
+from .. import util
 
 
 class Study(Resource):
@@ -56,7 +55,7 @@ class Study(Resource):
         date_string = self.get_main_information()['MainDicomTags']['StudyDate']
         time_string = self.get_main_information()['MainDicomTags']['StudyTime']
 
-        return make_datetime_from_dicom_date(date_string, time_string)
+        return util.make_datetime_from_dicom_date(date_string, time_string)
 
     @property
     def study_id(self) -> str:
@@ -192,14 +191,16 @@ class Study(Resource):
 
         Examples
         --------
-        >>> from pyorthanc import Orthanc, Study
-        >>> a_study = Study(
-        ...     'STUDY_IDENTIFIER',
-        ...     Orthanc('http://localhost:8042')
-        ... )
-        >>> bytes_content = a_study.get_zip()
-        >>> with open('study_zip_file_path.zip', 'wb') as file_handler:
-        ...     file_handler.write(bytes_content)
+        ```python
+        from pyorthanc import Orthanc, Study
+        a_study = Study(
+            'STUDY_IDENTIFIER',
+            Orthanc('http://localhost:8042')
+        )
+        bytes_content = a_study.get_zip()
+        with open('study_zip_file_path.zip', 'wb') as file_handler:
+            file_handler.write(bytes_content)
+        ```
 
         """
         return self.client.get_studies_id_archive(self.id_)
