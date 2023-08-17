@@ -1,7 +1,7 @@
 from typing import List, Dict
 
-from pyorthanc.study import Study
-from pyorthanc.client import Orthanc
+from .study import Study
+from .client import Orthanc
 
 
 class Patient:
@@ -240,9 +240,6 @@ class Patient:
 
         return Patient(anonymous_patient['ID'], self.client)
 
-    def __str__(self):
-        return f'Patient(PatientID={self.patient_id}, identifier={self.id_})'
-
     def remove_empty_studies(self) -> None:
         """Delete empty studies."""
         for study in self._studies:
@@ -254,3 +251,9 @@ class Patient:
 
     def __repr__(self):
         return f'Patient(PatientID={self.patient_id}, identifier={self.id_})'
+
+    def __str__(self):
+        return f'Patient(PatientID={self.patient_id}, identifier={self.id_})'
+
+    def __eq__(self, other: 'Patient') -> bool:
+        return self.id_ == other.id_

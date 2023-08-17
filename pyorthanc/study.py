@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import List, Dict
 
-from pyorthanc.client import Orthanc
-from pyorthanc.series import Series
-from pyorthanc.util import make_datetime_from_dicom_date
+from .client import Orthanc
+from .series import Series
+from .util import make_datetime_from_dicom_date
 
 
 class Study:
@@ -221,3 +221,6 @@ class Study:
 
     def __repr__(self):
         return f'Study(StudyId={self.study_id}, identifier={self.id_})'
+
+    def __eq__(self, other: 'Study') -> bool:
+        return self.id_ == other.id_
