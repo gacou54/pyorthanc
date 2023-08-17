@@ -2,7 +2,7 @@
 
 !.gitignore
 !LICENSE.txt
-!poetry.lock
+!.dockerignore
 !pyproject.toml
 
 !README.md
