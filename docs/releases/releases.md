@@ -1,5 +1,5 @@
-
-### Lastest release : 1.12.1
+Lastest release : 1.12.1
+------------
 
 The Orthanc client has been regenerated on the Orthanc 1.12.1 version (source of the [changelist](https://hg.orthanc-server.com/orthanc/file/Orthanc-1.12.1/NEWS)).
 
@@ -30,3 +30,20 @@ Details:
 
     - All tests made with unittest has been refactored to use pytest
 
+Release 1.11.5 
+------------
+
+PyOrthanc v1.11.5 follow Orthanc version 1.11.3.
+
+This release mostly improves the `find()` function.  It now takes an `Orthanc` object rather than an URL. This allows better control of the configuration for the connection to the Orthanc server.
+
+For example:
+```python
+from pyorthanc import Orthanc, find
+
+orthanc = Orthanc(url='http://localhost:8042/', username='username', password='password')
+patients = find(
+    orthanc=orthanc,
+    series_filter=lambda s: s.modality == 'RTDOSE'  # Optional: filter with pyorthanc.Series object
+)
+```
