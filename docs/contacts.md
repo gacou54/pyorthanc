@@ -12,5 +12,3 @@
 
 - [Orthanc](https://www.orthanc-server.com/)
 - [PARADIM](https://paradim.science)
-- [Salon des utilisateurs du socle](https://mail.google.com/chat/u/0/#chat/space/AAAApatFLqs)
-
