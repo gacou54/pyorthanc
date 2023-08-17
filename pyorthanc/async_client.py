@@ -33,7 +33,7 @@ class AsyncOrthanc(httpx.AsyncClient):
         headers
             Headers that will be share in all requests
         return_raw_response
-            All Orthanc's methods will return que raw httpx.Response rather than the serialized
+            All Orthanc's methods will return a raw httpx.Response rather than the serialized result
         """
         super().__init__()
         self.url = url
@@ -91,7 +91,7 @@ class AsyncOrthanc(httpx.AsyncClient):
                       route: str,
                       params: Optional[QueryParamTypes] = None,
                       headers: Optional[HeaderTypes] = None,
-                      cookies: Optional[CookieTypes] = None) -> Optional[httpx.Response]:
+                      cookies: Optional[CookieTypes] = None) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """DELETE to specified route
 
         Parameters
@@ -106,8 +106,8 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
-            If the HTTP DELETE request fails, HTTPError is raised, or return httpx.Response.
+        Union[Dict, List, str, bytes, int, httpx.Response]
+            Serialized response of the HTTP DELETE request or httpx.Response.
         """
         response = await self.delete(route, params=params, headers=headers, cookies=cookies)
 
@@ -115,7 +115,12 @@ class AsyncOrthanc(httpx.AsyncClient):
             return response
 
         if 200 <= response.status_code < 300:
-            return
+            if 'application/json' in response.headers['content-type']:
+                return response.json()
+            elif 'text/plain' in response.headers['content-type']:
+                return response.text
+            else:
+                return response.content
 
         raise httpx.HTTPError(f'HTTP code: {response.status_code}, with content: {response.text}')
 
@@ -171,7 +176,7 @@ class AsyncOrthanc(httpx.AsyncClient):
                    json: Optional[Any] = None,
                    params: Optional[QueryParamTypes] = None,
                    headers: Optional[HeaderTypes] = None,
-                   cookies: Optional[CookieTypes] = None) -> Optional[httpx.Response]:
+                   cookies: Optional[CookieTypes] = None) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """PUT to specified route
 
         Parameters
@@ -189,8 +194,8 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
-            If the HTTP PUT request fails, HTTPError is raised, or return httpx.Response.
+        Union[Dict, List, str, bytes, int, httpx.Response]
+            Serialized response of the HTTP PUT request or httpx.Response.
         """
         response = await self.put(route, content=content, data=data, files=files, json=json, params=params, headers=headers, cookies=cookies)
 
@@ -198,13 +203,18 @@ class AsyncOrthanc(httpx.AsyncClient):
             return response
 
         if 200 <= response.status_code < 300:
-            return
+            if 'application/json' in response.headers['content-type']:
+                return response.json()
+            elif 'text/plain' in response.headers['content-type']:
+                return response.text
+            else:
+                return response.content
 
         raise httpx.HTTPError(f'HTTP code: {response.status_code}, with text: {response.text}')
 
     async def delete_changes(
             self,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Clear changes
 
         Clear the full history stored in the changes log
@@ -216,7 +226,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/changes',
@@ -250,7 +260,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
     async def delete_exports(
             self,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Clear exports
 
         Clear the full history stored in the exports log
@@ -262,7 +272,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/exports',
@@ -354,7 +364,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def delete_instances_id(
             self,
             id_: str,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Delete some instance
 
         Delete the DICOM instance whose Orthanc identifier is provided in the URL
@@ -368,7 +378,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/instances/{id_}',
@@ -475,7 +485,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Delete attachment
 
         Delete an attachment associated with the given DICOM instance. This call will fail if trying to delete a system attachment (i.e. whose index is < 1024).
@@ -494,7 +504,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/instances/{id_}/attachments/{name}',
@@ -539,7 +549,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             name: str,
             content: RequestContent = None,
             headers: HeaderTypes = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Set attachment
 
         Attach a file to the given DICOM instance. This call will fail if trying to modify a system attachment (i.e. whose index is < 1024).
@@ -560,7 +570,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Empty JSON object in the case of a success
         """
         return await self._put(
@@ -1492,7 +1502,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Remove label
 
         Remove a label associated with a instance
@@ -1508,7 +1518,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/instances/{id_}/labels/{label}',
@@ -1545,7 +1555,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Add label
 
         Associate a label with a instance
@@ -1561,7 +1571,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/instances/{id_}/labels/{label}',
@@ -1625,7 +1635,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Delete metadata
 
         Delete some metadata associated with the given DICOM instance. This call will fail if trying to delete a system metadata (i.e. whose index is < 1024).
@@ -1644,7 +1654,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/instances/{id_}/metadata/{name}',
@@ -1689,7 +1699,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             name: str,
             data: RequestData = None,
             headers: HeaderTypes = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Set metadata
 
         Set the value of some metadata in the given DICOM instance. This call will fail if trying to modify a system metadata (i.e. whose index is < 1024).
@@ -1711,7 +1721,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/instances/{id_}/metadata/{name}',
@@ -2266,7 +2276,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             key: str,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Delete a job output
 
         Delete the output produced by a job. As of Orthanc 1.12.1, only the jobs that generate a DICOMDIR media or a ZIP archive provide such an output (with `key` equals to `archive`).
@@ -2282,7 +2292,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/jobs/{id_}/{key}',
@@ -2343,7 +2353,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def delete_modalities_id(
             self,
             id_: str,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Delete DICOM modality
 
         Delete one DICOM modality. This change is permanent iff. `DicomModalitiesInDatabase` is `true`, otherwise it is lost at the next restart of Orthanc.
@@ -2357,7 +2367,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/modalities/{id_}',
@@ -2391,7 +2401,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Update DICOM modality
 
         Define a new DICOM modality, or update an existing one. This change is permanent iff. `DicomModalitiesInDatabase` is `true`, otherwise it is lost at the next restart of Orthanc.
@@ -2419,7 +2429,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         if json is None:
             json = {}
@@ -2876,7 +2886,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def delete_patients_id(
             self,
             id_: str,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Delete some patient
 
         Delete the DICOM patient whose Orthanc identifier is provided in the URL
@@ -2890,7 +2900,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/patients/{id_}',
@@ -3064,7 +3074,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Delete attachment
 
         Delete an attachment associated with the given DICOM patient. This call will fail if trying to delete a system attachment (i.e. whose index is < 1024).
@@ -3083,7 +3093,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/patients/{id_}/attachments/{name}',
@@ -3128,7 +3138,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             name: str,
             content: RequestContent = None,
             headers: HeaderTypes = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Set attachment
 
         Attach a file to the given DICOM patient. This call will fail if trying to modify a system attachment (i.e. whose index is < 1024).
@@ -3149,7 +3159,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Empty JSON object in the case of a success
         """
         return await self._put(
@@ -3581,7 +3591,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Remove label
 
         Remove a label associated with a patient
@@ -3597,7 +3607,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/patients/{id_}/labels/{label}',
@@ -3634,7 +3644,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Add label
 
         Associate a label with a patient
@@ -3650,7 +3660,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/patients/{id_}/labels/{label}',
@@ -3755,7 +3765,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Delete metadata
 
         Delete some metadata associated with the given DICOM patient. This call will fail if trying to delete a system metadata (i.e. whose index is < 1024).
@@ -3774,7 +3784,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/patients/{id_}/metadata/{name}',
@@ -3819,7 +3829,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             name: str,
             data: RequestData = None,
             headers: HeaderTypes = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Set metadata
 
         Set the value of some metadata in the given DICOM patient. This call will fail if trying to modify a system metadata (i.e. whose index is < 1024).
@@ -3841,7 +3851,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/patients/{id_}/metadata/{name}',
@@ -3947,7 +3957,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_patients_id_protected(
             self,
             id_: str,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Protect one patient against recycling
 
         Check out configuration options `MaximumStorageSize` and `MaximumPatientCount`
@@ -3961,7 +3971,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/patients/{id_}/protected',
@@ -4137,7 +4147,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def delete_peers_id(
             self,
             id_: str,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Delete Orthanc peer
 
         Delete one Orthanc peer. This change is permanent iff. `OrthancPeersInDatabase` is `true`, otherwise it is lost at the next restart of Orthanc.
@@ -4151,7 +4161,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/peers/{id_}',
@@ -4185,7 +4195,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             json: Any = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Update Orthanc peer
 
         Define a new Orthanc peer, or update an existing one. This change is permanent iff. `OrthancPeersInDatabase` is `true`, otherwise it is lost at the next restart of Orthanc.
@@ -4207,7 +4217,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         if json is None:
             json = {}
@@ -4423,7 +4433,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def delete_queries_id(
             self,
             id_: str,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Delete a query
 
         Delete the query/retrieve operation whose identifier is provided in the URL
@@ -4437,7 +4447,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/queries/{id_}',
@@ -4855,7 +4865,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def delete_series_id(
             self,
             id_: str,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Delete some series
 
         Delete the DICOM series whose Orthanc identifier is provided in the URL
@@ -4869,7 +4879,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/series/{id_}',
@@ -5043,7 +5053,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Delete attachment
 
         Delete an attachment associated with the given DICOM series. This call will fail if trying to delete a system attachment (i.e. whose index is < 1024).
@@ -5062,7 +5072,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/series/{id_}/attachments/{name}',
@@ -5107,7 +5117,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             name: str,
             content: RequestContent = None,
             headers: HeaderTypes = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Set attachment
 
         Attach a file to the given DICOM series. This call will fail if trying to modify a system attachment (i.e. whose index is < 1024).
@@ -5128,7 +5138,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Empty JSON object in the case of a success
         """
         return await self._put(
@@ -5560,7 +5570,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Remove label
 
         Remove a label associated with a series
@@ -5576,7 +5586,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/series/{id_}/labels/{label}',
@@ -5613,7 +5623,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Add label
 
         Associate a label with a series
@@ -5629,7 +5639,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/series/{id_}/labels/{label}',
@@ -5734,7 +5744,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Delete metadata
 
         Delete some metadata associated with the given DICOM series. This call will fail if trying to delete a system metadata (i.e. whose index is < 1024).
@@ -5753,7 +5763,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/series/{id_}/metadata/{name}',
@@ -5798,7 +5808,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             name: str,
             data: RequestData = None,
             headers: HeaderTypes = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Set metadata
 
         Set the value of some metadata in the given DICOM series. This call will fail if trying to modify a system metadata (i.e. whose index is < 1024).
@@ -5820,7 +5830,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/series/{id_}/metadata/{name}',
@@ -6196,7 +6206,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def delete_studies_id(
             self,
             id_: str,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Delete some study
 
         Delete the DICOM study whose Orthanc identifier is provided in the URL
@@ -6210,7 +6220,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/studies/{id_}',
@@ -6384,7 +6394,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Delete attachment
 
         Delete an attachment associated with the given DICOM study. This call will fail if trying to delete a system attachment (i.e. whose index is < 1024).
@@ -6403,7 +6413,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/studies/{id_}/attachments/{name}',
@@ -6448,7 +6458,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             name: str,
             content: RequestContent = None,
             headers: HeaderTypes = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Set attachment
 
         Attach a file to the given DICOM study. This call will fail if trying to modify a system attachment (i.e. whose index is < 1024).
@@ -6469,7 +6479,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             Empty JSON object in the case of a success
         """
         return await self._put(
@@ -6901,7 +6911,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Remove label
 
         Remove a label associated with a study
@@ -6917,7 +6927,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/studies/{id_}/labels/{label}',
@@ -6954,7 +6964,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             id_: str,
             label: str,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Add label
 
         Associate a label with a study
@@ -6970,7 +6980,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/studies/{id_}/labels/{label}',
@@ -7110,7 +7120,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             id_: str,
             name: str,
             headers: HeaderTypes = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Delete metadata
 
         Delete some metadata associated with the given DICOM study. This call will fail if trying to delete a system metadata (i.e. whose index is < 1024).
@@ -7129,7 +7139,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._delete(
             route=f'{self.url}/studies/{id_}/metadata/{name}',
@@ -7174,7 +7184,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             name: str,
             data: RequestData = None,
             headers: HeaderTypes = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Set metadata
 
         Set the value of some metadata in the given DICOM study. This call will fail if trying to modify a system metadata (i.e. whose index is < 1024).
@@ -7196,7 +7206,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/studies/{id_}/metadata/{name}',
@@ -7552,7 +7562,7 @@ class AsyncOrthanc(httpx.AsyncClient):
             self,
             data: RequestData = None,
             json: Any = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Set accepted transfer syntaxes
 
         Set the DICOM transfer syntaxes that accepted by Orthanc C-STORE SCP
@@ -7568,7 +7578,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the now-accepted transfer syntax UIDs
         """
         if json is None:
@@ -7869,7 +7879,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_default_encoding(
             self,
             data: RequestData = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Set default encoding
 
         Change the default encoding that is used by Orthanc if parsing a DICOM instance without the `SpecificCharacterEncoding` tag, or during C-FIND. This corresponds to the configuration option `DefaultEncoding`.
@@ -7884,7 +7894,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/default-encoding',
@@ -8097,7 +8107,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_log_level(
             self,
             data: RequestData = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Set main log level
 
         Set the main log level of Orthanc
@@ -8112,7 +8122,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/log-level',
@@ -8143,7 +8153,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_log_level_dicom(
             self,
             data: RequestData = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Set log level for `dicom`
 
         Set the log level of the log category `dicom`
@@ -8158,7 +8168,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/log-level-dicom',
@@ -8189,7 +8199,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_log_level_generic(
             self,
             data: RequestData = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Set log level for `generic`
 
         Set the log level of the log category `generic`
@@ -8204,7 +8214,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/log-level-generic',
@@ -8235,7 +8245,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_log_level_http(
             self,
             data: RequestData = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Set log level for `http`
 
         Set the log level of the log category `http`
@@ -8250,7 +8260,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/log-level-http',
@@ -8281,7 +8291,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_log_level_jobs(
             self,
             data: RequestData = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Set log level for `jobs`
 
         Set the log level of the log category `jobs`
@@ -8296,7 +8306,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/log-level-jobs',
@@ -8327,7 +8337,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_log_level_lua(
             self,
             data: RequestData = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Set log level for `lua`
 
         Set the log level of the log category `lua`
@@ -8342,7 +8352,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/log-level-lua',
@@ -8373,7 +8383,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_log_level_plugins(
             self,
             data: RequestData = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Set log level for `plugins`
 
         Set the log level of the log category `plugins`
@@ -8388,7 +8398,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/log-level-plugins',
@@ -8419,7 +8429,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_log_level_sqlite(
             self,
             data: RequestData = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Set log level for `sqlite`
 
         Set the log level of the log category `sqlite`
@@ -8434,7 +8444,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/log-level-sqlite',
@@ -8491,7 +8501,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_metrics(
             self,
             data: RequestData = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Enable collection of metrics
 
         Enable or disable the collection and publication of metrics at `/tools/metrics-prometheus`
@@ -8506,7 +8516,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/metrics',
@@ -8666,7 +8676,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     async def put_tools_unknown_sop_class_accepted(
             self,
             data: RequestData = None,
-            ) -> Optional[httpx.Response]:
+            ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """(async) Set unknown SOP class accepted
 
         Set whether Orthanc C-STORE SCP should accept DICOM instances with an unknown SOP class UID
@@ -8681,7 +8691,7 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         Returns
         -------
-        Optional[httpx.Response]
+        Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return await self._put(
             route=f'{self.url}/tools/unknown-sop-class-accepted',
