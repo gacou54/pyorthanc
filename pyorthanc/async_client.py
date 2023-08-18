@@ -20,7 +20,7 @@ class AsyncOrthanc(httpx.AsyncClient):
     
     """
 
-    def __init__(self, url: str, username: Optional[str] = None, password: Optional[str] = None, headers: Optional[HeaderTypes] = None, return_raw_response: bool = False):
+    def __init__(self, url: str, username: Optional[str] = None, password: Optional[str] = None, return_raw_response: bool = False, *args, **kwargs):
         """
         Parameters
         ----------
@@ -30,10 +30,10 @@ class AsyncOrthanc(httpx.AsyncClient):
             Orthanc's username
         password
             Orthanc's password
-        headers
-            Headers that will be share in all requests
         return_raw_response
             All Orthanc's methods will return a raw httpx.Response rather than the serialized result
+        *args, **kwargs
+            Parameters passed to the httpx.Client (headers, timeout, etc.)
         """
         super().__init__()
         self.url = url
@@ -42,9 +42,6 @@ class AsyncOrthanc(httpx.AsyncClient):
 
         if username and password:
             self.setup_credentials(username, password)
-
-        if headers is not None:
-            self.headers = headers
 
     def setup_credentials(self, username: str, password: str) -> None:
         """Set credentials needed for HTTP requests"""
