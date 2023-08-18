@@ -58,36 +58,3 @@ def test_find_instances(labels, label, expected_identifiers):
     result = labels.find_instances(label)
 
     assert result == [Instance(id_, labels.client) for id_ in expected_identifiers]
-
-# @pytest.mark.parametrize('label', ['other_label'])
-# def test_add_label_to_patient(patient, labels, label):
-#    result = labels.add_label_to_patient(label, patient)
-#
-#    assert result is None
-#    assert patient in labels.find_patients(label)
-#
-#
-# @pytest.mark.parametrize('label', ['other_label'])
-# def test_add_label_to_study(study, labels, label):
-#    result = labels.add_label_to_study(label, study)
-#
-#    assert result is None
-#    assert study in labels.find_studies(label)
-#
-#
-# @pytest.mark.parametrize('label', ['other_label'])
-# def test_add_label_to_series(series, labels, label):
-#    result = labels.add_label_to_series(label, series)
-#
-#    assert result is None
-#    assert series in labels.find_series(label)
-#
-#
-# @pytest.mark.parametrize('label', ['other_label'])
-# def test_add_label_to_instance(instance, labels, label):
-#    result = labels.add_label_to_instance(label, instance)
-#
-#    assert result is None
-#    assert instance in labels.find_instances(label)
-#
-#    labels.remove_label_from_instance(label, instance)
