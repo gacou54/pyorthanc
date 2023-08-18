@@ -16,14 +16,6 @@ Here is a list of examples to helps you getting started with pyorthanc
 
 ## Some useful commands
 
-### Prepare python environment
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install pyorthanc
-```
-
-
 ### Docker commands
 Start Orthanc
 ```bash
