@@ -1,5 +1,11 @@
 # Acces to patient-study-series-instance informations
 
+In this tutorial, you can access to all patients, study, series and instances information. Use it with a small batch of 
+data in the Orthanc server
+
+## Get the python file
+[access_patient_information.py](./access_patient_information.py)
+[docker-compose.yaml](./docker-compose.yaml)
 
 ## Run Orthanc
 
@@ -17,10 +23,7 @@ source .venv/bin/activate
 pip install pyorthanc
 ```
 
-## Get the python file
-[access_patient_information.py](./access_patient_information.py)
-
-## Acces to patient-study-series-instance informatios
+## Run PyOrthanc script
 ```bash
 python access_patient_information.py
 ```
