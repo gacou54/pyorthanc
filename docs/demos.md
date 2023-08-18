@@ -11,9 +11,8 @@ Here is a list of examples to helps you getting started with pyorthanc
 
 ## First steps
 
-- Applications installed
-  - [x] Python3.10
-  - [x] Docker
+- [x] Python3.10
+- [x] Docker
 
 ## Some useful commands
 
