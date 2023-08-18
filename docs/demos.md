@@ -1,133 +1,44 @@
-
-
-Installation
-------------
-```sh
-$ pip install pyorthanc
-```
-
 Example of usage
 ----------------
 Be sure that Orthanc is running. The default URL (if running locally) is `http://localhost:8042`.
 
-#### Getting access to patients, studies, series and instances information:
+Here is a list of examples to helps you getting started with pyorthanc
 
-[Doc](examples/access_informations/README.md)
+| Purpose                                                       | 
+|---------------------------------------------------------------|
+| [Access instance informations](https://github.com/ylemarechal/pyorthanc/tree/main/docs/examples/access_informations) |
+|[Transfer data from a PACS to a Orthanc server](https://github.com/ylemarechal/dicom-transfer)|
 
-#### Find patients with certain characteristics in an Orthanc instance:
-Each patient is a tree. Layers in each tree have the following structure 
-`Patient` -> `Study` -> `Series` -> `Instance`
-that correspond to the provided filter functions.
+## First steps
 
-```python
-from pyorthanc import find, Orthanc
+- Applications installed
+  - [x] Python3.10
+  - [x] Docker
 
-orthanc = Orthanc(url='http://localhost:8042/', username='username', password='password')
-patients = find(
-    orthanc=orthanc,
-    series_filter=lambda s: s.modality == 'RTDOSE'  # Optional: filter with pyorthanc.Series object
-)
+## Some useful commands
 
-for patient in patients:
-   patient_info = patient.get_main_information()
-   patient.id_   # Access PatientID
-   patient.name  # Access PatientName
-   
-   patient.get_zip() # DICOM files' content in bytes
-   
-   anonymized_patient_1 = patient.anonymize()  # New patient that was anonymized by Orthanc
-   anonymized_patient_2 = patient.anonymize(
-      keep=['PatientName'],   # You can keep/remove/replace the DICOM tags you want
-      replace={'PatientID': 'TheNewPatientID'},
-      remove=['ReferringPhysicianName'],
-      force=True  # Needed when changing PatientID/StudyInstanceUID/SeriesInstanceUID/SOPInstanceUID
-   )  
-   ...
-
-   for study in patient.studies:
-       study.date  # Date as a datetime object
-       study.referring_physician_name
-       ...
-
-       for series in study.series:
-           series.modality  # Should be 'RTDOSE' because of the series_filter parameters
-           ...
-           for instance in series.instances:
-               # Getting content by tag
-               instance.get_content_by_tag('ManufacturerModelName')  # == 'Pinnable3'
-               # Or
-               instance.get_content_by_tag('0008-1090')  # == 'Pinnable3'
-
-               pydicom_dataset = instance.get_pydicom()  # Retrieve the DICOM file and make a pydicom.FileDataset
-               pydicom_dataset.pixel_array  # You can access the pydicom.FileDataset attribute
-        
+### Prepare python environment
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install pyorthanc
 ```
 
 
-#### Upload DICOM files to Orthanc:
-
-```python
-from pyorthanc import Orthanc
-
-orthanc = Orthanc('http://localhost:8042', 'username', 'password')
-
-with open('A_DICOM_INSTANCE_PATH.dcm', 'rb') as file:
-   orthanc.post_instances(file.read())
+### Docker commands
+Start Orthanc
+```bash
+docker compose up -d
 ```
-
-#### Getting list of connected remote modalities:
-```python
-from pyorthanc import Orthanc
-
-orthanc = Orthanc('http://localhost:8042', 'username', 'password')
-
-orthanc.get_modalities()
+Stop Orthanc
+```bash
+docker compose stop
 ```
-
-#### Query (C-Find) and Retrieve (C-Move) from remote modality:
-
-```python
-from pyorthanc import RemoteModality, Orthanc
-
-orthanc = Orthanc('http://localhost:8042', 'username', 'password')
-
-modality = RemoteModality(orthanc, 'modality')
-
-# Query (C-Find) on modality
-data = {'Level': 'Study', 'Query': {'PatientID': '*'}}
-query_response = modality.query(data=data)
-
-answer = modality.get_query_answers()[query_response['ID']]
-print(answer)
-
-# Retrieve (C-Move) results of query on a target modality (AET)
-modality.move(query_response['ID'], {'TargetAet': 'target_modality'})
+Restart Orthanc
+```bash
+docker compose restart
 ```
-
-#### Anonymize patient:
-```python
-from pyorthanc import Orthanc, Patient
-
-orthanc = Orthanc('http://localhost:8042', 'username', 'password')
-
-patient_identifier = orthanc.get_patients()[0]
-
-anonymized_patient = Patient(patient_identifier, orthanc).anonymize(
-    keep=['PatientName'],   # You can keep/remove/replace the DICOM tags you want
-    replace={'PatientID': 'TheNewPatientID'},
-    remove=['ReferringPhysicianName'],
-    force=True  # Needed when changing PatientID/StudyInstanceUID/SeriesInstanceUID/SOPInstanceUID
-)
-# Or directly with
-orthanc.post_patients_id_anonymize(patient_identifier)
-
-# result is: (you can retrieve DICOM file from ID)
-# {'ID': 'dd41f2f1-24838e1e-f01746fc-9715072f-189eb0a2',
-#  'Path': '/patients/dd41f2f1-24838e1e-f01746fc-9715072f-189eb0a2',
-#  'PatientID': 'dd41f2f1-24838e1e-f01746fc-9715072f-189eb0a2',
-#  'Type': 'Patient'}
+Delete Orthanc container
+```bash
+docker compose down
 ```
-
-#### Transfer data from a PACS to a Orthanc server:
-
-[dicom-transfer](https://github.com/ylemarechal/dicom-transfer)
