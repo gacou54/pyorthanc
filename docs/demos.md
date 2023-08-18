@@ -6,7 +6,7 @@ Here is a list of examples to helps you getting started with pyorthanc
 
 | Purpose                                                       | 
 |---------------------------------------------------------------|
-| [Access instance informations](https://github.com/ylemarechal/pyorthanc/tree/main/docs/examples/access_informations) |
+| [Access instance informations](https://github.com/ylemarechal/pyorthanc/tree/main/examples/access_informations) |
 |[Transfer data from a PACS to a Orthanc server](https://github.com/ylemarechal/dicom-transfer)|
 
 ## First steps
