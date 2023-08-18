@@ -3,13 +3,8 @@ from zipfile import ZipFile
 
 import pytest
 
-from pyorthanc import Patient
+from .conftest import LABEL_PATIENT
 from .data import a_patient
-
-
-@pytest.fixture
-def patient(client_with_data):
-    return Patient(client=client_with_data, patient_id=client_with_data.get_patients()[0])
 
 
 def test_attributes(patient):
@@ -21,6 +16,7 @@ def test_attributes(patient):
     assert patient.patient_id == a_patient.ID
     assert patient.name == a_patient.NAME
     assert patient.sex == a_patient.SEX
+    assert patient.labels == [LABEL_PATIENT]
 
     assert [s.identifier for s in patient.studies] == a_patient.INFORMATION['Studies']
 
@@ -72,3 +68,10 @@ def test_anonymize(patient):
     anonymize_patient.build_studies()
     assert patient.name == a_patient.NAME
     assert anonymize_patient.name == a_patient.NAME
+
+
+@pytest.mark.parametrize('label', ['a_label'])
+def test_label(patient, label):
+    patient.add_to_label(label)
+
+    assert label in patient.labels

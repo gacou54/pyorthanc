@@ -3,13 +3,8 @@ from zipfile import ZipFile
 
 import pytest
 
-from pyorthanc import Series
+from .conftest import LABEL_SERIES
 from .data import a_series
-
-
-@pytest.fixture
-def series(client_with_data):
-    return Series(client=client_with_data, series_id=a_series.IDENTIFIER)
 
 
 def test_attributes(series):
@@ -22,6 +17,7 @@ def test_attributes(series):
     assert series.modality == a_series.MODALITY
     assert series.manufacturer == a_series.MANUFACTURER
     assert series.study_identifier == a_series.PARENT_STUDY
+    assert series.labels == [LABEL_SERIES]
     assert series.instances != []
 
 
@@ -63,3 +59,10 @@ def test_remote_empty_instances(series):
 
     series.remove_empty_instances()
     assert series.instances == []
+
+
+@pytest.mark.parametrize('label', ['a_label'])
+def test_label(series, label):
+    series.add_to_label(label)
+
+    assert label in series.labels

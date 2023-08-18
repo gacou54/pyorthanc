@@ -3,13 +3,9 @@ from zipfile import ZipFile
 
 import pytest
 
-from pyorthanc import Study, util
+from pyorthanc import util
+from .conftest import LABEL_STUDY
 from .data import a_study
-
-
-@pytest.fixture
-def study(client_with_data):
-    return Study(client=client_with_data, study_id=a_study.IDENTIFIER)
 
 
 def test_attributes(study):
@@ -24,6 +20,7 @@ def test_attributes(study):
     assert study.date == a_study.DATE
     assert study.patient_identifier == a_study.PARENT_PATIENT_IDENTIFIER
     assert study.patient_information.keys() == a_study.PATIENT_MAIN_INFORMATION.keys()
+    assert study.labels == [LABEL_STUDY]
     assert study.series != []
 
 
@@ -63,3 +60,10 @@ def test_anonymize(study):
     anonymized_study.build_series()
     assert study.date == a_study.DATE
     assert anonymized_study.date == a_study.DATE
+
+
+@pytest.mark.parametrize('label', ['a_label'])
+def test_label(study, label):
+    study.add_to_label(label)
+
+    assert label in study.labels
