@@ -91,6 +91,9 @@ class Instance:
 
         return self.information
 
+    def refresh(self) -> None:
+        self.information = self.client.get_instances_id(self.id_)
+
     @property
     def file_size(self) -> int:
         """Get the file size
@@ -171,6 +174,9 @@ class Instance:
 
     def add_to_label(self, label: str) -> None:
         self.client.put_instances_id_labels_label(self.id_, label)
+
+    def remove_from_label(self, label):
+        self.client.delete_instances_id_labels_label(self.id_, label)
 
     def get_content_by_tag(self, tag: str) -> Any:
         """Get content by tag

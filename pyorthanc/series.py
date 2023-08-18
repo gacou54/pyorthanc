@@ -80,6 +80,9 @@ class Series:
 
         return self.information
 
+    def refresh(self) -> None:
+        self.information = self.client.get_series_id(self.id_)
+
     @property
     def manufacturer(self) -> str:
         """Get the manufacturer
@@ -130,6 +133,9 @@ class Series:
 
     def add_to_label(self, label: str) -> None:
         self.client.put_series_id_labels_label(self.id_, label)
+
+    def remove_from_label(self, label):
+        self.client.delete_series_id_labels_label(self.id_, label)
 
     def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None, force: bool = False) -> 'Series':
         """Anonymize Series

@@ -58,6 +58,9 @@ class Patient:
 
         return self.information
 
+    def refresh(self) -> None:
+        self.information = self.client.get_patients_id(self.id_)
+
     @property
     def patient_id(self) -> str:
         """Get patient ID
@@ -97,6 +100,9 @@ class Patient:
 
     def add_to_label(self, label: str) -> None:
         self.client.put_patients_id_labels_label(self.id_, label)
+
+    def remove_from_label(self, label):
+        self.client.delete_patients_id_labels_label(self.id_, label)
 
     def get_zip(self) -> bytes:
         """Get the bytes of the zip file

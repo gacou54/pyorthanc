@@ -64,5 +64,8 @@ def test_remote_empty_instances(series):
 @pytest.mark.parametrize('label', ['a_label'])
 def test_label(series, label):
     series.add_to_label(label)
-
     assert label in series.labels
+
+    series.remove_from_label(label)
+    series.refresh()
+    assert label not in series.labels
