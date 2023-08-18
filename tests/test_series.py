@@ -18,6 +18,7 @@ def test_attributes(series):
     assert series.manufacturer == a_series.MANUFACTURER
     assert series.study_identifier == a_series.PARENT_STUDY
     assert series.labels == [LABEL_SERIES]
+    assert not series.is_stable
     assert series.instances != []
 
 

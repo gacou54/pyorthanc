@@ -128,6 +128,10 @@ class Series:
         return self.get_main_information()['MainDicomTags']['SeriesNumber']
 
     @property
+    def is_stable(self):
+        return self.get_main_information()['IsStable']
+
+    @property
     def labels(self) -> List[str]:
         return self.get_main_information()['Labels']
 
