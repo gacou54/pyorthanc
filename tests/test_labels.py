@@ -1,22 +1,13 @@
 import pytest
 
 from pyorthanc import Labels, Patient, Study, Series, Instance
+from .conftest import LABEL_PATIENT, LABEL_STUDY, LABEL_SERIES, LABEL_INSTANCE
 from .data import a_patient, a_study, a_series, an_instance
-
-LABEL_PATIENT = 'my_label_patient'
-LABEL_STUDY = 'my_label_study'
-LABEL_SERIES = 'my_label_series'
-LABEL_INSTANCE = 'my_label_instance'
 
 
 @pytest.fixture
-def labels(client_with_data):
-    client_with_data.put_patients_id_labels_label(a_patient.IDENTIFIER, LABEL_PATIENT)
-    client_with_data.put_studies_id_labels_label(a_study.IDENTIFIER, LABEL_STUDY)
-    client_with_data.put_series_id_labels_label(a_series.IDENTIFIER, LABEL_SERIES)
-    client_with_data.put_instances_id_labels_label(an_instance.IDENTIFIER, LABEL_INSTANCE)
-
-    return Labels(client_with_data)
+def labels(client_with_data_and_labels):
+    return Labels(client_with_data_and_labels)
 
 
 @pytest.mark.parametrize('expected', [
@@ -67,3 +58,36 @@ def test_find_instances(labels, label, expected_identifiers):
     result = labels.find_instances(label)
 
     assert result == [Instance(id_, labels.client) for id_ in expected_identifiers]
+
+# @pytest.mark.parametrize('label', ['other_label'])
+# def test_add_label_to_patient(patient, labels, label):
+#    result = labels.add_label_to_patient(label, patient)
+#
+#    assert result is None
+#    assert patient in labels.find_patients(label)
+#
+#
+# @pytest.mark.parametrize('label', ['other_label'])
+# def test_add_label_to_study(study, labels, label):
+#    result = labels.add_label_to_study(label, study)
+#
+#    assert result is None
+#    assert study in labels.find_studies(label)
+#
+#
+# @pytest.mark.parametrize('label', ['other_label'])
+# def test_add_label_to_series(series, labels, label):
+#    result = labels.add_label_to_series(label, series)
+#
+#    assert result is None
+#    assert series in labels.find_series(label)
+#
+#
+# @pytest.mark.parametrize('label', ['other_label'])
+# def test_add_label_to_instance(instance, labels, label):
+#    result = labels.add_label_to_instance(label, instance)
+#
+#    assert result is None
+#    assert instance in labels.find_instances(label)
+#
+#    labels.remove_label_from_instance(label, instance)

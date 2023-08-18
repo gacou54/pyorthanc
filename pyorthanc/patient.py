@@ -91,6 +91,13 @@ class Patient:
         """
         return self.get_main_information()['MainDicomTags']['PatientSex']
 
+    @property
+    def labels(self) -> List[str]:
+        return self.get_main_information()['Labels']
+
+    def add_to_label(self, label: str) -> None:
+        self.client.put_patients_id_labels_label(self.id_, label)
+
     def get_zip(self) -> bytes:
         """Get the bytes of the zip file
 

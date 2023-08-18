@@ -3,7 +3,7 @@ from datetime import datetime
 import pydicom
 import pytest
 
-from pyorthanc import Instance
+from .conftest import LABEL_INSTANCE
 from .data import an_instance
 
 EXPECTED_DATE = datetime(
@@ -16,17 +16,13 @@ EXPECTED_DATE = datetime(
 )
 
 
-@pytest.fixture
-def instance(client_with_data):
-    return Instance(client=client_with_data, instance_id=an_instance.IDENTIFIER)
-
-
 def test_attributes(instance):
     assert instance.get_main_information().keys() == an_instance.INFORMATION.keys()
 
     assert instance.uid == an_instance.INFORMATION['MainDicomTags']['SOPInstanceUID']
     assert type(instance.file_size) == int
     assert instance.creation_date == EXPECTED_DATE
+    assert instance.labels == [LABEL_INSTANCE]
 
     assert '0008,0012' in instance.tags.keys()
     assert 'Value' in instance.tags['0008,0012'].keys()
@@ -59,3 +55,10 @@ def test_pydicom(instance):
 
     assert isinstance(result, pydicom.FileDataset)
     assert result.SOPInstanceUID == an_instance.INFORMATION['MainDicomTags']['SOPInstanceUID']
+
+
+@pytest.mark.parametrize('label', ['a_label'])
+def test_label(instance, label):
+    instance.add_to_label(label)
+
+    assert label in instance.labels

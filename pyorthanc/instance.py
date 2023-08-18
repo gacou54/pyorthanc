@@ -165,6 +165,13 @@ class Instance:
         """
         return dict(self.client.get_instances_id_tags(self.id_, params={'simplify': True}))
 
+    @property
+    def labels(self) -> List[str]:
+        return self.get_main_information()['Labels']
+
+    def add_to_label(self, label: str) -> None:
+        self.client.put_instances_id_labels_label(self.id_, label)
+
     def get_content_by_tag(self, tag: str) -> Any:
         """Get content by tag
 
