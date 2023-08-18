@@ -4,10 +4,10 @@ Be sure that Orthanc is running. The default URL (if running locally) is `http:/
 
 Here is a list of examples to helps you getting started with pyorthanc
 
-| Purpose                                                       | 
-|---------------------------------------------------------------|
+| code                                                                                                            | 
+|-----------------------------------------------------------------------------------------------------------------|
 | [Access instance informations](https://github.com/ylemarechal/pyorthanc/tree/main/examples/access_informations) |
-|[Transfer data from a PACS to a Orthanc server](https://github.com/ylemarechal/dicom-transfer)|
+| [Transfer data from a PACS to a Orthanc server](https://github.com/ylemarechal/dicom-transfer)                  |
 
 ## First steps
 
