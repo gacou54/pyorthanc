@@ -41,13 +41,13 @@ def test_patient_module(patient):
 
 
 def test_protection(patient):
-    assert patient.is_protected() is False
+    assert not patient.protected
 
-    patient.set_to_protected()
-    assert patient.is_protected() is True
+    patient.protected = True
+    assert patient.protected
 
-    patient.set_to_unprotected()
-    assert patient.is_protected() is False
+    patient.protected = False
+    assert not patient.protected
 
 
 def test_anonymize(patient):

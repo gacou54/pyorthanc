@@ -154,7 +154,8 @@ class Patient:
             params=params
         ))
 
-    def is_protected(self) -> bool:
+    @property
+    def protected(self) -> bool:
         """Get if patient is protected against recycling
 
         Protection against recycling: False means unprotected, True protected.
@@ -166,6 +167,30 @@ class Patient:
         """
         return '1' == self.client.get_patients_id_protected(self.id_)
 
+    @protected.setter
+    def protected(self, value: bool):
+        # As of version 1.11.1, the Orthanc OPEN API file has missing information
+        self.client._put(
+            f'{self.client.url}/patients/{self.id_}/protected',
+            json=1 if value else 0  # 1 means it will be protected, 0 means unprotected
+        )
+
+    def is_protected(self) -> bool:
+        """Get if patient is protected against recycling
+
+        Protection against recycling: False means unprotected, True protected.
+
+        Returns
+        -------
+        bool
+            False means unprotected, True means protected.
+        """
+        DeprecationWarning(
+            '`patient.is_protected()` is deprecated and will be removed in future release. '
+            'Use `patient.protected` instead.'
+        )
+        return self.protected
+
     def set_to_protected(self):
         """Set patient to protected state
 
@@ -175,10 +200,11 @@ class Patient:
             Nothing.
         """
         # As of version 1.11.1, the Orthanc OPEN API file has missing information
-        self.client._put(
-            f'{self.client.url}/patients/{self.id_}/protected',
-            json=1
+        DeprecationWarning(
+            '`patient.set_to_protected()` is deprecated and will be removed in future release. '
+            'Use `patient.protected = True` instead.'
         )
+        self.protected = True
 
     def set_to_unprotected(self):
         """Set patient to unprotected state
@@ -189,10 +215,11 @@ class Patient:
             Nothing.
         """
         # As of version 1.11.1, the Orthanc OPEN API file has missing information
-        self.client._put(
-            f'{self.client.url}/patients/{self.id_}/protected',
-            json=0
+        DeprecationWarning(
+            '`patient.set_to_protected()` is deprecated and will be removed in future release. '
+            'Use `patient.protected = True` instead.'
         )
+        self.protected = False
 
     @property
     def studies(self) -> List[Study]:
