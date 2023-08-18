@@ -21,6 +21,7 @@ def test_attributes(study):
     assert study.patient_identifier == a_study.PARENT_PATIENT_IDENTIFIER
     assert study.patient_information.keys() == a_study.PATIENT_MAIN_INFORMATION.keys()
     assert study.labels == [LABEL_STUDY]
+    assert not study.is_stable
     assert study.series != []
 
 

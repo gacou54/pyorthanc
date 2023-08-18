@@ -18,6 +18,8 @@ def test_attributes(patient):
     assert patient.sex == a_patient.SEX
     assert patient.labels == [LABEL_PATIENT]
 
+    assert not patient.is_stable
+
     assert [s.identifier for s in patient.studies] == a_patient.INFORMATION['Studies']
 
 
