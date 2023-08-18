@@ -3,8 +3,9 @@
 In this tutorial, you can access to all patients, study, series and instances information. Use it with a small batch of 
 data in the Orthanc server
 
-## Get the python file
+## Files needed
 [access_patient_information.py](./access_patient_information.py)
+
 [docker-compose.yaml](./docker-compose.yaml)
 
 ## Run Orthanc
