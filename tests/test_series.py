@@ -1,4 +1,5 @@
 import io
+from datetime import datetime
 from zipfile import ZipFile
 
 import pytest
@@ -19,6 +20,7 @@ def test_attributes(series):
     assert series.study_identifier == a_series.PARENT_STUDY
     assert series.labels == [LABEL_SERIES]
     assert not series.is_stable
+    assert isinstance(series.last_update, datetime)
     assert series.instances != []
 
 

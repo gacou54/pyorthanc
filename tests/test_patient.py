@@ -1,4 +1,5 @@
 import io
+from datetime import datetime
 from zipfile import ZipFile
 
 import pytest
@@ -16,9 +17,10 @@ def test_attributes(patient):
     assert patient.patient_id == a_patient.ID
     assert patient.name == a_patient.NAME
     assert patient.sex == a_patient.SEX
-    assert patient.labels == [LABEL_PATIENT]
 
+    assert patient.labels == [LABEL_PATIENT]
     assert not patient.is_stable
+    assert isinstance(patient.last_update, datetime)
 
     assert [s.identifier for s in patient.studies] == a_patient.INFORMATION['Studies']
 

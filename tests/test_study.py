@@ -1,4 +1,5 @@
 import io
+from datetime import datetime
 from zipfile import ZipFile
 
 import pytest
@@ -22,6 +23,7 @@ def test_attributes(study):
     assert study.patient_information.keys() == a_study.PATIENT_MAIN_INFORMATION.keys()
     assert study.labels == [LABEL_STUDY]
     assert not study.is_stable
+    assert isinstance(study.last_update, datetime)
     assert study.series != []
 
 
