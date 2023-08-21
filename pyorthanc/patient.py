@@ -1,5 +1,7 @@
+from datetime import datetime
 from typing import List, Dict
 
+from . import util
 from .study import Study
 from .client import Orthanc
 
@@ -97,6 +99,14 @@ class Patient:
     @property
     def is_stable(self):
         return self.get_main_information()['IsStable']
+
+    @property
+    def last_update(self) -> datetime:
+        last_updated_date_and_time = self.get_main_information()['LastUpdate'].split('T')
+        date = last_updated_date_and_time[0]
+        time = last_updated_date_and_time[1]
+
+        return util.make_datetime_from_dicom_date(date, time)
 
     @property
     def labels(self) -> List[str]:
@@ -266,7 +276,7 @@ class Patient:
         keep
             List of tag to keep unchanged
         force
-            Some tags can't be change without forcing it (e.g. PatientID) for security reason
+            Some tags can't be changed without forcing it (e.g. PatientID) for security reason
 
         Returns
         -------
