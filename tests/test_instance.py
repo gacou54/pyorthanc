@@ -59,9 +59,9 @@ def test_pydicom(instance):
 
 @pytest.mark.parametrize('label', ['a_label'])
 def test_label(instance, label):
-    instance.add_to_label(label)
+    instance.add_label(label)
     assert label in instance.labels
 
-    instance.remove_from_label(label)
+    instance.remove_label(label)
     instance.refresh()
     assert label not in instance.labels

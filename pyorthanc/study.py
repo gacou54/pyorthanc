@@ -165,10 +165,10 @@ class Study:
     def labels(self) -> List[str]:
         return self.get_main_information()['Labels']
 
-    def add_to_label(self, label: str) -> None:
+    def add_label(self, label: str) -> None:
         self.client.put_studies_id_labels_label(self.id_, label)
 
-    def remove_from_label(self, label):
+    def remove_label(self, label):
         self.client.delete_studies_id_labels_label(self.id_, label)
 
     def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None, force: bool = False) -> 'Study':

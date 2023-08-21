@@ -76,9 +76,9 @@ def test_anonymize(patient):
 
 @pytest.mark.parametrize('label', ['a_label'])
 def test_label(patient, label):
-    patient.add_to_label(label)
+    patient.add_label(label)
     assert label in patient.labels
 
-    patient.remove_from_label(label)
+    patient.remove_label(label)
     patient.refresh()
     assert label not in patient.labels
