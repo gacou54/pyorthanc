@@ -172,10 +172,10 @@ class Instance:
     def labels(self) -> List[str]:
         return self.get_main_information()['Labels']
 
-    def add_to_label(self, label: str) -> None:
+    def add_label(self, label: str) -> None:
         self.client.put_instances_id_labels_label(self.id_, label)
 
-    def remove_from_label(self, label):
+    def remove_label(self, label):
         self.client.delete_instances_id_labels_label(self.id_, label)
 
     def get_content_by_tag(self, tag: str) -> Any:
