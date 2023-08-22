@@ -22,5 +22,9 @@ __all__ = [
     'trim_patient',
     'retrieve_and_write_patients',
     'find',
+    'find_patients',
+    'find_studies',
+    'find_series',
+    'find_instances',
     'Labels',
 ]

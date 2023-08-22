@@ -6,13 +6,15 @@ from .patient import Patient
 from .series import Series
 from .study import Study
 
+LOOKUP_INTERVAL = 1_000
 
-def find_patients(orthanc: Orthanc,
+
+def find_patients(client: Orthanc,
                   query: Dict[str, str] = None,
                   labels: Union[list[str], str] = None,
                   labels_constraint: str = 'All') -> List[Patient]:
     return query_orthanc(
-        orthanc,
+        client=client,
         level='Patient',
         query=query,
         labels=labels,
@@ -20,12 +22,12 @@ def find_patients(orthanc: Orthanc,
     )
 
 
-def find_studies(orthanc: Orthanc,
+def find_studies(client: Orthanc,
                  query: Dict[str, str] = None,
                  labels: Union[list[str], str] = None,
                  labels_constraint: str = 'All') -> List[Study]:
     return query_orthanc(
-        orthanc,
+        client=client,
         level='Study',
         query=query,
         labels=labels,
@@ -33,12 +35,12 @@ def find_studies(orthanc: Orthanc,
     )
 
 
-def find_series(orthanc: Orthanc,
+def find_series(client: Orthanc,
                 query: Dict[str, str] = None,
                 labels: Union[list[str], str] = None,
                 labels_constraint: str = 'All') -> List[Series]:
     return query_orthanc(
-        orthanc,
+        client=client,
         level='Series',
         query=query,
         labels=labels,
@@ -46,12 +48,12 @@ def find_series(orthanc: Orthanc,
     )
 
 
-def find_instances(orthanc: Orthanc,
+def find_instances(client: Orthanc,
                    query: Dict[str, str] = None,
                    labels: Union[list[str], str] = None,
                    labels_constraint: str = 'All') -> List[Instance]:
     return query_orthanc(
-        orthanc,
+        client=client,
         level='Instance',
         query=query,
         labels=labels,
@@ -59,12 +61,13 @@ def find_instances(orthanc: Orthanc,
     )
 
 
-def query_orthanc(orthanc: Orthanc,
+def query_orthanc(client: Orthanc,
                   level: str,
                   query: Dict[str, str] = None,
                   labels: Union[list[str], str] = None,
                   labels_constraint: str = 'All') -> List[Union[Patient, Study, Series, Instance]]:
     _validate_level(level)
+    _validate_labels_constraint(labels_constraint)
 
     data = {
         'Expand': True,
@@ -79,11 +82,11 @@ def query_orthanc(orthanc: Orthanc,
 
     if labels is not None:
         data['Labels'] = [labels] if isinstance(labels, str) else labels
-        data['LabelsConstrain'] = labels_constraint
+        data['LabelsConstraint'] = labels_constraint
 
     results = []
     while True:
-        result_for_interval = orthanc.post_tools_find(data)
+        result_for_interval = client.post_tools_find(data)
         if len(result_for_interval) == 0:
             break
 
@@ -91,16 +94,16 @@ def query_orthanc(orthanc: Orthanc,
         data['Since'] += LOOKUP_INTERVAL  # Updating lookup window
 
     if level == 'Patient':
-        return [Patient(i['ID'], orthanc, i) for i in results]
+        return [Patient(i['ID'], client, i) for i in results]
 
     if level == 'Study':
-        return [Study(i['ID'], orthanc, i) for i in results]
+        return [Study(i['ID'], client, i) for i in results]
 
     if level == 'Series':
-        return [Series(i['ID'], orthanc, i) for i in results]
+        return [Series(i['ID'], client, i) for i in results]
 
     if level == 'Instance':
-        return [Instance(i['ID'], orthanc, i) for i in results]
+        return [Instance(i['ID'], client, i) for i in results]
 
 
 def _validate_labels_constraint(labels_constraint: str) -> None:
@@ -117,6 +120,3 @@ def _validate_level(level: str) -> None:
             "level should be one of ['Patient', 'Study', 'Series', 'Instance'], "
             f"got {level} instead."
         )
-
-
-LOOKUP_INTERVAL = 1_000
