@@ -1,0 +1,3 @@
+::: pyorthanc.RemoteModality
+    :docstring:
+    :members:

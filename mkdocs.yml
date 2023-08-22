@@ -4,19 +4,51 @@ repo_url: https://github.com/gacou54/pyorthanc
 repo_name: gacou54/pyorthanc
 theme:
   name: material
-
+  features:
+    - navigation.sections
+    - content.code.copy
+    - content.code.select
 
 nav:
-  - 'General informations':
-    - 'Presentation': 'index.md'
-    - 'Purpose': 'purpose.md'
-    - 'Contacts': 'contacts.md'
+  - 'Introduction': 'index.md' # README
+  - 'Usage':
+      - 'Quick Start': 'tutorial/quickstart.md'
+      - 'Advanced Usage': 'tutorial/advanced.md'
+  - 'Api Reference':
+      'Orthanc': 'api/orthanc.md'
+      'Asynchronous Orthanc': 'api/async_client.md'
+      'Patient': 'api/patient.md'
+      'Study': 'api/study.md'
+      'Series': 'api/series.md'
+      'Instance': 'api/instance.md'
+      'Filtering': 'api/filtering.md'
+      'Remote': 'api/remote.md'
+      'Util': 'api/util.md'
+
 
   - 'Releases & Roadmap':
     - 'Releases': 'releases/releases.md'
     - 'Roadmap' : 'releases/roadmap.md'
 
-  - 'Demos': 'demos.md'
+  - 'More informations':
+    - 'Contacts': 'contacts.md'
+    - 'Citation': 'citation.md'
 
 
-  - 'More information': 'documentation.md'
+
+markdown_extensions:
+  - admonition
+  - codehilite:
+      css_class: highlight
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+      default_handler: python
+
+
+extra_css:
+    - css/custom.css

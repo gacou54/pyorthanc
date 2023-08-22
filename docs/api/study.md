@@ -1,0 +1,3 @@
+::: pyorthanc.Study
+    :docstring:
+    :members:

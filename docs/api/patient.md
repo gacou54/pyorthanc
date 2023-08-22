@@ -1,0 +1,3 @@
+::: pyorthanc.Patient
+    :docstring:
+    :members:
