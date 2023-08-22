@@ -9,7 +9,7 @@ You can contribute to this project with the following steps:
 ```
 
 3. Enter the project and create a poetry environment 
-   (this project use the [poetry](https://python-poetry.org/) for dependency management)
+   (this project use the [poetry](https://python-poetry.org/) for dependency management).
 
 ```shell
    cd pyorthanc
