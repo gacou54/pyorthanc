@@ -31,6 +31,7 @@ nav:
     - 'Roadmap' : 'releases/roadmap.md'
 
   - 'More informations':
+    - 'Contributing': 'contributing.md'
     - 'Contacts': 'contacts.md'
     - 'Citation': 'citation.md'
 
