@@ -6,8 +6,11 @@ from .instance import Instance
 from .series import Series
 from .study import Study
 
+LOOKUP_INTERVAL = 1_000
+
 
 class Labels:
+    """Utility class for finding resources that correspond to desired labels"""
 
     def __init__(self, client: Orthanc):
         self.client = client
@@ -32,9 +35,22 @@ class Labels:
         return sorted(self.client.get_tools_labels()) == sorted(other.client.get_tools_labels())
 
     def find_patients(self, label: str) -> List[Patient]:
-        result = self.client.get_patients(params={'expand': True})
+        since = 0
+        patients = []
 
-        return [Patient(i['ID'], self.client, patient_information=i) for i in result if label in i['Labels']]
+        while True:
+            result = self.client.get_patients(params={
+                'expand': True,
+                'limit': LOOKUP_INTERVAL,
+                'since': since
+            })
+            if len(result) == 0:
+                break
+
+            patients += [Patient(i['ID'], self.client, patient_information=i) for i in result if label in i['Labels']]
+            since = LOOKUP_INTERVAL
+
+        return patients
 
     def find_studies(self, label: str) -> List[Study]:
         result = self.client.get_studies(params={'expand': True})
