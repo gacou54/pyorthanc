@@ -1,10 +1,11 @@
 from typing import Dict, List, Union
 
-from pyorthanc.resources.instance import Instance
-from pyorthanc.resources.patient import Patient
-from pyorthanc.resources.series import Series
-from pyorthanc.resources.study import Study
 from .client import Orthanc
+from .resources.instance import Instance
+from .resources.patient import Patient
+from .resources.resource import Resource
+from .resources.series import Series
+from .resources.study import Study
 
 DEFAULT_RESOURCES_LIMIT = 1_000
 
@@ -193,7 +194,7 @@ def query_orthanc(client: Orthanc,
                   labels_constraint: str = 'All',
                   limit: int = DEFAULT_RESOURCES_LIMIT,
                   since: int = 0,
-                  retrieve_all_resources: bool = True) -> List[Union[Patient, Study, Series, Instance]]:
+                  retrieve_all_resources: bool = True) -> List[Resource]:
     """
 
     Parameters
@@ -217,7 +218,7 @@ def query_orthanc(client: Orthanc,
 
     Returns
     -------
-    List[Union[Patient, Study, Series, Instance]]
+    List[Resource]
         List of resources that fit the provided criteria.
 
     Examples
