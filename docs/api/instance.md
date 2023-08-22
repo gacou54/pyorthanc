@@ -1,0 +1,3 @@
+::: pyorthanc.Instance
+    :docstring:
+    :members:

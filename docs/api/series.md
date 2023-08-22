@@ -1,0 +1,3 @@
+::: pyorthanc.Series
+    :docstring:
+    :members:
