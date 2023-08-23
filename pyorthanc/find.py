@@ -13,6 +13,37 @@ def find_patients(client: Orthanc,
                   query: Dict[str, str] = None,
                   labels: Union[list[str], str] = None,
                   labels_constraint: str = 'All') -> List[Patient]:
+    """Finds patients in Orthanc according to queries and labels
+
+    Parameters
+    ----------
+    client
+        Orthanc client.
+    query
+        Dictionary that specifies the filters on the Patient related DICOM tags.
+    labels
+        List of strings specifying which labels to look for in the resources.
+    labels_constraint
+        Constraint on the labels, can be 'All', 'Any', or 'None'.
+
+    Returns
+    -------
+    List[Patient]
+        List of patients that fit the provided criteria.
+
+    Examples
+    --------
+    ```python
+    import pyorthanc
+
+    client = pyorthanc.Orthanc('http://localhost:8042', 'orthanc', 'orthanc')
+    patients = find_patients(
+        client=client,
+        query={'PatientID': 'Something*'},
+        labels=['my_label']
+    )
+    ```
+    """
     return query_orthanc(
         client=client,
         level='Patient',
@@ -26,6 +57,38 @@ def find_studies(client: Orthanc,
                  query: Dict[str, str] = None,
                  labels: Union[list[str], str] = None,
                  labels_constraint: str = 'All') -> List[Study]:
+    """Finds studies in Orthanc according to queries and labels
+
+    Parameters
+    ----------
+    client
+        Orthanc client.
+    query
+        Dictionary that specifies the filters on the Study related DICOM tags.
+    labels
+        List of strings specifying which labels to look for in the resources.
+    labels_constraint
+        Constraint on the labels, can be 'All', 'Any', or 'None'.
+
+    Returns
+    -------
+    List[Study]
+        List of studies that fit the provided criteria.
+
+    Examples
+    --------
+    ```python
+    import pyorthanc
+
+    client = pyorthanc.Orthanc('http://localhost:8042', 'orthanc', 'orthanc')
+    studies = find_studies(
+        client=client,
+        query={'ReferringPhysicianName': 'Something*'},
+        labels=['my_label']
+    )
+    ```
+    """
+
     return query_orthanc(
         client=client,
         level='Study',
@@ -39,6 +102,37 @@ def find_series(client: Orthanc,
                 query: Dict[str, str] = None,
                 labels: Union[list[str], str] = None,
                 labels_constraint: str = 'All') -> List[Series]:
+    """Finds series in Orthanc according to queries and labels
+
+    Parameters
+    ----------
+    client
+        Orthanc client.
+    query
+        Dictionary that specifies the filters on the Series related DICOM tags.
+    labels
+        List of strings specifying which labels to look for in the resources.
+    labels_constraint
+        Constraint on the labels, can be 'All', 'Any', or 'None'.
+
+    Returns
+    -------
+    List[Series]
+        List of Series that fit the provided criteria.
+
+    Examples
+    --------
+    ```python
+    import pyorthanc
+
+    client = pyorthanc.Orthanc('http://localhost:8042', 'orthanc', 'orthanc')
+    series = find_series(
+        client=client,
+        query={'Modality': 'RTDose'},
+        labels=['my_label']
+    )
+    ```
+    """
     return query_orthanc(
         client=client,
         level='Series',
@@ -52,6 +146,37 @@ def find_instances(client: Orthanc,
                    query: Dict[str, str] = None,
                    labels: Union[list[str], str] = None,
                    labels_constraint: str = 'All') -> List[Instance]:
+    """Finds instances in Orthanc according to queries and labels
+
+    Parameters
+    ----------
+    client
+        Orthanc client.
+    query
+        Dictionary that specifies the filters on the instances related DICOM tags.
+    labels
+        List of strings specifying which labels to look for in the resources.
+    labels_constraint
+        Constraint on the labels, can be 'All', 'Any', or 'None'.
+
+    Returns
+    -------
+    List[Instance]
+        List of Instances that fit the provided criteria.
+
+    Examples
+    --------
+    ```python
+    import pyorthanc
+
+    client = pyorthanc.Orthanc('http://localhost:8042', 'orthanc', 'orthanc')
+    instances = find_instances(
+        client=client,
+        query={'InstanceCreationDate': '20100301'},
+        labels=['my_label']
+    )
+    ```
+    """
     return query_orthanc(
         client=client,
         level='Instance',
@@ -69,6 +194,47 @@ def query_orthanc(client: Orthanc,
                   limit: int = DEFAULT_RESOURCES_LIMIT,
                   since: int = 0,
                   retrieve_all_resources: bool = True) -> List[Union[Patient, Study, Series, Instance]]:
+    """
+
+    Parameters
+    ----------
+    client
+        Orthanc client.
+    level
+        Level of the query ['Patient', 'Study', 'Series', 'Instance'].
+    query
+        Dictionary that specifies the filters on the level related DICOM tags.
+    labels
+        List of strings specifying which labels to look for in the resources.
+    labels_constraint
+        Constraint on the labels, can be 'All', 'Any', or 'None'.
+    limit
+        Limit the number of reported resources.
+    since
+        Show only the resources since the provided index (in conjunction with "limit").
+    retrieve_all_resources
+        Retrieve all resources since the index specified in the "since" parameter.
+
+    Returns
+    -------
+    List[Union[Patient, Study, Series, Instance]]
+        List of resources that fit the provided criteria.
+
+    Examples
+    --------
+    ```python
+    import pyorthanc
+
+    client = pyorthanc.Orthanc('http://localhost:8042', 'orthanc', 'orthanc')
+    instances = query_orthanc(
+        client=client,
+        level='Instance',
+        query={'InstanceCreationDate': '20100301'},
+        labels=['my_label'],
+        since=100,
+        retrieve_all_resource=False
+    )
+    """
     _validate_level(level)
     _validate_labels_constraint(labels_constraint)
 
