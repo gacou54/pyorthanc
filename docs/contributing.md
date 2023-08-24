@@ -22,7 +22,6 @@ You can contribute to this project with the following steps:
 ```shell
     git checkout -b your-branch-name
 ```
-   Now you can make your changes
 
 5. Once done, `git add`, `git commit` and `git push` the changes.
 
