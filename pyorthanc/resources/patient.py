@@ -1,9 +1,10 @@
+import warnings
 from datetime import datetime
 from typing import Dict, List
 
-from pyorthanc import util
 from .resource import Resource
 from .study import Study
+from .. import util
 
 
 class Patient(Resource):
@@ -199,9 +200,10 @@ class Patient(Resource):
             Nothing.
         """
         # As of version 1.11.1, the Orthanc OPEN API file has missing information
-        DeprecationWarning(
+        warnings.warn(
             '`patient.set_to_protected()` is deprecated and will be removed in future release. '
-            'Use `patient.protected = True` instead.'
+            'Use `patient.protected = True` instead.',
+            DeprecationWarning
         )
         self.protected = True
 
@@ -214,9 +216,10 @@ class Patient(Resource):
             Nothing.
         """
         # As of version 1.11.1, the Orthanc OPEN API file has missing information
-        DeprecationWarning(
+        warnings.warn(
             '`patient.set_to_protected()` is deprecated and will be removed in future release. '
-            'Use `patient.protected = True` instead.'
+            'Use `patient.protected = True` instead.',
+            DeprecationWarning
         )
         self.protected = False
 

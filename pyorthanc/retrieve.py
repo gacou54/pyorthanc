@@ -19,34 +19,34 @@ def retrieve_and_write_patients(patients: List[Patient], path: str) -> None:
     """
     os.makedirs(path, exist_ok=True)
     for patient in patients:
-        retrieve_patient(patient, path)
+        retrieve_and_write_patient(patient, path)
 
 
-def retrieve_patient(patient: Patient, path: str) -> None:
-    patient_path = _make_patient_path(path, patient.id_)
+def retrieve_and_write_patient(patient: Patient, path: str) -> None:
+    patient_path = _make_patient_path(path, patient.patient_id)
     os.makedirs(patient_path, exist_ok=True)
 
     for study in patient.studies:
-        retrieve_study(study, patient_path)
+        retrieve_and_write_study(study, patient_path)
 
 
-def retrieve_study(study: Study, patient_path: str) -> None:
-    study_path = _make_study_path(patient_path, study.id_)
+def retrieve_and_write_study(study: Study, patient_path: str) -> None:
+    study_path = _make_study_path(patient_path, study.uid)
     os.makedirs(study_path, exist_ok=True)
 
     for series in study.series:
-        retrieve_series(series, study_path)
+        retrieve_and_write_series(series, study_path)
 
 
-def retrieve_series(series: Series, study_path: str) -> None:
+def retrieve_and_write_series(series: Series, study_path: str) -> None:
     series_path = _make_series_path(study_path, series.modality)
     os.makedirs(series_path, exist_ok=True)
 
     for instance in series.instances:
-        retrieve_instance(instance, series_path)
+        retrieve_and_write_instance(instance, series_path)
 
 
-def retrieve_instance(instance: Instance, series_path) -> None:
+def retrieve_and_write_instance(instance: Instance, series_path) -> None:
     path = os.path.join(series_path, instance.uid + '.dcm')
 
     dicom_file_bytes = instance.get_dicom_file_content()
@@ -65,13 +65,8 @@ def _make_patient_path(path: str, patient_id: str) -> str:
     return os.path.join(path, patient_id)
 
 
-def _make_study_path(patient_path: str, study_id: str) -> str:
-    study_directories = os.listdir(patient_path)
-
-    if study_id.strip() == '':
-        study_id = 'anonymous-study'
-
-    return os.path.join(patient_path, _make_path_name(study_id, study_directories))
+def _make_study_path(patient_path: str, study_uid: str) -> str:
+    return os.path.join(patient_path, study_uid)
 
 
 def _make_series_path(study_path: str, modality: str) -> str:
