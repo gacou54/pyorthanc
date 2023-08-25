@@ -1,52 +1,37 @@
 from datetime import datetime
-from typing import List, Dict
+from typing import Dict, List
 
-from . import util
-from .client import Orthanc
+from pyorthanc import util
+from pyorthanc.util import make_datetime_from_dicom_date
+from .resource import Resource
 from .series import Series
-from .util import make_datetime_from_dicom_date
 
 
-class Study:
+class Study(Resource):
     """Represent a study that is in an Orthanc server
 
     This object has many getters that allow the user to retrieve metadata
     or the entire DICOM file of the Series
     """
 
-    def __init__(
-            self,
-            study_id: str,
-            client: Orthanc,
-            study_information: Dict = None) -> None:
-        """Constructor
-
-        Parameters
-        ----------
-        study_id
-            Orthanc study identifier.
-        client
-            Orthanc object.
-        study_information
-            Dictionary of study's information.
-        """
-        self.client = client
-
-        self.id_ = study_id
-        self.information = study_information
-
-        self._series: List[Series] = []
-
-    @property
-    def identifier(self) -> str:
-        """Get Study Orthanc's identifier
-
-        Returns
-        -------
-        str
-            Study identifier
-        """
-        return self.id_
+    # def __init__(self, id_: str, client: Orthanc, lock: bool = False) -> None:
+    #     """Constructor
+    #
+    #     Parameters
+    #     ----------
+    #     study_id
+    #         Orthanc study identifier.
+    #     client
+    #         Orthanc object.
+    #     study_information
+    #         Dictionary of study's information.
+    #     """
+    #     self.client = client
+    #
+    #     self.id_ = id_
+    #     self.information = study_information
+    #
+    #     self._series: List[Series] = []
 
     def get_main_information(self) -> Dict:
         """Get Study information
@@ -56,13 +41,14 @@ class Study:
         Dict
             Dictionary of study information
         """
-        if self.information is None:
-            self.information = self.client.get_studies_id(self.id_)
+        if self.lock:
+            if self._information is None:
+                # Setup self._information for the first time when study is lock
+                self._information = self.client.get_studies_id(self.id_)
 
-        return self.information
+            return self._information
 
-    def refresh(self) -> None:
-        self.information = self.client.get_studies_id(self.id_)
+        return self.client.get_studies_id(self.id_)
 
     @property
     def referring_physician_name(self) -> str:
@@ -147,7 +133,16 @@ class Study:
         List[Series]
             List of study's Series
         """
-        return self._series
+        if self.lock:
+            if self._child_resources is None:
+                series_information = self.client.get_studies_id_series(self.id_)
+                self._child_resources = [Series(i['ID'], self.client, self.lock) for i in series_information]
+
+            return self._child_resources
+
+        series_information = self.client.get_studies_id_series(self.id_)
+
+        return [Series(i['ID'], self.client, self.lock) for i in series_information]
 
     @property
     def is_stable(self):
@@ -228,25 +223,15 @@ class Study:
         """
         return self.client.get_studies_id_archive(self.id_)
 
-    def build_series(self) -> None:
-        """Build a list of the study's series."""
-        series_information = self.client.get_studies_id_series(self.id_)
-        self._series = [Series(i['ID'], self.client) for i in series_information]
-        for series in self._series:
-            series.build_instances()
-
     def remove_empty_series(self) -> None:
         """Delete empty series."""
-        for series in self._series:
+        if self._child_resources is None:
+            return
+
+        for series in self._child_resources:
             series.remove_empty_instances()
 
-        self._series = list(filter(
-            lambda series: series.instances != [],
-            self._series
-        ))
+        self._child_resources = [series for series in self._child_resources if series._child_resources != []]
 
     def __repr__(self):
         return f'Study(StudyId={self.study_id}, identifier={self.id_})'
-
-    def __eq__(self, other: 'Study') -> bool:
-        return self.id_ == other.id_

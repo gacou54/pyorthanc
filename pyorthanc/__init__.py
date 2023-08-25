@@ -1,13 +1,11 @@
+from pyorthanc.resources.study import Study
 from .async_client import AsyncOrthanc
 from .client import Orthanc
-from .filtering import build_patient_forest, find, trim_patient
+from .filtering import build_patient_forest, find, trim_patients
 from .find import find_instances, find_patients, find_series, find_studies, query_orthanc
-from .instance import Instance
-from .patient import Patient
 from .remote import RemoteModality
+from .resources import Instance, Patient, Series, Study
 from .retrieve import retrieve_and_write_patients
-from .series import Series
-from .study import Study
 
 __all__ = [
     'AsyncOrthanc',
@@ -18,7 +16,7 @@ __all__ = [
     'Series',
     'Instance',
     'build_patient_forest',
-    'trim_patient',
+    'trim_patients',
     'retrieve_and_write_patients',
     'find',
     'find_patients',

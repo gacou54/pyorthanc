@@ -1,8 +1,8 @@
 import pytest
 
-from pyorthanc import Orthanc, AsyncOrthanc, RemoteModality, Patient, Study, Series, Instance
-from .data import a_study, a_patient, a_series, an_instance
-from .setup_server import ORTHANC_1, setup_data, clear_data, ORTHANC_2, add_modality
+from pyorthanc import AsyncOrthanc, Instance, Orthanc, Patient, RemoteModality, Series, Study
+from .data import a_patient, a_series, a_study, an_instance
+from .setup_server import ORTHANC_1, ORTHANC_2, add_modality, clear_data, setup_data
 
 LABEL_PATIENT = 'my_label_patient'
 LABEL_STUDY = 'my_label_study'
@@ -73,19 +73,19 @@ def modality(client, second_client):
 
 @pytest.fixture
 def patient(client_with_data_and_labels):
-    return Patient(client=client_with_data_and_labels, patient_id=a_patient.IDENTIFIER)
+    return Patient(client=client_with_data_and_labels, id_=a_patient.IDENTIFIER)
 
 
 @pytest.fixture
 def study(client_with_data_and_labels):
-    return Study(client=client_with_data_and_labels, study_id=a_study.IDENTIFIER)
+    return Study(client=client_with_data_and_labels, id_=a_study.IDENTIFIER)
 
 
 @pytest.fixture
 def series(client_with_data_and_labels):
-    return Series(client=client_with_data_and_labels, series_id=a_series.IDENTIFIER)
+    return Series(client=client_with_data_and_labels, id_=a_series.IDENTIFIER)
 
 
 @pytest.fixture
 def instance(client_with_data_and_labels):
-    return Instance(client=client_with_data_and_labels, instance_id=an_instance.IDENTIFIER)
+    return Instance(client=client_with_data_and_labels, id_=an_instance.IDENTIFIER)
