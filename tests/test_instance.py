@@ -63,5 +63,4 @@ def test_label(instance, label):
     assert label in instance.labels
 
     instance.remove_label(label)
-    instance.refresh()
     assert label not in instance.labels

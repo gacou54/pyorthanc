@@ -1,51 +1,29 @@
 from datetime import datetime
-from typing import List, Dict
+from typing import Dict, List
 
-from . import util
+from pyorthanc import util
+from .resource import Resource
 from .study import Study
-from .client import Orthanc
 
 
-class Patient:
+class Patient(Resource):
     """Represent a Patient that is in an Orthanc server
 
     This object has many getters that allow the user to retrieve metadata
     or the entire DICOM file of the Patient
     """
 
-    def __init__(
-            self,
-            patient_id: str,
-            client: Orthanc,
-            patient_information: Dict = None) -> None:
-        """Constructor
-
-        Parameters
-        ----------
-        patient_id
-            Orthanc patient identifier.
-        client
-            Orthanc object.
-        patient_information
-            Dictionary of patient's information.
-        """
-        self.client = client
-
-        self.id_ = patient_id
-        self.information = patient_information
-
-        self._studies: List[Study] = []
-
-    @property
-    def identifier(self) -> str:
-        """Get patient identifier
-
-        Returns
-        -------
-        str
-            Patient identifier
-        """
-        return self.id_
+    # def __init__(self, id_: str, client: Orthanc, lock: bool = False) -> None:
+    #     """Constructor
+    #
+    #     Parameters
+    #     ----------
+    #     id_
+    #         Orthanc patient identifier.
+    #     client
+    #         Orthanc object.
+    #     """
+    #     super().__init__(id_, client, lock)
 
     def get_main_information(self) -> Dict:
         """Get Patient information
@@ -55,13 +33,14 @@ class Patient:
         Dict
             Dictionary of patient main information.
         """
-        if self.information is None:
-            self.information = self.client.get_patients_id(self.id_)
+        if self.lock:
+            if self._information is None:
+                # Setup self._information for the first time when patient is lock
+                self._information = self.client.get_patients_id(self.id_)
 
-        return self.information
+            return self._information
 
-    def refresh(self) -> None:
-        self.information = self.client.get_patients_id(self.id_)
+        return self.client.get_patients_id(self.id_)
 
     @property
     def patient_id(self) -> str:
@@ -250,16 +229,16 @@ class Patient:
         List[Study]
             List of the patient's studies
         """
-        return self._studies
+        if self.lock:
+            if self._child_resources is None:
+                studies_information = self.client.get_patients_id_studies(self.id_)
+                self._child_resources = [Study(i['ID'], self.client, self.lock) for i in studies_information]
 
-    def build_studies(self) -> None:
-        """Build a list of the patient's studies
-        """
+            return self._child_resources
+
         studies_information = self.client.get_patients_id_studies(self.id_)
 
-        self._studies = [Study(i['ID'], self.client) for i in studies_information]
-        for study in self._studies:
-            study.build_series()
+        return [Study(i['ID'], self.client, self.lock) for i in studies_information]
 
     def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None, force: bool = False) -> 'Patient':
         """Anonymize patient
@@ -296,18 +275,13 @@ class Patient:
 
     def remove_empty_studies(self) -> None:
         """Delete empty studies."""
-        for study in self._studies:
+        if self._child_resources is None:
+            return
+
+        for study in self._child_resources:
             study.remove_empty_series()
 
-        self._studies = list(filter(
-            lambda s: s.series != [], self._studies
-        ))
+        self._child_resources = [study for study in self._child_resources if study._child_resources != []]
 
     def __repr__(self):
         return f'Patient(PatientID={self.patient_id}, identifier={self.id_})'
-
-    def __str__(self):
-        return f'Patient(PatientID={self.patient_id}, identifier={self.id_})'
-
-    def __eq__(self, other: 'Patient') -> bool:
-        return self.id_ == other.id_

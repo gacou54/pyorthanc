@@ -10,8 +10,6 @@ from .data import a_study
 
 
 def test_attributes(study):
-    study.build_series()
-
     assert study.get_main_information().keys() == a_study.INFORMATION.keys()
 
     assert study.identifier == a_study.IDENTIFIER
@@ -27,11 +25,11 @@ def test_attributes(study):
     assert study.series != []
 
 
-def test_remote_empty_series(study):
-    study.build_series()
+def test_remove_empty_series(study):
+    study.lock = True
 
     for series in study.series:
-        series._instances = []
+        series._child_resources = []
 
     study.remove_empty_series()
     assert study.series == []
@@ -46,21 +44,16 @@ def test_zip(study):
 
 
 def test_anonymize(study):
-    study.build_series()
-
     anonymized_study = study.anonymize(remove=['StudyDate'])
-    anonymized_study.build_series()
     assert anonymized_study.uid != a_study.INFORMATION['MainDicomTags']['StudyInstanceUID']
     with pytest.raises(KeyError):
         anonymized_study.date
 
     anonymized_study = study.anonymize(replace={'StudyDate': '20220101'})
-    anonymized_study.build_series()
     assert study.date == a_study.DATE
     assert anonymized_study.date == util.make_datetime_from_dicom_date('20220101')
 
     anonymized_study = study.anonymize(keep=['StudyDate'])
-    anonymized_study.build_series()
     assert study.date == a_study.DATE
     assert anonymized_study.date == a_study.DATE
 
@@ -71,5 +64,4 @@ def test_label(study, label):
     assert label in study.labels
 
     study.remove_label(label)
-    study.refresh()
     assert label not in study.labels

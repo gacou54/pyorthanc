@@ -1,10 +1,10 @@
 from typing import Dict, List, Union
 
+from pyorthanc.resources.instance import Instance
+from pyorthanc.resources.patient import Patient
+from pyorthanc.resources.series import Series
+from pyorthanc.resources.study import Study
 from .client import Orthanc
-from .instance import Instance
-from .patient import Patient
-from .series import Series
-from .study import Study
 
 LOOKUP_INTERVAL = 1_000
 

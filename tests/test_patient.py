@@ -9,8 +9,6 @@ from .data import a_patient
 
 
 def test_attributes(patient):
-    patient.build_studies()
-
     assert patient.get_main_information().keys() == a_patient.INFORMATION.keys()
 
     assert patient.identifier == a_patient.IDENTIFIER
@@ -55,21 +53,16 @@ def test_protection(patient):
 
 
 def test_anonymize(patient):
-    patient.build_studies()
-
     anonymize_patient = patient.anonymize(remove=['PatientName'])
-    anonymize_patient.build_studies()
     assert anonymize_patient.patient_id != a_patient.ID
     with pytest.raises(KeyError):
         anonymize_patient.name
 
     anonymize_patient = patient.anonymize(replace={'PatientName': 'NewName'})
-    anonymize_patient.build_studies()
     assert patient.name == a_patient.NAME
     assert anonymize_patient.name == 'NewName'
 
     anonymize_patient = patient.anonymize(keep=['PatientName'])
-    anonymize_patient.build_studies()
     assert patient.name == a_patient.NAME
     assert anonymize_patient.name == a_patient.NAME
 
@@ -80,5 +73,4 @@ def test_label(patient, label):
     assert label in patient.labels
 
     patient.remove_label(label)
-    patient.refresh()
     assert label not in patient.labels

@@ -9,8 +9,6 @@ from .data import a_series
 
 
 def test_attributes(series):
-    series.build_instances()
-
     assert series.get_main_information().keys() == a_series.INFORMATION.keys()
 
     assert series.identifier == a_series.IDENTIFIER
@@ -33,21 +31,16 @@ def test_zip(series):
 
 
 def test_anonymize(series):
-    series.build_instances()
-
     anonymized_series = series.anonymize(remove=['Modality'])
-    anonymized_series.build_instances()
     assert anonymized_series.uid != a_series.INFORMATION['MainDicomTags']['SeriesInstanceUID']
     with pytest.raises(KeyError):
         anonymized_series.modality
 
     anonymized_series = series.anonymize(replace={'Modality': 'RandomModality'})
-    anonymized_series.build_instances()
     assert series.modality in a_series.MODALITY
     assert anonymized_series.modality == 'RandomModality'
 
     anonymized_series = series.anonymize(keep=['StationName'])
-    anonymized_series.build_instances()
     assert series.get_main_information()['MainDicomTags']['StationName'] == \
            a_series.INFORMATION['MainDicomTags']['StationName']
     assert anonymized_series.get_main_information()['MainDicomTags']['StationName'] == \
@@ -55,10 +48,10 @@ def test_anonymize(series):
 
 
 def test_remote_empty_instances(series):
-    series.build_instances()
+    series.lock = True
 
     # Putting an empty instance
-    series._instances = [None]
+    series._child_resources = [None]
 
     series.remove_empty_instances()
     assert series.instances == []
@@ -70,5 +63,4 @@ def test_label(series, label):
     assert label in series.labels
 
     series.remove_label(label)
-    series.refresh()
     assert label not in series.labels

@@ -1,40 +1,40 @@
 from datetime import datetime
-from typing import List, Dict
+from typing import Dict, List
 
-from . import util
+from pyorthanc import util
 from .instance import Instance
-from .client import Orthanc
+from .resource import Resource
 
 
-class Series:
+class Series(Resource):
     """Represent a series that is in an Orthanc server
 
     This object has many getters that allow the user to retrieve metadata
     or the entire DICOM file of the Series
     """
 
-    def __init__(
-            self,
-            series_id: str,
-            client: Orthanc,
-            series_information: Dict = None) -> None:
-        """Constructor
-
-        Parameters
-        ----------
-        series_id
-            Orthanc series identifier.
-        client
-            Orthanc object.
-        series_information
-            Dictionary of series information.
-        """
-        self.client = client
-
-        self.id_ = series_id
-        self.information = series_information
-
-        self._instances: List[Instance] = []
+    # def __init__(
+    #         self,
+    #         series_id: str,
+    #         client: Orthanc,
+    #         series_information: Dict = None) -> None:
+    #     """Constructor
+    #
+    #     Parameters
+    #     ----------
+    #     series_id
+    #         Orthanc series identifier.
+    #     client
+    #         Orthanc object.
+    #     series_information
+    #         Dictionary of series information.
+    #     """
+    #     self.client = client
+    #
+    #     self.id_ = series_id
+    #     self.information = series_information
+    #
+    #     self._instances: List[Instance] = []
 
     @property
     def instances(self) -> List[Instance]:
@@ -45,18 +45,16 @@ class Series:
         List[Instance]
             List of the series' Instance.
         """
-        return self._instances
+        if self.lock:
+            if self._child_resources is None:
+                instances_information = self.client.get_series_id_instances(self.id_)
+                self._child_resources = [Instance(i['ID'], self.client, self.lock) for i in instances_information]
 
-    @property
-    def identifier(self) -> str:
-        """Get series identifier
+            return self._child_resources
 
-        Returns
-        -------
-        str
-            Series identifier.
-        """
-        return self.id_
+        instances_information = self.client.get_series_id_instances(self.id_)
+
+        return [Instance(i['ID'], self.client, self.lock) for i in instances_information]
 
     @property
     def uid(self) -> str:
@@ -77,13 +75,14 @@ class Series:
         Dict
             Dictionary of series main information.
         """
-        if self.information is None:
-            self.information = self.client.get_series_id(self.id_)
+        if self.lock:
+            if self._information is None:
+                # Setup self._information for the first time when series is lock
+                self._information = self.client.get_series_id(self.id_)
 
-        return self.information
+            return self._information
 
-    def refresh(self) -> None:
-        self.information = self.client.get_series_id(self.id_)
+        return self.client.get_series_id(self.id_)
 
     @property
     def manufacturer(self) -> str:
@@ -208,17 +207,9 @@ class Series:
         """
         return self.client.get_series_id_archive(self.id_)
 
-    def build_instances(self) -> None:
-        """Build a list of the series' instances."""
-
-        instance_ids = self.client.get_series_id_instances(self.id_)
-        self._instances = [Instance(i['ID'], self.client) for i in instance_ids]
-
     def __repr__(self):
         return f'Series(identifier={self.id_})'
 
     def remove_empty_instances(self) -> None:
-        self._instances = [i for i in self._instances if i is not None]
-
-    def __eq__(self, other: 'Series') -> bool:
-        return self.id_ == other.id_
+        if self._child_resources is not None:
+            self._child_resources = [i for i in self._child_resources if i is not None]

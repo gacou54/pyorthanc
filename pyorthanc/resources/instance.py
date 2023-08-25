@@ -1,39 +1,40 @@
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 import pydicom
 
-from . import util
-from .client import Orthanc
+from .resource import Resource
+from .. import util
+from ..client import Orthanc
 
 
-class Instance:
+class Instance(Resource):
     """Represent an instance that is in an Orthanc server
 
     This object has many getters that allow the user to retrieve metadata
     or the entire DICOM file of the Instance
     """
 
-    def __init__(
-            self,
-            instance_id: str,
-            client: Orthanc,
-            instance_information: Dict = None) -> None:
-        """Constructor
-
-        Parameters
-        ----------
-        instance_id
-            Orthanc instance identifier.
-        client
-            Orthanc object.
-        instance_information
-            Dictionary of instance's information.
-        """
-        self.client = client
-
-        self.id_ = instance_id
-        self.information = instance_information
+    # def __init__(
+    #         self,
+    #         instance_id: str,
+    #         client: Orthanc,
+    #         instance_information: Dict = None) -> None:
+    #     """Constructor
+    #
+    #     Parameters
+    #     ----------
+    #     instance_id
+    #         Orthanc instance identifier.
+    #     client
+    #         Orthanc object.
+    #     instance_information
+    #         Dictionary of instance's information.
+    #     """
+    #     self.client = client
+    #
+    #     self.id_ = instance_id
+    #     self.information = instance_information
 
     def get_dicom_file_content(self) -> bytes:
         """Retrieves DICOM file
@@ -57,17 +58,6 @@ class Instance:
         return self.client.get_instances_id_file(self.id_)
 
     @property
-    def identifier(self) -> str:
-        """Get instance identifier
-
-        Returns
-        -------
-        str
-            Instance identifier
-        """
-        return self.id_
-
-    @property
     def uid(self) -> str:
         """Get SOPInstanceUID
 
@@ -86,13 +76,14 @@ class Instance:
         Dict
             Dictionary with tags as key and information as value
         """
-        if self.information is None:
-            self.information = self.client.get_instances_id(self.id_)
+        if self.lock:
+            if self._information is None:
+                # Setup self._information for the first time when study is lock
+                self._information = self.client.get_instances_id(self.id_)
 
-        return self.information
+            return self._information
 
-    def refresh(self) -> None:
-        self.information = self.client.get_instances_id(self.id_)
+        return self.client.get_instances_id(self.id_)
 
     @property
     def file_size(self) -> int:
@@ -235,6 +226,3 @@ class Instance:
 
     def __repr__(self):
         return f'Instance(identifier={self.id_})'
-
-    def __eq__(self, other: 'Instance') -> bool:
-        return self.id_ == other.id_
