@@ -5,7 +5,6 @@ import pydicom
 
 from .resource import Resource
 from .. import util
-from ..client import Orthanc
 
 
 class Instance(Resource):
@@ -14,27 +13,6 @@ class Instance(Resource):
     This object has many getters that allow the user to retrieve metadata
     or the entire DICOM file of the Instance
     """
-
-    # def __init__(
-    #         self,
-    #         instance_id: str,
-    #         client: Orthanc,
-    #         instance_information: Dict = None) -> None:
-    #     """Constructor
-    #
-    #     Parameters
-    #     ----------
-    #     instance_id
-    #         Orthanc instance identifier.
-    #     client
-    #         Orthanc object.
-    #     instance_information
-    #         Dictionary of instance's information.
-    #     """
-    #     self.client = client
-    #
-    #     self.id_ = instance_id
-    #     self.information = instance_information
 
     def get_dicom_file_content(self) -> bytes:
         """Retrieves DICOM file
@@ -48,12 +26,14 @@ class Instance(Resource):
 
         Examples
         --------
-        >>> from pyorthanc import Instance
-        >>> instance = Instance('instance_identifier',
-        ...                     Orthanc('http://localhost:8042'))
-        >>> dicom_file_bytes = instance.get_dicom_file_content()
-        >>> with open('your_path', 'wb') as file_handler:
-        ...     file_handler.write(dicom_file_bytes)
+        ```python
+        from pyorthanc import Instance
+        instance = Instance('instance_identifier',
+                            Orthanc('http://localhost:8042'))
+        dicom_file_bytes = instance.get_dicom_file_content()
+        with open('your_path', 'wb') as file_handler:
+            file_handler.write(dicom_file_bytes)
+        ```
         """
         return self.client.get_instances_id_file(self.id_)
 
