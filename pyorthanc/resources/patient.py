@@ -14,18 +14,6 @@ class Patient(Resource):
     or the entire DICOM file of the Patient
     """
 
-    # def __init__(self, id_: str, client: Orthanc, lock: bool = False) -> None:
-    #     """Constructor
-    #
-    #     Parameters
-    #     ----------
-    #     id_
-    #         Orthanc patient identifier.
-    #     client
-    #         Orthanc object.
-    #     """
-    #     super().__init__(id_, client, lock)
-
     def get_main_information(self) -> Dict:
         """Get Patient information
 

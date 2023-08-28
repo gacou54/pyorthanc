@@ -14,25 +14,6 @@ class Study(Resource):
     or the entire DICOM file of the Series
     """
 
-    # def __init__(self, id_: str, client: Orthanc, lock: bool = False) -> None:
-    #     """Constructor
-    #
-    #     Parameters
-    #     ----------
-    #     study_id
-    #         Orthanc study identifier.
-    #     client
-    #         Orthanc object.
-    #     study_information
-    #         Dictionary of study's information.
-    #     """
-    #     self.client = client
-    #
-    #     self.id_ = id_
-    #     self.information = study_information
-    #
-    #     self._series: List[Series] = []
-
     def get_main_information(self) -> Dict:
         """Get Study information
 

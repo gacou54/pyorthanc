@@ -13,29 +13,6 @@ class Series(Resource):
     or the entire DICOM file of the Series
     """
 
-    # def __init__(
-    #         self,
-    #         series_id: str,
-    #         client: Orthanc,
-    #         series_information: Dict = None) -> None:
-    #     """Constructor
-    #
-    #     Parameters
-    #     ----------
-    #     series_id
-    #         Orthanc series identifier.
-    #     client
-    #         Orthanc object.
-    #     series_information
-    #         Dictionary of series information.
-    #     """
-    #     self.client = client
-    #
-    #     self.id_ = series_id
-    #     self.information = series_information
-    #
-    #     self._instances: List[Instance] = []
-
     @property
     def instances(self) -> List[Instance]:
         """Get series instance
