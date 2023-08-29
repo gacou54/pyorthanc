@@ -35,7 +35,7 @@ class AsyncOrthanc(httpx.AsyncClient):
         *args, **kwargs
             Parameters passed to the httpx.Client (headers, timeout, etc.)
         """
-        super().__init__()
+        super().__init__(*args, **kwargs)
         self.url = url
         self.version = '1.12.1'
         self.return_raw_response = return_raw_response
