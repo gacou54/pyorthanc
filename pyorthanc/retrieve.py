@@ -22,7 +22,11 @@ def retrieve_and_write_patients(patients: List[Patient], path: str) -> None:
 
 
 def retrieve_and_write_patient(patient: Patient, path: str) -> None:
-    patient_path = os.path.join(path, patient.patient_id)
+    patient_id = patient.patient_id
+    if patient_id == '':
+        patient_path = os.path.join(path, 'unknown-patient')
+    else:
+        patient_path = os.path.join(path, patient.patient_id)
 
     for study in patient.studies:
         retrieve_and_write_study(study, patient_path)
