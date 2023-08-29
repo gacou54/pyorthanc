@@ -91,34 +91,6 @@ async def _async_find(
         series_filter: Optional[Callable] = None,
         instance_filter: Optional[Callable] = None) -> List[Patient]:
     patient_identifiers = await async_orthanc.get_patients()
-    # patients = [Patient(i, async_to_sync(async_orthanc), lock=True) for i in patient_identifiers]
-    #
-    # if patient_filter is not None:
-    #     patients = [i for i in patients if patient_filter(i)]
-    #
-    # for patient in patients:
-    #     study_identifiers = await async_orthanc.get_patients_id_studies(patient.id_)
-    #     patient._child_resources = [Study(i['ID'], async_to_sync(async_orthanc), lock=True) for i in study_identifiers]
-    #
-    #     if study_filter is not None:
-    #         patient._child_resources = [i for i in patient.studies if study_filter(i)]
-    #
-    #     for study in patient.studies:
-    #         series_identifiers = await async_orthanc.get_studies_id_series(study.id_)
-    #         study._child_resources = [Series(i['ID'], async_to_sync(async_orthanc), lock=True) for i in series_identifiers]
-    #
-    #         if series_filter is not None:
-    #             study._child_resources = [i for i in study.series if series_filter(i)]
-    #
-    #         for series in study.series:
-    #             instance_identifiers = await async_orthanc.get_series_id_instances(series.id_)
-    #             series._child_resources = [Instance(i['ID'], async_to_sync(async_orthanc), lock=True) for i in instance_identifiers]
-    #
-    #             if instance_filter is not None:
-    #                 series._child_resources = [i for i in series.instances if instance_filter(i)]
-    #
-    # return trim_patients(patients)
-
     tasks = []
 
     for patient_id in patient_identifiers:  # This ID is the Orthanc's ID, and not the PatientID
@@ -151,6 +123,7 @@ async def _async_build_patient(
 
     if patient_filter is not None:
         if not patient_filter(patient):
+            patient._child_resources = []
             return patient
 
     study_information = await async_orthanc.get_patients_id_studies(patient_id_)
@@ -158,10 +131,11 @@ async def _async_build_patient(
     tasks = []
     for info in study_information:
         task = asyncio.create_task(
-            _async_build_study(info, async_orthanc, study_filter, series_filter, instance_filter))
+            _async_build_study(info, async_orthanc, study_filter, series_filter, instance_filter)
+        )
         tasks.append(task)
 
-    patient._studies = await asyncio.gather(*tasks)
+    patient._child_resources = await asyncio.gather(*tasks)
 
     return patient
 
@@ -173,9 +147,11 @@ async def _async_build_study(
         series_filter: Optional[Callable],
         instance_filter: Optional[Callable]) -> Study:
     study = Study(study_information['ID'], async_to_sync(async_orthanc), lock=True)
+    study._information = study_information
 
     if study_filter is not None:
         if not study_filter(study):
+            study._child_resources = []
             return study
 
     series_information = await async_orthanc.get_studies_id_series(study_information['ID'])
@@ -185,7 +161,7 @@ async def _async_build_study(
         task = asyncio.create_task(_async_build_series(info, async_orthanc, series_filter, instance_filter))
         tasks.append(task)
 
-    study._series = await asyncio.gather(*tasks)
+    study._child_resources = await asyncio.gather(*tasks)
 
     return study
 
@@ -195,15 +171,18 @@ async def _async_build_series(
         async_orthanc: AsyncOrthanc,
         series_filter: Optional[Callable],
         instance_filter: Optional[Callable]) -> Series:
-    series = Series(series_information['ID'], async_to_sync(async_orthanc), series_information)
+    series = Series(series_information['ID'], async_to_sync(async_orthanc), lock=True)
+    series._information = series_information
 
     if series_filter is not None:
         if not series_filter(series):
+            series._child_resources = []
             return series
 
     instance_information = await async_orthanc.get_series_id_instances(series_information['ID'])
-    series._instances = [_build_instance(i, async_to_sync(async_orthanc), instance_filter) for i in
-                         instance_information]
+    series._child_resources = [
+        _build_instance(i, async_to_sync(async_orthanc), instance_filter) for i in instance_information
+    ]
 
     return series
 
@@ -212,7 +191,8 @@ def _build_instance(
         instance_information: Dict,
         orthanc: Orthanc,
         instance_filter: Optional[Callable]) -> Optional[Instance]:
-    instance = Instance(instance_information['ID'], orthanc, instance_information)
+    instance = Instance(instance_information['ID'], orthanc, lock=True)
+    instance._information = instance_information
 
     if instance_filter is not None:
         if not instance_filter(instance):

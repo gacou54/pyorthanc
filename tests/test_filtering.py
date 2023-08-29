@@ -12,12 +12,10 @@ from tests.data import a_patient, a_series, a_study, an_instance
         ('client_with_data', lambda p: p.name == 'MR-R', None, None, None, 1, 3),
         ('client_with_data', lambda p: p.name == 'NOT_EXISTING_PATIENT', None, None, None, 0, 0),
         ('client_with_data', None, lambda s: s.date == make_datetime_from_dicom_date('20100223'), None, None, 1, 3),
-        ('client_with_data', None, lambda s: s.date == make_datetime_from_dicom_date('19990101'), None, None, 0, 0),
-        # Fake date.
+        ('client_with_data', None, lambda s: s.date == make_datetime_from_dicom_date('19990101'), None, None, 0, 0), # Fake date.
         ('client_with_data', None, None, lambda s: s.modality == 'RTDOSE', None, 1, 1),
         ('client_with_data', None, None, lambda s: s.modality == 'NOT_EXISTING_MODALITY', None, 0, 0),
-        ('client_with_data', None, None, None,
-         lambda i: i.creation_date == make_datetime_from_dicom_date('20100301', '170155'), 1, 3),
+        ('client_with_data', None, None, None, lambda i: i.creation_date == make_datetime_from_dicom_date('20100301', '170155'), 1, 3),
         ('client_with_data', None, None, None, lambda i: i.creation_date == make_datetime_from_dicom_date('19990101'), 0, 0),  # Fake date.
         ('async_client_with_data', None, None, None, None, 1, 3),
         ('async_client_with_data', lambda p: p.name == 'MR-R', None, None, None, 1, 3),
@@ -53,8 +51,7 @@ def test_find(client_fixture, patient_filter, study_filter, series_filter, insta
         assert len(study.series) == expected_nbr_of_series
 
         assert len(study.series) != 0
-        series = [s for s in patients[0].studies[0].series if s.modality == 'RTDOSE'][
-            0]  # Ensure that the correct series is selected
+        series = [s for s in patients[0].studies[0].series if s.modality == 'RTDOSE'][0]
         assert type(series) == Series
         assert series.uid == a_series.INFORMATION['MainDicomTags']['SeriesInstanceUID']
 
