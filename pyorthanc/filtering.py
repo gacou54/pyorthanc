@@ -78,7 +78,7 @@ def find(orthanc: Union[Orthanc, AsyncOrthanc],
                 study._child_resources = [i for i in study.series if series_filter(i)]
 
             for series in study.series:
-                if instance_filter:
+                if instance_filter is not None:
                     series._child_resources = [i for i in series.instances if instance_filter(i)]
 
     return trim_patients(patients)
