@@ -1,7 +1,7 @@
 import pytest
 
 from pyorthanc import find_instances, find_patients, find_series, find_studies, query_orthanc
-from pyorthanc.find import DEFAULT_RESOURCES_LIMIT
+from pyorthanc._find import DEFAULT_RESOURCES_LIMIT
 from .conftest import LABEL_INSTANCE, LABEL_PATIENT, LABEL_SERIES, LABEL_STUDY
 from .data import a_patient, a_series, a_study, an_instance
 

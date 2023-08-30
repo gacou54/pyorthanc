@@ -4,10 +4,10 @@ from typing import Callable, Dict, List, Optional, Union
 
 from .async_client import AsyncOrthanc
 from .client import Orthanc
-from .resources.instance import Instance
-from .resources.patient import Patient
-from .resources.series import Series
-from .resources.study import Study
+from ._resources.instance import Instance
+from ._resources.patient import Patient
+from ._resources.series import Series
+from ._resources.study import Study
 from .util import async_to_sync
 
 

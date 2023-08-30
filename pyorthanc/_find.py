@@ -1,11 +1,11 @@
 from typing import Dict, List, Union
 
 from .client import Orthanc
-from .resources.instance import Instance
-from .resources.patient import Patient
-from .resources.resource import Resource
-from .resources.series import Series
-from .resources.study import Study
+from ._resources.instance import Instance
+from ._resources.patient import Patient
+from ._resources.resource import Resource
+from ._resources.series import Series
+from ._resources.study import Study
 
 DEFAULT_RESOURCES_LIMIT = 1_000
 

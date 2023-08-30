@@ -1,6 +1,6 @@
 import pytest
 
-from pyorthanc import AsyncOrthanc, Instance, Orthanc, Patient, RemoteModality, Series, Study
+from pyorthanc import AsyncOrthanc, Instance, Modality, Orthanc, Patient, Series, Study
 from .data import a_patient, a_series, a_study, an_instance
 from .setup_server import ORTHANC_1, ORTHANC_2, add_modality, clear_data, setup_data
 
@@ -68,7 +68,7 @@ def modality(client, second_client):
         add_modality(ORTHANC_1, ORTHANC_2.AeT, 'orthanc2', 4242)
         add_modality(ORTHANC_2, ORTHANC_1.AeT, 'orthanc1', 4242)
 
-    return RemoteModality(client, ORTHANC_2.AeT)
+    return Modality(client, ORTHANC_2.AeT)
 
 
 @pytest.fixture

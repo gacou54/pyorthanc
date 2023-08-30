@@ -5,9 +5,8 @@ import httpx
 from .client import Orthanc
 
 
-class RemoteModality:
-    """Wrapper around Orthanc API when dealing with a (remote) modality.
-    """
+class Modality:
+    """Wrapper around Orthanc API when dealing with a modality."""
 
     def __init__(self, client: Orthanc, modality: str) -> None:
         """Constructor
@@ -23,7 +22,7 @@ class RemoteModality:
         self.modality = modality
 
     def echo(self) -> bool:
-        """C-Echo to remote modality
+        """C-Echo to modality
 
         Returns
         -------
@@ -60,12 +59,12 @@ class RemoteModality:
         ...         }
         ... }
 
-        >>> remote_modality = RemoteModality(
+        >>> modality = Modality(
         ...     client=Orthanc('http://localhost:8042'),
         ...     modality='sample'
         ... )
 
-        >>> remote_modality.query(data)
+        >>> modality.query(data)
         """
         return dict(self.client.post_modalities_id_query(self.modality, json=data))
 
@@ -88,13 +87,13 @@ class RemoteModality:
 
         Examples
         --------
-        >>> remote_modality = RemoteModality(Orthanc('http://localhost:8042'), 'modality')
-        >>> query_id = remote_modality.query(
+        >>> modality = Modality(Orthanc('http://localhost:8042'), 'modality')
+        >>> query_id = modality.query(
         ...     data={'Level': 'Series',
         ...           'Query': {'PatientID': '',
         ...                     'Modality':'SR'}})
 
-        >>> remote_modality.move(
+        >>> modality.move(
         ...     query_identifier=query_id['ID'],
         ...     cmove_data={'TargetAet': 'TARGETAET'}
         ... )
@@ -103,7 +102,7 @@ class RemoteModality:
         return dict(self.client.post_queries_id_retrieve(query_identifier, json=cmove_data))
 
     def store(self, instance_or_series_id: str) -> Dict:
-        """Store series or instance to remote modality.
+        """Store series or instance to modality.
 
         Parameters
         ----------
@@ -130,3 +129,4 @@ class RemoteModality:
         return answers
 
 
+RemoteModality = Modality

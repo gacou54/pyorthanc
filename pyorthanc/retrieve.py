@@ -1,10 +1,10 @@
 import os
 from typing import List
 
-from .resources.instance import Instance
-from .resources.patient import Patient
-from .resources.series import Series
-from .resources.study import Study
+from ._resources.instance import Instance
+from ._resources.patient import Patient
+from ._resources.series import Series
+from ._resources.study import Study
 
 
 def retrieve_and_write_patients(patients: List[Patient], path: str) -> None:
