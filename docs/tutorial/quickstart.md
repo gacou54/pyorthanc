@@ -50,6 +50,7 @@ orthanc = Orthanc(url='http://localhost:8042/',
 orthanc.get_modalities()
 ```
 
+
 ### Find and download patients according to criteria:
 
 ```python
@@ -64,7 +65,7 @@ patients = find_patients(
 retrieve_and_write_patients(patients, '.')
 ```
 
-#### Query (C-Find) and Retrieve (C-Move) from remote modality:
+### Query (C-Find) and Retrieve (C-Move) from remote modality:
 
 ```python
 from pyorthanc import RemoteModality, Orthanc
