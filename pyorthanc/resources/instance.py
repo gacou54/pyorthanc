@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 import pydicom
 
 from .resource import Resource
-from .. import util
+from .. import errors, util
 
 
 class Instance(Resource):
@@ -96,15 +96,41 @@ class Instance(Resource):
         return util.make_datetime_from_dicom_date(date_string, time_string)
 
     @property
-    def series_id(self) -> str:
-        """Get the parent series identifier
-
-        Returns
-        -------
-        str
-            The parent series identifier.
-        """
+    def series_identifier(self) -> str:
+        """Get the parent series identifier"""
         return self.get_main_information()['ParentSeries']
+    
+    @property
+    def acquisition_number(self) -> int:
+        try:
+            return int(self.get_main_information()['MainDicomTags']['AcquisitionNumber'])
+        except KeyError:
+            raise errors.OptionalTagDoesNotExistError(f'{self} has no AcquisitionNumber tag.')
+
+    @property
+    def image_orientation_patient(self) -> List[float]:
+        try:
+            orientation = self.get_main_information()['MainDicomTags']['ImageOrientationPatient']
+            return [float(i) for i in orientation.split('\\')]
+
+        except KeyError:
+            raise errors.OptionalTagDoesNotExistError(f'{self} has no ImageOrientationPatient tag.')
+
+    @property
+    def image_position_patient(self) -> List[float]:
+        try:
+            position = self.get_main_information()['MainDicomTags']['ImagePositionPatient']
+            return [float(i) for i in position.split('\\')]
+
+        except KeyError:
+            raise errors.OptionalTagDoesNotExistError(f'{self} has no ImagePositionPatient tag.')
+
+    @property
+    def instance_number(self) -> int:
+        try:
+            return int(self.get_main_information()['MainDicomTags']['InstanceNumber'])
+        except KeyError:
+            raise errors.OptionalTagDoesNotExistError(f'{self} has no InstanceNumber tag.')
 
     @property
     def first_level_tags(self) -> Any:

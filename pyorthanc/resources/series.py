@@ -95,39 +95,32 @@ class Series(Resource):
         return self.get_main_information()['MainDicomTags']['Modality']
 
     @property
-    def series_number(self) -> str:
-        """Get series number
-
-        Returns
-        -------
-        str
-            Series number.
-        """
-        return self.get_main_information()['MainDicomTags']['SeriesNumber']
+    def series_number(self) -> int:
+        return int(self.get_main_information()['MainDicomTags']['SeriesNumber'])
 
     @property
-    def performed_procedure_step_description(self):
+    def performed_procedure_step_description(self) -> str:
         try:
             return self.get_main_information()['MainDicomTags']['PerformedProcedureStepDescription']
         except KeyError:
             raise errors.OptionalTagDoesNotExistError(f'{self} has no PerformedProcedureStepDescription tag.')
 
     @property
-    def protocol_name(self):
+    def protocol_name(self) -> str:
         try:
             return self.get_main_information()['MainDicomTags']['ProtocolName']
         except KeyError:
             raise errors.OptionalTagDoesNotExistError(f'{self} has no ProtocolName tag.')
         
     @property
-    def station_name(self):
+    def station_name(self) -> str:
         try:
             return self.get_main_information()['MainDicomTags']['StationName']
         except KeyError:
             raise errors.OptionalTagDoesNotExistError(f'{self} has no StationName tag.')
 
     @property
-    def is_stable(self):
+    def is_stable(self) -> bool:
         return self.get_main_information()['IsStable']
 
     @property
