@@ -109,15 +109,15 @@ orthanc.post_patients_id_anonymize(patient_identifier)
 #  'Type': 'Patient'}
 ```
 
-Example of usage
-----------------
+## Full basic examples
+
 Be sure that Orthanc is running. The default URL (if running locally) is `http://localhost:8042`.
 
 Here is a list of examples to helps you getting started with pyorthanc
 
-| code                                                                                                            | 
-|-----------------------------------------------------------------------------------------------------------------|
-| [Access instance informations](https://github.com/ylemarechal/pyorthanc-examples/tree/main/basic/access_informations) |
+### Access instance informations
+
+[Get instance informations](https://github.com/ylemarechal/pyorthanc-examples/tree/main/basic/access_informations)
 
 ## Some useful commands
 
