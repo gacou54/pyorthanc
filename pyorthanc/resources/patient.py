@@ -275,6 +275,3 @@ class Patient(Resource):
             study.remove_empty_series()
 
         self._child_resources = [study for study in self._child_resources if study._child_resources != []]
-
-    def __repr__(self):
-        return f'Patient(PatientID={self.patient_id}, identifier={self.id_})'

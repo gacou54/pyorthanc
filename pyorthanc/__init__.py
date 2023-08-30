@@ -1,4 +1,3 @@
-from pyorthanc.resources.study import Study
 from .async_client import AsyncOrthanc
 from .client import Orthanc
 from .filtering import build_patient_forest, find, trim_patients

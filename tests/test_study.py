@@ -23,6 +23,7 @@ def test_attributes(study):
     assert not study.is_stable
     assert isinstance(study.last_update, datetime)
     assert study.series != []
+    assert str(study) == f'Study({a_study.IDENTIFIER})'
 
 
 def test_remove_empty_series(study):
