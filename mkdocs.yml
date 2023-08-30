@@ -51,7 +51,3 @@ plugins:
           options:
             docstring_style: numpy
       default_handler: python
-
-
-extra_css:
-    - css/custom.css
