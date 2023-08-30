@@ -15,12 +15,14 @@ nav:
       - 'Quick Start': 'tutorial/quickstart.md'
       - 'Advanced Usage': 'tutorial/advanced.md'
   - 'Api Reference':
-      'Orthanc': 'api/orthanc.md'
+      'Orthanc': 'api/client.md'
       'Asynchronous Orthanc': 'api/async_client.md'
-      'Patient': 'api/patient.md'
-      'Study': 'api/study.md'
-      'Series': 'api/series.md'
-      'Instance': 'api/instance.md'
+      'Resource': 'api/resources/resource.md'
+      'Patient': 'api/resources/patient.md'
+      'Study': 'api/resources/study.md'
+      'Series': 'api/resources/series.md'
+      'Instance': 'api/resources/instance.md'
+      'Find': 'api/find.md'
       'Filtering': 'api/filtering.md'
       'Remote': 'api/remote.md'
       'Util': 'api/util.md'
@@ -28,7 +30,7 @@ nav:
 
   - 'Releases & Roadmap':
     - 'Releases': 'releases/releases.md'
-    - 'Roadmap' : 'releases/roadmap.md'
+
 
   - 'More informations':
     - 'Contributing': 'contributing.md'
