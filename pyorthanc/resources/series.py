@@ -3,7 +3,7 @@ from typing import Dict, List
 
 from .instance import Instance
 from .resource import Resource
-from .. import util
+from .. import errors, util
 
 
 class Series(Resource):
@@ -104,6 +104,27 @@ class Series(Resource):
             Series number.
         """
         return self.get_main_information()['MainDicomTags']['SeriesNumber']
+
+    @property
+    def performed_procedure_step_description(self):
+        try:
+            return self.get_main_information()['MainDicomTags']['PerformedProcedureStepDescription']
+        except KeyError:
+            raise errors.OptionalTagDoesNotExistError(f'{self} has no PerformedProcedureStepDescription tag.')
+
+    @property
+    def protocol_name(self):
+        try:
+            return self.get_main_information()['MainDicomTags']['ProtocolName']
+        except KeyError:
+            raise errors.OptionalTagDoesNotExistError(f'{self} has no ProtocolName tag.')
+        
+    @property
+    def station_name(self):
+        try:
+            return self.get_main_information()['MainDicomTags']['StationName']
+        except KeyError:
+            raise errors.OptionalTagDoesNotExistError(f'{self} has no StationName tag.')
 
     @property
     def is_stable(self):
