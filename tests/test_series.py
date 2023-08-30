@@ -4,6 +4,7 @@ from zipfile import ZipFile
 
 import pytest
 
+from pyorthanc import errors
 from .conftest import LABEL_SERIES
 from .data import a_series
 
@@ -21,6 +22,13 @@ def test_attributes(series):
     assert isinstance(series.last_update, datetime)
     assert series.instances != []
     assert str(series) == f'Series({a_series.IDENTIFIER})'
+
+    with pytest.raises(errors.OptionalTagDoesNotExistError):
+        series.performed_procedure_step_description
+    with pytest.raises(errors.OptionalTagDoesNotExistError):
+        series.protocol_name
+    with pytest.raises(errors.OptionalTagDoesNotExistError):
+        series.station_name
 
 
 def test_zip(series):
