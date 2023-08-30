@@ -115,14 +115,14 @@ class Study(Resource):
         """
         if self.lock:
             if self._child_resources is None:
-                series_information = self.client.get_studies_id_series(self.id_)
-                self._child_resources = [Series(i['ID'], self.client, self.lock) for i in series_information]
+                series_ids = self.get_main_information()['Series']
+                self._child_resources = [Series(i, self.client, self.lock) for i in series_ids]
 
             return self._child_resources
 
-        series_information = self.client.get_studies_id_series(self.id_)
+        series_ids = self.get_main_information()['Series']
 
-        return [Series(i['ID'], self.client, self.lock) for i in series_information]
+        return [Series(i, self.client, self.lock) for i in series_ids]
 
     @property
     def is_stable(self):

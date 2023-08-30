@@ -24,14 +24,14 @@ class Series(Resource):
         """
         if self.lock:
             if self._child_resources is None:
-                instances_information = self.client.get_series_id_instances(self.id_)
-                self._child_resources = [Instance(i['ID'], self.client, self.lock) for i in instances_information]
+                instances_ids = self.get_main_information()['Instances']
+                self._child_resources = [Instance(i, self.client, self.lock) for i in instances_ids]
 
             return self._child_resources
 
-        instances_information = self.client.get_series_id_instances(self.id_)
+        instances_ids = self.get_main_information()['Instances']
 
-        return [Instance(i['ID'], self.client, self.lock) for i in instances_information]
+        return [Instance(i, self.client, self.lock) for i in instances_ids]
 
     @property
     def uid(self) -> str:
