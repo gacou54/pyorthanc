@@ -59,7 +59,7 @@ Here is a list of examples to helps you getting started with pyorthanc
 
 | code                                                                                                            | 
 |-----------------------------------------------------------------------------------------------------------------|
-| [Access instance informations](https://github.com/ylemarechal/pyorthanc/tree/main/examples/access_informations) |
+| [Access instance informations](https://github.com/ylemarechal/pyorthanc-examples/tree/main/basic/access_informations) |
 
 ## Some useful commands
 
