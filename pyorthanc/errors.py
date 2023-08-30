@@ -1,0 +1,2 @@
+class OptionalTagDoesNotExistError(Exception):
+    pass

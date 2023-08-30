@@ -4,7 +4,7 @@ from zipfile import ZipFile
 
 import pytest
 
-from pyorthanc import util
+from pyorthanc import errors, util
 from .conftest import LABEL_STUDY
 from .data import a_study
 
@@ -24,6 +24,13 @@ def test_attributes(study):
     assert isinstance(study.last_update, datetime)
     assert study.series != []
     assert str(study) == f'Study({a_study.IDENTIFIER})'
+
+    with pytest.raises(errors.OptionalTagDoesNotExistError):
+        study.description
+    with pytest.raises(errors.OptionalTagDoesNotExistError):
+        study.institution_name
+    with pytest.raises(errors.OptionalTagDoesNotExistError):
+        study.requested_procedure_description
 
 
 def test_remove_empty_series(study):

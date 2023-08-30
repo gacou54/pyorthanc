@@ -3,7 +3,7 @@ from typing import Dict, List
 
 from .resource import Resource
 from .series import Series
-from .. import util
+from .. import errors, util
 
 
 class Study(Resource):
@@ -123,6 +123,31 @@ class Study(Resource):
         series_ids = self.get_main_information()['Series']
 
         return [Series(i, self.client, self.lock) for i in series_ids]
+
+    @property
+    def accession_number(self):
+        return self.get_main_information()['MainDicomTags']['AccessionNumber']
+
+    @property
+    def description(self):
+        try:
+            return self.get_main_information()['MainDicomTags']['StudyDescription']
+        except KeyError:
+            raise errors.OptionalTagDoesNotExistError(f'{self} has no StudyDescription tag.')
+
+    @property
+    def institution_name(self):
+        try:
+            return self.get_main_information()['MainDicomTags']['InstitutionName']
+        except KeyError:
+            raise errors.OptionalTagDoesNotExistError(f'{self} has no InstitutionName tag.')
+
+    @property
+    def requested_procedure_description(self):
+        try:
+            return self.get_main_information()['MainDicomTags']['RequestedProcedureDescription']
+        except KeyError:
+            raise errors.OptionalTagDoesNotExistError(f'{self} has no RequestedProcedureDescription tag.')
 
     @property
     def is_stable(self):
