@@ -1,0 +1,3 @@
+::: pyorthanc.retrieve
+    :docstring:
+    :members:

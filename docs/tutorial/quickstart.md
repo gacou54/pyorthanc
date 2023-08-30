@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- [x] Python3.10
+- [x] Python3.8
 
 ## Installation
 
