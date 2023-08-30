@@ -1,6 +1,6 @@
 import pytest
 
-from pyorthanc import Instance, Patient, Series, Study, filtering
+from pyorthanc import Instance, Patient, Series, Study, find
 from pyorthanc.util import make_datetime_from_dicom_date
 from tests.data import a_patient, a_series, a_study, an_instance
 
@@ -29,7 +29,7 @@ from tests.data import a_patient, a_series, a_study, an_instance
     ])
 def test_find(client_fixture, patient_filter, study_filter, series_filter, instance_filter, expected_nbr_of_patient,
               expected_nbr_of_series, request):
-    patients = filtering.find(
+    patients = find(
         orthanc=request.getfixturevalue(client_fixture),
         patient_filter=patient_filter,
         study_filter=study_filter,
