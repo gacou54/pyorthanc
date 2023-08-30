@@ -1,3 +1,5 @@
+[![ci](https://github.com/gacou54/pyorthanc/workflows/Test/badge.svg)](https://github.com/gacou54/pyorthanc/actions?query=workflow%3ATest)
+[![documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg?style=flat)](https://gacou54.github.io/pyorthanc/)
 # PyOrthanc
 **PyOrthanc** is a python client for the Orthanc REST API, which fully wraps all the methods of the REST API.
 Additionally, it provides many utility functions to interact with an Orthanc instance.
@@ -74,7 +76,6 @@ job.state  # You can follow the job state
 job.wait_until_completion() # Or just wait on its completion
 new_patient = pyorthanc.Patient(job.content['ID'], client)
 ```
-
 
 ## Notes on versioning
 PyOrthanc has been rewritten almost entirely from `0.*.*`.
