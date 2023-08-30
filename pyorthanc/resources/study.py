@@ -125,32 +125,32 @@ class Study(Resource):
         return [Series(i, self.client, self.lock) for i in series_ids]
 
     @property
-    def accession_number(self):
+    def accession_number(self) -> str:
         return self.get_main_information()['MainDicomTags']['AccessionNumber']
 
     @property
-    def description(self):
+    def description(self) -> str:
         try:
             return self.get_main_information()['MainDicomTags']['StudyDescription']
         except KeyError:
             raise errors.OptionalTagDoesNotExistError(f'{self} has no StudyDescription tag.')
 
     @property
-    def institution_name(self):
+    def institution_name(self) -> str:
         try:
             return self.get_main_information()['MainDicomTags']['InstitutionName']
         except KeyError:
             raise errors.OptionalTagDoesNotExistError(f'{self} has no InstitutionName tag.')
 
     @property
-    def requested_procedure_description(self):
+    def requested_procedure_description(self) -> str:
         try:
             return self.get_main_information()['MainDicomTags']['RequestedProcedureDescription']
         except KeyError:
             raise errors.OptionalTagDoesNotExistError(f'{self} has no RequestedProcedureDescription tag.')
 
     @property
-    def is_stable(self):
+    def is_stable(self) -> bool:
         return self.get_main_information()['IsStable']
 
     @property

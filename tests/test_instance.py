@@ -3,8 +3,9 @@ from datetime import datetime
 import pydicom
 import pytest
 
+from pyorthanc import errors
 from .conftest import LABEL_INSTANCE
-from .data import an_instance
+from .data import a_series, an_instance
 
 EXPECTED_DATE = datetime(
     year=2010,
@@ -23,10 +24,17 @@ def test_attributes(instance):
     assert type(instance.file_size) == int
     assert instance.creation_date == EXPECTED_DATE
     assert instance.labels == [LABEL_INSTANCE]
+    assert instance.series_identifier == a_series.IDENTIFIER
+    assert instance.image_orientation_patient == [1, 0, 0, 0, 1, 0]
+    assert instance.image_position_patient == [-223.9880065918, -158.08148193359, -117.78499603271]
+    assert instance.instance_number == int(an_instance.INFORMATION['MainDicomTags']['InstanceNumber'])
 
     assert '0008,0012' in instance.tags.keys()
     assert 'Value' in instance.tags['0008,0012'].keys()
     assert str(instance) == f'Instance({an_instance.IDENTIFIER})'
+
+    with pytest.raises(errors.OptionalTagDoesNotExistError):
+        instance.acquisition_number
 
 
 def test_get_tag_content(instance):
