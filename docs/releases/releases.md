@@ -1,5 +1,6 @@
-Lastest release : 1.12.1
-------------
+# Releases 
+
+## Lastest release : 1.12.1
 
 The Orthanc client has been regenerated on the Orthanc 1.12.1 version (source of the [changelist](https://hg.orthanc-server.com/orthanc/file/Orthanc-1.12.1/NEWS)).
 
@@ -30,8 +31,8 @@ Details:
 
     - All tests made with unittest has been refactored to use pytest
 
-Release 1.11.5 
-------------
+## Release 1.11.5 
+
 
 PyOrthanc v1.11.5 follow Orthanc version 1.11.3.
 

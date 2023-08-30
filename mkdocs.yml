@@ -51,3 +51,9 @@ plugins:
           options:
             docstring_style: numpy
       default_handler: python
+#  - toc-md:
+#      header_level:
+#      pickup_description_class: false
+#      ignore_page_pattern: api/*
+#      remove_navigation_page_pattern: api/*
+
