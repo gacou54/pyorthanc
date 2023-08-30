@@ -224,14 +224,14 @@ class Patient(Resource):
         """
         if self.lock:
             if self._child_resources is None:
-                studies_information = self.client.get_patients_id_studies(self.id_)
-                self._child_resources = [Study(i['ID'], self.client, self.lock) for i in studies_information]
+                studies_ids = self.get_main_information()['Studies']
+                self._child_resources = [Study(i, self.client, self.lock) for i in studies_ids]
 
             return self._child_resources
 
-        studies_information = self.client.get_patients_id_studies(self.id_)
+        studies_ids = self.get_main_information()['Studies']
 
-        return [Study(i['ID'], self.client, self.lock) for i in studies_information]
+        return [Study(i, self.client, self.lock) for i in studies_ids]
 
     def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None, force: bool = False) -> 'Patient':
         """Anonymize patient
