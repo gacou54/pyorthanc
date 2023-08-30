@@ -203,6 +203,3 @@ class Instance(Resource):
     def get_pydicom(self) -> pydicom.FileDataset:
         """Retrieve a pydicom.FileDataset object corresponding to the instance."""
         return util.get_pydicom(self.client, self.id_)
-
-    def __repr__(self):
-        return f'Instance(identifier={self.id_})'

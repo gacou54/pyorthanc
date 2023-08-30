@@ -214,6 +214,3 @@ class Study(Resource):
             series.remove_empty_instances()
 
         self._child_resources = [series for series in self._child_resources if series._child_resources != []]
-
-    def __repr__(self):
-        return f'Study(StudyId={self.study_id}, identifier={self.id_})'

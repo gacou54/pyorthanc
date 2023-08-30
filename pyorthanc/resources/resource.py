@@ -38,5 +38,11 @@ class Resource:
         """
         return self.id_
 
+    def get_main_information(self):
+        raise NotImplementedError
+
     def __eq__(self, other: 'Resource') -> bool:
         return self.id_ == other.id_
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}({self.id_})'

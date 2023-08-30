@@ -20,6 +20,7 @@ def test_attributes(series):
     assert not series.is_stable
     assert isinstance(series.last_update, datetime)
     assert series.instances != []
+    assert str(series) == f'Series({a_series.IDENTIFIER})'
 
 
 def test_zip(series):

@@ -186,9 +186,6 @@ class Series(Resource):
         """
         return self.client.get_series_id_archive(self.id_)
 
-    def __repr__(self):
-        return f'Series(identifier={self.id_})'
-
     def remove_empty_instances(self) -> None:
         if self._child_resources is not None:
             self._child_resources = [i for i in self._child_resources if i is not None]

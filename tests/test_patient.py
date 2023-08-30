@@ -19,6 +19,7 @@ def test_attributes(patient):
     assert patient.labels == [LABEL_PATIENT]
     assert not patient.is_stable
     assert isinstance(patient.last_update, datetime)
+    assert str(patient) == f'Patient({a_patient.IDENTIFIER})'
 
     assert [s.identifier for s in patient.studies] == a_patient.INFORMATION['Studies']
 

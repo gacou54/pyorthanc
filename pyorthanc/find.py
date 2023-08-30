@@ -194,7 +194,8 @@ def query_orthanc(client: Orthanc,
                   labels_constraint: str = 'All',
                   limit: int = DEFAULT_RESOURCES_LIMIT,
                   since: int = 0,
-                  retrieve_all_resources: bool = True) -> List[Resource]:
+                  retrieve_all_resources: bool = True,
+                  lock: bool = False) -> List[Resource]:
     """
 
     Parameters
@@ -215,6 +216,8 @@ def query_orthanc(client: Orthanc,
         Show only the resources since the provided index (in conjunction with "limit").
     retrieve_all_resources
         Retrieve all resources since the index specified in the "since" parameter.
+    lock
+        if `True`, lock the resource state at lookup (useful for minimising the number of HTTP calls).
 
     Returns
     -------
@@ -267,16 +270,23 @@ def query_orthanc(client: Orthanc,
         results = client.post_tools_find(data)
 
     if level == 'Patient':
-        return [Patient(i['ID'], client, i) for i in results]
+        resources = [Patient(i['ID'], client, lock=lock) for i in results]
+    elif level == 'Study':
+        resources = [Study(i['ID'], client, lock=lock) for i in results]
+    elif level == 'Series':
+        resources = [Series(i['ID'], client, lock=lock) for i in results]
+    elif level == 'Instance':
+        resources = [Instance(i['ID'], client, lock=lock) for i in results]
+    else:
+        raise ValueError(f"Unknown level ['Patient', 'Study', 'Series', 'Instance'], got {level}")
 
-    if level == 'Study':
-        return [Study(i['ID'], client, i) for i in results]
+    if lock:
+        for resource in resources:
+            # This loads the state in memory. Since lock=True,
+            # subsequent queries on resource will use the local state
+            resource.get_main_information()
 
-    if level == 'Series':
-        return [Series(i['ID'], client, i) for i in results]
-
-    if level == 'Instance':
-        return [Instance(i['ID'], client, i) for i in results]
+    return resources
 
 
 def _validate_labels_constraint(labels_constraint: str) -> None:

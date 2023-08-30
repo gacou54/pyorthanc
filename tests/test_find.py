@@ -84,35 +84,37 @@ def test_find_instance(client_with_data_and_labels, query, labels, expected):
     assert [instance.id_ for instance in result] == expected
 
 
-@pytest.mark.parametrize('level, query, labels, labels_constraint, limit, since, retrieve_all_resources, expected', [
+@pytest.mark.parametrize('level, query, labels, labels_constraint, limit, since, retrieve_all_resources, lock, expected', [
     # On level
-    ('Patient', None, None, 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, [a_patient.IDENTIFIER]),
-    ('Study', None, None, 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, [a_study.IDENTIFIER]),
-    ('Series', None, None, 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, ['60108266-ece4d8f7-7b028286-a7b61f25-c6d33f0b', 'c4c1fcc9-ae63f793-40cbcf25-fbd3efe5-ad72ff06', 'e2a7df26-99673e0f-05aa84cd-c89677c0-634a2a96']),
-    ('Instance', None, None, 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, ['22dcf059-8fd3ade7-efb39ca3-7f46b248-0200abc9', 'da2024f5-606f9e83-41b012bb-9dced1ea-77bcd599', '348befe7-5be5ff53-70120381-3baa0cc2-e4e04220']),
+    ('Patient', None, None, 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, False, [a_patient.IDENTIFIER]),
+    ('Study', None, None, 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, False, [a_study.IDENTIFIER]),
+    ('Series', None, None, 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, False, ['60108266-ece4d8f7-7b028286-a7b61f25-c6d33f0b', 'c4c1fcc9-ae63f793-40cbcf25-fbd3efe5-ad72ff06', 'e2a7df26-99673e0f-05aa84cd-c89677c0-634a2a96']),
+    ('Instance', None, None, 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, False, ['22dcf059-8fd3ade7-efb39ca3-7f46b248-0200abc9', 'da2024f5-606f9e83-41b012bb-9dced1ea-77bcd599', '348befe7-5be5ff53-70120381-3baa0cc2-e4e04220']),
     # On query
-    ('Patient', {}, None, 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, [a_patient.IDENTIFIER]),
-    ('Patient', {'PatientID': '*'}, None, 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, [a_patient.IDENTIFIER]),
-    ('Patient', {'PatientID': 'NOT_EXISTING_PATIENT'}, None, 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, []),
+    ('Patient', {}, None, 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, False, [a_patient.IDENTIFIER]),
+    ('Patient', {'PatientID': '*'}, None, 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, False, [a_patient.IDENTIFIER]),
+    ('Patient', {'PatientID': 'NOT_EXISTING_PATIENT'}, None, 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, False, []),
     # On labels
-    ('Patient', None, LABEL_PATIENT, 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, [a_patient.IDENTIFIER]),
-    ('Patient', None, [LABEL_PATIENT], 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, [a_patient.IDENTIFIER]),
-    ('Patient', None, '', 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, [a_patient.IDENTIFIER]),
-    ('Patient', None, [], 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, [a_patient.IDENTIFIER]),
-    ('Patient', None, ['NOT_EXISTING_LABEL'], 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, []),
+    ('Patient', None, LABEL_PATIENT, 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, False, [a_patient.IDENTIFIER]),
+    ('Patient', None, [LABEL_PATIENT], 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, False, [a_patient.IDENTIFIER]),
+    ('Patient', None, '', 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, False, [a_patient.IDENTIFIER]),
+    ('Patient', None, [], 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, False, [a_patient.IDENTIFIER]),
+    ('Patient', None, ['NOT_EXISTING_LABEL'], 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, False, []),
     # On labels_constraint
-    ('Patient', None, [LABEL_PATIENT], 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, [a_patient.IDENTIFIER]),
-    ('Patient', None, [LABEL_PATIENT, 'BAD_LABEL'], 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, []),
-    ('Patient', None, [LABEL_PATIENT, 'BAD_LABEL'], 'Any', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, [a_patient.IDENTIFIER]),
-    ('Patient', None, [LABEL_PATIENT], 'None', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, []),
-    ('Patient', None, None, 'None', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, [a_patient.IDENTIFIER]),
+    ('Patient', None, [LABEL_PATIENT], 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, False, [a_patient.IDENTIFIER]),
+    ('Patient', None, [LABEL_PATIENT, 'BAD_LABEL'], 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, False, []),
+    ('Patient', None, [LABEL_PATIENT, 'BAD_LABEL'], 'Any', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, False, [a_patient.IDENTIFIER]),
+    ('Patient', None, [LABEL_PATIENT], 'None', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, False, []),
+    ('Patient', None, None, 'None', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, False, [a_patient.IDENTIFIER]),
     # On limit and since
-    ('Series', None, None, 'All', DEFAULT_RESOURCES_LIMIT, 1, False, ['c4c1fcc9-ae63f793-40cbcf25-fbd3efe5-ad72ff06', 'e2a7df26-99673e0f-05aa84cd-c89677c0-634a2a96']),
-    ('Series', None, None, 'All', 1, DEFAULT_SINCE, False, ['60108266-ece4d8f7-7b028286-a7b61f25-c6d33f0b']),
-    ('Series', None, None, 'All', 1, DEFAULT_SINCE, True, ['60108266-ece4d8f7-7b028286-a7b61f25-c6d33f0b', 'c4c1fcc9-ae63f793-40cbcf25-fbd3efe5-ad72ff06', 'e2a7df26-99673e0f-05aa84cd-c89677c0-634a2a96']),
+    ('Series', None, None, 'All', DEFAULT_RESOURCES_LIMIT, 1, False, False, ['c4c1fcc9-ae63f793-40cbcf25-fbd3efe5-ad72ff06', 'e2a7df26-99673e0f-05aa84cd-c89677c0-634a2a96']),
+    ('Series', None, None, 'All', 1, DEFAULT_SINCE, False, False, ['60108266-ece4d8f7-7b028286-a7b61f25-c6d33f0b']),
+    ('Series', None, None, 'All', 1, DEFAULT_SINCE, True, False, ['60108266-ece4d8f7-7b028286-a7b61f25-c6d33f0b', 'c4c1fcc9-ae63f793-40cbcf25-fbd3efe5-ad72ff06', 'e2a7df26-99673e0f-05aa84cd-c89677c0-634a2a96']),
+    # On lock
+    ('Patient', None, [LABEL_PATIENT], 'All', DEFAULT_RESOURCES_LIMIT, DEFAULT_SINCE, False, True, [a_patient.IDENTIFIER]),
 
 ])
-def test_query_orthanc(client_with_data_and_labels, level, query, labels, labels_constraint, limit, since, retrieve_all_resources, expected):
+def test_query_orthanc(client_with_data_and_labels, level, query, labels, labels_constraint, limit, since, retrieve_all_resources, lock, expected):
     result = query_orthanc(
         client=client_with_data_and_labels,
         level=level,
@@ -121,10 +123,16 @@ def test_query_orthanc(client_with_data_and_labels, level, query, labels, labels
         labels_constraint=labels_constraint,
         limit=limit,
         since=since,
-        retrieve_all_resources=retrieve_all_resources
+        retrieve_all_resources=retrieve_all_resources,
+        lock=lock
     )
 
     assert [resource.id_ for resource in result] == expected
+    for resource in result:
+        if lock:
+            assert isinstance(resource._information, dict)
+        else:
+            assert resource._information is None
 
 
 @pytest.mark.parametrize('level, labels_constraint', [
