@@ -11,7 +11,6 @@ Install PyOrthanc using pip:
 ```bash
 pip install pyorthanc
 ```
-
 ---
 Then use the client. If Orthanc is running locally, the default URL is `http://localhost:8042`.
 ```python
