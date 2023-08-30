@@ -1,2 +1,2 @@
 If you publish using PyOrthanc, we kindly ask that you credit us. PyOrthanc can be found on Zenodo :
-[https://zenodo.org/record/7086219](https://zenodo.org/record/7086219).
+[https://doi.org/10.5281/zenodo.3387551](https://doi.org/10.5281/zenodo.3387551).
