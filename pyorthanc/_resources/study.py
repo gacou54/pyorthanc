@@ -36,6 +36,11 @@ class Study(Resource):
         return self._get_main_dicom_tag_value('ReferringPhysicianName')
 
     @property
+    def requesting_physician(self) -> str:
+        """Get referring physician name"""
+        return self._get_main_dicom_tag_value('RequestingPhysician')
+
+    @property
     def date(self) -> datetime:
         """Get study date
 

@@ -31,6 +31,8 @@ def test_attributes(study):
         study.institution_name
     with pytest.raises(errors.TagDoesNotExistError):
         study.requested_procedure_description
+    with pytest.raises(errors.TagDoesNotExistError):
+        study.requesting_physician
 
 
 def test_remove_empty_series(study):
