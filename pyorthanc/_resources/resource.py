@@ -1,5 +1,6 @@
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
+from .. import errors
 from ..client import Orthanc
 
 
@@ -40,6 +41,12 @@ class Resource:
 
     def get_main_information(self):
         raise NotImplementedError
+
+    def _get_main_dicom_tag_value(self, tag: str) -> Any:
+        try:
+            return self.get_main_information()['MainDicomTags'][tag]
+        except KeyError:
+            raise errors.TagDoesNotExistError(f'{self} has no {tag} tag.')
 
     def __eq__(self, other: 'Resource') -> bool:
         return self.id_ == other.id_

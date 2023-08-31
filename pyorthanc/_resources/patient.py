@@ -33,36 +33,18 @@ class Patient(Resource):
 
     @property
     def patient_id(self) -> str:
-        """Get patient ID
-
-        Returns
-        -------
-        str
-            Patient ID
-        """
-        return self.get_main_information()['MainDicomTags']['PatientID']
+        """Get patient ID"""
+        return self._get_main_dicom_tag_value('PatientID')
 
     @property
     def name(self) -> str:
-        """Get patient name
-
-        Returns
-        -------
-        str
-            Patient name
-        """
-        return self.get_main_information()['MainDicomTags']['PatientName']
+        """Get patient name"""
+        return self._get_main_dicom_tag_value('PatientName')
 
     @property
     def sex(self) -> str:
-        """Get patient sex
-
-        Returns
-        -------
-        str
-            Patient sex
-        """
-        return self.get_main_information()['MainDicomTags']['PatientSex']
+        """Get patient sex"""
+        return self._get_main_dicom_tag_value('PatientSex')
 
     @property
     def is_stable(self):

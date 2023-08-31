@@ -3,7 +3,7 @@ from typing import Dict, List
 
 from .resource import Resource
 from .series import Series
-from .. import errors, util
+from .. import util
 
 
 class Study(Resource):
@@ -32,14 +32,8 @@ class Study(Resource):
 
     @property
     def referring_physician_name(self) -> str:
-        """Get referring physician name
-
-        Returns
-        -------
-        str
-            Referring physician Name.
-        """
-        return self.get_main_information()['MainDicomTags']['ReferringPhysicianName']
+        """Get referring physician name"""
+        return self._get_main_dicom_tag_value('ReferringPhysicianName')
 
     @property
     def date(self) -> datetime:
@@ -59,60 +53,27 @@ class Study(Resource):
 
     @property
     def study_id(self) -> str:
-        """Get Study ID
-
-        Returns
-        -------
-        str
-            Study ID
-        """
-        try:
-            return self.get_main_information()['MainDicomTags']['StudyID']
-        except KeyError:
-            return ''
+        """Get Study ID"""
+        return self._get_main_dicom_tag_value('StudyID')
 
     @property
     def uid(self) -> str:
-        """Get StudyInstanceUID
-
-        Returns
-        -------
-        str
-            StudyInstanceUID
-        """
-        return self.get_main_information()['MainDicomTags']['StudyInstanceUID']
+        """Get StudyInstanceUID"""
+        return self._get_main_dicom_tag_value('StudyInstanceUID')
 
     @property
     def patient_identifier(self) -> str:
-        """Get the Orthanc identifier of the parent patient
-
-        Returns
-        -------
-        str
-            Parent patient's identifier.
-        """
+        """Get the Orthanc identifier of the parent patient"""
         return self.get_main_information()['ParentPatient']
 
     @property
     def patient_information(self) -> Dict:
-        """Get patient information
-
-        Returns
-        -------
-        Dict
-            Patient general information.
-        """
+        """Get patient information"""
         return self.get_main_information()['PatientMainDicomTags']
 
     @property
     def series(self) -> List[Series]:
-        """Get Study series
-
-        Returns
-        -------
-        List[Series]
-            List of study's Series
-        """
+        """Get Study series"""
         if self.lock:
             if self._child_resources is None:
                 series_ids = self.get_main_information()['Series']
@@ -126,28 +87,19 @@ class Study(Resource):
 
     @property
     def accession_number(self) -> str:
-        return self.get_main_information()['MainDicomTags']['AccessionNumber']
+        return self._get_main_dicom_tag_value('AccessionNumber')
 
     @property
     def description(self) -> str:
-        try:
-            return self.get_main_information()['MainDicomTags']['StudyDescription']
-        except KeyError:
-            raise errors.OptionalTagDoesNotExistError(f'{self} has no StudyDescription tag.')
+        return self._get_main_dicom_tag_value('StudyDescription')
 
     @property
     def institution_name(self) -> str:
-        try:
-            return self.get_main_information()['MainDicomTags']['InstitutionName']
-        except KeyError:
-            raise errors.OptionalTagDoesNotExistError(f'{self} has no InstitutionName tag.')
+        return self._get_main_dicom_tag_value('InstitutionName')
 
     @property
     def requested_procedure_description(self) -> str:
-        try:
-            return self.get_main_information()['MainDicomTags']['RequestedProcedureDescription']
-        except KeyError:
-            raise errors.OptionalTagDoesNotExistError(f'{self} has no RequestedProcedureDescription tag.')
+        return self._get_main_dicom_tag_value('RequestedProcedureDescription')
 
     @property
     def is_stable(self) -> bool:

@@ -33,7 +33,7 @@ def test_attributes(instance):
     assert 'Value' in instance.tags['0008,0012'].keys()
     assert str(instance) == f'Instance({an_instance.IDENTIFIER})'
 
-    with pytest.raises(errors.OptionalTagDoesNotExistError):
+    with pytest.raises(errors.TagDoesNotExistError):
         instance.acquisition_number
 
 
