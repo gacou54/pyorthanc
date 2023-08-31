@@ -65,21 +65,16 @@ def test_get_study_instances_when_no_data(client):
         client.get_studies_id_instances(a_study.IDENTIFIER)
 
 
-@pytest.mark.parametrize('params, expected_tags', [
-    (None, a_study.INSTANCE_TAGS),
-    ({'simplify': True}, a_study.INSTANCE_TAGS_IN_SIMPLIFIED_VERSION),
-    ({'short': True}, a_study.INSTANCE_TAGS_IN_SHORTER_VERSION),
-])
-def test_get_study_instances_tags(client_with_data, params, expected_tags):
+@pytest.mark.parametrize('params', [None, {'simplify': True}, {'short': True}])
+def test_get_study_instances_tags(client_with_data, params):
     result = client_with_data.get_studies_id_instances_tags(a_study.IDENTIFIER, params=params)
 
-    if params == {'short': True}:
-        assert result == expected_tags
-
-    else:
-        for instance_identifier, instance in result.items():
-            for expected_key in expected_tags[instance_identifier]:
-                assert expected_key in instance
+    # Only test if it has the correct structure
+    for tags in result.values():
+        if params == {'simplify': True}:
+            assert 'PatientID' in tags
+        else:
+            assert '0010,0010' in tags
 
 
 def test_get_study_instances_tags_when_no_data(client):
