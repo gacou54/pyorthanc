@@ -3,7 +3,7 @@ from typing import Dict, List
 
 from .instance import Instance
 from .resource import Resource
-from .. import errors, util
+from .. import util
 
 
 class Series(Resource):
@@ -15,13 +15,7 @@ class Series(Resource):
 
     @property
     def instances(self) -> List[Instance]:
-        """Get series instance
-
-        Returns
-        -------
-        List[Instance]
-            List of the series' Instance.
-        """
+        """Get series instance"""
         if self.lock:
             if self._child_resources is None:
                 instances_ids = self.get_main_information()['Instances']
@@ -35,23 +29,11 @@ class Series(Resource):
 
     @property
     def uid(self) -> str:
-        """Get SeriesInstanceUID
-
-        Returns
-        -------
-        str
-            SeriesInstanceUID
-        """
-        return self.get_main_information()['MainDicomTags']['SeriesInstanceUID']
+        """Get SeriesInstanceUID"""
+        return self._get_main_dicom_tag_value('SeriesInstanceUID')
 
     def get_main_information(self) -> Dict:
-        """Get series main information
-
-        Returns
-        -------
-        Dict
-            Dictionary of series main information.
-        """
+        """Get series main information"""
         if self.lock:
             if self._information is None:
                 # Setup self._information for the first time when series is lock
@@ -63,61 +45,34 @@ class Series(Resource):
 
     @property
     def manufacturer(self) -> str:
-        """Get the manufacturer
-
-        Returns
-        -------
-        str
-            The manufacturer.
-        """
-        return self.get_main_information()['MainDicomTags']['Manufacturer']
+        """Get the manufacturer"""
+        return self._get_main_dicom_tag_value('Manufacturer')
 
     @property
     def study_identifier(self) -> str:
-        """Get the parent study identifier
-
-        Returns
-        -------
-        str
-            The parent study identifier.
-        """
+        """Get the parent study identifier"""
         return self.get_main_information()['ParentStudy']
 
     @property
     def modality(self) -> str:
-        """Get series modality
-
-        Returns
-        -------
-        str
-            Series modality.
-        """
-        return self.get_main_information()['MainDicomTags']['Modality']
+        """Get series modality"""
+        return self._get_main_dicom_tag_value('Modality')
 
     @property
     def series_number(self) -> int:
-        return int(self.get_main_information()['MainDicomTags']['SeriesNumber'])
+        return int(self._get_main_dicom_tag_value('SeriesNumber'))
 
     @property
     def performed_procedure_step_description(self) -> str:
-        try:
-            return self.get_main_information()['MainDicomTags']['PerformedProcedureStepDescription']
-        except KeyError:
-            raise errors.OptionalTagDoesNotExistError(f'{self} has no PerformedProcedureStepDescription tag.')
+        return self._get_main_dicom_tag_value('PerformedProcedureStepDescription')
 
     @property
     def protocol_name(self) -> str:
-        try:
-            return self.get_main_information()['MainDicomTags']['ProtocolName']
-        except KeyError:
-            raise errors.OptionalTagDoesNotExistError(f'{self} has no ProtocolName tag.')
-        
+        return self._get_main_dicom_tag_value('ProtocolName')
+
     @property
     def station_name(self) -> str:
-        try:
-            return self.get_main_information()['MainDicomTags']['StationName']
-        except KeyError:
-            raise errors.OptionalTagDoesNotExistError(f'{self} has no StationName tag.')
+        return self._get_main_dicom_tag_value('StationName')
 
     @property
     def is_stable(self) -> bool:

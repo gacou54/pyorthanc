@@ -1,2 +1,2 @@
-class OptionalTagDoesNotExistError(Exception):
+class TagDoesNotExistError(Exception):
     pass

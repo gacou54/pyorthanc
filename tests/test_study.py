@@ -25,11 +25,11 @@ def test_attributes(study):
     assert study.series != []
     assert str(study) == f'Study({a_study.IDENTIFIER})'
 
-    with pytest.raises(errors.OptionalTagDoesNotExistError):
+    with pytest.raises(errors.TagDoesNotExistError):
         study.description
-    with pytest.raises(errors.OptionalTagDoesNotExistError):
+    with pytest.raises(errors.TagDoesNotExistError):
         study.institution_name
-    with pytest.raises(errors.OptionalTagDoesNotExistError):
+    with pytest.raises(errors.TagDoesNotExistError):
         study.requested_procedure_description
 
 

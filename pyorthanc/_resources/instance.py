@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 import pydicom
 
 from .resource import Resource
-from .. import errors, util
+from .. import util
 
 
 class Instance(Resource):
@@ -39,14 +39,8 @@ class Instance(Resource):
 
     @property
     def uid(self) -> str:
-        """Get SOPInstanceUID
-
-        Returns
-        -------
-        str
-            SOPInstanceUID
-        """
-        return self.get_main_information()['MainDicomTags']['SOPInstanceUID']
+        """Get SOPInstanceUID"""
+        return self._get_main_dicom_tag_value('SOPInstanceUID')
 
     def get_main_information(self) -> Dict:
         """Get instance information
@@ -102,77 +96,50 @@ class Instance(Resource):
     
     @property
     def acquisition_number(self) -> int:
-        try:
-            return int(self.get_main_information()['MainDicomTags']['AcquisitionNumber'])
-        except KeyError:
-            raise errors.OptionalTagDoesNotExistError(f'{self} has no AcquisitionNumber tag.')
+        return int(self._get_main_dicom_tag_value('AcquisitionNumber'))
 
     @property
     def image_orientation_patient(self) -> List[float]:
-        try:
-            orientation = self.get_main_information()['MainDicomTags']['ImageOrientationPatient']
-            return [float(i) for i in orientation.split('\\')]
+        orientation = self._get_main_dicom_tag_value('ImageOrientationPatient')
 
-        except KeyError:
-            raise errors.OptionalTagDoesNotExistError(f'{self} has no ImageOrientationPatient tag.')
+        return [float(i) for i in orientation.split('\\')]
 
     @property
     def image_position_patient(self) -> List[float]:
-        try:
-            position = self.get_main_information()['MainDicomTags']['ImagePositionPatient']
-            return [float(i) for i in position.split('\\')]
+        position = self._get_main_dicom_tag_value('ImagePositionPatient')
 
-        except KeyError:
-            raise errors.OptionalTagDoesNotExistError(f'{self} has no ImagePositionPatient tag.')
+        return [float(i) for i in position.split('\\')]
 
     @property
     def instance_number(self) -> int:
-        try:
-            return int(self.get_main_information()['MainDicomTags']['InstanceNumber'])
-        except KeyError:
-            raise errors.OptionalTagDoesNotExistError(f'{self} has no InstanceNumber tag.')
+        return int(self._get_main_dicom_tag_value('InstanceNumber'))
 
     @property
     def first_level_tags(self) -> Any:
-        """Get first level tags
-
-        Returns
-        -------
-        Any
-            First level tags.
-        """
+        """Get first level tags"""
         return self.client.get_instances_id_content_tags_path(self.id_, '')
 
     @property
     def tags(self) -> Dict:
-        """Get tags
-
-        Returns
-        -------
-        Dict
-            Tags in the form of a dictionary.
-        """
+        """Get tags"""
         return dict(self.client.get_instances_id_tags(self.id_))
 
     @property
     def simplified_tags(self) -> Dict:
-        """Get simplified tags
-
-        Returns
-        -------
-        Dict
-            Simplified tags in the form of a dictionary.
-        """
+        """Get simplified tags"""
         return dict(self.client.get_instances_id_tags(self.id_, params={'simplify': True}))
 
     @property
     def labels(self) -> List[str]:
+        """Get instance labels"""
         return self.get_main_information()['Labels']
 
     def add_label(self, label: str) -> None:
+        """Add label to resource"""
         self.client.put_instances_id_labels_label(self.id_, label)
 
     def remove_label(self, label):
+        """Remove label from resource"""
         self.client.delete_instances_id_labels_label(self.id_, label)
 
     def get_content_by_tag(self, tag: str) -> Any:

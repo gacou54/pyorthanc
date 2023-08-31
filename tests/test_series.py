@@ -25,9 +25,9 @@ def test_attributes(series):
     assert series.study_identifier
     assert series.station_name == a_series.INFORMATION['MainDicomTags']['StationName']
 
-    with pytest.raises(errors.OptionalTagDoesNotExistError):
+    with pytest.raises(errors.TagDoesNotExistError):
         series.performed_procedure_step_description
-    with pytest.raises(errors.OptionalTagDoesNotExistError):
+    with pytest.raises(errors.TagDoesNotExistError):
         series.protocol_name
 
 
