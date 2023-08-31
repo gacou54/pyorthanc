@@ -17,18 +17,22 @@ def test_attributes(series):
     assert series.modality == a_series.MODALITY
     assert series.manufacturer == a_series.MANUFACTURER
     assert series.study_identifier == a_series.PARENT_STUDY
+    assert series.instances != []
+    assert series.station_name == a_series.INFORMATION['MainDicomTags']['StationName']
+    assert series.image_orientation_patient == [1, 0, 0, 0, 1, 0]
+
     assert series.labels == [LABEL_SERIES]
     assert not series.is_stable
     assert isinstance(series.last_update, datetime)
-    assert series.instances != []
     assert str(series) == f'Series({a_series.IDENTIFIER})'
-    assert series.study_identifier
-    assert series.station_name == a_series.INFORMATION['MainDicomTags']['StationName']
 
-    with pytest.raises(errors.TagDoesNotExistError):
-        series.performed_procedure_step_description
-    with pytest.raises(errors.TagDoesNotExistError):
-        series.protocol_name
+    for absent_attribute in ['performed_procedure_step_description', 'sequence_name',
+                             'protocol_name', 'description', 'body_part_examined', 'cardiac_number_of_images',
+                             'images_in_acquisition', 'number_of_temporal_positions', 'number_of_slices',
+                             'number_of_time_slices', 'series_type', 'operators_name',
+                             'acquisition_device_processing_description', 'contrast_bolus_agent']:
+        with pytest.raises(errors.TagDoesNotExistError):
+            getattr(series, absent_attribute)
 
 
 def test_zip(series):
@@ -46,7 +50,7 @@ def test_anonymize(series):
         anonymized_series.modality
 
     anonymized_series = series.anonymize(replace={'Modality': 'RandomModality'})
-    assert series.modality in a_series.MODALITY
+    assert series.modality == a_series.MODALITY
     assert anonymized_series.modality == 'RandomModality'
 
     anonymized_series = series.anonymize(keep=['StationName'])

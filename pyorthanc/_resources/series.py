@@ -3,7 +3,7 @@ from typing import Dict, List
 
 from .instance import Instance
 from .resource import Resource
-from .. import util
+from .. import errors, util
 
 
 class Series(Resource):
@@ -54,6 +54,25 @@ class Series(Resource):
         return self.get_main_information()['ParentStudy']
 
     @property
+    def date(self) -> datetime:
+        """Get series datetime
+
+        The date have precision to the second (if available).
+
+        Returns
+        -------
+        datetime
+            Series date
+        """
+        date_string = self._get_main_dicom_tag_value('SeriesDate')
+        try:
+            time_string = self._get_main_dicom_tag_value('SeriesTime')
+        except errors.TagDoesNotExistError:
+            time_string = None
+
+        return util.make_datetime_from_dicom_date(date_string, time_string)
+
+    @property
     def modality(self) -> str:
         """Get series modality"""
         return self._get_main_dicom_tag_value('Modality')
@@ -73,6 +92,60 @@ class Series(Resource):
     @property
     def station_name(self) -> str:
         return self._get_main_dicom_tag_value('StationName')
+
+    @property
+    def description(self) -> str:
+        return self._get_main_dicom_tag_value('StudyDescription')
+
+    @property
+    def body_part_examined(self) -> str:
+        return self._get_main_dicom_tag_value('BodyPartExamined')
+    
+    @property
+    def sequence_name(self) -> str:
+        return self._get_main_dicom_tag_value('SequenceName')
+    
+    @property
+    def cardiac_number_of_images(self) -> int:
+        return int(self._get_main_dicom_tag_value('CardiacNumberOfImages'))
+
+    @property
+    def images_in_acquisition(self) -> int:
+        return int(self._get_main_dicom_tag_value('ImagesInAcquisition'))
+    
+    @property
+    def number_of_temporal_positions(self) -> int:
+        return int(self._get_main_dicom_tag_value('NumberOfTemporalPositions'))
+
+    @property
+    def number_of_slices(self) -> int:
+        return int(self._get_main_dicom_tag_value('NumberOfSlices'))
+
+    @property
+    def number_of_time_slices(self) -> int:
+        return int(self._get_main_dicom_tag_value('NumberOfTimeSlices'))
+
+    @property
+    def image_orientation_patient(self) -> List[float]:
+        orientation = self._get_main_dicom_tag_value('ImageOrientationPatient')
+
+        return [float(i) for i in orientation.split('\\')]
+
+    @property
+    def series_type(self) -> str:
+        return self._get_main_dicom_tag_value('SeriesType')
+    
+    @property
+    def operators_name(self) -> str:
+        return self._get_main_dicom_tag_value('OperatorsName')
+    
+    @property
+    def acquisition_device_processing_description(self) -> str:
+        return self._get_main_dicom_tag_value('AcquisitionDeviceProcessingDescription')
+    
+    @property
+    def contrast_bolus_agent(self) -> str:
+        return self._get_main_dicom_tag_value('ContrastBolusAgent')
 
     @property
     def is_stable(self) -> bool:
