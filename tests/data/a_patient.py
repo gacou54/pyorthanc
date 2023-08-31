@@ -8,10 +8,11 @@ INFORMATION = {
     'LastUpdate': 'THIS_IS_VARIABLE',
     'Labels': [],
     'MainDicomTags': {
-        'PatientBirthDate': '',
+        'PatientBirthDate': '19410901',
         'PatientID': ID,
         'PatientName': NAME,
-        'PatientSex': SEX
+        'PatientSex': SEX,
+        'OtherPatientIDs': ['other-id-1', 'other-id-2']
     },
     'Studies': ['118bc493-b3b3172a-082119bd-f6802ec3-81695613'],
     'Type': 'Patient'
@@ -27,20 +28,23 @@ ZIP_FILE_PATH = './tests/data/A_PATIENT_DATA.zip'
 MODULE = {
     '0010,0010': {'Name': 'PatientName', 'Type': 'String', 'Value': 'MR-R'},
     '0010,0020': {'Name': 'PatientID', 'Type': 'String', 'Value': '03HDQ000'},
-    '0010,0030': {'Name': 'PatientBirthDate', 'Type': 'String', 'Value': ''},
-    '0010,0040': {'Name': 'PatientSex', 'Type': 'String', 'Value': 'M'}
+    '0010,0030': {'Name': 'PatientBirthDate', 'Type': 'String', 'Value': '19410901'},
+    '0010,0040': {'Name': 'PatientSex', 'Type': 'String', 'Value': 'M'},
+    '0010,1000': {'Name': 'OtherPatientIDs', 'Type': 'String', 'Value': 'other-id-1\\other-id-2'},
 }
 MODULE_IN_SIMPLIFIED_VERSION = {
-    'PatientBirthDate': '',
+    'PatientBirthDate': '19410901',
     'PatientID': '03HDQ000',
     'PatientName': 'MR-R',
-    'PatientSex': 'M'
+    'PatientSex': 'M',
+    'OtherPatientIDs': 'other-id-1\\other-id-2',
 }
 MODULE_IN_SHORTER_VERSION = {
     '0010,0010': 'MR-R',
     '0010,0020': '03HDQ000',
-    '0010,0030': '',
-    '0010,0040': 'M'
+    '0010,0030': '19410901',
+    '0010,0040': 'M',
+    '0010,1000': 'other-id-1\\other-id-2'
 }
 SHARED_TAGS = {
     '0008,0012': {'Name': 'InstanceCreationDate', 'Type': 'String', 'Value': '20100301'},
@@ -54,7 +58,7 @@ SHARED_TAGS = {
     '0008,1090': {'Name': 'ManufacturerModelName', 'Type': 'String', 'Value': 'Pinnacle3'},
     '0010,0010': {'Name': 'PatientName', 'Type': 'String', 'Value': 'MR-R'},
     '0010,0020': {'Name': 'PatientID', 'Type': 'String', 'Value': '03HDQ000'},
-    '0010,0030': {'Name': 'PatientBirthDate', 'Type': 'String', 'Value': ''},
+    '0010,0030': {'Name': 'PatientBirthDate', 'Type': 'String', 'Value': '19410901'},
     '0010,0040': {'Name': 'PatientSex', 'Type': 'String', 'Value': 'M'},
     '0018,1020': {'Name': 'SoftwareVersions', 'Type': 'String', 'Value': 'OCP x.x'},
     '0020,000d': {'Name': 'StudyInstanceUID', 'Type': 'String', 'Value': '1.2.840.113619.2.55.3.671782272.419.1266452812.128'},

@@ -4,6 +4,7 @@ from zipfile import ZipFile
 
 import pytest
 
+from pyorthanc import errors
 from .conftest import LABEL_PATIENT
 from .data import a_patient
 
@@ -15,6 +16,8 @@ def test_attributes(patient):
     assert patient.patient_id == a_patient.ID
     assert patient.name == a_patient.NAME
     assert patient.sex == a_patient.SEX
+    assert patient.birth_date == datetime(year=1941, month=9, day=1)
+    assert patient.other_patient_ids == ['other-id-1', 'other-id-2']
 
     assert patient.labels == [LABEL_PATIENT]
     assert not patient.is_stable
@@ -56,7 +59,7 @@ def test_protection(patient):
 def test_anonymize(patient):
     anonymize_patient = patient.anonymize(remove=['PatientName'])
     assert anonymize_patient.patient_id != a_patient.ID
-    with pytest.raises(KeyError):
+    with pytest.raises(errors.TagDoesNotExistError):
         anonymize_patient.name
 
     anonymize_patient = patient.anonymize(replace={'PatientName': 'NewName'})
