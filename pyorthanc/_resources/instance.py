@@ -97,6 +97,10 @@ class Instance(Resource):
     @property
     def acquisition_number(self) -> int:
         return int(self._get_main_dicom_tag_value('AcquisitionNumber'))
+    
+    @property
+    def image_index(self) -> int:
+        return int(self._get_main_dicom_tag_value('ImageIndex'))
 
     @property
     def image_orientation_patient(self) -> List[float]:
@@ -111,8 +115,20 @@ class Instance(Resource):
         return [float(i) for i in position.split('\\')]
 
     @property
+    def image_comments(self) -> str:
+        return self._get_main_dicom_tag_value('ImageComments')
+    
+    @property
     def instance_number(self) -> int:
         return int(self._get_main_dicom_tag_value('InstanceNumber'))
+    
+    @property
+    def number_of_frames(self) -> int:
+        return int(self._get_main_dicom_tag_value('NumberOfFrames'))
+
+    @property
+    def temporal_position_identifier(self) -> str:
+        return self._get_main_dicom_tag_value('TemporalPositionIdentifier')
 
     @property
     def first_level_tags(self) -> Any:

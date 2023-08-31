@@ -25,14 +25,9 @@ def test_attributes(study):
     assert study.series != []
     assert str(study) == f'Study({a_study.IDENTIFIER})'
 
-    with pytest.raises(errors.TagDoesNotExistError):
-        study.description
-    with pytest.raises(errors.TagDoesNotExistError):
-        study.institution_name
-    with pytest.raises(errors.TagDoesNotExistError):
-        study.requested_procedure_description
-    with pytest.raises(errors.TagDoesNotExistError):
-        study.requesting_physician
+    for absent_attribute in ['description', 'institution_name', 'requested_procedure_description', 'requesting_physician']:
+        with pytest.raises(errors.TagDoesNotExistError):
+            getattr(study, absent_attribute)
 
 
 def test_remove_empty_series(study):
@@ -56,7 +51,7 @@ def test_zip(study):
 def test_anonymize(study):
     anonymized_study = study.anonymize(remove=['StudyDate'])
     assert anonymized_study.uid != a_study.INFORMATION['MainDicomTags']['StudyInstanceUID']
-    with pytest.raises(KeyError):
+    with pytest.raises(errors.TagDoesNotExistError):
         anonymized_study.date
 
     anonymized_study = study.anonymize(replace={'StudyDate': '20220101'})

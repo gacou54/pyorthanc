@@ -28,13 +28,15 @@ def test_attributes(instance):
     assert instance.image_orientation_patient == [1, 0, 0, 0, 1, 0]
     assert instance.image_position_patient == [-223.9880065918, -158.08148193359, -117.78499603271]
     assert instance.instance_number == int(an_instance.INFORMATION['MainDicomTags']['InstanceNumber'])
+    assert instance.number_of_frames == 75
 
     assert '0008,0012' in instance.tags.keys()
     assert 'Value' in instance.tags['0008,0012'].keys()
     assert str(instance) == f'Instance({an_instance.IDENTIFIER})'
 
-    with pytest.raises(errors.TagDoesNotExistError):
-        instance.acquisition_number
+    for absent_attribute in ['acquisition_number', 'image_index', 'image_comments', 'temporal_position_identifier']:
+        with pytest.raises(errors.TagDoesNotExistError):
+            getattr(instance, absent_attribute)
 
 
 def test_get_tag_content(instance):
