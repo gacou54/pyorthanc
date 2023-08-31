@@ -42,9 +42,20 @@ class Patient(Resource):
         return self._get_main_dicom_tag_value('PatientName')
 
     @property
+    def birth_date(self) -> datetime:
+        """Get patient birthdate"""
+        date = self._get_main_dicom_tag_value('PatientBirthDate')
+
+        return util.make_datetime_from_dicom_date(date)
+
+    @property
     def sex(self) -> str:
         """Get patient sex"""
         return self._get_main_dicom_tag_value('PatientSex')
+
+    @property
+    def other_patient_ids(self) -> str:
+        return self._get_main_dicom_tag_value('OtherPatientIDs').split('\\')
 
     @property
     def is_stable(self):

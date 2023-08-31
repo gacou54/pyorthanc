@@ -42,7 +42,7 @@ def test_zip(series):
 def test_anonymize(series):
     anonymized_series = series.anonymize(remove=['Modality'])
     assert anonymized_series.uid != a_series.INFORMATION['MainDicomTags']['SeriesInstanceUID']
-    with pytest.raises(KeyError):
+    with pytest.raises(errors.TagDoesNotExistError):
         anonymized_series.modality
 
     anonymized_series = series.anonymize(replace={'Modality': 'RandomModality'})
