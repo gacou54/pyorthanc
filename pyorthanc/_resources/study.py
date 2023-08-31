@@ -3,7 +3,7 @@ from typing import Dict, List
 
 from .resource import Resource
 from .series import Series
-from .. import util
+from .. import errors, util
 
 
 class Study(Resource):
@@ -51,8 +51,11 @@ class Study(Resource):
         datetime
             Study date
         """
-        date_string = self.get_main_information()['MainDicomTags']['StudyDate']
-        time_string = self.get_main_information()['MainDicomTags']['StudyTime']
+        date_string = self._get_main_dicom_tag_value('StudyDate')
+        try:
+            time_string = self._get_main_dicom_tag_value('StudyTime')
+        except errors.TagDoesNotExistError:
+            time_string = None
 
         return util.make_datetime_from_dicom_date(date_string, time_string)
 
