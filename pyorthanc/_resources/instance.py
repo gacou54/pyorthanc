@@ -223,6 +223,9 @@ class Instance(Resource):
             'KeepSource': keep_source,
         }
 
+        if dicom_version is not None:
+            data['DicomVersion'] = dicom_version
+
         return self.client.post_instances_id_anonymize(self.id_, data)
 
     def get_pydicom(self) -> pydicom.FileDataset:

@@ -4,7 +4,7 @@ from zipfile import ZipFile
 
 import pytest
 
-from pyorthanc import errors
+from pyorthanc import Series, errors
 from .conftest import LABEL_SERIES
 from .data import a_series
 
@@ -59,6 +59,28 @@ def test_anonymize(series):
     assert anonymized_series.get_main_information()['MainDicomTags']['StationName'] == \
            a_series.INFORMATION['MainDicomTags']['StationName']
 
+
+def test_anonymize_as_job(series):
+    job = series.anonymize_as_job(remove=['Modality'])
+    job.wait_until_completion()
+    anonymized_series = Series(job.content['ID'], series.client)
+    assert anonymized_series.uid != a_series.INFORMATION['MainDicomTags']['SeriesInstanceUID']
+    with pytest.raises(errors.TagDoesNotExistError):
+        anonymized_series.modality
+
+    job = series.anonymize_as_job(replace={'Modality': 'RandomModality'})
+    job.wait_until_completion()
+    anonymized_series = Series(job.content['ID'], series.client)
+    assert series.modality == a_series.MODALITY
+    assert anonymized_series.modality == 'RandomModality'
+
+    job = series.anonymize_as_job(keep=['StationName'])
+    job.wait_until_completion()
+    anonymized_series = Series(job.content['ID'], series.client)
+    assert series.get_main_information()['MainDicomTags']['StationName'] == \
+           a_series.INFORMATION['MainDicomTags']['StationName']
+    assert anonymized_series.get_main_information()['MainDicomTags']['StationName'] == \
+           a_series.INFORMATION['MainDicomTags']['StationName']
 
 def test_remote_empty_instances(series):
     series.lock = True
