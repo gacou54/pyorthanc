@@ -1,9 +1,10 @@
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from .instance import Instance
 from .resource import Resource
 from .. import errors, util
+from ..jobs import Job
 
 
 class Series(Resource):
@@ -169,7 +170,10 @@ class Series(Resource):
     def remove_label(self, label):
         self.client.delete_series_id_labels_label(self.id_, label)
 
-    def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None, force: bool = False) -> 'Series':
+    def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None,
+                  asynchronous: bool = False, force: bool = False, keep_private_tags: bool = False,
+                  keep_source: bool = True, priority: int = 0, permissive: bool = False,
+                  dicom_version: str = None) -> Union['Series', Job]:
         """Anonymize Series
 
         If no error has been raise, then it creates a new anonymous series.
@@ -183,24 +187,53 @@ class Series(Resource):
             Dictionary of {tag: new_content}
         keep
             List of tag to keep unchanged
+        asynchronous
+            If True, run the job in asynchronous mode, which means that the method immediately
+            return a job object. __Prefer this flavor wherever possible.__
         force
-            Some tags can't be change without forcing it (e.g. PatientID) for security reason
+            Some tags can't be changed without forcing it (e.g. PatientID) for security reason
+        keep_private_tags
+            If True, keep the private tags from the DICOM instances.
+        keep_source
+            If False, instructs Orthanc to the remove original resources.
+            By default, the original resources are kept in Orthanc.
+        priority
+            In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+        permissive
+            If True, ignore errors during the individual steps of the job.
+        dicom_version
+            Version of the DICOM standard to be used for anonymization.
+            Check out configuration option DeidentifyLogsDicomVersion for possible values.
 
         Returns
         -------
-        Series
-            A new anonymous Series.
+        Union[Series, Job]
+            A New anonymous series or Job if asynchronous=True.
         """
         remove = [] if remove is None else remove
         replace = {} if replace is None else replace
         keep = [] if keep is None else keep
 
-        anonymous_series = self.client.post_series_id_anonymize(
-            self.id_,
-            json={'Remove': remove, 'Replace': replace, 'Keep': keep, 'Force': force}
-        )
+        data = {
+            'Remove': remove,
+            'Replace': replace,
+            'Keep': keep,
+            'Force': force,
+            'Asynchronous': asynchronous,
+            'KeepPrivateTags': keep_private_tags,
+            'KeepSource': keep_source,
+            'Priority': priority,
+            'Permissive': permissive,
+        }
+        if dicom_version is not None:
+            data['DicomVersion'] = dicom_version
 
-        return Series(anonymous_series['ID'], self.client)
+        anonymous_series_or_job = self.client.post_series_id_anonymize(self.id_, data)
+
+        if asynchronous:
+            return Job(anonymous_series_or_job['ID'], self.client)
+
+        return Series(anonymous_series_or_job['ID'], self.client)
 
     def get_zip(self) -> bytes:
         """Get the bytes of the zip file

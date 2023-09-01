@@ -178,7 +178,9 @@ class Instance(Resource):
         except AttributeError:
             return result
 
-    def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None, force: bool = False) -> bytes:
+    def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None,
+                  keep_private_tags: bool = False, keep_source: bool = True,
+                  force: bool = False, dicom_version: str = None) -> bytes:
         """Anonymize Instance
 
         If no error has been raise, then it creates a new anonymous series.
@@ -194,6 +196,14 @@ class Instance(Resource):
             List of tag to keep unchanged
         force
             Some tags can't be change without forcing it (e.g. PatientID) for security reason
+        keep_private_tags
+            If True, keep the private tags from the DICOM instances.
+        keep_source
+            If False, instructs Orthanc to the remove original resources.
+            By default, the original resources are kept in Orthanc.
+        dicom_version
+            Version of the DICOM standard to be used for anonymization.
+            Check out configuration option DeidentifyLogsDicomVersion for possible values.
 
         Returns
         -------
@@ -204,10 +214,16 @@ class Instance(Resource):
         replace = {} if replace is None else replace
         keep = [] if keep is None else keep
 
-        return self.client.post_instances_id_anonymize(
-            self.id_,
-            json={'Remove': remove, 'Replace': replace, 'Keep': keep, 'Force': force}
-        )
+        data = {
+            'Remove': remove,
+            'Replace': replace,
+            'Keep': keep,
+            'Force': force,
+            'KeepPrivateTags': keep_private_tags,
+            'KeepSource': keep_source,
+        }
+
+        return self.client.post_instances_id_anonymize(self.id_, data)
 
     def get_pydicom(self) -> pydicom.FileDataset:
         """Retrieve a pydicom.FileDataset object corresponding to the instance."""
