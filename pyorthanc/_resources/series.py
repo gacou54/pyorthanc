@@ -244,7 +244,10 @@ class Series(Resource):
         try:
             anonymous_series = self.client.post_series_id_anonymize(self.id_, data)
         except ReadTimeout:
-            raise ReadTimeout('Series is too long to process. Use `.anonymize_as_job` or increase client.timeout.')
+            raise ReadTimeout(
+                'Series anonymization is too long to process. '
+                'Use `.anonymize_as_job` or increase client.timeout.'
+            )
 
         return Series(anonymous_series['ID'], self.client)
 
@@ -254,7 +257,7 @@ class Series(Resource):
                          dicom_version: str = None) -> Job:
         """Anonymize series and return a job
 
-        If no error has been raise, then it creates a new anonymous series.
+        Launch an anonymization job.
         Documentation: https://book.orthanc-server.com/users/anonymization.html
 
         Notes

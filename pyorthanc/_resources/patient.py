@@ -235,7 +235,7 @@ class Patient(Resource):
                   dicom_version: str = None) -> 'Patient':
         """Anonymize patient
 
-        If no error has been raise, return an anonymous patient.
+        If no error has been raise, then it creates a new anonymous patient.
         Documentation: https://book.orthanc-server.com/users/anonymization.html
 
         Notes
@@ -303,7 +303,10 @@ class Patient(Resource):
         try:
             anonymous_patient = self.client.post_patients_id_anonymize(self.id_, data)
         except ReadTimeout:
-            raise ReadTimeout('Patient is too long to process. Use `.anonymize_as_job` or increase client.timeout.')
+            raise ReadTimeout(
+                'Patient anonymization is too long to process. '
+                'Use `.anonymize_as_job` or increase client.timeout.'
+            )
 
         return Patient(anonymous_patient['ID'], self.client)
 
@@ -313,7 +316,7 @@ class Patient(Resource):
                          dicom_version: str = None) -> Job:
         """Anonymize patient and return a job
 
-        If no error has been raise, then it creates a new anonymous patient.
+        Launch an anonymization job.
         Documentation: https://book.orthanc-server.com/users/anonymization.html
 
         Notes

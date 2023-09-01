@@ -206,7 +206,10 @@ class Study(Resource):
         try:
             anonymous_study = self.client.post_studies_id_anonymize(self.id_, data)
         except ReadTimeout:
-            raise ReadTimeout('Study is too long to process. Use `.anonymize_as_job` or increase client.timeout.')
+            raise ReadTimeout(
+                'Study anonymization is too long to process. '
+                'Use `.anonymize_as_job` or increase client.timeout.'
+            )
 
         return Study(anonymous_study['ID'], self.client)
 
@@ -216,7 +219,7 @@ class Study(Resource):
                          dicom_version: str = None) -> Job:
         """Anonymize study and return a job
 
-        If no error has been raise, then it creates a new anonymous study.
+        Launch an anonymization job.
         Documentation: https://book.orthanc-server.com/users/anonymization.html
 
         Notes
