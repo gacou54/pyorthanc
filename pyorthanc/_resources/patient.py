@@ -1,6 +1,8 @@
 import warnings
 from datetime import datetime
-from typing import Dict, List, Union
+from typing import Dict, List
+
+from httpx import ReadTimeout
 
 from .resource import Resource
 from .study import Study
@@ -228,13 +230,18 @@ class Patient(Resource):
         return [Study(i, self.client, self.lock) for i in studies_ids]
 
     def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None,
-                  asynchronous: bool = False, force: bool = False, keep_private_tags: bool = False,
+                  force: bool = False, keep_private_tags: bool = False,
                   keep_source: bool = True, priority: int = 0, permissive: bool = False,
-                  dicom_version: str = None) -> Union['Patient', Job]:
+                  dicom_version: str = None) -> 'Patient':
         """Anonymize patient
 
-        If no error has been raise, then it creates a new anonymous patient.
+        If no error has been raise, return an anonymous patient.
         Documentation: https://book.orthanc-server.com/users/anonymization.html
+
+        Notes
+        -----
+        This method might be long to run, especially on large patient or when multiple
+        patients are anonymized. In those cases, it is recommended to use the `.anonymize_as_job()`
 
         Parameters
         ----------
@@ -244,9 +251,6 @@ class Patient(Resource):
             Dictionary of {tag: new_content}
         keep
             List of tag to keep unchanged
-        asynchronous
-            If True, run the job in asynchronous mode, which means that the method immediately
-            return a job object. __Prefer this flavor wherever possible.__
         force
             Some tags can't be changed without forcing it (e.g. PatientID) for security reason
         keep_private_tags
@@ -264,12 +268,11 @@ class Patient(Resource):
 
         Returns
         -------
-        Union[Patient, Job]
-            A New anonymous patient or Job if asynchronous=True.
+        Patient
+            A New anonymous patient.
 
         Examples
         --------
-        Naive anonymization
         ```python
         new_patient = patient.anonymize()
 
@@ -278,25 +281,17 @@ class Patient(Resource):
             replace={'PatientID': 'TheNewPatientID'},
             force=True
         )
-        ```
-        For large patient (recommended)
-        ```python
-        job = patient.anonymize(asynchronous=True)
-        job.state
-        job.block_until_completion()
-        new_patient = Patient(job.content['ID'], orthanc)
-        ```
         """
         remove = [] if remove is None else remove
         replace = {} if replace is None else replace
         keep = [] if keep is None else keep
 
         data = {
+            'Asynchronous': False,
             'Remove': remove,
             'Replace': replace,
             'Keep': keep,
             'Force': force,
-            'Asynchronous': asynchronous,
             'KeepPrivateTags': keep_private_tags,
             'KeepSource': keep_source,
             'Priority': priority,
@@ -305,12 +300,88 @@ class Patient(Resource):
         if dicom_version is not None:
             data['DicomVersion'] = dicom_version
 
-        anonymous_patient_or_job = self.client.post_patients_id_anonymize(self.id_, data)
+        try:
+            anonymous_patient = self.client.post_patients_id_anonymize(self.id_, data)
+        except ReadTimeout:
+            raise ReadTimeout('Patient is too long to process. Use `.anonymize_as_job` or increase client.timeout.')
 
-        if asynchronous:
-            return Job(anonymous_patient_or_job['ID'], self.client)
+        return Patient(anonymous_patient['ID'], self.client)
 
-        return Patient(anonymous_patient_or_job['ID'], self.client)
+    def anonymize_as_job(self, remove: List = None, replace: Dict = None, keep: List = None,
+                         force: bool = False, keep_private_tags: bool = False,
+                         keep_source: bool = True, priority: int = 0, permissive: bool = False,
+                         dicom_version: str = None) -> Job:
+        """Anonymize patient and return a job
+
+        If no error has been raise, then it creates a new anonymous patient.
+        Documentation: https://book.orthanc-server.com/users/anonymization.html
+
+        Notes
+        -----
+        This method is useful when anonymizing large patient or launching many
+        anonymization jobs. The jobs are sent to Orthanc and processed according
+        to the priority.
+
+        Parameters
+        ----------
+        remove
+            List of tag to remove
+        replace
+            Dictionary of {tag: new_content}
+        keep
+            List of tag to keep unchanged
+        force
+            Some tags can't be changed without forcing it (e.g. PatientID) for security reason
+        keep_private_tags
+            If True, keep the private tags from the DICOM instances.
+        keep_source
+            If False, instructs Orthanc to the remove original resources.
+            By default, the original resources are kept in Orthanc.
+        priority
+            In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+        permissive
+            If True, ignore errors during the individual steps of the job.
+        dicom_version
+            Version of the DICOM standard to be used for anonymization.
+            Check out configuration option DeidentifyLogsDicomVersion for possible values.
+
+        Returns
+        -------
+        Job
+            Return a Job object of the anonymization job.
+
+        Examples
+        --------
+        For large patient (recommended)
+        ```python
+        job = patient.anonymize_as_job(asynchronous=True)
+        job.state  # You can follow the job state
+
+        job.wait_until_completion() # Or just wait on its completion
+        new_patient = Patient(job.content['ID'], orthanc)
+        ```
+        """
+        remove = [] if remove is None else remove
+        replace = {} if replace is None else replace
+        keep = [] if keep is None else keep
+
+        data = {
+            'Asynchronous': True,
+            'Remove': remove,
+            'Replace': replace,
+            'Keep': keep,
+            'Force': force,
+            'KeepPrivateTags': keep_private_tags,
+            'KeepSource': keep_source,
+            'Priority': priority,
+            'Permissive': permissive,
+        }
+        if dicom_version is not None:
+            data['DicomVersion'] = dicom_version
+
+        job_info = self.client.post_patients_id_anonymize(self.id_, data)
+
+        return Job(job_info['ID'], self.client)
 
     def remove_empty_studies(self) -> None:
         """Delete empty studies."""

@@ -4,7 +4,7 @@ from zipfile import ZipFile
 
 import pytest
 
-from pyorthanc import errors, util
+from pyorthanc import Study, errors, util
 from .conftest import LABEL_STUDY
 from .data import a_study
 
@@ -62,6 +62,25 @@ def test_anonymize(study):
     assert study.date == a_study.DATE
     assert anonymized_study.date == a_study.DATE
 
+
+def test_anonymize_as_job(study):
+    job = study.anonymize_as_job(remove=['StudyDate'])
+    job.wait_until_completion()
+    anonymize_study = Study(job.content['ID'], study.client)
+    with pytest.raises(errors.TagDoesNotExistError):
+        anonymize_study.date
+
+    job = study.anonymize_as_job(replace={'StudyDate': '20220101'})
+    job.wait_until_completion()
+    anonymize_study = Study(job.content['ID'], study.client)
+    assert study.date == a_study.DATE
+    assert anonymize_study.date == util.make_datetime_from_dicom_date('20220101')
+
+    job = study.anonymize_as_job(keep=['StudyDate'])
+    job.wait_until_completion()
+    anonymize_study = Study(job.content['ID'], study.client)
+    assert study.date == a_study.DATE
+    assert anonymize_study.date == a_study.DATE
 
 @pytest.mark.parametrize('label', ['a_label'])
 def test_label(study, label):

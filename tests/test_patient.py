@@ -4,7 +4,7 @@ from zipfile import ZipFile
 
 import pytest
 
-from pyorthanc import errors
+from pyorthanc import Patient, errors
 from .conftest import LABEL_PATIENT
 from .data import a_patient
 
@@ -69,6 +69,28 @@ def test_anonymize(patient):
     anonymize_patient = patient.anonymize(keep=['PatientName'])
     assert patient.name == a_patient.NAME
     assert anonymize_patient.name == a_patient.NAME
+
+
+def test_anonymize_as_job(patient):
+    job = patient.anonymize_as_job(remove=['PatientName'])
+    job.wait_until_completion()
+    anonymize_patient = Patient(job.content['ID'], patient.client)
+    assert anonymize_patient.patient_id != a_patient.ID
+    with pytest.raises(errors.TagDoesNotExistError):
+        anonymize_patient.name
+
+    job = patient.anonymize_as_job(replace={'PatientName': 'NewName'})
+    job.wait_until_completion()
+    anonymize_patient = Patient(job.content['ID'], patient.client)
+    assert patient.name == a_patient.NAME
+    assert anonymize_patient.name == 'NewName'
+
+    job = patient.anonymize_as_job(keep=['PatientName'])
+    job.wait_until_completion()
+    anonymize_patient = Patient(job.content['ID'], patient.client)
+    assert patient.name == a_patient.NAME
+    assert anonymize_patient.name == a_patient.NAME
+
 
 
 @pytest.mark.parametrize('label', ['a_label'])

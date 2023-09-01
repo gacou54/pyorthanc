@@ -1,5 +1,7 @@
 from datetime import datetime
-from typing import Dict, List, Union
+from typing import Dict, List
+
+from httpx import ReadTimeout
 
 from .instance import Instance
 from .resource import Resource
@@ -171,13 +173,18 @@ class Series(Resource):
         self.client.delete_series_id_labels_label(self.id_, label)
 
     def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None,
-                  asynchronous: bool = False, force: bool = False, keep_private_tags: bool = False,
+                  force: bool = False, keep_private_tags: bool = False,
                   keep_source: bool = True, priority: int = 0, permissive: bool = False,
-                  dicom_version: str = None) -> Union['Series', Job]:
-        """Anonymize Series
+                  dicom_version: str = None) -> 'Series':
+        """Anonymize series
 
-        If no error has been raise, then it creates a new anonymous series.
+        If no error has been raise, return an anonymous series.
         Documentation: https://book.orthanc-server.com/users/anonymization.html
+
+        Notes
+        -----
+        This method might be long to run, especially on large series or when multiple
+        seriess are anonymized. In those cases, it is recommended to use the `.anonymize_as_job()`
 
         Parameters
         ----------
@@ -187,9 +194,83 @@ class Series(Resource):
             Dictionary of {tag: new_content}
         keep
             List of tag to keep unchanged
-        asynchronous
-            If True, run the job in asynchronous mode, which means that the method immediately
-            return a job object. __Prefer this flavor wherever possible.__
+        force
+            Some tags can't be changed without forcing it (e.g. SeriesID) for security reason
+        keep_private_tags
+            If True, keep the private tags from the DICOM instances.
+        keep_source
+            If False, instructs Orthanc to the remove original resources.
+            By default, the original resources are kept in Orthanc.
+        priority
+            In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+        permissive
+            If True, ignore errors during the individual steps of the job.
+        dicom_version
+            Version of the DICOM standard to be used for anonymization.
+            Check out configuration option DeidentifyLogsDicomVersion for possible values.
+
+        Returns
+        -------
+        Series
+            A New anonymous series.
+
+        Examples
+        --------
+        ```python
+        new_series = series.anonymize()
+
+        new_series_with_specific_series_id = series.anonymize(
+            replace={'SeriesDescription': 'A description'}
+        )
+        """
+        remove = [] if remove is None else remove
+        replace = {} if replace is None else replace
+        keep = [] if keep is None else keep
+
+        data = {
+            'Asynchronous': False,
+            'Remove': remove,
+            'Replace': replace,
+            'Keep': keep,
+            'Force': force,
+            'KeepPrivateTags': keep_private_tags,
+            'KeepSource': keep_source,
+            'Priority': priority,
+            'Permissive': permissive,
+        }
+        if dicom_version is not None:
+            data['DicomVersion'] = dicom_version
+
+        try:
+            anonymous_series = self.client.post_series_id_anonymize(self.id_, data)
+        except ReadTimeout:
+            raise ReadTimeout('Series is too long to process. Use `.anonymize_as_job` or increase client.timeout.')
+
+        return Series(anonymous_series['ID'], self.client)
+
+    def anonymize_as_job(self, remove: List = None, replace: Dict = None, keep: List = None,
+                         force: bool = False, keep_private_tags: bool = False,
+                         keep_source: bool = True, priority: int = 0, permissive: bool = False,
+                         dicom_version: str = None) -> Job:
+        """Anonymize series and return a job
+
+        If no error has been raise, then it creates a new anonymous series.
+        Documentation: https://book.orthanc-server.com/users/anonymization.html
+
+        Notes
+        -----
+        This method is useful when anonymizing large series or launching many
+        anonymization jobs. The jobs are sent to Orthanc and processed according
+        to the priority.
+
+        Parameters
+        ----------
+        remove
+            List of tag to remove
+        replace
+            Dictionary of {tag: new_content}
+        keep
+            List of tag to keep unchanged
         force
             Some tags can't be changed without forcing it (e.g. PatientID) for security reason
         keep_private_tags
@@ -207,19 +288,30 @@ class Series(Resource):
 
         Returns
         -------
-        Union[Series, Job]
-            A New anonymous series or Job if asynchronous=True.
+        Job
+            Return a Job object of the anonymization job.
+
+        Examples
+        --------
+        For large series (recommended)
+        ```python
+        job = series.anonymize_as_job(asynchronous=True)
+        job.state  # You can follow the job state
+
+        job.wait_until_completion() # Or just wait on its completion
+        new_series = Patient(job.content['ID'], orthanc)
+        ```
         """
         remove = [] if remove is None else remove
         replace = {} if replace is None else replace
         keep = [] if keep is None else keep
 
         data = {
+            'Asynchronous': True,
             'Remove': remove,
             'Replace': replace,
             'Keep': keep,
             'Force': force,
-            'Asynchronous': asynchronous,
             'KeepPrivateTags': keep_private_tags,
             'KeepSource': keep_source,
             'Priority': priority,
@@ -228,12 +320,9 @@ class Series(Resource):
         if dicom_version is not None:
             data['DicomVersion'] = dicom_version
 
-        anonymous_series_or_job = self.client.post_series_id_anonymize(self.id_, data)
+        job_info = self.client.post_series_id_anonymize(self.id_, data)
 
-        if asynchronous:
-            return Job(anonymous_series_or_job['ID'], self.client)
-
-        return Series(anonymous_series_or_job['ID'], self.client)
+        return Job(job_info['ID'], self.client)
 
     def get_zip(self) -> bytes:
         """Get the bytes of the zip file
