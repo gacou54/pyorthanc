@@ -28,4 +28,4 @@ def test_job_attributes(job: Job):
     assert (job.completion_time is None) or isinstance(job.completion_time, datetime)
 
     assert job.error == ErrorCode.SUCCESS
-    assert job.error_details is None
+    assert job.error_details == ''
