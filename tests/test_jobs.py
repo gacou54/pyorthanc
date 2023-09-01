@@ -2,18 +2,18 @@ from datetime import datetime
 
 import pytest
 
-from pyorthanc.jobs import Job, State
+from pyorthanc.jobs import ErrorCode, Job, State
 
 
 @pytest.fixture
 def job(patient):
-    job = patient.anonymize(asynchronous=True)
+    job = patient.anonymize_as_job()
 
     return job
 
 
 def test_job_attributes(job: Job):
-    job.block_until_completion()
+    job.wait_until_completion()
 
     assert job.state == State.success
 
@@ -27,5 +27,5 @@ def test_job_attributes(job: Job):
     assert isinstance(job.timestamp, datetime)
     assert (job.completion_time is None) or isinstance(job.completion_time, datetime)
 
-    assert job.error.code == 0
-    assert job.error.description == 'Success'
+    assert job.error == ErrorCode.SUCCESS
+    assert job.error_details is None
