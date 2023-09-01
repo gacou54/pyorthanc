@@ -5,6 +5,7 @@ from ._modality import Modality, RemoteModality
 from ._resources import Instance, Patient, Series, Study
 from .async_client import AsyncOrthanc
 from .client import Orthanc
+from .jobs import Job
 from .retrieve import retrieve_and_write_instance, retrieve_and_write_patient, retrieve_and_write_patients, \
     retrieve_and_write_series, retrieve_and_write_study
 
@@ -25,6 +26,7 @@ __all__ = [
     'find_series',
     'find_instances',
     'query_orthanc',
+    'Job',
     'retrieve_and_write_patients',
     'retrieve_and_write_patient',
     'retrieve_and_write_study',
