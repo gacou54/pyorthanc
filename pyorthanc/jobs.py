@@ -8,12 +8,12 @@ from .client import Orthanc
 
 
 class State(Enum):
-    success = 'Success'
-    running = 'Running'
     failure = 'Failure'
-    pending = 'Pending'
     paused = 'Paused'
+    pending = 'Pending'
     retry = 'Retry'
+    running = 'Running'
+    success = 'Success'
 
 
 class ErrorCode(Enum):
