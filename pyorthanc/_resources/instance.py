@@ -180,7 +180,7 @@ class Instance(Resource):
 
     def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None,
                   keep_private_tags: bool = False, keep_source: bool = True,
-                  force: bool = False, dicom_version: str = None) -> bytes:
+                  private_creator: str = None, force: bool = False, dicom_version: str = None) -> bytes:
         """Anonymize Instance
 
         If no error has been raise, then it creates a new anonymous series.
@@ -195,12 +195,14 @@ class Instance(Resource):
         keep
             List of tag to keep unchanged
         force
-            Some tags can't be change without forcing it (e.g. PatientID) for security reason
+            Some tags can't be changed without forcing it (e.g. PatientID) for security reason
         keep_private_tags
             If True, keep the private tags from the DICOM instances.
         keep_source
             If False, instructs Orthanc to the remove original resources.
             By default, the original resources are kept in Orthanc.
+        private_creator
+            The private creator to be used for private tags in Replace.
         dicom_version
             Version of the DICOM standard to be used for anonymization.
             Check out configuration option DeidentifyLogsDicomVersion for possible values.
@@ -222,7 +224,8 @@ class Instance(Resource):
             'KeepPrivateTags': keep_private_tags,
             'KeepSource': keep_source,
         }
-
+        if private_creator is not None:
+            data['PrivateCreator'] = private_creator
         if dicom_version is not None:
             data['DicomVersion'] = dicom_version
 

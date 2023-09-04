@@ -175,7 +175,7 @@ class Series(Resource):
     def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None,
                   force: bool = False, keep_private_tags: bool = False,
                   keep_source: bool = True, priority: int = 0, permissive: bool = False,
-                  dicom_version: str = None) -> 'Series':
+                  private_creator: str = None, dicom_version: str = None) -> 'Series':
         """Anonymize series
 
         If no error has been raise, return an anonymous series.
@@ -184,7 +184,7 @@ class Series(Resource):
         Notes
         -----
         This method might be long to run, especially on large series or when multiple
-        seriess are anonymized. In those cases, it is recommended to use the `.anonymize_as_job()`
+        series are anonymized. In those cases, it is recommended to use the `.anonymize_as_job()`
 
         Parameters
         ----------
@@ -205,6 +205,8 @@ class Series(Resource):
             Priority of the job. The lower the value, the higher the priority.
         permissive
             If True, ignore errors during the individual steps of the job.
+        private_creator
+            The private creator to be used for private tags in Replace.
         dicom_version
             Version of the DICOM standard to be used for anonymization.
             Check out configuration option DeidentifyLogsDicomVersion for possible values.
@@ -238,6 +240,8 @@ class Series(Resource):
             'Priority': priority,
             'Permissive': permissive,
         }
+        if private_creator is not None:
+            data['PrivateCreator'] = private_creator
         if dicom_version is not None:
             data['DicomVersion'] = dicom_version
 
@@ -254,7 +258,7 @@ class Series(Resource):
     def anonymize_as_job(self, remove: List = None, replace: Dict = None, keep: List = None,
                          force: bool = False, keep_private_tags: bool = False,
                          keep_source: bool = True, priority: int = 0, permissive: bool = False,
-                         dicom_version: str = None) -> Job:
+                         private_creator: str = None, dicom_version: str = None) -> Job:
         """Anonymize series and return a job
 
         Launch an anonymization job.
@@ -285,6 +289,8 @@ class Series(Resource):
             Priority of the job. The lower the value, the higher the priority.
         permissive
             If True, ignore errors during the individual steps of the job.
+        private_creator
+            The private creator to be used for private tags in Replace.
         dicom_version
             Version of the DICOM standard to be used for anonymization.
             Check out configuration option DeidentifyLogsDicomVersion for possible values.
@@ -320,6 +326,8 @@ class Series(Resource):
             'Priority': priority,
             'Permissive': permissive,
         }
+        if private_creator is not None:
+            data['PrivateCreator'] = private_creator
         if dicom_version is not None:
             data['DicomVersion'] = dicom_version
 

@@ -232,7 +232,7 @@ class Patient(Resource):
     def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None,
                   force: bool = False, keep_private_tags: bool = False,
                   keep_source: bool = True, priority: int = 0, permissive: bool = False,
-                  dicom_version: str = None) -> 'Patient':
+                  private_creator: str = None, dicom_version: str = None) -> 'Patient':
         """Anonymize patient
 
         If no error has been raise, then it creates a new anonymous patient.
@@ -262,6 +262,8 @@ class Patient(Resource):
             Priority of the job. The lower the value, the higher the priority.
         permissive
             If True, ignore errors during the individual steps of the job.
+        private_creator
+            The private creator to be used for private tags in Replace.
         dicom_version
             Version of the DICOM standard to be used for anonymization.
             Check out configuration option DeidentifyLogsDicomVersion for possible values.
@@ -297,6 +299,8 @@ class Patient(Resource):
             'Priority': priority,
             'Permissive': permissive,
         }
+        if private_creator is not None:
+            data['PrivateCreator'] = private_creator
         if dicom_version is not None:
             data['DicomVersion'] = dicom_version
 
@@ -313,7 +317,7 @@ class Patient(Resource):
     def anonymize_as_job(self, remove: List = None, replace: Dict = None, keep: List = None,
                          force: bool = False, keep_private_tags: bool = False,
                          keep_source: bool = True, priority: int = 0, permissive: bool = False,
-                         dicom_version: str = None) -> Job:
+                         private_creator: str = None, dicom_version: str = None) -> Job:
         """Anonymize patient and return a job
 
         Launch an anonymization job.
@@ -344,6 +348,8 @@ class Patient(Resource):
             Priority of the job. The lower the value, the higher the priority.
         permissive
             If True, ignore errors during the individual steps of the job.
+        private_creator
+            The private creator to be used for private tags in Replace.
         dicom_version
             Version of the DICOM standard to be used for anonymization.
             Check out configuration option DeidentifyLogsDicomVersion for possible values.
@@ -379,6 +385,8 @@ class Patient(Resource):
             'Priority': priority,
             'Permissive': permissive,
         }
+        if private_creator is not None:
+            data['PrivateCreator'] = private_creator
         if dicom_version is not None:
             data['DicomVersion'] = dicom_version
 
