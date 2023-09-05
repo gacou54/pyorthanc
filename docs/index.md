@@ -3,19 +3,56 @@
 <!-- ================================================= -->
 
 # PyOrthanc
+**PyOrthanc** is a python client for the Orthanc REST API, which fully wraps all the methods of the REST API.
+Additionally, it provides many utility functions to interact with an Orthanc instance.
 
-Python library that wraps the Orthanc REST API and facilitates the manipulation of data with several cool utilities.
-What for ?
 
-The aim of the PyOrthanc module is to easy use the Orthanc Dicom server API.
+---
+Install PyOrthanc
+```bash
+pip install pyorthanc
+```
+---
+Then use the client:
+```python
+import pyorthanc
 
-It has access to the full available Orthanc API and get the useful return without dealing with http requests.
+client = pyorthanc.Orthanc('https://demo.orthanc-server.com')
+patient_ids = client.get_patients()
+```
+Interact with connected modalities
 
-It also allows you to find specifics series/studies/patients according to complex filters
+```python
+import pyorthanc
+
+modality = pyorthanc.Modality(client, 'MY_MODALITY')
+assert modality.echo()
+
+# C-Find on modality
+response = modality.query({'Level': 'Study', 'Query': {'PatientID': '*'}})
+
+# C-Move to target modality
+modality.move(response['ID'], {'TargetAet': 'target_modality'})
+```
+Find patients
+```python
+patients = pyorthanc.find_patients(client, {'PatientID': '*P001'})
+for patient in patients:
+    patient.labels
+    patient.is_stable
+    patient.name
+    ...
+    for study in patient.studies:
+        study.labels
+        study.date
+        ...
+        for series in study.series:
+            ...
+            for instance in series.instances:
+                pydicom_ds = instance.get_pydicom()
+```
 
 ## [First steps](tutorial/quickstart.md#first-steps)
-### [Requirements](tutorial/quickstart.md#requirements)
-### [Installation](tutorial/quickstart.md#installation)
 ### [Getting started](tutorial/quickstart.md#getting-started)
 * [Import pyorthanc library](tutorial/quickstart.md#import-pyorthanc-library)
 * [Connect to Orthanc](tutorial/quickstart.md#connect-to-orthanc)
@@ -25,14 +62,11 @@ It also allows you to find specifics series/studies/patients according to comple
 * [Query (C-Find) and Retrieve (C-Move) from remote modality:](tutorial/quickstart.md#query-c-find-and-retrieve-c-move-from-remote-modality)
 ### [Full basic examples](tutorial/quickstart.md#full-basic-examples)
 * [Access instance informations](tutorial/quickstart.md#access-instance-informations)
-### [Some useful commands](tutorial/quickstart.md#some-useful-commands)
-* [Docker commands](tutorial/quickstart.md#docker-commands)
 ### [Advanced examples](tutorial/advanced.md)
 * [Transfer data from a PACS to a Orthanc server](tutorial/advanced.md#transfer-data-from-a-pacs-to-a-orthanc-server)
 ### [Releases](releases/releases.md)
 * [Lastest release : 1.12.1](releases/releases.md#lastest-release-1121)
 * [Release 1.11.5](releases/releases.md#release-1115)
-## [Contribute](contributing.md#contribute)
 ## [Contacts](contacts.md#contacts)
 * [Maintainers Team](contacts.md#maintainers-team)
 * [Useful links](contacts.md#useful-links)
