@@ -202,7 +202,7 @@ class Series(Resource):
             If False, instructs Orthanc to the remove original resources.
             By default, the original resources are kept in Orthanc.
         priority
-            In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            Priority of the job. The lower the value, the higher the priority.
         permissive
             If True, ignore errors during the individual steps of the job.
         dicom_version
@@ -282,7 +282,7 @@ class Series(Resource):
             If False, instructs Orthanc to the remove original resources.
             By default, the original resources are kept in Orthanc.
         priority
-            In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            Priority of the job. The lower the value, the higher the priority.
         permissive
             If True, ignore errors during the individual steps of the job.
         dicom_version
@@ -298,7 +298,7 @@ class Series(Resource):
         --------
         For large series (recommended)
         ```python
-        job = series.anonymize_as_job(asynchronous=True)
+        job = series.anonymize_as_job()
         job.state  # You can follow the job state
 
         job.wait_until_completion() # Or just wait on its completion
