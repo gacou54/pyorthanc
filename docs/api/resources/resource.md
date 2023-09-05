@@ -1,3 +1,3 @@
-::: pyorthanc.resources.Resource
+::: pyorthanc._resources.Resource
     :docstring:
     :members:

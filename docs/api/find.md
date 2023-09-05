@@ -1,3 +1,3 @@
-::: pyorthanc.find
+::: pyorthanc._find
     :docstring:
     :members:
