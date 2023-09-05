@@ -1,3 +1,3 @@
-::: pyorthanc.filtering
+::: pyorthanc._filtering
     :docstring:
     :members:
