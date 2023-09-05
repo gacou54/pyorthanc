@@ -6,7 +6,7 @@ from httpx import ReadTimeout
 
 from .resource import Resource
 from .study import Study
-from .. import util
+from .. import errors, util
 from ..jobs import Job
 
 
@@ -391,6 +391,183 @@ class Patient(Resource):
             data['DicomVersion'] = dicom_version
 
         job_info = self.client.post_patients_id_anonymize(self.id_, data)
+
+        return Job(job_info['ID'], self.client)
+
+    def modify(self, remove: List = None, replace: Dict = None, keep: List = None,
+               force: bool = False, remove_private_tags: bool = False,
+               keep_source: bool = True, priority: int = 0, permissive: bool = False,
+               private_creator: str = None) -> 'Patient':
+        """Modify patient
+
+        If no error has been raise, then modify the patient. If the PatientID is replaced
+        (with `force=True`), then return a new patient.
+        Documentation: https://book.orthanc-server.com/users/anonymization.html
+
+        Notes
+        -----
+        This method might be long to run, especially on large patient or when multiple
+        patients are modified. In those cases, it is recommended to use the `.modify_as_job()`
+
+        Parameters
+        ----------
+        remove
+            List of tag to remove
+        replace
+            Dictionary of {tag: new_content}
+        keep
+            Keep the original value of the specified tags, to be chosen among the StudyInstanceUID,
+            SeriesInstanceUID and SOPInstanceUID tags. Avoid this feature as much as possible,
+            as this breaks the DICOM model of the real world.
+        force
+            Some tags can't be changed without forcing it (e.g. PatientID) for security reason
+        remove_private_tags
+            If True, remove the private tags from the DICOM instances.
+        keep_source
+            If False, instructs Orthanc to the remove original resources.
+            By default, the original resources are kept in Orthanc.
+        priority
+            Priority of the job. The lower the value, the higher the priority.
+        permissive
+            If True, ignore errors during the individual steps of the job.
+        private_creator
+            The private creator to be used for private tags in Replace.
+
+        Returns
+        -------
+        Patient
+            Returns a new patient if the "PatientID" tag has been replaced,
+            returns itself if not (in this case, the patient itself is modified).
+
+        Examples
+        --------
+        ```python
+        patient.modify(remove=['PatientName'])
+        patient.name  # will raise
+
+        modified_patient = patient.modify(replace={'PatientID': 'TheNewPatientID'}, force=True)
+        modified_patient.patient_id == 'TheNewPatientID'
+        """
+        remove = [] if remove is None else remove
+        replace = {} if replace is None else replace
+        keep = [] if keep is None else keep
+
+        if 'PatientID' in replace and not force:
+            raise errors.ModificationError('If PatientID is replaced, `force` must be `True`')
+
+        data = {
+            'Asynchronous': False,
+            'Remove': remove,
+            'Replace': replace,
+            'Keep': keep,
+            'Force': force,
+            'RemovePrivateTags': remove_private_tags,
+            'KeepSource': keep_source,
+            'Priority': priority,
+            'Permissive': permissive,
+        }
+        if private_creator is not None:
+            data['PrivateCreator'] = private_creator
+
+        try:
+            modified_patient = self.client.post_patients_id_modify(self.id_, data)
+        except ReadTimeout:
+            raise ReadTimeout(
+                'Patient modification is too long to process. '
+                'Use `.modify_as_job` or increase client.timeout.'
+            )
+
+        # if 'PatientID' is not affected, the modified_patient['ID'] is the same as self.id_
+        return Patient(modified_patient['ID'], self.client)
+
+    def modify_as_job(self, remove: List = None, replace: Dict = None, keep: List = None,
+                      force: bool = False, remove_private_tags: bool = False,
+                      keep_source: bool = True, priority: int = 0, permissive: bool = False,
+                      private_creator: str = None) -> Job:
+        """Modify patient and return a job
+
+        Launch a modification job. If the PatientID is replaced (with `force=True`),
+        then return a new patient. If the PatientID is not replaced, the patient itself is modified.
+        Documentation: https://book.orthanc-server.com/users/anonymization.html
+
+        Notes
+        -----
+        This method is useful when modifying large patient or launching many
+        modification jobs. The jobs are sent to Orthanc and processed according
+        to the priority.
+
+        Parameters
+        ----------
+        remove
+            List of tag to remove
+        replace
+            Dictionary of {tag: new_content}
+        keep
+            Keep the original value of the specified tags, to be chosen among the StudyInstanceUID,
+            SeriesInstanceUID and SOPInstanceUID tags. Avoid this feature as much as possible,
+            as this breaks the DICOM model of the real world.
+        force
+            Allow the modification of tags related to DICOM identifiers, at the risk of breaking
+            the DICOM model of the real world.
+        remove_private_tags
+            If True, remove the private tags from the DICOM instances.
+        keep_source
+            If False, instructs Orthanc to the remove original resources.
+            By default, the original resources are kept in Orthanc.
+        priority
+            Priority of the job. The lower the value, the higher the priority.
+        permissive
+            If True, ignore errors during the individual steps of the job.
+        private_creator
+            The private creator to be used for private tags in Replace.
+
+        Returns
+        -------
+        Job
+            Return a Job object of the anonymization job.
+
+        Examples
+        --------
+        For large patient (recommended)
+        ```python
+        job = patient.modify_as_job(replace={'PatientName': 'NewName'})
+        job.state  # You can follow the job state
+
+        job.wait_until_completion() # Or just wait on its completion
+        patient.name == 'NewName'
+        ```
+        Or modify the PatientID
+        ```python
+        job = patient.modify_as_job(replace={'PatientID': 'new-id'}, force=True)
+        job.wait_until_completion() # Or just wait on its completion
+
+        modified_patient = Patient(job.content['ID'], client)
+        patient.patient_id != 'new_id'
+        modified_patient.patient_id == 'new_id'
+        ```
+        """
+        remove = [] if remove is None else remove
+        replace = {} if replace is None else replace
+        keep = [] if keep is None else keep
+
+        if 'PatientID' in replace and not force:
+            raise errors.ModificationError('If PatientID is affected, `force` must be `True`')
+
+        data = {
+            'Asynchronous': True,
+            'Remove': remove,
+            'Replace': replace,
+            'Keep': keep,
+            'Force': force,
+            'RemovePrivateTags': remove_private_tags,
+            'KeepSource': keep_source,
+            'Priority': priority,
+            'Permissive': permissive,
+        }
+        if private_creator is not None:
+            data['PrivateCreator'] = private_creator
+
+        job_info = self.client.post_patients_id_modify(self.id_, data)
 
         return Job(job_info['ID'], self.client)
 

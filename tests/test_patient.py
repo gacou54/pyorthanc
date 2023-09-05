@@ -2,6 +2,7 @@ import io
 from datetime import datetime
 from zipfile import ZipFile
 
+import httpx
 import pytest
 
 from pyorthanc import Patient, errors
@@ -91,6 +92,69 @@ def test_anonymize_as_job(patient):
     assert patient.name == a_patient.NAME
     assert anonymize_patient.name == a_patient.NAME
 
+
+def test_modify_remove(patient):
+    assert patient.name == a_patient.NAME
+
+    patient.modify(remove=['PatientName'])
+    assert patient.patient_id == a_patient.ID
+    with pytest.raises(errors.TagDoesNotExistError):
+        patient.name
+
+    with pytest.raises(httpx.HTTPError):
+        patient.modify(remove=['PatientID'])
+
+    with pytest.raises(httpx.HTTPError):
+        patient.modify(remove=['PatientID'], force=True)
+
+
+def test_modify_replace(patient):
+    assert patient.name == a_patient.NAME
+
+    patient.modify(replace={'PatientName': 'NewName'})
+
+    assert patient.patient_id == a_patient.ID
+    assert patient.name == 'NewName'
+
+    with pytest.raises(errors.ModificationError):
+        patient.modify(replace={'PatientID': 'new-id'})
+
+    modified_patient = patient.modify(replace={'PatientID': 'new-id'}, force=True)
+    assert modified_patient.patient_id == 'new-id'
+
+
+def test_modify_as_job_remove(patient):
+    job = patient.modify_as_job(remove=['PatientName'])
+    assert patient.name == a_patient.NAME
+
+    job.wait_until_completion()
+    assert patient.patient_id == a_patient.ID
+    with pytest.raises(errors.TagDoesNotExistError):
+        patient.name
+
+    with pytest.raises(httpx.HTTPError):
+        patient.modify_as_job(remove=['PatientID'])
+
+    job = patient.modify_as_job(remove=['PatientID'], force=True)
+    job.wait_until_completion()
+    assert 'ID' not in job.content  # Has no effect because PatientID can't be removed
+
+
+def test_modify_as_job_replace(patient):
+    job = patient.modify_as_job(replace={'PatientName': 'NewName'})
+    assert patient.name == a_patient.NAME
+
+    job.wait_until_completion()
+    assert patient.patient_id == a_patient.ID
+    assert patient.name == 'NewName'
+
+    with pytest.raises(errors.ModificationError):
+        patient.modify_as_job(replace={'PatientID': 'new-id'})
+
+    job = patient.modify_as_job(replace={'PatientID': 'new-id'}, force=True)
+    job.wait_until_completion()
+    modified_patient = Patient(job.content['ID'], patient.client)
+    assert modified_patient.patient_id == 'new-id'
 
 
 @pytest.mark.parametrize('label', ['a_label'])
