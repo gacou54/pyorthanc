@@ -206,7 +206,7 @@ class Series(Resource):
         permissive
             If True, ignore errors during the individual steps of the job.
         private_creator
-            The private creator to be used for private tags in Replace.
+            The private creator to be used for private tags in replace.
         dicom_version
             Version of the DICOM standard to be used for anonymization.
             Check out configuration option DeidentifyLogsDicomVersion for possible values.
@@ -290,7 +290,7 @@ class Series(Resource):
         permissive
             If True, ignore errors during the individual steps of the job.
         private_creator
-            The private creator to be used for private tags in Replace.
+            The private creator to be used for private tags in replace.
         dicom_version
             Version of the DICOM standard to be used for anonymization.
             Check out configuration option DeidentifyLogsDicomVersion for possible values.

@@ -202,7 +202,7 @@ class Instance(Resource):
             If False, instructs Orthanc to the remove original resources.
             By default, the original resources are kept in Orthanc.
         private_creator
-            The private creator to be used for private tags in Replace.
+            The private creator to be used for private tags in replace.
         dicom_version
             Version of the DICOM standard to be used for anonymization.
             Check out configuration option DeidentifyLogsDicomVersion for possible values.
