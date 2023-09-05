@@ -108,6 +108,27 @@ job.wait_until_completion() # Or just wait on its completion
 new_patient = pyorthanc.Patient(job.content['ID'], client)
 ```
 
+#### Find resources with complex filters or filter on many resource levels
+The `pyorthanc.find()` function allow to find resources with filters on many levels,
+or with complex filter. Each filter function takes an object that correspond to the resource level
+and should return a boolean value.
+
+Note that when using the `find()` function, the state of the resources `Patient/Study/Series/Instance` 
+are locked.
+```python
+from datetime import datetime
+from pyorthanc import find
+
+patients = find(
+    orthanc,
+    patient_filter=lambda patient: patient.last_update > datetime(year=2023, month=10, day=1),
+    study_filter=lambda study: 'thorax' in study.description.lower(),
+    series_filter=lambda series: series.modality == 'CT'
+)
+```
+__Note__ that this function may take a while to run since each resource level is filtered. 
+Using `find()` on large Orthanc server is not recommended.
+
 
 ## Full basic examples
 
