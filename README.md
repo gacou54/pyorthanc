@@ -18,8 +18,8 @@ import pyorthanc
 client = pyorthanc.Orthanc('http://localhost:8042', username='orthanc', password='orthanc')
 patient_ids = client.get_patients()
 ```
-Interact with connected modalities
 
+Interact with connected modalities
 ```python
 import pyorthanc
 
@@ -50,23 +50,24 @@ for patient in patients:
                 pydicom_ds = instance.get_pydicom()
 ```
 
-Resources (`Patient`, `Study`, `Series`, `Instance`) can be easily anonymized.
+Resources (`Patient`, `Study`, `Series`, `Instance`) can be easily __anonymized__.
 ```python
 import pyorthanc
 
 orthanc_patient_id = client.get_patients()[0]
 patient = pyorthanc.Patient(orthanc_patient_id, client)
-
-# Waiting the for the anonymization process
+```
+Waiting the for the anonymization process:
+```python
 new_patient = patient.anonymize()
 new_patient_with_given_patient_id = patient.anonymize(
    keep=['PatientName'],
    replace={'PatientID': 'TheNewPatientID'},
    force=True  # Needed when changing PatientID/StudyInstanceUID/SeriesInstanceUID/SOPInstanceUID
 )
-
-# For long running job (i.e. large patient), 
-# or to submit many anonymization job at the same time, use
+```
+For long-running job (i.e. large patient) or to submit many anonymization jobs at the same time, use
+```python
 job = patient.anonymize_as_job()
 job.state  # You can follow the job state
 
