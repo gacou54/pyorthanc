@@ -61,6 +61,12 @@ def test_anonymize(instance):
     assert type(anonymized_instance) == bytes
 
 
+def test_modify(instance):
+    modified_instance = instance.modify(replace={'NumberOfFrames': '10'})
+
+    assert type(modified_instance) == bytes
+
+
 def test_pydicom(instance):
     result = instance.get_pydicom()
 

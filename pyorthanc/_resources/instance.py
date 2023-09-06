@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 import pydicom
 
 from .resource import Resource
-from .. import util
+from .. import errors, util
 
 
 class Instance(Resource):
@@ -183,7 +183,7 @@ class Instance(Resource):
                   private_creator: str = None, force: bool = False, dicom_version: str = None) -> bytes:
         """Anonymize Instance
 
-        If no error has been raise, then it creates a new anonymous series.
+        If no error has been raise, then it creates a new anonymous instance.
         Documentation: https://book.orthanc-server.com/users/anonymization.html
 
         Parameters
@@ -195,7 +195,7 @@ class Instance(Resource):
         keep
             List of tag to keep unchanged
         force
-            Some tags can't be changed without forcing it (e.g. PatientID) for security reason
+            Some tags can't be changed without forcing it (e.g. SOPInstanceUID) for security reason
         keep_private_tags
             If True, keep the private tags from the DICOM instances.
         keep_source
@@ -230,6 +230,59 @@ class Instance(Resource):
             data['DicomVersion'] = dicom_version
 
         return self.client.post_instances_id_anonymize(self.id_, data)
+
+    def modify(self, remove: List = None, replace: Dict = None, keep: List = None,
+               remove_private_tags: bool = False, keep_source: bool = True,
+               private_creator: str = None, force: bool = False) -> bytes:
+        """Modify Instance
+
+        If no error has been raise, then it creates a new modified instance.
+        Documentation: https://book.orthanc-server.com/users/anonymization.html
+
+        Parameters
+        ----------
+        remove
+            List of tag to remove
+        replace
+            Dictionary of {tag: new_content}
+        keep
+            Keep the original value of the specified tags, to be chosen among the StudyInstanceUID,
+            SeriesInstanceUID and SOPInstanceUID tags. Avoid this feature as much as possible,
+            as this breaks the DICOM model of the real world.
+        force
+            Some tags can't be changed without forcing it (e.g. SOPInstanceUID) for security reason
+        remove_private_tags
+            If True, remove the private tags from the DICOM instances.
+        keep_source
+            If False, instructs Orthanc to the remove original resources.
+            By default, the original resources are kept in Orthanc.
+        private_creator
+            The private creator to be used for private tags in replace.
+
+        Returns
+        -------
+        bytes
+            Raw bytes of the modified instance.
+        """
+        remove = [] if remove is None else remove
+        replace = {} if replace is None else replace
+        keep = [] if keep is None else keep
+
+        if 'SOPInstanceUID' in replace and not force:
+            raise errors.ModificationError('If SOPInstanceUID is replaced, `force` must be `True`')
+
+        data = {
+            'Remove': remove,
+            'Replace': replace,
+            'Keep': keep,
+            'Force': force,
+            'RemovePrivateTags': remove_private_tags,
+            'KeepSource': keep_source,
+        }
+        if private_creator is not None:
+            data['PrivateCreator'] = private_creator
+
+        return self.client.post_instances_id_modify(self.id_, data)
 
     def get_pydicom(self) -> pydicom.FileDataset:
         """Retrieve a pydicom.FileDataset object corresponding to the instance."""
