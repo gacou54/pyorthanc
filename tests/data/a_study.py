@@ -20,6 +20,7 @@ SERIES = [
     '60108266-ece4d8f7-7b028286-a7b61f25-c6d33f0b',
     'e2a7df26-99673e0f-05aa84cd-c89677c0-634a2a96',
 ]
+UID = '1.2.840.113619.2.55.3.671782272.419.1266452812.128'
 INFORMATION = {
     'ID': IDENTIFIER,
     'IsStable': False,
@@ -30,7 +31,7 @@ INFORMATION = {
         'ReferringPhysicianName': '',
         'StudyDate': '20100223',
         'StudyID': ID,
-        'StudyInstanceUID': '1.2.840.113619.2.55.3.671782272.419.1266452812.128',
+        'StudyInstanceUID': UID,
         'StudyTime': '',
     },
     'ParentPatient': PARENT_PATIENT_IDENTIFIER,

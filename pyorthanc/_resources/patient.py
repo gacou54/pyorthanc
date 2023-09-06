@@ -446,7 +446,7 @@ class Patient(Resource):
         patient.name  # will raise
 
         modified_patient = patient.modify(replace={'PatientID': 'TheNewPatientID'}, force=True)
-        modified_patient.patient_id == 'TheNewPatientID'
+        assert modified_patient.patient_id == 'TheNewPatientID'
         """
         remove = [] if remove is None else remove
         replace = {} if replace is None else replace
@@ -534,7 +534,7 @@ class Patient(Resource):
         job.state  # You can follow the job state
 
         job.wait_until_completion() # Or just wait on its completion
-        patient.name == 'NewName'
+        assert patient.name == 'NewName'
         ```
         Or modify the PatientID
         ```python
@@ -542,8 +542,8 @@ class Patient(Resource):
         job.wait_until_completion() # Or just wait on its completion
 
         modified_patient = Patient(job.content['ID'], client)
-        patient.patient_id != 'new_id'
-        modified_patient.patient_id == 'new_id'
+        assert patient.patient_id != 'new_id'
+        assert modified_patient.patient_id == 'new_id'
         ```
         """
         remove = [] if remove is None else remove
