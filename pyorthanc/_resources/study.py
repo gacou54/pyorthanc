@@ -241,7 +241,7 @@ class Study(Resource):
         keep
             List of tag to keep unchanged
         force
-            Some tags can't be changed without forcing it (e.g. PatientID) for security reason
+            Some tags can't be changed without forcing it (e.g. StudyInstanceUID) for security reason
         keep_private_tags
             If True, keep the private tags from the DICOM instances.
         keep_source
@@ -270,7 +270,7 @@ class Study(Resource):
         job.state  # You can follow the job state
 
         job.wait_until_completion() # Or just wait on its completion
-        new_study = Patient(job.content['ID'], orthanc)
+        new_study = Study(job.content['ID'], orthanc)
         ```
         """
         remove = [] if remove is None else remove
@@ -294,6 +294,201 @@ class Study(Resource):
             data['DicomVersion'] = dicom_version
 
         job_info = self.client.post_studies_id_anonymize(self.id_, data)
+
+        return Job(job_info['ID'], self.client)
+
+    def modify(self, remove: List = None, replace: Dict = None, keep: List = None,
+               force: bool = False, remove_private_tags: bool = False,
+               keep_source: bool = True, priority: int = 0, permissive: bool = False,
+               private_creator: str = None) -> 'Study':
+        """Modify study
+
+        If no error has been raise, then create a modified version of the study.
+        If keep=['StudyInstanceUID'] and force=True are use, then the study itself is changed.
+        Documentation: https://book.orthanc-server.com/users/anonymization.html
+
+        Notes
+        -----
+        This method might be long to run, especially on large study or when multiple
+        studies are modified. In those cases, it is recommended to use the `.modify_as_job()`
+
+        Parameters
+        ----------
+        remove
+            List of tag to remove
+        replace
+            Dictionary of {tag: new_content}
+        keep
+            Keep the original value of the specified tags, to be chosen among the StudyInstanceUID,
+            SeriesInstanceUID and SOPInstanceUID tags. Avoid this feature as much as possible,
+            as this breaks the DICOM model of the real world.
+        force
+            Some tags can't be changed without forcing it (e.g. StudyInstanceUID) for security reason
+        remove_private_tags
+            If True, remove the private tags from the DICOM instances.
+        keep_source
+            If False, instructs Orthanc to the remove original resources.
+            By default, the original resources are kept in Orthanc.
+        priority
+            Priority of the job. The lower the value, the higher the priority.
+        permissive
+            If True, ignore errors during the individual steps of the job.
+        private_creator
+            The private creator to be used for private tags in Replace.
+
+        Returns
+        -------
+        Study
+            Returns a new modified study or returns itself if keep=['StudyInstanceUID']
+            (in this case, the study itself is modified).
+
+        Examples
+        --------
+        ```python
+        # Create a modified study
+        modified_study = study.modify(replace={'StudyInstanceUID': '1.2.840.113745.101000.1008000.38048.4626.5933732'}, force=True)
+        assert modified_study.uid == '1.2.840.113745.101000.1008000.38048.4626.5933732'
+
+        # Modify itself
+        study.modify(replace={'ReferringPhysicianName': 'last^first'}, keep=['StudyInstanceUID'], force=True)
+        assert study.referring_physician_name == 'last^first'
+        ```
+        """
+        remove = [] if remove is None else remove
+        replace = {} if replace is None else replace
+        keep = [] if keep is None else keep
+
+        if 'StudyInstanceUID' in replace and not force:
+            raise errors.ModificationError('If StudyInstanceUID is replaced, `force` must be `True`')
+
+        data = {
+            'Asynchronous': False,
+            'Remove': remove,
+            'Replace': replace,
+            'Keep': keep,
+            'Force': force,
+            'RemovePrivateTags': remove_private_tags,
+            'KeepSource': keep_source,
+            'Priority': priority,
+            'Permissive': permissive,
+        }
+        if private_creator is not None:
+            data['PrivateCreator'] = private_creator
+
+        try:
+            modified_study = self.client.post_studies_id_modify(self.id_, data)
+        except ReadTimeout:
+            raise ReadTimeout(
+                'Study modification is too long to process. '
+                'Use `.modify_as_job` or increase client.timeout.'
+            )
+
+        # if 'StudyInstanceUID' is not affected, the modified_study['ID'] is the same as self.id_
+        return Study(modified_study['ID'], self.client)
+
+    def modify_as_job(self, remove: List = None, replace: Dict = None, keep: List = None,
+                      force: bool = False, remove_private_tags: bool = False,
+                      keep_source: bool = True, priority: int = 0, permissive: bool = False,
+                      private_creator: str = None) -> Job:
+        """Modify study and return a job
+
+        Launch a modification job. If keep=['StudyInstanceUID'] (with `force=True`),
+        then modified this study. If the StudyInstanceUID is not keeped, this creates
+        a new modified study.
+        Documentation: https://book.orthanc-server.com/users/anonymization.html
+
+        Notes
+        -----
+        This method is useful when modifying large study or launching many
+        modification jobs. The jobs are sent to Orthanc and processed according
+        to the priority.
+
+        Parameters
+        ----------
+        remove
+            List of tag to remove
+        replace
+            Dictionary of {tag: new_content}
+        keep
+            Keep the original value of the specified tags, to be chosen among the StudyInstanceUID,
+            SeriesInstanceUID and SOPInstanceUID tags. Avoid this feature as much as possible,
+            as this breaks the DICOM model of the real world.
+        force
+            Allow the modification of tags related to DICOM identifiers, at the risk of breaking
+            the DICOM model of the real world.
+        remove_private_tags
+            If True, remove the private tags from the DICOM instances.
+        keep_source
+            If False, instructs Orthanc to the remove original resources.
+            By default, the original resources are kept in Orthanc.
+        priority
+            Priority of the job. The lower the value, the higher the priority.
+        permissive
+            If True, ignore errors during the individual steps of the job.
+        private_creator
+            The private creator to be used for private tags in Replace.
+
+        Returns
+        -------
+        Job
+            Return a Job object of the modification job.
+
+        Examples
+        --------
+        For large study (recommended)
+        ```python
+        job = study.modify_as_job(replace={'StudyDescription': 'a description'})
+        job.state  # You can follow the job state
+
+        job.wait_until_completion() # Or just wait on its completion
+        modified_study = Study(job.content['ID'], client)
+        assert modified_study.description == 'a description'
+        ```
+        Or modify the StudyInstanceUID
+        ```python
+        job = study.modify_as_job(
+            replace={'StudyInstanceUID': '1.2.840.113745.101000.1008000.38048.4626.5933732'},
+            force=True
+        )
+        job.wait_until_completion() # Or just wait on its completion
+
+        modified_study = Study(job.content['ID'], client)
+        modified_study.uid == '1.2.840.113745.101000.1008000.38048.4626.5933732'
+        ```
+        Or keep the StudyInstanceUID
+        ```python
+        job = study.modify_as_job(
+            replace={'StudyDescription': 'a description'},
+            keep=['StudyInstanceUID'],
+            force=True
+        )
+        job.wait_until_completion()
+
+        assert study.description == 'a description'
+        ```
+        """
+        remove = [] if remove is None else remove
+        replace = {} if replace is None else replace
+        keep = [] if keep is None else keep
+
+        if 'StudyInstanceUID' in replace and not force:
+            raise errors.ModificationError('If StudyInstanceUID is affected, `force` must be `True`')
+
+        data = {
+            'Asynchronous': True,
+            'Remove': remove,
+            'Replace': replace,
+            'Keep': keep,
+            'Force': force,
+            'RemovePrivateTags': remove_private_tags,
+            'KeepSource': keep_source,
+            'Priority': priority,
+            'Permissive': permissive,
+        }
+        if private_creator is not None:
+            data['PrivateCreator'] = private_creator
+
+        job_info = self.client.post_studies_id_modify(self.id_, data)
 
         return Job(job_info['ID'], self.client)
 
