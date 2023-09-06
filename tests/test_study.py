@@ -162,7 +162,7 @@ def test_modify_as_job_remove(study):
 
     job = study.modify_as_job(remove=['StudyInstanceUID'], force=True)
     job.wait_until_completion()
-    assert 'ID' not in job.content  # Has no effect because PatientID can't be removed
+    assert 'ID' not in job.content  # Has no effect because StudyInstanceUID can't be removed
 
 
 def test_modify_as_job_replace(study):
