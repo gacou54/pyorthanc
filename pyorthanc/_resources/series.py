@@ -279,7 +279,7 @@ class Series(Resource):
         keep
             List of tag to keep unchanged
         force
-            Some tags can't be changed without forcing it (e.g. PatientID) for security reason
+            Some tags can't be changed without forcing it (e.g. SeriesInstanceUID) for security reason
         keep_private_tags
             If True, keep the private tags from the DICOM instances.
         keep_source
@@ -308,7 +308,7 @@ class Series(Resource):
         job.state  # You can follow the job state
 
         job.wait_until_completion() # Or just wait on its completion
-        new_series = Patient(job.content['ID'], orthanc)
+        new_series = Series(job.content['ID'], orthanc)
         ```
         """
         remove = [] if remove is None else remove
@@ -332,6 +332,201 @@ class Series(Resource):
             data['DicomVersion'] = dicom_version
 
         job_info = self.client.post_series_id_anonymize(self.id_, data)
+
+        return Job(job_info['ID'], self.client)
+
+    def modify(self, remove: List = None, replace: Dict = None, keep: List = None,
+               force: bool = False, remove_private_tags: bool = False,
+               keep_source: bool = True, priority: int = 0, permissive: bool = False,
+               private_creator: str = None) -> 'Series':
+        """Modify series
+
+        If no error has been raise, then create a modified version of the series.
+        If keep=['SeriesInstanceUID'] and force=True are use, then the series itself is changed.
+        Documentation: https://book.orthanc-server.com/users/anonymization.html
+
+        Notes
+        -----
+        This method might be long to run, especially on large series or when multiple
+        series are modified. In those cases, it is recommended to use the `.modify_as_job()`
+
+        Parameters
+        ----------
+        remove
+            List of tag to remove
+        replace
+            Dictionary of {tag: new_content}
+        keep
+            Keep the original value of the specified tags, to be chosen among the SeriesInstanceUID,
+            SeriesInstanceUID and SOPInstanceUID tags. Avoid this feature as much as possible,
+            as this breaks the DICOM model of the real world.
+        force
+            Some tags can't be changed without forcing it (e.g. SeriesInstanceUID) for security reason
+        remove_private_tags
+            If True, remove the private tags from the DICOM instances.
+        keep_source
+            If False, instructs Orthanc to the remove original resources.
+            By default, the original resources are kept in Orthanc.
+        priority
+            Priority of the job. The lower the value, the higher the priority.
+        permissive
+            If True, ignore errors during the individual steps of the job.
+        private_creator
+            The private creator to be used for private tags in Replace.
+
+        Returns
+        -------
+        Series
+            Returns a new modified series or returns itself if keep=['SeriesInstanceUID']
+            (in this case, the series itself is modified).
+
+        Examples
+        --------
+        ```python
+        # Create a modified series
+        modified_series = series.modify(replace={'SeriesInstanceUID': '1.2.840.113745.101000.1008000.38048.4626.5933732'}, force=True)
+        assert modified_series.uid == '1.2.840.113745.101000.1008000.38048.4626.5933732'
+
+        # Modify itself
+        series.modify(replace={'ReferringPhysicianName': 'last^first'}, keep=['SeriesInstanceUID'], force=True)
+        assert series.referring_physician_name == 'last^first'
+        ```
+        """
+        remove = [] if remove is None else remove
+        replace = {} if replace is None else replace
+        keep = [] if keep is None else keep
+
+        if 'SeriesInstanceUID' in replace and not force:
+            raise errors.ModificationError('If SeriesInstanceUID is replaced, `force` must be `True`')
+
+        data = {
+            'Asynchronous': False,
+            'Remove': remove,
+            'Replace': replace,
+            'Keep': keep,
+            'Force': force,
+            'RemovePrivateTags': remove_private_tags,
+            'KeepSource': keep_source,
+            'Priority': priority,
+            'Permissive': permissive,
+        }
+        if private_creator is not None:
+            data['PrivateCreator'] = private_creator
+
+        try:
+            modified_series = self.client.post_series_id_modify(self.id_, data)
+        except ReadTimeout:
+            raise ReadTimeout(
+                'Series modification is too long to process. '
+                'Use `.modify_as_job` or increase client.timeout.'
+            )
+
+        # if 'SeriesInstanceUID' is not affected, the modified_series['ID'] is the same as self.id_
+        return Series(modified_series['ID'], self.client)
+
+    def modify_as_job(self, remove: List = None, replace: Dict = None, keep: List = None,
+                      force: bool = False, remove_private_tags: bool = False,
+                      keep_source: bool = True, priority: int = 0, permissive: bool = False,
+                      private_creator: str = None) -> Job:
+        """Modify series and return a job
+
+        Launch a modification job. If keep=['SeriesInstanceUID'] (with `force=True`),
+        then modified this series. If the SeriesInstanceUID is not keeped, this creates
+        a new modified series.
+        Documentation: https://book.orthanc-server.com/users/anonymization.html
+
+        Notes
+        -----
+        This method is useful when modifying large series or launching many
+        modification jobs. The jobs are sent to Orthanc and processed according
+        to the priority.
+
+        Parameters
+        ----------
+        remove
+            List of tag to remove
+        replace
+            Dictionary of {tag: new_content}
+        keep
+            Keep the original value of the specified tags, to be chosen among the SeriesInstanceUID,
+            SeriesInstanceUID and SOPInstanceUID tags. Avoid this feature as much as possible,
+            as this breaks the DICOM model of the real world.
+        force
+            Allow the modification of tags related to DICOM identifiers, at the risk of breaking
+            the DICOM model of the real world.
+        remove_private_tags
+            If True, remove the private tags from the DICOM instances.
+        keep_source
+            If False, instructs Orthanc to the remove original resources.
+            By default, the original resources are kept in Orthanc.
+        priority
+            Priority of the job. The lower the value, the higher the priority.
+        permissive
+            If True, ignore errors during the individual steps of the job.
+        private_creator
+            The private creator to be used for private tags in Replace.
+
+        Returns
+        -------
+        Job
+            Return a Job object of the modification job.
+
+        Examples
+        --------
+        For large series (recommended)
+        ```python
+        job = series.modify_as_job(replace={'SeriesDescription': 'a description'})
+        job.state  # You can follow the job state
+
+        job.wait_until_completion() # Or just wait on its completion
+        modified_series = Series(job.content['ID'], client)
+        assert modified_series.description == 'a description'
+        ```
+        Or modify the SeriesInstanceUID
+        ```python
+        job = series.modify_as_job(
+            replace={'SeriesInstanceUID': '1.2.840.113745.101000.1008000.38048.4626.5933732'},
+            force=True
+        )
+        job.wait_until_completion() # Or just wait on its completion
+
+        modified_series = Series(job.content['ID'], client)
+        modified_series.uid == '1.2.840.113745.101000.1008000.38048.4626.5933732'
+        ```
+        Or keep the SeriesInstanceUID
+        ```python
+        job = series.modify_as_job(
+            replace={'SeriesDescription': 'a description'},
+            keep=['SeriesInstanceUID'],
+            force=True
+        )
+        job.wait_until_completion()
+
+        assert series.description == 'a description'
+        ```
+        """
+        remove = [] if remove is None else remove
+        replace = {} if replace is None else replace
+        keep = [] if keep is None else keep
+
+        if 'SeriesInstanceUID' in replace and not force:
+            raise errors.ModificationError('If SeriesInstanceUID is affected, `force` must be `True`')
+
+        data = {
+            'Asynchronous': True,
+            'Remove': remove,
+            'Replace': replace,
+            'Keep': keep,
+            'Force': force,
+            'RemovePrivateTags': remove_private_tags,
+            'KeepSource': keep_source,
+            'Priority': priority,
+            'Permissive': permissive,
+        }
+        if private_creator is not None:
+            data['PrivateCreator'] = private_creator
+
+        job_info = self.client.post_series_id_modify(self.id_, data)
 
         return Job(job_info['ID'], self.client)
 
