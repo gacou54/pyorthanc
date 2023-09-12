@@ -1,18 +1,18 @@
 from typing import Dict, List, Union
 
-from .client import Orthanc
 from ._resources.instance import Instance
 from ._resources.patient import Patient
 from ._resources.resource import Resource
 from ._resources.series import Series
 from ._resources.study import Study
+from .client import Orthanc
 
 DEFAULT_RESOURCES_LIMIT = 1_000
 
 
 def find_patients(client: Orthanc,
                   query: Dict[str, str] = None,
-                  labels: Union[list[str], str] = None,
+                  labels: Union[List[str], str] = None,
                   labels_constraint: str = 'All') -> List[Patient]:
     """Finds patients in Orthanc according to queries and labels
 
@@ -56,7 +56,7 @@ def find_patients(client: Orthanc,
 
 def find_studies(client: Orthanc,
                  query: Dict[str, str] = None,
-                 labels: Union[list[str], str] = None,
+                 labels: Union[List[str], str] = None,
                  labels_constraint: str = 'All') -> List[Study]:
     """Finds studies in Orthanc according to queries and labels
 
@@ -101,7 +101,7 @@ def find_studies(client: Orthanc,
 
 def find_series(client: Orthanc,
                 query: Dict[str, str] = None,
-                labels: Union[list[str], str] = None,
+                labels: Union[List[str], str] = None,
                 labels_constraint: str = 'All') -> List[Series]:
     """Finds series in Orthanc according to queries and labels
 
@@ -145,7 +145,7 @@ def find_series(client: Orthanc,
 
 def find_instances(client: Orthanc,
                    query: Dict[str, str] = None,
-                   labels: Union[list[str], str] = None,
+                   labels: Union[List[str], str] = None,
                    labels_constraint: str = 'All') -> List[Instance]:
     """Finds instances in Orthanc according to queries and labels
 
@@ -190,7 +190,7 @@ def find_instances(client: Orthanc,
 def query_orthanc(client: Orthanc,
                   level: str,
                   query: Dict[str, str] = None,
-                  labels: Union[list[str], str] = None,
+                  labels: Union[List[str], str] = None,
                   labels_constraint: str = 'All',
                   limit: int = DEFAULT_RESOURCES_LIMIT,
                   since: int = 0,
