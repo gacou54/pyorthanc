@@ -79,14 +79,22 @@ new_patient = pyorthanc.Patient(job.content['ID'], client)
 ```
 
 ## Notes on versioning
-PyOrthanc has been rewritten almost entirely from `0.*.*`.
-The new `Orthanc` client is now automatically generated from `https://api.orthanc-server.com/`.
-The version `*.*.` of PyOrthanc will follow Orthanc version 
-(e.g. `pyorthanc 1.11.*` is generated from the API specification of Orthanc `1.11.*`).
+
+The `Orthanc` and `AsyncOrthanc` classes are generated from `https://api.orthanc-server.com/`.
+
+Compatibility of versions between PyOrthanc and the Orthanc REST API are the following.
+Note that recent PyOrthanc versions will likely support older Orthanc version.
+
+| PyOrthanc version | Generated from                                |
+|-------------------|-----------------------------------------------|
+| \>= 1.12.1        | Orthanc API 1.12.1                            |
+| 1.11.*            | Orthanc API 1.11.3                            |
+| 0.2.*             | Provided Google sheet from Orthanc maintainer |
+
 
 You can still use the old client with
 ```python
-from pyorthanc.deprecated.client import Orthanc
+from pyorthanc.deprecated.client import Orthanc  # Old client wrote by hand
 from pyorthanc.deprecated.client_1_11_3 import Orthanc
 ```
 
@@ -98,6 +106,9 @@ However, the automatic generation allows PyOrthanc to cover all the routes of th
 If you publish using PyOrthanc, we kindly ask that you credit us. PyOrthanc can be found on Zenodo :
 https://zenodo.org/record/7086219 .
 
+## Credits
+The `orthanc_sdk.py` has been generated from the `scripts/data/python-sdk.txt` file,
+which is from the [Python Orthanc Plugin](https://github.com/orthanc-server/orthanc-setup-samples/blob/master/python-samples/python-sdk.txt)
 
 ## Contributing
 You can contribute to this project with the following steps:
