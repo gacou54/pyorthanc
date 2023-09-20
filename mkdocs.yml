@@ -24,7 +24,8 @@ nav:
       'Instance': 'api/resources/instance.md'
       'Find': 'api/find.md'
       'Filtering': 'api/filtering.md'
-      'Remote': 'api/remote.md'
+      'Modality': 'api/modality.md'
+      'Job': 'api/job.md'
       'Util': 'api/util.md'
 
 
