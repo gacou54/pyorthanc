@@ -104,7 +104,6 @@ class Patient(Resource):
         with open('patient_zip_file_path.zip', 'wb') as file_handler:
             file_handler.write(bytes_content)
         ```
-
         """
         return self.client.get_patients_id_archive(self.id_)
 
@@ -283,6 +282,7 @@ class Patient(Resource):
             replace={'PatientID': 'TheNewPatientID'},
             force=True
         )
+        ```
         """
         remove = [] if remove is None else remove
         replace = {} if replace is None else replace
@@ -447,6 +447,7 @@ class Patient(Resource):
 
         modified_patient = patient.modify(replace={'PatientID': 'TheNewPatientID'}, force=True)
         assert modified_patient.patient_id == 'TheNewPatientID'
+        ```
         """
         remove = [] if remove is None else remove
         replace = {} if replace is None else replace

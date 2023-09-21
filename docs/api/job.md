@@ -1,3 +1,0 @@
-::: pyorthanc.job
-    :docstring:
-    :members:

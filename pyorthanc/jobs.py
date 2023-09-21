@@ -8,6 +8,7 @@ from .client import Orthanc
 
 
 class State(Enum):
+    """Job state enum"""
     failure = 'Failure'
     paused = 'Paused'
     pending = 'Pending'
@@ -128,6 +129,7 @@ class ErrorCode(Enum):
 
 
 class Job:
+    """Job class to follow a Job in Orthanc"""
 
     def __init__(self, id_: str, client: Orthanc):
         self.id_ = id_
