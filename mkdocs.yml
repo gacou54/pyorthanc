@@ -17,7 +17,6 @@ nav:
   - 'Api Reference':
       'Orthanc': 'api/client.md'
       'Asynchronous Orthanc': 'api/async_client.md'
-      'Resource': 'api/resources/resource.md'
       'Patient': 'api/resources/patient.md'
       'Study': 'api/resources/study.md'
       'Series': 'api/resources/series.md'
@@ -25,8 +24,9 @@ nav:
       'Find': 'api/find.md'
       'Filtering': 'api/filtering.md'
       'Modality': 'api/modality.md'
-      'Job': 'api/job.md'
+      'Jobs': 'api/jobs.md'
       'Util': 'api/util.md'
+      'Resource': 'api/resources/resource.md'
 
 
   - 'Releases & Roadmap':
@@ -50,6 +50,7 @@ plugins:
       handlers:
         python:
           options:
+            show_root_heading: true
             docstring_style: numpy
       default_handler: python
 #  - toc-md:

@@ -238,6 +238,7 @@ def query_orthanc(client: Orthanc,
         since=100,
         retrieve_all_resource=False
     )
+    ```
     """
     _validate_level(level)
     _validate_labels_constraint(labels_constraint)
