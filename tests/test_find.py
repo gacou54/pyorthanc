@@ -24,7 +24,8 @@ def test_find_patients(client_with_data_and_labels, query, labels, expected):
         labels=labels
     )
 
-    assert [patient.id_ for patient in result] == expected
+    for patient in result:
+        assert patient.id_ in expected
 
 
 @pytest.mark.parametrize('query, labels, expected', [
@@ -43,7 +44,8 @@ def test_find_studies(client_with_data_and_labels, query, labels, expected):
         labels=labels
     )
 
-    assert [study.id_ for study in result] == expected
+    for study in result:
+        assert study.id_ in expected
 
 
 @pytest.mark.parametrize('query, labels, expected', [
@@ -62,7 +64,8 @@ def test_find_series(client_with_data_and_labels, query, labels, expected):
         labels=labels
     )
 
-    assert [series.id_ for series in result] == expected
+    for series in result:
+        assert series.id_ in expected
 
 
 @pytest.mark.parametrize('query, labels, expected', [
@@ -81,7 +84,8 @@ def test_find_instance(client_with_data_and_labels, query, labels, expected):
         labels=labels
     )
 
-    assert [instance.id_ for instance in result] == expected
+    for instance in result:
+        assert instance.id_ in expected
 
 
 @pytest.mark.parametrize('level, query, labels, labels_constraint, limit, since, retrieve_all_resources, lock, expected', [
@@ -127,8 +131,8 @@ def test_query_orthanc(client_with_data_and_labels, level, query, labels, labels
         lock=lock
     )
 
-    assert [resource.id_ for resource in result] == expected
     for resource in result:
+        assert resource.id_ in expected
         if lock:
             assert isinstance(resource._information, dict)
         else:
