@@ -132,6 +132,8 @@ class Job:
     """Job class to follow a Job in Orthanc"""
 
     def __init__(self, id_: str, client: Orthanc):
+        client = util.ensure_non_raw_response(client)
+
         self.id_ = id_
         self.client = client
 

@@ -2,12 +2,13 @@ import asyncio
 import warnings
 from typing import Callable, Dict, List, Optional, Union
 
-from .async_client import AsyncOrthanc
-from .client import Orthanc
+from . import util
 from ._resources.instance import Instance
 from ._resources.patient import Patient
 from ._resources.series import Series
 from ._resources.study import Study
+from .async_client import AsyncOrthanc
+from .client import Orthanc
 from .util import async_to_sync
 
 
@@ -56,6 +57,9 @@ def find(orthanc: Union[Orthanc, AsyncOrthanc],
     List[Patient]
         List of patients that respect .
     """
+    # In this function, client that return raw responses are not supported.
+    orthanc = util.ensure_non_raw_response(orthanc)
+
     if isinstance(orthanc, AsyncOrthanc):
         return asyncio.run(_async_find(
             async_orthanc=orthanc,

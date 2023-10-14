@@ -2,6 +2,7 @@ from typing import Dict
 
 import httpx
 
+from . import util
 from .client import Orthanc
 
 
@@ -18,6 +19,8 @@ class Modality:
         modality
             Remote modality.
         """
+        client = util.ensure_non_raw_response(client)
+
         self.client = client
         self.modality = modality
 

@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Optional
 
-from .. import errors
+from .. import errors, util
 from ..client import Orthanc
 
 
@@ -21,6 +21,8 @@ class Resource:
             or all of those children. "lock=True" is notably used for the "find" function,
             so that only the filtered resources are kept.
         """
+        client = util.ensure_non_raw_response(client)
+
         self.id_ = id_
         self.client = client
 
