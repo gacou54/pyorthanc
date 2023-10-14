@@ -1,3 +1,5 @@
+import copy
+import warnings
 from datetime import datetime
 from io import BytesIO
 from typing import Optional
@@ -51,3 +53,14 @@ def get_pydicom(orthanc: Orthanc, instance_identifier: str) -> pydicom.FileDatas
     return pydicom.dcmread(BytesIO(dicom_bytes))
 
 
+
+def ensure_non_raw_response(client: Orthanc) -> Orthanc:
+    if client.return_raw_response:
+        warnings.warn(
+            'client.return_raw_response is True, which is currently not supported for this class/function. '
+            'Will use the client with client.return_raw_response=False'
+        )
+        client = copy.deepcopy(client)
+        client.return_raw_response = False
+
+    return client

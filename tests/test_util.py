@@ -3,7 +3,7 @@ from datetime import datetime
 import pydicom
 import pytest
 
-from pyorthanc import Orthanc, AsyncOrthanc, util
+from pyorthanc import AsyncOrthanc, Orthanc, util
 from .data import an_instance
 
 
@@ -36,3 +36,12 @@ def test_get_pydicom(client_with_data):
 
     assert isinstance(result, pydicom.FileDataset)
     assert result.SOPInstanceUID == an_instance.INFORMATION['MainDicomTags']['SOPInstanceUID']
+
+
+@pytest.mark.parametrize('return_raw_response', [True, False])
+def test_ensure_non_raw_response(client, return_raw_response):
+    client.return_raw_response = return_raw_response
+
+    client = util.ensure_non_raw_response(client)
+
+    assert client.return_raw_response
