@@ -59,7 +59,7 @@ def ensure_non_raw_response(client: Orthanc) -> Orthanc:
             'client.return_raw_response is True, which is currently not supported for this class/function. '
             'Will use the client with client.return_raw_response=False'
         )
-        client = copy.deepcopy(client)
+        client = copy.copy(client)
         client.return_raw_response = False
 
     return client

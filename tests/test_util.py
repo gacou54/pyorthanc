@@ -42,6 +42,7 @@ def test_get_pydicom(client_with_data):
 def test_ensure_non_raw_response(client, return_raw_response):
     client.return_raw_response = return_raw_response
 
-    client = util.ensure_non_raw_response(client)
+    new_client = util.ensure_non_raw_response(client)
 
-    assert client.return_raw_response
+    assert not new_client.return_raw_response
+    assert client.return_raw_response == return_raw_response
