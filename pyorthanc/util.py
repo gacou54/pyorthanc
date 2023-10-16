@@ -53,7 +53,6 @@ def get_pydicom(orthanc: Orthanc, instance_identifier: str) -> pydicom.FileDatas
     return pydicom.dcmread(BytesIO(dicom_bytes))
 
 
-
 def ensure_non_raw_response(client: Orthanc) -> Orthanc:
     if client.return_raw_response:
         warnings.warn(
