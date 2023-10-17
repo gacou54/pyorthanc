@@ -1,8 +1,0 @@
-{
-  "Name" : "Orthanc2",
-  "DicomAet" : "ORTHANC2",
-  "DicomModalities" : {
-    "Orthanc1" : [ "ORTHANC1", "orthanc1", 4242 ]
-  },
-  "OrthancExplorerEnabled" : false
-}
