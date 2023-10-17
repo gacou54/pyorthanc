@@ -6,10 +6,10 @@ RUN python -m pip install --upgrade pip
 RUN python -m pip install poetry
 
 # Installing project dependecies
-COPY pyproject.toml .
+COPY ../../pyproject.toml .
 RUN poetry install
 
-COPY . /app
+COPY ../.. /app
 
 ENTRYPOINT [ "poetry", "run", "pytest", "-vv" ]
 #ENTRYPOINT [ "python", "-m", "http.server" ]

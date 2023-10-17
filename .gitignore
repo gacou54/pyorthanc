@@ -7,7 +7,6 @@
 
 !README.md
 !docker-compose.yaml
-!pytest.Dockerfile
 
 !.github/
 !.github/**

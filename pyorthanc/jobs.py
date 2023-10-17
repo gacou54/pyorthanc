@@ -4,8 +4,8 @@ from enum import Enum
 from typing import Dict, Optional
 
 from . import util
+from ._orthanc_sdk_enums import ErrorCode
 from .client import Orthanc
-from .orthanc_sdk import ErrorCode
 
 
 class State(Enum):

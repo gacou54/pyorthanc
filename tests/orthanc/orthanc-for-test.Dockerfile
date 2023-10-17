@@ -1,4 +1,4 @@
-FROM osimis/orthanc:22.6.1
+FROM osimis/orthanc:23.9.2
 
 RUN pip install httpx pydicom
 
