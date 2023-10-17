@@ -14,7 +14,7 @@ services:
   test:
     build:
       context: .
-      dockerfile: pytest.Dockerfile
+      dockerfile: tests/orthanc/pytest.Dockerfile
     depends_on:
       - orthanc1
       - orthanc2
