@@ -52,6 +52,17 @@ for patient in patients:
                 pydicom_ds = instance.get_pydicom()
 ```
 
+Use the `orthanc_sdk` when developing with the Orthanc's Python Plugin
+
+```python
+from pyorthanc import orthanc_sdk
+
+def on_get(output: orthanc_sdk.RestOutput, *_, **__):
+    output.AnswerBuffer('ok', 'text/plain')
+
+orthanc_sdk.RegisterRestCallback('/test', on_get)
+```
+
 ## [First steps](tutorial/quickstart.md#first-steps)
 ### [Getting started](tutorial/quickstart.md#getting-started)
 * [Import pyorthanc library](tutorial/quickstart.md#import-pyorthanc-library)
@@ -64,9 +75,9 @@ for patient in patients:
 * [Access instance informations](tutorial/quickstart.md#access-instance-informations)
 ### [Advanced examples](tutorial/advanced.md)
 * [Transfer data from a PACS to a Orthanc server](tutorial/advanced.md#transfer-data-from-a-pacs-to-a-orthanc-server)
-### [Releases](releases/releases.md)
-* [Lastest release : 1.12.1](releases/releases.md#lastest-release-1121)
-* [Release 1.11.5](releases/releases.md#release-1115)
+### [Releases](releases.md)
+* [Lastest release : 1.12.1](releases.md#lastest-release-1121)
+* [Release 1.11.5](releases.md#release-1115)
 ## [Contacts](contacts.md#contacts)
 * [Maintainers Team](contacts.md#maintainers-team)
 * [Useful links](contacts.md#useful-links)

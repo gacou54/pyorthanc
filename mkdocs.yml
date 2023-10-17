@@ -17,6 +17,7 @@ nav:
   - 'Api Reference':
       'Orthanc': 'api/client.md'
       'Asynchronous Orthanc': 'api/async_client.md'
+      'Orthanc SDK': 'api/orthanc_sdk.md'
       'Patient': 'api/resources/patient.md'
       'Study': 'api/resources/study.md'
       'Series': 'api/resources/series.md'
@@ -27,11 +28,9 @@ nav:
       'Jobs': 'api/jobs.md'
       'Util': 'api/util.md'
       'Resource': 'api/resources/resource.md'
+      'Retrieve': 'api/retrieve.md'
 
-
-  - 'Releases & Roadmap':
-    - 'Releases': 'releases/releases.md'
-
+  - 'Releases': 'releases.md'
 
   - 'More informations':
     - 'Contributing': 'contributing.md'
