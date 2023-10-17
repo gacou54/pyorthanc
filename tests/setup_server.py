@@ -1,6 +1,5 @@
-import os
 import dataclasses
-import subprocess
+import os
 
 import httpx
 
@@ -9,28 +8,20 @@ import httpx
 class OrthancServer:
     url: str
     AeT: str
-    config_path: str
-    storage_path: str
     test_data_path: str
     username: str = 'orthanc'
     password: str = 'orthanc'
-
-    process: subprocess.Popen = None
 
 
 ORTHANC_1 = OrthancServer(
     url=f'http://orthanc1:8042',
     AeT='ORTHANC',
-    storage_path='./tests/data/config/OrthancStorage-1',
-    config_path='./tests/data/config/config-1.json',
     test_data_path='./tests/data/orthanc_1_test_data',
 )
 
 ORTHANC_2 = OrthancServer(
     url=f'http://orthanc2:8042',
     AeT='ORTHANC',
-    storage_path='./tests/data/config/OrthancStorage-2',
-    config_path='./tests/data/config/config-2.json',
     test_data_path='./tests/data/orthanc_2_test_data',
 )
 

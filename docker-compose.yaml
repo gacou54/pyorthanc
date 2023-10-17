@@ -1,7 +1,12 @@
 version: '3.3'
 services:
   orthanc1:
-    image: jodogne/orthanc:1.12.1
+    build:
+      dockerfile: tests/orthanc/orthanc-for-test.Dockerfile
+      context: .
+    environment:
+      PYTHON_PLUGIN_ENABLE: "true"
+      ORTHANC__PYTHON_SCRIPT: "/python/script.py"
     depends_on:
       - orthanc2
   orthanc2:
