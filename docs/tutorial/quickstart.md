@@ -130,6 +130,24 @@ __Note__ that this function may take a while to run since each resource level is
 Using `find()` on large Orthanc server is not recommended.
 
 
+#### Develop with the Orthanc's Python Plugin
+The `orthanc_sdk` is useful when developing with the Orthanc's Python Plugin,
+it exposes `orthanc` module when available (i.e. used as an Orthanc script),
+or expose the functions/classes signatures when not for linting and autocomplete.
+
+Use it the same way you would use the Python Plugin:
+
+```python
+# Has the same signature as `import orthanc`
+from pyorthanc import orthanc_sdk 
+
+def on_get(output: orthanc_sdk.RestOutput, *_, **__):
+    output.AnswerBuffer('ok', 'text/plain')
+
+orthanc_sdk.RegisterRestCallback('/test', on_get)
+```
+
+
 ## Full basic examples
 
 Be sure that Orthanc is running. The default URL (if running locally) is `http://localhost:8042`.
