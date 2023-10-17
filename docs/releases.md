@@ -1,10 +1,29 @@
 # Releases 
 
-## Lastest release : 1.12.1
+## PyOrthanc 1.13.0
+Features:
+- Add a new submodule `orthanc_sdk`. 
+  - When used in an Orthanc Python script, it acts as the same as `import orthanc` 
+  - When used outside Orthanc (i.e. when developing a script), expose the same signature as `import orthanc`
+    - This adds autocomplete and linting
+  - Use it with `from pyorthanc import orthanc_sdk`
 
+
+## PyOrthanc 1.12.3
+Fix:
+- Fix bug that occurs when `Orthanc(return_raw_response=True)` is used in functions/classes
+where returning a `httpx.Response` object is not possible.
+
+
+## PyOrthanc: 1.12.2
+Fix:
+- Fix bug where an error is raised at import pyorthanc when using Python 3.8 
+
+
+## PyOrthanc: 1.12.1
 The Orthanc client has been regenerated on the Orthanc 1.12.1 version (source of the [changelist](https://hg.orthanc-server.com/orthanc/file/Orthanc-1.12.1/NEWS)).
 
-From 1.12.1:
+From Orthanc API 1.12.1:
 
     - API version upgraded to 21
     - "/tools/create-dicom" can now be used to create Encapsulated 3D
@@ -12,7 +31,7 @@ From 1.12.1:
     - Added a route to delete the output of an asynchronous job (right now
     - only for archive jobs): e.g. DELETE /jobs/../archive
 
-From 1.12.0:
+From Orthanc API 1.12.0:
 
     - New URIs "/.../{id}/labels/{label}" to test/set/remove labels
     - "/patients/{id}", "/studies/{id}", "/series/{id}" and "/instances/{id}"
@@ -31,9 +50,8 @@ Details:
 
     - All tests made with unittest has been refactored to use pytest
 
-## Release 1.11.5 
 
-
+## PyOrthanc 1.11.5 
 PyOrthanc v1.11.5 follow Orthanc version 1.11.3.
 
 This release mostly improves the `find()` function.  It now takes an `Orthanc` object rather than an URL. This allows better control of the configuration for the connection to the Orthanc server.
