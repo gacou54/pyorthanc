@@ -48,17 +48,6 @@ def test_ensure_non_raw_response(client, return_raw_response):
     assert client.return_raw_response == return_raw_response
 
 
-PATIENT_ID = '03HDQ000'
-STUDY_UID = '1.2.840.113619.2.55.3.671782272.419.1266452812.128'
-SERIES_UID = '1.2.840.113619.2.55.3.671782272.419.1266452812.128'
-INSTANCE_UID = '2.16.840.1.113669.2.931128.981194414.20100301170155.668389'
-
-EXPECTED_PATIENT_ID = 'e34c28ce-981b0e5c-2a481559-cf0d5fbe-053335f8'
-EXPECTED_STUDY_ID = '118bc493-b3b3172a-082119bd-f6802ec3-81695613'
-EXPECTED_SERIES_ID = 'c4c1fcc9-ae63f793-40cbcf25-fbd3efe5-ad72ff06'
-EXPECTED_INSTANCE_ID = '22dcf059-8fd3ade7-efb39ca3-7f46b248-0200abc9'
-
-
 def test_to_orthanc_patient_id():
     result = util.to_orthanc_patient_id(a_patient.ID)
 
