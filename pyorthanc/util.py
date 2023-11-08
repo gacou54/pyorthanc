@@ -68,31 +68,25 @@ def ensure_non_raw_response(client: Orthanc) -> Orthanc:
 
 
 def to_orthanc_patient_id(patient_id: str) -> str:
-    hashed_id = hashlib.sha1(patient_id.encode())
-
-    return _format_hex(hashed_id.hexdigest())
+    return _make_orthanc_id(patient_id)
 
 
 def to_orthanc_study_id(patient_id: str, study_uid: str) -> str:
-    string = '|'.join([patient_id, study_uid])
-    hashed_id = hashlib.sha1(string.encode())
-
-    return _format_hex(hashed_id.hexdigest())
+    return _make_orthanc_id(patient_id, study_uid)
 
 
 def to_orthanc_series_id(patient_id: str, study_uid: str, series_uid: str) -> str:
-    string = '|'.join([patient_id, study_uid, series_uid])
-    hashed_id = hashlib.sha1(string.encode())
-
-    return _format_hex(hashed_id.hexdigest())
+    return _make_orthanc_id(patient_id, study_uid, series_uid)
 
 
 def to_orthanc_instance_id(patient_id: str, study_uid: str, series_uid: str, instance_uid) -> str:
-    string = '|'.join([patient_id, study_uid, series_uid, instance_uid])
-    hashed_id = hashlib.sha1(string.encode())
-
-    return _format_hex(hashed_id.hexdigest())
+    return _make_orthanc_id(patient_id, study_uid, series_uid, instance_uid)
 
 
-def _format_hex(hexa: str) -> str:
-    return re.sub(r'(\S{8})(\S{8})(\S{8})(\S{8})(\S{8})', r'\1-\2-\3-\4-\5', hexa)
+def _make_orthanc_id(patient_id: str, study_uid: str = None, series_uid: str = None, instance_uid: str = None) -> str:
+    ids = [patient_id, study_uid, series_uid, instance_uid]
+
+    ids_string = '|'.join([i for i in ids if i is not None])
+    uid = hashlib.sha1(ids_string.encode()).hexdigest()
+
+    return re.sub(r'(\S{8})(\S{8})(\S{8})(\S{8})(\S{8})', r'\1-\2-\3-\4-\5', uid)
