@@ -3,6 +3,7 @@ FILE_SIZE = 1506520
 CREATION_DATE = '20100301'
 CREATION_TIME = '170155'
 SERIES_ID = 'c4c1fcc9-ae63f793-40cbcf25-fbd3efe5-ad72ff06'
+UID = '2.16.840.1.113669.2.931128.981194414.20100301170155.668389'
 
 INFORMATION = {
     'FileSize': FILE_SIZE,
@@ -17,7 +18,7 @@ INFORMATION = {
         'InstanceCreationTime': CREATION_TIME,
         'InstanceNumber': '1',
         'NumberOfFrames': '75',
-        'SOPInstanceUID': '2.16.840.1.113669.2.931128.981194414.20100301170155.668389'
+        'SOPInstanceUID': UID
     },
     'ParentSeries': SERIES_ID,
     'Type': 'Instance'
