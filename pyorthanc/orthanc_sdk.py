@@ -1,9 +1,289 @@
 """Orthanc SDK methods wrapped in python (plugin version 4.0)"""
-from typing import Any, Callable
+from typing import Any, Callable, Optional, Tuple
 
 from ._orthanc_sdk_enums import *
 
-VERSION = '4.0'
+VERSION = '4.1'
+
+
+class DicomInstance:
+    """Generated from Orthanc C class: OrthancPluginDicomInstance"""
+
+    def GetInstanceAdvancedJson(self, *args):
+        """Generated from C function OrthancPluginGetInstanceAdvancedJson()"""
+        pass
+
+    def GetInstanceData(self, *args):
+        """Generated from C function OrthancPluginGetInstanceData()"""
+        pass
+
+    def GetInstanceDecodedFrame(self, *args):
+        """Generated from C function OrthancPluginGetInstanceDecodedFrame()"""
+        pass
+
+    def GetInstanceFramesCount(self, *args):
+        """Generated from C function OrthancPluginGetInstanceFramesCount()"""
+        pass
+
+    def GetInstanceJson(self, *args):
+        """Generated from C function OrthancPluginGetInstanceJson()"""
+        pass
+
+    def GetInstanceMetadata(self, *args):
+        """Generated from C function OrthancPluginGetInstanceMetadata()"""
+        pass
+
+    def GetInstanceOrigin(self) -> InstanceOrigin:
+        """Generated from C function OrthancPluginGetInstanceOrigin()"""
+        pass
+
+    def GetInstanceRawFrame(self, *args):
+        """Generated from C function OrthancPluginGetInstanceRawFrame()"""
+        pass
+
+    def GetInstanceRemoteAet(self) -> str:
+        """Generated from C function OrthancPluginGetInstanceRemoteAet()"""
+        pass
+
+    def GetInstanceSimplifiedJson(self, *args):
+        """Generated from C function OrthancPluginGetInstanceSimplifiedJson()"""
+        pass
+
+    def GetInstanceSize(self, *args):
+        """Generated from C function OrthancPluginGetInstanceSize()"""
+        pass
+
+    def GetInstanceTransferSyntaxUid(self, *args):
+        """Generated from C function OrthancPluginGetInstanceTransferSyntaxUid()"""
+        pass
+
+    def HasInstanceMetadata(self, *args):
+        """Generated from C function OrthancPluginHasInstanceMetadata()"""
+        pass
+
+    def HasInstancePixelData(self, *args):
+        """Generated from C function OrthancPluginHasInstancePixelData()"""
+        pass
+
+    def SerializeDicomInstance(self, *args):
+        """Generated from C function OrthancPluginSerializeDicomInstance()"""
+        pass
+
+
+class FindAnswers:
+    """Generated from Orthanc C class: OrthancPluginFindAnswers"""
+
+    def FindAddAnswer(self, *args):
+        """Generated from C function OrthancPluginFindAddAnswer()"""
+        pass
+
+    def FindMarkIncomplete(self, *args):
+        """Generated from C function OrthancPluginFindMarkIncomplete()"""
+        pass
+
+
+class FindMatcher:
+    """Generated from Orthanc C class: OrthancPluginFindMatcher"""
+
+    def FindMatcherIsMatch(self, *args):
+        """Generated from C function OrthancPluginFindMatcherIsMatch()"""
+        pass
+
+
+class FindQuery:
+    """Generated from Orthanc C class: OrthancPluginFindQuery"""
+
+    def GetFindQuerySize(self, *args):
+        """Generated from C function OrthancPluginGetFindQuerySize()"""
+        pass
+
+    def GetFindQueryTagElement(self, *args):
+        """Generated from C function OrthancPluginGetFindQueryTag()"""
+        pass
+
+    def GetFindQueryTagGroup(self, *args):
+        """Generated from C function OrthancPluginGetFindQueryTag()"""
+        pass
+
+    def GetFindQueryTagName(self, *args):
+        """Generated from C function OrthancPluginGetFindQueryTagName()"""
+        pass
+
+    def GetFindQueryValue(self, *args):
+        """Generated from C function OrthancPluginGetFindQueryValue()"""
+        pass
+
+
+class Image:
+    """Generated from Orthanc C class: OrthancPluginImage"""
+
+    def ConvertPixelFormat(self, *args):
+        """Generated from C function OrthancPluginConvertPixelFormat()"""
+        pass
+
+    def DrawText(self, *args):
+        """Generated from C function OrthancPluginDrawText()"""
+        pass
+
+    def GetImageBuffer(self, *args):
+        """Generated from C function OrthancPluginGetImageBuffer()"""
+        pass
+
+    def GetImageHeight(self, *args):
+        """Generated from C function OrthancPluginGetImageHeight()"""
+        pass
+
+    def GetImagePitch(self, *args):
+        """Generated from C function OrthancPluginGetImagePitch()"""
+        pass
+
+    def GetImagePixelFormat(self, *args):
+        """Generated from C function OrthancPluginGetImagePixelFormat()"""
+        pass
+
+    def GetImageWidth(self, *args):
+        """Generated from C function OrthancPluginGetImageWidth()"""
+        pass
+
+
+class Job:
+    """Generated from Orthanc C class: OrthancPluginJob"""
+
+    def SubmitJob(self, *args):
+        """Generated from C function OrthancPluginSubmitJob()"""
+        pass
+
+
+class OrthancException:
+    """Common base class for all non-exit exceptions."""
+
+    def with_traceback(self, *args):
+        """Exception.with_traceback(tb) -- set self.__traceback__ to tb and return self."""
+        pass
+
+
+class Peers:
+    """Generated from Orthanc C class: OrthancPluginPeers"""
+
+    def GetPeerName(self, *args):
+        """Generated from C function OrthancPluginGetPeerName()"""
+        pass
+
+    def GetPeerUrl(self, *args):
+        """Generated from C function OrthancPluginGetPeerUrl()"""
+        pass
+
+    def GetPeerUserProperty(self, *args):
+        """Generated from C function OrthancPluginGetPeerUserProperty()"""
+        pass
+
+    def GetPeersCount(self, *args):
+        """Generated from C function OrthancPluginGetPeersCount()"""
+        pass
+
+
+class RestOutput:
+    """Generated from Orthanc C class: OrthancPluginRestOutput"""
+
+    def AnswerBuffer(self, *args):
+        """Generated from C function OrthancPluginAnswerBuffer()"""
+        pass
+
+    def CompressAndAnswerJpegImage(self, *args):
+        """Generated from C function OrthancPluginCompressAndAnswerJpegImage()"""
+        pass
+
+    def CompressAndAnswerPngImage(self, *args):
+        """Generated from C function OrthancPluginCompressAndAnswerPngImage()"""
+        pass
+
+    def Redirect(self, *args):
+        """Generated from C function OrthancPluginRedirect()"""
+        pass
+
+    def SendHttpStatus(self, *args):
+        """Generated from C function OrthancPluginSendHttpStatus()"""
+        pass
+
+    def SendHttpStatusCode(self, *args):
+        """Generated from C function OrthancPluginSendHttpStatusCode()"""
+        pass
+
+    def SendMethodNotAllowed(self, *args):
+        """Generated from C function OrthancPluginSendMethodNotAllowed()"""
+        pass
+
+    def SendMultipartItem(self, *args):
+        """Generated from C function OrthancPluginSendMultipartItem()"""
+        pass
+
+    def SendUnauthorized(self, *args):
+        """Generated from C function OrthancPluginSendUnauthorized()"""
+        pass
+
+    def SetCookie(self, *args):
+        """Generated from C function OrthancPluginSetCookie()"""
+        pass
+
+    def SetHttpErrorDetails(self, *args):
+        """Generated from C function OrthancPluginSetHttpErrorDetails()"""
+        pass
+
+    def SetHttpHeader(self, *args):
+        """Generated from C function OrthancPluginSetHttpHeader()"""
+        pass
+
+    def StartMultipartAnswer(self, *args):
+        """Generated from C function OrthancPluginStartMultipartAnswer()"""
+        pass
+
+
+class ServerChunkedRequestReader:
+    """Generated from Orthanc C class: OrthancPluginServerChunkedRequestReader"""
+
+
+class StorageArea:
+    """Generated from Orthanc C class: OrthancPluginStorageArea"""
+
+    def ReconstructMainDicomTags(self, *args):
+        """Generated from C function OrthancPluginReconstructMainDicomTags()"""
+        pass
+
+    def StorageAreaCreate(self, *args):
+        """Generated from C function OrthancPluginStorageAreaCreate()"""
+        pass
+
+    def StorageAreaRead(self, *args):
+        """Generated from C function OrthancPluginStorageAreaRead()"""
+        pass
+
+    def StorageAreaRemove(self, *args):
+        """Generated from C function OrthancPluginStorageAreaRemove()"""
+        pass
+
+
+class WorklistAnswers:
+    """Generated from Orthanc C class: OrthancPluginWorklistAnswers"""
+
+    def WorklistAddAnswer(self, *args):
+        """Generated from C function OrthancPluginWorklistAddAnswer()"""
+        pass
+
+    def WorklistMarkIncomplete(self, *args):
+        """Generated from C function OrthancPluginWorklistMarkIncomplete()"""
+        pass
+
+
+class WorklistQuery:
+    """Generated from Orthanc C class: OrthancPluginWorklistQuery"""
+
+    def WorklistGetDicomQuery(self, *args):
+        """Generated from C function OrthancPluginWorklistGetDicomQuery()"""
+        pass
+
+    def WorklistIsMatch(self, *args):
+        """Generated from C function OrthancPluginWorklistIsMatch()"""
+        pass
 
 
 def AutodetectMimeType(*args):
@@ -320,8 +600,32 @@ def RegisterMoveCallback(*args):
     pass
 
 
-def RegisterOnChangeCallback(*args):
-    """None"""
+def RegisterOnChangeCallback(func: Callable[[ChangeType, ResourceType, str], None]):
+    """Register an on change callback
+
+    Parameters
+    ----------
+    func
+        Function that is called as callback.
+
+    Examples
+    --------
+    From https://book.orthanc-server.com/plugins/python.html#listening-to-changes.
+    ```python
+    def on_change(change_type: orthanc_sdk.ChangeType, level: orthanc_sdk.ResourceType, resource: str) -> None:
+        if changeType == orthanc.ChangeType.ORTHANC_STARTED:
+            with open('/tmp/sample.dcm', 'rb') as f:
+                orthanc.RestApiPost('/instances', f.read())
+
+        elif changeType == orthanc.ChangeType.ORTHANC_STOPPED:
+            print('Stopped')
+
+        elif changeType == orthanc.ChangeType.NEW_INSTANCE:
+            print('A new instance was uploaded: %s' % resource)
+
+    orthanc.RegisterOnChangeCallback(on_change)
+    ```
+    """
     pass
 
 
@@ -335,12 +639,33 @@ def RegisterPrivateDictionaryTag(*args):
     pass
 
 
-def RegisterReceivedInstanceCallback(*args):
-    """None"""
+def RegisterReceivedInstanceCallback(
+        func: Callable[[DicomInstance, InstanceOrigin], Tuple[ReceivedInstanceAction, Optional[bytes]]]):
+    """Register a callback for when an instance arrives (but hasn't been stored).
+
+    Parameters
+    ----------
+    func
+        Function that is called as callback.
+
+    Examples
+    --------
+    ```python
+    def on_received_instance(dicom: DicomInstance, origin: InstanceOrigin):
+        if origin == origin.REST_API:
+            LogInfo('Not accepting DICOM from REST API.')
+            return ReceivedInstanceAction.DISCARD, None
+
+        return ReceivedInstanceAction.KEEP_AS_IS, None
+
+    orthanc.RegisterReceivedInstanceCallback(on_received_instance)
+    ```
+    """
+
     pass
 
 
-def RegisterRestCallback(new_route: str, callback: Callable) -> None:
+def RegisterRestCallback(new_route: str, func: Callable[[RestOutput, str, Any], None]) -> None:
     """Register a REST callback.
 
     This function registers a REST callback against a regular
@@ -352,7 +677,7 @@ def RegisterRestCallback(new_route: str, callback: Callable) -> None:
     ----------
     new_route
         Regular expression for the URI. May contain groups.
-    callback
+    func
         The callback function to handle the REST call.
 
     Examples
@@ -470,286 +795,6 @@ def UncompressImage(*args):
 def WriteFile(*args):
     """Generated from C function OrthancPluginWriteFile()"""
     pass
-
-
-class DicomInstance:
-    """Generated from Orthanc C class: OrthancPluginDicomInstance"""
-
-    def GetInstanceAdvancedJson(self, *args):
-        """Generated from C function OrthancPluginGetInstanceAdvancedJson()"""
-        pass
-
-    def GetInstanceData(self, *args):
-        """Generated from C function OrthancPluginGetInstanceData()"""
-        pass
-
-    def GetInstanceDecodedFrame(self, *args):
-        """Generated from C function OrthancPluginGetInstanceDecodedFrame()"""
-        pass
-
-    def GetInstanceFramesCount(self, *args):
-        """Generated from C function OrthancPluginGetInstanceFramesCount()"""
-        pass
-
-    def GetInstanceJson(self, *args):
-        """Generated from C function OrthancPluginGetInstanceJson()"""
-        pass
-
-    def GetInstanceMetadata(self, *args):
-        """Generated from C function OrthancPluginGetInstanceMetadata()"""
-        pass
-
-    def GetInstanceOrigin(self, *args):
-        """Generated from C function OrthancPluginGetInstanceOrigin()"""
-        pass
-
-    def GetInstanceRawFrame(self, *args):
-        """Generated from C function OrthancPluginGetInstanceRawFrame()"""
-        pass
-
-    def GetInstanceRemoteAet(self, *args):
-        """Generated from C function OrthancPluginGetInstanceRemoteAet()"""
-        pass
-
-    def GetInstanceSimplifiedJson(self, *args):
-        """Generated from C function OrthancPluginGetInstanceSimplifiedJson()"""
-        pass
-
-    def GetInstanceSize(self, *args):
-        """Generated from C function OrthancPluginGetInstanceSize()"""
-        pass
-
-    def GetInstanceTransferSyntaxUid(self, *args):
-        """Generated from C function OrthancPluginGetInstanceTransferSyntaxUid()"""
-        pass
-
-    def HasInstanceMetadata(self, *args):
-        """Generated from C function OrthancPluginHasInstanceMetadata()"""
-        pass
-
-    def HasInstancePixelData(self, *args):
-        """Generated from C function OrthancPluginHasInstancePixelData()"""
-        pass
-
-    def SerializeDicomInstance(self, *args):
-        """Generated from C function OrthancPluginSerializeDicomInstance()"""
-        pass
-
-
-class FindAnswers:
-    """Generated from Orthanc C class: OrthancPluginFindAnswers"""
-
-    def FindAddAnswer(self, *args):
-        """Generated from C function OrthancPluginFindAddAnswer()"""
-        pass
-
-    def FindMarkIncomplete(self, *args):
-        """Generated from C function OrthancPluginFindMarkIncomplete()"""
-        pass
-
-
-class FindMatcher:
-    """Generated from Orthanc C class: OrthancPluginFindMatcher"""
-
-    def FindMatcherIsMatch(self, *args):
-        """Generated from C function OrthancPluginFindMatcherIsMatch()"""
-        pass
-
-
-class FindQuery:
-    """Generated from Orthanc C class: OrthancPluginFindQuery"""
-
-    def GetFindQuerySize(self, *args):
-        """Generated from C function OrthancPluginGetFindQuerySize()"""
-        pass
-
-    def GetFindQueryTagElement(self, *args):
-        """Generated from C function OrthancPluginGetFindQueryTag()"""
-        pass
-
-    def GetFindQueryTagGroup(self, *args):
-        """Generated from C function OrthancPluginGetFindQueryTag()"""
-        pass
-
-    def GetFindQueryTagName(self, *args):
-        """Generated from C function OrthancPluginGetFindQueryTagName()"""
-        pass
-
-    def GetFindQueryValue(self, *args):
-        """Generated from C function OrthancPluginGetFindQueryValue()"""
-        pass
-
-
-class Image:
-    """Generated from Orthanc C class: OrthancPluginImage"""
-
-    def ConvertPixelFormat(self, *args):
-        """Generated from C function OrthancPluginConvertPixelFormat()"""
-        pass
-
-    def DrawText(self, *args):
-        """Generated from C function OrthancPluginDrawText()"""
-        pass
-
-    def GetImageBuffer(self, *args):
-        """Generated from C function OrthancPluginGetImageBuffer()"""
-        pass
-
-    def GetImageHeight(self, *args):
-        """Generated from C function OrthancPluginGetImageHeight()"""
-        pass
-
-    def GetImagePitch(self, *args):
-        """Generated from C function OrthancPluginGetImagePitch()"""
-        pass
-
-    def GetImagePixelFormat(self, *args):
-        """Generated from C function OrthancPluginGetImagePixelFormat()"""
-        pass
-
-    def GetImageWidth(self, *args):
-        """Generated from C function OrthancPluginGetImageWidth()"""
-        pass
-
-
-class Job:
-    """Generated from Orthanc C class: OrthancPluginJob"""
-
-    def SubmitJob(self, *args):
-        """Generated from C function OrthancPluginSubmitJob()"""
-        pass
-
-
-class OrthancException:
-    """Common base class for all non-exit exceptions."""
-
-    def with_traceback(self, *args):
-        """Exception.with_traceback(tb) -- set self.__traceback__ to tb and return self."""
-        pass
-
-
-class Peers:
-    """Generated from Orthanc C class: OrthancPluginPeers"""
-
-    def GetPeerName(self, *args):
-        """Generated from C function OrthancPluginGetPeerName()"""
-        pass
-
-    def GetPeerUrl(self, *args):
-        """Generated from C function OrthancPluginGetPeerUrl()"""
-        pass
-
-    def GetPeerUserProperty(self, *args):
-        """Generated from C function OrthancPluginGetPeerUserProperty()"""
-        pass
-
-    def GetPeersCount(self, *args):
-        """Generated from C function OrthancPluginGetPeersCount()"""
-        pass
-
-
-class RestOutput:
-    """Generated from Orthanc C class: OrthancPluginRestOutput"""
-
-    def AnswerBuffer(self, *args):
-        """Generated from C function OrthancPluginAnswerBuffer()"""
-        pass
-
-    def CompressAndAnswerJpegImage(self, *args):
-        """Generated from C function OrthancPluginCompressAndAnswerJpegImage()"""
-        pass
-
-    def CompressAndAnswerPngImage(self, *args):
-        """Generated from C function OrthancPluginCompressAndAnswerPngImage()"""
-        pass
-
-    def Redirect(self, *args):
-        """Generated from C function OrthancPluginRedirect()"""
-        pass
-
-    def SendHttpStatus(self, *args):
-        """Generated from C function OrthancPluginSendHttpStatus()"""
-        pass
-
-    def SendHttpStatusCode(self, *args):
-        """Generated from C function OrthancPluginSendHttpStatusCode()"""
-        pass
-
-    def SendMethodNotAllowed(self, *args):
-        """Generated from C function OrthancPluginSendMethodNotAllowed()"""
-        pass
-
-    def SendMultipartItem(self, *args):
-        """Generated from C function OrthancPluginSendMultipartItem()"""
-        pass
-
-    def SendUnauthorized(self, *args):
-        """Generated from C function OrthancPluginSendUnauthorized()"""
-        pass
-
-    def SetCookie(self, *args):
-        """Generated from C function OrthancPluginSetCookie()"""
-        pass
-
-    def SetHttpErrorDetails(self, *args):
-        """Generated from C function OrthancPluginSetHttpErrorDetails()"""
-        pass
-
-    def SetHttpHeader(self, *args):
-        """Generated from C function OrthancPluginSetHttpHeader()"""
-        pass
-
-    def StartMultipartAnswer(self, *args):
-        """Generated from C function OrthancPluginStartMultipartAnswer()"""
-        pass
-
-
-class ServerChunkedRequestReader:
-    """Generated from Orthanc C class: OrthancPluginServerChunkedRequestReader"""
-
-
-class StorageArea:
-    """Generated from Orthanc C class: OrthancPluginStorageArea"""
-
-    def ReconstructMainDicomTags(self, *args):
-        """Generated from C function OrthancPluginReconstructMainDicomTags()"""
-        pass
-
-    def StorageAreaCreate(self, *args):
-        """Generated from C function OrthancPluginStorageAreaCreate()"""
-        pass
-
-    def StorageAreaRead(self, *args):
-        """Generated from C function OrthancPluginStorageAreaRead()"""
-        pass
-
-    def StorageAreaRemove(self, *args):
-        """Generated from C function OrthancPluginStorageAreaRemove()"""
-        pass
-
-
-class WorklistAnswers:
-    """Generated from Orthanc C class: OrthancPluginWorklistAnswers"""
-
-    def WorklistAddAnswer(self, *args):
-        """Generated from C function OrthancPluginWorklistAddAnswer()"""
-        pass
-
-    def WorklistMarkIncomplete(self, *args):
-        """Generated from C function OrthancPluginWorklistMarkIncomplete()"""
-        pass
-
-
-class WorklistQuery:
-    """Generated from Orthanc C class: OrthancPluginWorklistQuery"""
-
-    def WorklistGetDicomQuery(self, *args):
-        """Generated from C function OrthancPluginWorklistGetDicomQuery()"""
-        pass
-
-    def WorklistIsMatch(self, *args):
-        """Generated from C function OrthancPluginWorklistIsMatch()"""
-        pass
 
 
 class __loader__:
