@@ -1,4 +1,4 @@
-"""Orthanc SDK methods wrapped in python (plugin version 4.0)"""
+"""Orthanc SDK methods wrapped in python"""
 from typing import Any, Callable, Optional, Tuple
 
 from ._orthanc_sdk_enums import *
@@ -6,66 +6,121 @@ from ._orthanc_sdk_enums import *
 VERSION = '4.1'
 
 
+class Image:
+    """Generated from Orthanc C class: OrthancPluginImage"""
+
+    def ConvertPixelFormat(self, *args):
+        """Generated from C function OrthancPluginConvertPixelFormat()"""
+        pass
+
+    def DrawText(self, *args):
+        """Generated from C function OrthancPluginDrawText()"""
+        pass
+
+    def GetImageBuffer(self, *args):
+        """Generated from C function OrthancPluginGetImageBuffer()"""
+        pass
+
+    def GetImageHeight(self, *args):
+        """Generated from C function OrthancPluginGetImageHeight()"""
+        pass
+
+    def GetImagePitch(self, *args):
+        """Generated from C function OrthancPluginGetImagePitch()"""
+        pass
+
+    def GetImagePixelFormat(self, *args):
+        """Generated from C function OrthancPluginGetImagePixelFormat()"""
+        pass
+
+    def GetImageWidth(self, *args):
+        """Generated from C function OrthancPluginGetImageWidth()"""
+        pass
+
+
 class DicomInstance:
     """Generated from Orthanc C class: OrthancPluginDicomInstance"""
 
-    def GetInstanceAdvancedJson(self, *args):
-        """Generated from C function OrthancPluginGetInstanceAdvancedJson()"""
+    def GetInstanceAdvancedJson(self, *args, **kwargs) -> str:
+        """This function outputs a JSON string representing the tags of this DICOM file."""
         pass
 
-    def GetInstanceData(self, *args):
-        """Generated from C function OrthancPluginGetInstanceData()"""
+    def GetInstanceData(self) -> Any:
+        """This function returns the content of the given DICOM instance."""
         pass
 
-    def GetInstanceDecodedFrame(self, *args):
-        """Generated from C function OrthancPluginGetInstanceDecodedFrame()"""
+    def GetInstanceDecodedFrame(self, frameIndex: int) -> Image:
+        """This function decodes one frame of a DICOM image that is managed by the Orthanc core."""
         pass
 
-    def GetInstanceFramesCount(self, *args):
-        """Generated from C function OrthancPluginGetInstanceFramesCount()"""
+    def GetInstanceFramesCount(self) -> int:
+        """This function returns the number of frames that are part of a DICOM image managed by the Orthanc core."""
         pass
 
-    def GetInstanceJson(self, *args):
-        """Generated from C function OrthancPluginGetInstanceJson()"""
+    def GetInstanceJson(self) -> str:
+        """
+        This function returns a string containing a JSON file.
+        This JSON file encodes the tag hierarchy of the given DICOM instance.
+        """
         pass
 
-    def GetInstanceMetadata(self, *args):
-        """Generated from C function OrthancPluginGetInstanceMetadata()"""
+    def GetInstanceMetadata(self, metadata: str) -> Any:
+        """
+        This functions returns the value of some metadata that is associated with the DICOM instance of interest.
+        Before calling this function, the existence of the metadata must have been checked with HasInstanceMetadata().
+        """
         pass
 
     def GetInstanceOrigin(self) -> InstanceOrigin:
-        """Generated from C function OrthancPluginGetInstanceOrigin()"""
+        """This function returns the origin of a DICOM instance that has been received by Orthanc."""
         pass
 
-    def GetInstanceRawFrame(self, *args):
+    def GetInstanceRawFrame(self, *args) -> Any:
         """Generated from C function OrthancPluginGetInstanceRawFrame()"""
         pass
 
     def GetInstanceRemoteAet(self) -> str:
-        """Generated from C function OrthancPluginGetInstanceRemoteAet()"""
+        """
+        This function returns the Application Entity Title (AET) of the DICOM modality
+        from which a DICOM instance originates.
+        """
         pass
 
-    def GetInstanceSimplifiedJson(self, *args):
-        """Generated from C function OrthancPluginGetInstanceSimplifiedJson()"""
+    def GetInstanceSimplifiedJson(self) -> str:
+        """
+        This function returns a string containing a JSON file.
+        This JSON file encodes the tag hierarchy of the given DICOM instance.
+        In contrast with GetInstanceJson(), the returned JSON file is in its simplified version.
+        """
         pass
 
-    def GetInstanceSize(self, *args):
-        """Generated from C function OrthancPluginGetInstanceSize()"""
+    def GetInstanceSize(self) -> int:
+        """This function returns the number of bytes of the given DICOM instance."""
         pass
 
-    def GetInstanceTransferSyntaxUid(self, *args):
-        """Generated from C function OrthancPluginGetInstanceTransferSyntaxUid()"""
+    def GetInstanceTransferSyntaxUid(self) -> str:
+        """
+        This function returns a string that contains the transfer syntax UID of the DICOM instance.
+        The empty string might be returned if this information is unknown.
+        """
         pass
 
-    def HasInstanceMetadata(self, *args):
-        """Generated from C function OrthancPluginHasInstanceMetadata()"""
+    def HasInstanceMetadata(self, metadata: str) -> bool:
+        """
+        This function checks whether the DICOM instance of interest is associated with some metadata.
+        As of Orthanc 0.8.1, in the callbacks registered by OnStoredInstanceCallback(),
+        the only possibly available metadata are "ReceptionDate", "RemoteAET" and "IndexInSeries".
+        """
         pass
 
-    def HasInstancePixelData(self, *args):
-        """Generated from C function OrthancPluginHasInstancePixelData()"""
+    def HasInstancePixelData(self) -> bool:
+        """
+        This function returns a Boolean value indicating whether the DICOM instance
+        contains the pixel data (7FE0,0010) tag.
+        """
         pass
 
-    def SerializeDicomInstance(self, *args):
+    def SerializeDicomInstance(self, *args) -> Any:
         """Generated from C function OrthancPluginSerializeDicomInstance()"""
         pass
 
@@ -111,38 +166,6 @@ class FindQuery:
 
     def GetFindQueryValue(self, *args):
         """Generated from C function OrthancPluginGetFindQueryValue()"""
-        pass
-
-
-class Image:
-    """Generated from Orthanc C class: OrthancPluginImage"""
-
-    def ConvertPixelFormat(self, *args):
-        """Generated from C function OrthancPluginConvertPixelFormat()"""
-        pass
-
-    def DrawText(self, *args):
-        """Generated from C function OrthancPluginDrawText()"""
-        pass
-
-    def GetImageBuffer(self, *args):
-        """Generated from C function OrthancPluginGetImageBuffer()"""
-        pass
-
-    def GetImageHeight(self, *args):
-        """Generated from C function OrthancPluginGetImageHeight()"""
-        pass
-
-    def GetImagePitch(self, *args):
-        """Generated from C function OrthancPluginGetImagePitch()"""
-        pass
-
-    def GetImagePixelFormat(self, *args):
-        """Generated from C function OrthancPluginGetImagePixelFormat()"""
-        pass
-
-    def GetImageWidth(self, *args):
-        """Generated from C function OrthancPluginGetImageWidth()"""
         pass
 
 
@@ -629,8 +652,36 @@ def RegisterOnChangeCallback(func: Callable[[ChangeType, ResourceType, str], Non
     pass
 
 
-def RegisterOnStoredInstanceCallback(*args):
-    """None"""
+def RegisterOnStoredInstanceCallback(func: Callable[[DicomInstance, str], None]):
+    """Register a callback for when an instance is stored.
+
+    Parameters
+    ----------
+    func
+        Function that is called as callback.
+
+    Examples
+    --------
+    ```python
+    ```
+    """
+
+    def OnStoredInstance(dicom: DicomInstance, instance_id: str):
+        print('Received instance %s of size %d (transfer syntax %s, SOP class UID %s)' % (
+            instance_id, dicom.GetInstanceSize(),
+            dicom.GetInstanceMetadata('TransferSyntax'),
+            dicom.GetInstanceMetadata('SopClassUid')))
+
+        # Print the origin information
+        if dicom.GetInstanceOrigin() == orthanc.InstanceOrigin.DICOM_PROTOCOL:
+            print('This instance was received through the DICOM protocol')
+        elif dicom.GetInstanceOrigin() == orthanc.InstanceOrigin.REST_API:
+            print('This instance was received through the REST API')
+
+        # Print the DICOM tags
+        pprint.pprint(json.loads(dicom.GetInstanceSimplifiedJson()))
+
+    orthanc.RegisterOnStoredInstanceCallback(OnStoredInstance)
     pass
 
 
