@@ -636,17 +636,17 @@ def RegisterOnChangeCallback(func: Callable[[ChangeType, ResourceType, str], Non
     From https://book.orthanc-server.com/plugins/python.html#listening-to-changes.
     ```python
     def on_change(change_type: orthanc_sdk.ChangeType, level: orthanc_sdk.ResourceType, resource: str) -> None:
-        if changeType == orthanc.ChangeType.ORTHANC_STARTED:
+        if changeType == orthanc_sdk.ChangeType.ORTHANC_STARTED:
             with open('/tmp/sample.dcm', 'rb') as f:
                 orthanc.RestApiPost('/instances', f.read())
 
-        elif changeType == orthanc.ChangeType.ORTHANC_STOPPED:
+        elif changeType == orthanc_sdk.ChangeType.ORTHANC_STOPPED:
             print('Stopped')
 
-        elif changeType == orthanc.ChangeType.NEW_INSTANCE:
+        elif changeType == orthanc_sdk.ChangeType.NEW_INSTANCE:
             print('A new instance was uploaded: %s' % resource)
 
-    orthanc.RegisterOnChangeCallback(on_change)
+    orthanc_sdk.RegisterOnChangeCallback(on_change)
     ```
     """
     pass
@@ -662,26 +662,22 @@ def RegisterOnStoredInstanceCallback(func: Callable[[DicomInstance, str], None])
 
     Examples
     --------
+    Example from https://book.orthanc-server.com/plugins/python.html#accessing-the-content-of-a-new-instance
     ```python
-    ```
-    """
-
-    def OnStoredInstance(dicom: DicomInstance, instance_id: str):
+    def on_store_instance(dicom: orthanc_sdk.DicomInstance, instance_id: str):
         print('Received instance %s of size %d (transfer syntax %s, SOP class UID %s)' % (
             instance_id, dicom.GetInstanceSize(),
             dicom.GetInstanceMetadata('TransferSyntax'),
             dicom.GetInstanceMetadata('SopClassUid')))
 
-        # Print the origin information
-        if dicom.GetInstanceOrigin() == orthanc.InstanceOrigin.DICOM_PROTOCOL:
+        if dicom.GetInstanceOrigin() == orthanc_sdk.InstanceOrigin.DICOM_PROTOCOL:
             print('This instance was received through the DICOM protocol')
-        elif dicom.GetInstanceOrigin() == orthanc.InstanceOrigin.REST_API:
+        elif dicom.GetInstanceOrigin() == orthanc_sdk.InstanceOrigin.REST_API:
             print('This instance was received through the REST API')
 
-        # Print the DICOM tags
-        pprint.pprint(json.loads(dicom.GetInstanceSimplifiedJson()))
-
-    orthanc.RegisterOnStoredInstanceCallback(OnStoredInstance)
+    orthanc_sdk.RegisterOnStoredInstanceCallback(on_store_instance)
+    ```
+    """
     pass
 
 
@@ -702,7 +698,7 @@ def RegisterReceivedInstanceCallback(
     Examples
     --------
     ```python
-    def on_received_instance(dicom: DicomInstance, origin: InstanceOrigin):
+    def on_received_instance(dicom: orthanc_sdk.DicomInstance, origin: orthanc_sdk.InstanceOrigin):
         if origin == origin.REST_API:
             LogInfo('Not accepting DICOM from REST API.')
             return ReceivedInstanceAction.DISCARD, None
@@ -712,7 +708,6 @@ def RegisterReceivedInstanceCallback(
     orthanc.RegisterReceivedInstanceCallback(on_received_instance)
     ```
     """
-
     pass
 
 
@@ -733,10 +728,11 @@ def RegisterRestCallback(new_route: str, func: Callable[[RestOutput, str, Any], 
 
     Examples
     --------
+    Example from https://book.orthanc-server.com/plugins/python.html#extending-the-rest-api
     ```python
-    def on_rest(output, uri, **request):
+    def on_rest(output: orthanc_sdk.RestOutput, uri: str, **request):
         print(request)
-
+        output.AnswerBuffer('ok', 'text/plain')
 
     orthanc.RegisterRestCallback('/tata', on_rest)
     ```
@@ -854,7 +850,7 @@ class __loader__:
 
 try:
     # Try to import the orthanc SDK (should work when ran inside the Orthanc Python plugin)
-    # If it pass succeed, overwrite the mock functions/classes
+    # If it passes succeed, overwrite the mock functions/classes
     from orthanc import *
 
 except ModuleNotFoundError:
