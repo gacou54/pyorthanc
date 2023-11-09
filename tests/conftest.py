@@ -12,7 +12,7 @@ LABEL_INSTANCE = 'my_label_instance'
 
 @pytest.fixture
 def client():
-    yield Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password)
+    yield Orthanc(ORTHANC_1.url, ORTHANC_1.username, ORTHANC_1.password, timeout=60)
 
     clear_data(ORTHANC_1)
 
