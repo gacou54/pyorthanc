@@ -36,7 +36,7 @@ modality.move(response['ID'], {'TargetAet': 'target_modality'})
 ```
 Find patients
 ```python
-patients = pyorthanc.find_patients(client, {'PatientID': '*P001'})
+patients = pyorthanc.find_patients(client, {'PatientName': '*Gabriel'})
 for patient in patients:
     patient.labels
     patient.is_stable
