@@ -5,9 +5,9 @@ from zipfile import ZipFile
 import httpx
 import pytest
 
-from pyorthanc import Series, Study, errors
+from pyorthanc import Patient, Series, Study, errors
 from .conftest import LABEL_SERIES
-from .data import a_series
+from .data import a_patient, a_series, a_study
 
 
 def test_attributes(series):
@@ -31,6 +31,11 @@ def test_attributes(series):
     assert not series.is_stable
     assert isinstance(series.last_update, datetime)
     assert str(series) == f'Series({a_series.IDENTIFIER})'
+
+    assert isinstance(series.parent_study, Study)
+    assert series.parent_study.date == a_study.DATE
+    assert isinstance(series.parent_patient, Patient)
+    assert series.parent_patient.name == a_patient.NAME
 
     for absent_attribute in ['performed_procedure_step_description', 'sequence_name',
                              'protocol_name', 'description', 'body_part_examined', 'cardiac_number_of_images',

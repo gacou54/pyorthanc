@@ -5,9 +5,9 @@ from zipfile import ZipFile
 import httpx
 import pytest
 
-from pyorthanc import Study, errors, util
+from pyorthanc import Patient, Study, errors, util
 from .conftest import LABEL_STUDY
-from .data import a_study
+from .data import a_patient, a_study
 
 
 def test_attributes(study):
@@ -25,6 +25,9 @@ def test_attributes(study):
     assert isinstance(study.last_update, datetime)
     assert study.series != []
     assert str(study) == f'Study({a_study.IDENTIFIER})'
+
+    assert isinstance(study.parent_patient, Patient)
+    assert study.parent_patient.name == a_patient.NAME
 
     shared_tags = study.shared_tags
     assert isinstance(shared_tags, dict)
