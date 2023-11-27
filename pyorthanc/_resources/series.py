@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, List, TYPE_CHECKING
 
 from httpx import ReadTimeout
 
@@ -7,6 +9,9 @@ from .instance import Instance
 from .resource import Resource
 from .. import errors, util
 from ..jobs import Job
+
+if TYPE_CHECKING:
+    from . import Patient, Study
 
 
 class Series(Resource):
@@ -55,6 +60,15 @@ class Series(Resource):
     def study_identifier(self) -> str:
         """Get the parent study identifier"""
         return self.get_main_information()['ParentStudy']
+
+    @property
+    def parent_study(self) -> Study:
+        from . import Study
+        return Study(self.study_identifier, self.client)
+
+    @property
+    def parent_patient(self) -> Patient:
+        return self.parent_study.parent_patient
 
     @property
     def date(self) -> datetime:

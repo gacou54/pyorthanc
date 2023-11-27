@@ -1,10 +1,15 @@
+from __future__ import annotations
+
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List, TYPE_CHECKING
 
 import pydicom
 
 from .resource import Resource
 from .. import errors, util
+
+if TYPE_CHECKING:
+    from . import Patient, Study, Series
 
 
 class Instance(Resource):
@@ -93,7 +98,20 @@ class Instance(Resource):
     def series_identifier(self) -> str:
         """Get the parent series identifier"""
         return self.get_main_information()['ParentSeries']
-    
+
+    @property
+    def parent_series(self) -> Series:
+        from . import Series
+        return Series(self.series_identifier, self.client)
+
+    @property
+    def parent_study(self) -> Study:
+        return self.parent_series.parent_study
+
+    @property
+    def parent_patient(self) -> Patient:
+        return self.parent_study.parent_patient
+
     @property
     def acquisition_number(self) -> int:
         return int(self._get_main_dicom_tag_value('AcquisitionNumber'))

@@ -3,9 +3,9 @@ from datetime import datetime
 import pydicom
 import pytest
 
-from pyorthanc import errors
+from pyorthanc import Patient, Series, Study, errors
 from .conftest import LABEL_INSTANCE
-from .data import a_series, an_instance
+from .data import a_patient, a_series, a_study, an_instance
 
 EXPECTED_DATE = datetime(
     year=2010,
@@ -29,6 +29,13 @@ def test_attributes(instance):
     assert instance.image_position_patient == [-223.9880065918, -158.08148193359, -117.78499603271]
     assert instance.instance_number == int(an_instance.INFORMATION['MainDicomTags']['InstanceNumber'])
     assert instance.number_of_frames == 75
+
+    assert isinstance(instance.parent_series, Series)
+    assert instance.parent_series.modality == a_series.MODALITY
+    assert isinstance(instance.parent_study, Study)
+    assert instance.parent_study.date == a_study.DATE
+    assert isinstance(instance.parent_patient, Patient)
+    assert instance.parent_patient.name == a_patient.NAME
 
     assert '0008,0012' in instance.tags.keys()
     assert 'Value' in instance.tags['0008,0012'].keys()
