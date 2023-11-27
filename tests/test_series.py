@@ -22,6 +22,11 @@ def test_attributes(series):
     assert series.station_name == a_series.INFORMATION['MainDicomTags']['StationName']
     assert series.image_orientation_patient == [1, 0, 0, 0, 1, 0]
 
+    shared_tags = series.shared_tags
+    assert isinstance(shared_tags, dict)
+    assert 'PatientName' in shared_tags  # simply checking for common shared tags
+    assert 'PixelSpacing' in shared_tags
+
     assert series.labels == [LABEL_SERIES]
     assert not series.is_stable
     assert isinstance(series.last_update, datetime)
@@ -39,7 +44,7 @@ def test_attributes(series):
 def test_zip(series):
     result = series.get_zip()
 
-    assert type(result) == bytes
+    assert isinstance(result, bytes)
     zipfile = ZipFile(io.BytesIO(result))
     assert zipfile.testzip() is None  # Verify that zip files are valid (if it is, returns None)
 

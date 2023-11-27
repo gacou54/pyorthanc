@@ -25,6 +25,12 @@ def test_attributes(patient):
     assert isinstance(patient.last_update, datetime)
     assert str(patient) == f'Patient({a_patient.IDENTIFIER})'
 
+    shared_tags = patient.shared_tags
+    assert isinstance(shared_tags, dict)
+    assert 'PatientName' in shared_tags  # simply checking for common shared tags
+    assert 'PatientBirthDate' in shared_tags
+
+
     assert [s.identifier for s in patient.studies] == a_patient.INFORMATION['Studies']
 
 
