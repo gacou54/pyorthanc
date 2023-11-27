@@ -572,6 +572,26 @@ class Patient(Resource):
 
         return Job(job_info['ID'], self.client)
 
+    def get_shared_tags(self, simplify: bool = False, short: bool = False) -> Dict:
+        """Retrieve the shared tags of the patient"""
+        if simplify and not short:
+            params = {'simplify': True}
+        elif short and not simplify:
+            params = {'short': True}
+        elif simplify and short:
+            raise ValueError('simplify and short can\'t be both True.')
+        else:
+            params = {}
+
+        return dict(self.client.get_patients_id_shared_tags(
+            self.id_,
+            params=params
+        ))
+
+    @property
+    def shared_tags(self) -> Dict:
+        return self.get_shared_tags(simplify=True)
+
     def remove_empty_studies(self) -> None:
         """Delete empty studies."""
         if self._child_resources is None:

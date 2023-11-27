@@ -26,6 +26,11 @@ def test_attributes(study):
     assert study.series != []
     assert str(study) == f'Study({a_study.IDENTIFIER})'
 
+    shared_tags = study.shared_tags
+    assert isinstance(shared_tags, dict)
+    assert 'PatientName' in shared_tags  # simply checking for common shared tags
+    assert 'StudyDate' in shared_tags
+
     for absent_attribute in ['description', 'institution_name', 'requested_procedure_description', 'requesting_physician']:
         with pytest.raises(errors.TagDoesNotExistError):
             getattr(study, absent_attribute)

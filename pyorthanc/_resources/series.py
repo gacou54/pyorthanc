@@ -556,6 +556,26 @@ class Series(Resource):
         """
         return self.client.get_series_id_archive(self.id_)
 
+    def get_shared_tags(self, simplify: bool = False, short: bool = False) -> Dict:
+        """Retrieve the shared tags of the series"""
+        if simplify and not short:
+            params = {'simplify': True}
+        elif short and not simplify:
+            params = {'short': True}
+        elif simplify and short:
+            raise ValueError('simplify and short can\'t be both True.')
+        else:
+            params = {}
+
+        return dict(self.client.get_series_id_shared_tags(
+            self.id_,
+            params=params
+        ))
+
+    @property
+    def shared_tags(self) -> Dict:
+        return self.get_shared_tags(simplify=True)
+
     def remove_empty_instances(self) -> None:
         if self._child_resources is not None:
             self._child_resources = [i for i in self._child_resources if i is not None]
