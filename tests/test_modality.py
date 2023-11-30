@@ -49,10 +49,10 @@ def test_query(modality):
 
 
 def test_failed_query(modality):
-    BAD_PAYLOAD = {'Level': 'Study', 'Query': {'BadTag': 'MP*'}}
+    bad_payload = {'Level': 'Study', 'Query': {'BadTag': 'MP*'}}
 
     with pytest.raises(httpx.HTTPError):
-        modality.query(BAD_PAYLOAD)
+        modality.query(bad_payload)
 
 
 def test_move(modality):

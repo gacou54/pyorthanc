@@ -50,6 +50,18 @@ class Resource:
         except KeyError:
             raise errors.TagDoesNotExistError(f'{self} has no {tag} tag.')
 
+    def _make_response_format_params(self, simplify: bool = False, short: bool = False) -> Dict:
+        if simplify and not short:
+            params = {'simplify': True}
+        elif short and not simplify:
+            params = {'short': True}
+        elif simplify and short:
+            raise ValueError('simplify and short can\'t be both True.')
+        else:
+            params = {}
+
+        return params
+
     def __eq__(self, other: 'Resource') -> bool:
         return self.id_ == other.id_
 
