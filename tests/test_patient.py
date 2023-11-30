@@ -30,14 +30,13 @@ def test_attributes(patient):
     assert 'PatientName' in shared_tags  # simply checking for common shared tags
     assert 'PatientBirthDate' in shared_tags
 
-
     assert [s.identifier for s in patient.studies] == a_patient.INFORMATION['Studies']
 
 
 def test_zip(patient):
     result = patient.get_zip()
 
-    assert type(result) == bytes
+    assert type(result) is bytes
     zipfile = ZipFile(io.BytesIO(result))
     assert zipfile.testzip() is None  # Verify that zip files are valid (if it is, returns None)
 

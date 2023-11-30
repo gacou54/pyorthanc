@@ -530,14 +530,7 @@ class Study(Resource):
 
     def get_shared_tags(self, simplify: bool = False, short: bool = False) -> Dict:
         """Retrieve the shared tags of the study"""
-        if simplify and not short:
-            params = {'simplify': True}
-        elif short and not simplify:
-            params = {'short': True}
-        elif simplify and short:
-            raise ValueError('simplify and short can\'t be both True.')
-        else:
-            params = {}
+        params = self._make_response_format_params(simplify, short)
 
         return dict(self.client.get_studies_id_shared_tags(
             self.id_,
