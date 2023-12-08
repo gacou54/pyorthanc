@@ -112,7 +112,7 @@ class Series(Resource):
 
     @property
     def description(self) -> str:
-        return self._get_main_dicom_tag_value('StudyDescription')
+        return self._get_main_dicom_tag_value('SeriesDescription')
 
     @property
     def body_part_examined(self) -> str:
