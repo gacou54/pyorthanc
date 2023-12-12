@@ -57,6 +57,7 @@ def test_zip(series):
 def test_download(series: Series, tmp_dir: str):
     buffer = io.BytesIO()
     series.download(buffer)
+    buffer.seek(0)
     assert ZipFile(buffer).testzip() is None  # Verify that zip files are valid (if it is, returns None)
 
     series.download(f'{tmp_dir}/file.zip')

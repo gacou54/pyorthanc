@@ -60,6 +60,7 @@ def test_zip(study):
 def test_download(study: Study, tmp_dir: str):
     buffer = io.BytesIO()
     study.download(buffer)
+    buffer.seek(0)
     assert ZipFile(buffer).testzip() is None  # Verify that zip files are valid (if it is, returns None)
 
     study.download(f'{tmp_dir}/file.zip')

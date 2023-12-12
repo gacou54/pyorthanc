@@ -33,8 +33,8 @@ class Instance(Resource):
         --------
         ```python
         from pyorthanc import Instance
-        instance = Instance('instance_identifier',
-                            Orthanc('http://localhost:8042'))
+        instance = Instance('instance_identifier', Orthanc('http://localhost:8042'))
+
         dicom_file_bytes = instance.get_dicom_file_content()
         with open('your_path', 'wb') as file_handler:
             file_handler.write(dicom_file_bytes)
@@ -42,8 +42,35 @@ class Instance(Resource):
         """
         return self.client.get_instances_id_file(self.id_)
 
-    def download(self, target_path: Union[str, BinaryIO], with_progres: bool = False) -> None:
-        self._download_file(f'{self.client.url}/instances/{self.id_}/file', target_path, with_progres)
+    def download(self, filepath: Union[str, BinaryIO], with_progres: bool = False) -> None:
+        """Download the DICOM file to a target path or buffer
+
+        This method is an alternative to the `.get_dicom_file_content()` method for large files.
+        The `.get_dicom_file_content()` method will pull all the data in a single GET call,
+        while `.download()` stream the data to a file or a buffer.
+        Favor the `.download()` method to avoid timeout and memory issues.
+
+        Examples
+        --------
+        ```python
+        from pyorthanc import Orthanc, Instance
+        instance = Instance('instance_identifier', Orthanc('http://localhost:8042'))
+
+        # Download the dicom file
+        instance.download('instance.dcm')
+
+        # Download the file and show progress
+        instance.download('instance.dcm', with_progres=True)
+
+        # Or download in a buffer in memory
+        buffer = io.BytesIO()
+        instance.download(buffer)
+        # Now do whatever you want to do
+        buffer.seek(0)
+        dicom_bytes = buffer.read()
+        ```
+        """
+        self._download_file(f'{self.client.url}/instances/{self.id_}/file', filepath, with_progres)
 
     @property
     def uid(self) -> str:

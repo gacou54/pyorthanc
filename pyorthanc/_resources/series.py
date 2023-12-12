@@ -558,10 +558,8 @@ class Series(Resource):
         --------
         ```python
         from pyorthanc import Orthanc, Series
-        a_series = Series(
-            'SERIES_IDENTIFIER',
-            Orthanc('http://localhost:8042')
-        )
+        a_series = Series('SERIES_IDENTIFIER', Orthanc('http://localhost:8042'))
+
         bytes_content = a_series.get_zip()
         with open('series_zip_file_path.zip', 'wb') as file_handler:
             file_handler.write(bytes_content)
@@ -570,8 +568,35 @@ class Series(Resource):
         """
         return self.client.get_series_id_archive(self.id_)
 
-    def download(self, target_path: Union[str, BinaryIO], with_progres: bool = False) -> None:
-        self._download_file(f'{self.client.url}/series/{self.id_}/archive', target_path, with_progres)
+    def download(self, filepath: Union[str, BinaryIO], with_progres: bool = False) -> None:
+        """Download the zip file to a target path or buffer
+
+        This method is an alternative to the `.get_zip()` method for large files.
+        The `.get_zip()` method will pull all the data in a single GET call,
+        while `.download()` stream the data to a file or a buffer.
+        Favor the `.download()` method to avoid timeout and memory issues.
+
+        Examples
+        --------
+        ```python
+        from pyorthanc import Orthanc, Series
+        a_series = Series('SERIES_IDENTIFIER', Orthanc('http://localhost:8042'))
+
+        # Download a zip
+        a_series.download('series.zip')
+
+        # Download a zip and show progress
+        a_series.download('series.zip', with_progres=True)
+
+        # Or download in a buffer in memory
+        buffer = io.BytesIO()
+        a_series.download(buffer)
+        # Now do whatever you want to do
+        buffer.seek(0)
+        zip_bytes = buffer.read()
+        ```
+        """
+        self._download_file(f'{self.client.url}/series/{self.id_}/archive', filepath, with_progres)
 
     def get_shared_tags(self, simplify: bool = False, short: bool = False) -> Dict:
         """Retrieve the shared tags of the series"""

@@ -102,6 +102,7 @@ def test_download(instance, tmp_dir):
     # Test with buffer
     buffer = io.BytesIO()
     instance.download(buffer)
+    buffer.seek(0)
     pydicom.dcmread(buffer)  # Assert not raised
 
     # Test with filepath
@@ -111,6 +112,7 @@ def test_download(instance, tmp_dir):
     # Test with progress enable
     buffer = io.BytesIO()
     instance.download(buffer, with_progres=True)
+    buffer.seek(0)
     pydicom.dcmread(buffer)  # Assert not raised
 
 
