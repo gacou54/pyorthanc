@@ -73,10 +73,10 @@ class Resource:
             params: Optional[QueryParamTypes] = None):
         if isinstance(path, str):
             file = open(path, 'wb')
-        elif isinstance(path, BinaryIO):
+        elif hasattr(path, 'read'):
             file = path
         else:
-            raise TypeError(f'"path" must be a file-like object or a file path, got "{type(path)}".')
+            raise TypeError(f'"path" must be a file-like object or a file path, got "{type(path).__name__}".')
 
         try:
             with self.client.stream('GET', url, params=params) as response:
