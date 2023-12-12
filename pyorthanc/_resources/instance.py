@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, TYPE_CHECKING
+from typing import Any, BinaryIO, Dict, List, TYPE_CHECKING, Union
 
 import pydicom
 
@@ -41,6 +41,9 @@ class Instance(Resource):
         ```
         """
         return self.client.get_instances_id_file(self.id_)
+
+    def download(self, target_path: Union[str, BinaryIO], with_progres: bool = False) -> None:
+        self._download_file(f'{self.client.url}/instances/{self.id_}/file', target_path, with_progres)
 
     @property
     def uid(self) -> str:

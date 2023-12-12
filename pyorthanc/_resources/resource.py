@@ -1,4 +1,7 @@
-from typing import Any, Dict, List, Optional
+import abc
+from typing import Any, BinaryIO, Dict, List, Optional, Union
+
+from httpx._types import QueryParamTypes
 
 from .. import errors, util
 from ..client import Orthanc
@@ -41,6 +44,7 @@ class Resource:
         """
         return self.id_
 
+    @abc.abstractmethod
     def get_main_information(self):
         raise NotImplementedError
 
@@ -61,6 +65,44 @@ class Resource:
             params = {}
 
         return params
+
+    def _download_file(
+            self, url: str,
+            path: Union[str, BinaryIO],
+            with_progress: bool = False,
+            params: Optional[QueryParamTypes] = None):
+        if isinstance(path, str):
+            file = open(path, 'wb')
+        elif isinstance(path, BinaryIO):
+            file = path
+        else:
+            raise TypeError(f'"path" must be a file-like object or a file path, got "{type(path)}".')
+
+        try:
+            with self.client.stream('GET', url, params=params) as response:
+                if with_progress:
+                    try:
+                        from tqdm import tqdm
+                    except ModuleNotFoundError:
+                        raise ModuleNotFoundError(
+                            'Optional dependency tqdm have to be installed for the progress indicator. '
+                            'Install with `pip install pyorthanc[progress]` or `pip install pyorthanc[all]'
+                        )
+
+                    last_num_bytes_downloaded = response.num_bytes_downloaded
+
+                    with tqdm(unit='B', unit_scale=True, desc=self.__repr__()) as progress:
+                        for chunk in response.iter_bytes():
+                            file.write(chunk)
+                            progress.update(response.num_bytes_downloaded - last_num_bytes_downloaded)
+                            last_num_bytes_downloaded = response.num_bytes_downloaded
+
+                else:
+                    for chunk in response.iter_bytes():
+                        file.write(chunk)
+
+        finally:
+            file.close()
 
     def __eq__(self, other: 'Resource') -> bool:
         return self.id_ == other.id_

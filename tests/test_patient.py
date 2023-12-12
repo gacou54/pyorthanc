@@ -36,9 +36,18 @@ def test_attributes(patient):
 def test_zip(patient):
     result = patient.get_zip()
 
-    assert type(result) is bytes
+    assert isinstance(result, bytes)
     zipfile = ZipFile(io.BytesIO(result))
     assert zipfile.testzip() is None  # Verify that zip files are valid (if it is, returns None)
+
+
+def test_download(patient: Patient, tmp_dir: str):
+    buffer = io.BytesIO()
+    patient.download(buffer)
+    assert ZipFile(buffer).testzip() is None  # Verify that zip files are valid (if it is, returns None)
+
+    patient.download(f'{tmp_dir}/file.zip')
+    assert ZipFile(f'{tmp_dir}/file.zip').testzip() is None
 
 
 def test_patient_module(patient):
@@ -77,7 +86,7 @@ def test_anonymize(patient):
     assert anonymize_patient.name == a_patient.NAME
 
 
-def test_anonymize_as_job(patient):
+def test_anonymize_as_job(patient: Patient):
     job = patient.anonymize_as_job(remove=['PatientName'])
     job.wait_until_completion()
     anonymize_patient = Patient(job.content['ID'], patient.client)
@@ -145,7 +154,7 @@ def test_modify_as_job_remove(patient):
     assert 'ID' not in job.content  # Has no effect because PatientID can't be removed
 
 
-def test_modify_as_job_replace(patient):
+def test_modify_as_job_replace(patient: Patient):
     job = patient.modify_as_job(replace={'PatientName': 'NewName'})
     assert patient.name == a_patient.NAME
 

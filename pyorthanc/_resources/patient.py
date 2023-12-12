@@ -1,6 +1,6 @@
 import warnings
 from datetime import datetime
-from typing import Dict, List
+from typing import BinaryIO, Dict, List, Union
 
 from httpx import ReadTimeout
 
@@ -106,6 +106,9 @@ class Patient(Resource):
         ```
         """
         return self.client.get_patients_id_archive(self.id_)
+
+    def download(self, target_path: Union[str, BinaryIO], with_progres: bool = False) -> None:
+        self._download_file(f'{self.client.url}/patients/{self.id_}/archive', target_path, with_progres)
 
     def get_patient_module(self, simplify: bool = False, short: bool = False) -> Dict:
         """Get patient module in a simplified version

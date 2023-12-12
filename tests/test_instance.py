@@ -1,3 +1,4 @@
+import io
 from datetime import datetime
 
 import pydicom
@@ -21,7 +22,7 @@ def test_attributes(instance):
     assert instance.get_main_information().keys() == an_instance.INFORMATION.keys()
 
     assert instance.uid == an_instance.INFORMATION['MainDicomTags']['SOPInstanceUID']
-    assert type(instance.file_size) == int
+    assert isinstance(instance.file_size, int)
     assert instance.creation_date == EXPECTED_DATE
     assert instance.labels == [LABEL_INSTANCE]
     assert instance.series_identifier == a_series.IDENTIFIER
@@ -65,13 +66,13 @@ def test_get_tag_content(instance):
 def test_anonymize(instance):
     anonymized_instance = instance.anonymize(remove=['InstanceCreationDate'])
 
-    assert type(anonymized_instance) == bytes
+    assert isinstance(anonymized_instance, bytes)
 
 
 def test_modify(instance):
     modified_instance = instance.modify(replace={'NumberOfFrames': '10'})
 
-    assert type(modified_instance) == bytes
+    assert isinstance(modified_instance, bytes)
 
 
 def test_pydicom(instance):
@@ -88,3 +89,28 @@ def test_label(instance, label):
 
     instance.remove_label(label)
     assert label not in instance.labels
+
+
+def test_get_dicom_file_content(instance):
+    result = instance.get_dicom_file_content()
+
+    assert isinstance(result, bytes)
+    pydicom.dcmread(io.BytesIO(result))  # Assert not raised
+
+
+def test_download(instance, tmp_dir):
+    # Test with buffer
+    buffer = io.BytesIO()
+    instance.download(buffer)
+    pydicom.dcmread(buffer)  # Assert not raised
+
+    # Test with filepath
+    instance.download(f'{tmp_dir}/file.dcm')
+    pydicom.dcmread(f'{tmp_dir}/file.dcm')  # Assert not raised
+
+    # Test with progress enable
+    buffer = io.BytesIO()
+    instance.download(buffer, with_progres=True)
+    pydicom.dcmread(buffer)  # Assert not raised
+
+

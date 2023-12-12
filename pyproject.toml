@@ -17,10 +17,17 @@ keywords = ["Orthanc", "DICOM", "Medical-Imaging"]
 python = "^3.8"
 httpx = ">=0.24.1,<1.0.0"
 pydicom = "^2.3.0"
+tqdm = { version = "^4.66.1", optional = true }
+
+
+[tool.poetry.extras]
+progress = ["tqdm"]
+all = ["progress"]
+
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.5.3"
-mkdocstrings = {extras = ["python"], version = "^0.23.0"}
+mkdocstrings = { extras = ["python"], version = "^0.23.0" }
 mkdocs-material = "^9.4.6"
 jinja2 = "^3.1.2"
 
@@ -28,6 +35,9 @@ jinja2 = "^3.1.2"
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"
 simple-openapi-client = "^0.5.3"
+
+
+
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

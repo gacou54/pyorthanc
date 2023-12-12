@@ -10,7 +10,7 @@ from .conftest import LABEL_SERIES
 from .data import a_patient, a_series, a_study
 
 
-def test_attributes(series):
+def test_attributes(series: Series):
     assert series.get_main_information().keys() == a_series.INFORMATION.keys()
 
     assert series.identifier == a_series.IDENTIFIER
@@ -54,7 +54,16 @@ def test_zip(series):
     assert zipfile.testzip() is None  # Verify that zip files are valid (if it is, returns None)
 
 
-def test_anonymize(series):
+def test_download(series: Series, tmp_dir: str):
+    buffer = io.BytesIO()
+    series.download(buffer)
+    assert ZipFile(buffer).testzip() is None  # Verify that zip files are valid (if it is, returns None)
+
+    series.download(f'{tmp_dir}/file.zip')
+    assert ZipFile(f'{tmp_dir}/file.zip').testzip() is None
+
+
+def test_anonymize(series: Series):
     anonymized_series = series.anonymize(remove=['Modality'])
     assert anonymized_series.uid != a_series.INFORMATION['MainDicomTags']['SeriesInstanceUID']
     with pytest.raises(errors.TagDoesNotExistError):
@@ -71,7 +80,7 @@ def test_anonymize(series):
            a_series.INFORMATION['MainDicomTags']['StationName']
 
 
-def test_anonymize_as_job(series):
+def test_anonymize_as_job(series: Series):
     job = series.anonymize_as_job(remove=['Modality'])
     job.wait_until_completion()
     anonymized_series = Series(job.content['ID'], series.client)
@@ -94,7 +103,7 @@ def test_anonymize_as_job(series):
            a_series.INFORMATION['MainDicomTags']['StationName']
 
 
-def test_modify_remove(series):
+def test_modify_remove(series: Series):
     assert series.manufacturer == a_series.MANUFACTURER
 
     modified_series = series.modify(remove=['Manufacturer'])
@@ -120,7 +129,7 @@ def test_modify_remove(series):
         series.modify(remove=['SeriesInstanceUID'], force=True)
 
 
-def test_modify_replace(series):
+def test_modify_replace(series: Series):
     assert series.manufacturer == a_series.MANUFACTURER
 
     modified_series = series.modify(replace={'Manufacturer': 'new-manufacturer'})
@@ -150,7 +159,7 @@ def test_modify_replace(series):
     assert modified_series.id_ != series.id_
 
 
-def test_modify_as_job_remove(series):
+def test_modify_as_job_remove(series: Series):
     # Create new modified series
     job = series.modify_as_job(remove=['Manufacturer'])
     job.wait_until_completion()
@@ -184,7 +193,7 @@ def test_modify_as_job_remove(series):
     assert 'ID' not in job.content  # Has no effect because SeriesInstanceUID can't be removed
 
 
-def test_modify_as_job_replace(series):
+def test_modify_as_job_replace(series: Series):
     job = series.modify_as_job(replace={'Manufacturer': 'new-manufacturer'})
     job.wait_until_completion()
     modified_series = Series(job.content['ID'], series.client)
