@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List, Optional, Union
 
 import httpx
 
@@ -24,16 +24,31 @@ class Modality:
         self.client = client
         self.modality = modality
 
-    def echo(self) -> bool:
+    def echo(self, check_find: Optional[bool] = None, timeout: Optional[int] = None) -> bool:
         """C-Echo to modality
 
+        Parameters
+        ----------
+        check_find
+            Issue a dummy C-FIND command after the C-GET SCU, in order to check whether the remote modality
+            knows about Orthanc. This field defaults to the value of the `DicomEchoChecksFind` configuration option.
+            New in Orthanc 1.8.1.
+        timeout
+            Timeout for the C-ECHO command, in seconds. The default value is the `DicomScuTimeout` in the configuration.
+            If `timeout` is set to 0, this means no timeout.
         Returns
         -------
         bool
             True if C-Echo succeeded.
         """
+        data = {}
+        if check_find is not None:
+            data['CheckFind'] = check_find
+        if timeout is not None:
+            data['Timeout'] = timeout
+
         try:
-            self.client.post_modalities_id_echo(self.modality)
+            self.client.post_modalities_id_echo(id_=self.modality, json=data)
             return True
 
         except httpx.HTTPError:
@@ -104,13 +119,13 @@ class Modality:
         """
         return dict(self.client.post_queries_id_retrieve(query_identifier, json=cmove_data))
 
-    def store(self, instance_or_series_id: str) -> Dict:
-        """Store series or instance to modality.
+    def store(self, resource_ids: Union[str, List[str]]) -> Dict:
+        """Store a resource to modality (C-Store).
 
         Parameters
         ----------
-        instance_or_series_id
-            Instance or Series Orthanc identifier.
+        resource_ids
+            Orthanc resource identifier to store to the modality.
 
         Returns
         -------
@@ -119,7 +134,7 @@ class Modality:
         """
         return dict(self.client.post_modalities_id_store(
             self.modality,
-            json=instance_or_series_id
+            json=resource_ids
         ))
 
     def get_query_answers(self) -> Dict:

@@ -46,7 +46,7 @@ class Instance(Resource):
         """Download the DICOM file to a target path or buffer
 
         This method is an alternative to the `.get_dicom_file_content()` method for large files.
-        The `.get_dicom_file_content()` method will pull all the data in a single GET call,
+        The `.get_dicom_file_content()` method will pull all the data in a single HTTP GET call,
         while `.download()` stream the data to a file or a buffer.
         Favor the `.download()` method to avoid timeout and memory issues.
 
