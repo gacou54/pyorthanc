@@ -1,3 +1,5 @@
+import tempfile
+
 import pytest
 
 from pyorthanc import AsyncOrthanc, Instance, Modality, Orthanc, Patient, Series, Study
@@ -89,3 +91,9 @@ def series(client_with_data_and_labels):
 @pytest.fixture
 def instance(client_with_data_and_labels):
     return Instance(client=client_with_data_and_labels, id_=an_instance.IDENTIFIER)
+
+
+@pytest.fixture
+def tmp_dir():
+    with tempfile.TemporaryDirectory() as dir_path:
+        yield dir_path

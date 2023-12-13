@@ -55,9 +55,15 @@ patients = find_patients(
 )
 ```
 
-Write the patients DICOM files locally
+Download the patients data as a zip file
 ```python
-retrieve_and_write_patients(patients, './patients_path')
+from pyorthanc import retrieve_and_write_patients
+
+for patient in patients:
+    patient.download(f'./data/patient-{patient.patient_id}.zip', with_progres=False)
+
+# As a directory tree DICOM files (patients -> studies -> series -> instances)
+retrieve_and_write_patients(patients, './data/')
 ```
 Or manipulates the Patient object
 ```python
@@ -73,7 +79,16 @@ patient.add_label('a-new-label')
 ...
 ```
 
-If you have the Patient ID, StudyInstanceUID, the SeriesInstanceUID 
+It is also possible to query the other resource levels
+```python
+from pyorthanc import find_studies, find_series, find_instances
+
+studies = find_studies(client=orthanc, query={...}, labels=[...])
+series = find_series(client=orthanc, query={...}, labels=[...])
+instances = find_instances(client=orthanc, query={...}, labels=[...])
+```
+
+If you have the Patient ID, StudyInstanceUID, the SeriesInstanceUID
 and/or the SOPInstanceUID, you can generate the Orthanc IDs:
 
 ```python
@@ -87,15 +102,6 @@ util.to_orthanc_instance_id('patient_id', 'study_uid', 'series_uid', 'instance_u
 patient = Patient('8dfa510b-b29ad31a-b2139fbf-b9929710-2edfa5c2', client)
 ```
 
-
-It is also possible to query the other resource levels
-```python
-from pyorthanc import find_studies, find_series, find_instances
-
-studies = find_studies(client=orthanc, query={...}, labels=[...])
-series = find_series(client=orthanc, query={...}, labels=[...])
-instances = find_instances(client=orthanc, query={...}, labels=[...])
-```
 
 #### Anonymize patient
 Resources (`Patient`, `Study`, `Series`, `Instance`) can be easily __anonymized__.

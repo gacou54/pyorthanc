@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Dict, List, TYPE_CHECKING
+from typing import BinaryIO, Dict, List, TYPE_CHECKING, Union
 
 from httpx import ReadTimeout
 
@@ -516,17 +516,44 @@ class Study(Resource):
         --------
         ```python
         from pyorthanc import Orthanc, Study
-        a_study = Study(
-            'STUDY_IDENTIFIER',
-            Orthanc('http://localhost:8042')
-        )
+        a_study = Study('STUDY_IDENTIFIER', Orthanc('http://localhost:8042'))
+
         bytes_content = a_study.get_zip()
         with open('study_zip_file_path.zip', 'wb') as file_handler:
             file_handler.write(bytes_content)
         ```
-
         """
         return self.client.get_studies_id_archive(self.id_)
+
+    def download(self, filepath: Union[str, BinaryIO], with_progres: bool = False) -> None:
+        """Download the zip file to a target path or buffer
+
+        This method is an alternative to the `.get_zip()` method for large files.
+        The `.get_zip()` method will pull all the data in a single GET call,
+        while `.download()` stream the data to a file or a buffer.
+        Favor the `.download()` method to avoid timeout and memory issues.
+
+        Examples
+        --------
+        ```python
+        from pyorthanc import Orthanc, Study
+        a_study = Study('STUDY_IDENTIFIER', Orthanc('http://localhost:8042'))
+
+        # Download a zip
+        a_study.download('study.zip')
+
+        # Download a zip and show progress
+        a_study.download('study.zip', with_progres=True)
+
+        # Or download in a buffer in memory
+        buffer = io.BytesIO()
+        a_study.download(buffer)
+        # Now do whatever you want to do
+        buffer.seek(0)
+        zip_bytes = buffer.read()
+        ```
+        """
+        self._download_file(f'{self.client.url}/studies/{self.id_}/archive', filepath, with_progres)
 
     def get_shared_tags(self, simplify: bool = False, short: bool = False) -> Dict:
         """Retrieve the shared tags of the study"""
