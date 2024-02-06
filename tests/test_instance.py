@@ -103,16 +103,17 @@ def test_download(instance, tmp_dir):
     buffer = io.BytesIO()
     instance.download(buffer)
     buffer.seek(0)
-    pydicom.dcmread(buffer)  # Assert not raised
+    ds = pydicom.dcmread(buffer)  # Assert not raised
+    assert ds.SOPInstanceUID == an_instance.UID
 
     # Test with filepath
     instance.download(f'{tmp_dir}/file.dcm')
-    pydicom.dcmread(f'{tmp_dir}/file.dcm')  # Assert not raised
+    ds = pydicom.dcmread(f'{tmp_dir}/file.dcm')  # Assert not raised
+    assert ds.SOPInstanceUID == an_instance.UID
 
     # Test with progress enable
     buffer = io.BytesIO()
     instance.download(buffer, with_progres=True)
     buffer.seek(0)
-    pydicom.dcmread(buffer)  # Assert not raised
-
-
+    ds = pydicom.dcmread(buffer)  # Assert not raised
+    assert ds.SOPInstanceUID == an_instance.UID
