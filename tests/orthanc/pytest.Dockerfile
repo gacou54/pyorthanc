@@ -12,4 +12,3 @@ RUN poetry install --extras "all"
 COPY ../.. /app
 
 ENTRYPOINT [ "poetry", "run", "pytest", "-vv" ]
-#ENTRYPOINT [ "python", "-m", "http.server" ]
