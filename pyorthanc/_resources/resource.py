@@ -44,6 +44,10 @@ class Resource:
         """
         return self.id_
 
+    @property
+    def main_dicom_tags(self) -> Dict[str, str]:
+        return self.get_main_information()['MainDicomTags']
+
     @abc.abstractmethod
     def get_main_information(self):
         raise NotImplementedError

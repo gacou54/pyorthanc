@@ -6,12 +6,13 @@ import httpx
 import pytest
 
 from pyorthanc import Patient, errors
-from .conftest import LABEL_PATIENT
-from .data import a_patient
+from tests.conftest import LABEL_PATIENT
+from tests.data import a_patient
 
 
 def test_attributes(patient):
     assert patient.get_main_information().keys() == a_patient.INFORMATION.keys()
+    assert patient.main_dicom_tags == a_patient.INFORMATION['MainDicomTags']
 
     assert patient.identifier == a_patient.IDENTIFIER
     assert patient.patient_id == a_patient.ID
