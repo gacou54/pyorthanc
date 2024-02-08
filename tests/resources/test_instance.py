@@ -5,8 +5,8 @@ import pydicom
 import pytest
 
 from pyorthanc import Patient, Series, Study, errors
-from .conftest import LABEL_INSTANCE
-from .data import a_patient, a_series, a_study, an_instance
+from tests.conftest import LABEL_INSTANCE
+from tests.data import a_patient, a_series, a_study, an_instance
 
 EXPECTED_DATE = datetime(
     year=2010,
@@ -20,6 +20,7 @@ EXPECTED_DATE = datetime(
 
 def test_attributes(instance):
     assert instance.get_main_information().keys() == an_instance.INFORMATION.keys()
+    assert instance.main_dicom_tags == an_instance.INFORMATION['MainDicomTags']
 
     assert instance.uid == an_instance.INFORMATION['MainDicomTags']['SOPInstanceUID']
     assert isinstance(instance.file_size, int)

@@ -6,12 +6,13 @@ import httpx
 import pytest
 
 from pyorthanc import Patient, Series, Study, errors
-from .conftest import LABEL_SERIES
-from .data import a_patient, a_series, a_study
+from tests.conftest import LABEL_SERIES
+from tests.data import a_patient, a_series, a_study
 
 
 def test_attributes(series: Series):
     assert series.get_main_information().keys() == a_series.INFORMATION.keys()
+    assert series.main_dicom_tags == a_series.INFORMATION['MainDicomTags']
 
     assert series.identifier == a_series.IDENTIFIER
     assert series.uid == a_series.INFORMATION['MainDicomTags']['SeriesInstanceUID']
