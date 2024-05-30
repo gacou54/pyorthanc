@@ -219,7 +219,7 @@ class Instance(Resource):
         Any
             Content corresponding to specified tag.
         """
-        result = self.client.get_instances_id_content_tags_path(id_=self.id_, tags_path=tag)
+        result = self.client.get_instances_id_content_path(id_=self.id_, path=tag)
 
         try:
             return result.decode('utf-8').strip().replace('\x00', '')

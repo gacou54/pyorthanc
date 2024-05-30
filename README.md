@@ -87,14 +87,15 @@ Note that recent PyOrthanc versions will likely support older Orthanc version.
 
 | PyOrthanc version | Generated from                                |
 |-------------------|-----------------------------------------------|
-| \>= 1.13.2        | Orthanc API 1.12.1 with Python Plugin 4.1     |
+| \>= 1.17.0        | Orthanc API 1.12.3 with Python Plugin 4.2     |
+| 1.13.2 to 1.16.1  | Orthanc API 1.12.1 with Python Plugin 4.1     |
 | 1.13.0, 1.13.1    | Orthanc API 1.12.1 with Python Plugin 4.0     |
 | 1.12.*            | Orthanc API 1.12.1                            |
 | 1.11.*            | Orthanc API 1.11.3                            |
 | 0.2.*             | Provided Google sheet from Orthanc maintainer |
 
 
-You can still use the old client with
+You can still use the old clients with
 ```python
 from pyorthanc.deprecated.client import Orthanc  # Old client wrote by hand
 from pyorthanc.deprecated.client_1_11_3 import Orthanc
@@ -133,3 +134,7 @@ You can contribute to this project with the following steps:
 5. Once done, `git add`, `git commit` and `git push` the changes.
 6. Make a Pull Request from your branch to the https://github.com/gacou54/pyorthanc.
 
+### Run tests
+```shell
+docker compose run --build test
+```
