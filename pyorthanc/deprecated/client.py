@@ -1,5 +1,6 @@
 # coding: utf-8
 import json
+import warnings
 from typing import List, Dict, Union, Any, Optional
 
 import requests
@@ -22,6 +23,9 @@ class Orthanc:
         orthanc_url
             Orthanc server address
         """
+        warnings.warn(
+            'pyorthanc.deprecated.client.Orthanc will be remove in future release. Please use pyorthanc.Orthanc instead.',
+            DeprecationWarning, stacklevel=2)
         self._orthanc_url = orthanc_url
 
         self._credentials_are_set = False
