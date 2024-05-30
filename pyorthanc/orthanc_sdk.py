@@ -603,8 +603,34 @@ def RegisterErrorCode(*args):
     pass
 
 
-def RegisterFindCallback(*args):
-    """None"""
+def RegisterFindCallback(func: Callable[[FindAnswers, FindQuery, str, str], None]) -> None:
+    """Register on C-Find Callback
+
+    Parameters
+    ----------
+    func
+        Function that is call when Orthanc receive an incoming C-Find request
+
+    Examples
+    --------
+    From https://orthanc.uclouvain.be/book/plugins/python.html#handling-dicom-scp-requests-new-in-3-2
+    ```python
+    def on_find(answers, query, issuerAet, calledAet):
+        print('Received incoming C-FIND request from %s:' % issuerAet)
+
+        answer = {}
+        for i in range(query.GetFindQuerySize()):
+            print('  %s (%04x,%04x) = [%s]' % (query.GetFindQueryTagName(i),
+                                               query.GetFindQueryTagGroup(i),
+                                               query.GetFindQueryTagElement(i),
+                                               query.GetFindQueryValue(i)))
+            answer[query.GetFindQueryTagName(i)] = ('HELLO%d-%s' % (i, query.GetFindQueryValue(i)))
+
+        answers.FindAddAnswer(orthanc.CreateDicom(json.dumps(answer), None, orthanc.CreateDicomFlags.NONE))
+
+    orthanc.RegisterFindCallback(on_find)
+    ```
+    """
     pass
 
 
@@ -618,13 +644,18 @@ def RegisterIncomingHttpRequestFilter(*args):
     pass
 
 
-def RegisterMoveCallback(*args):
+def RegisterMoveCallback(func: Callable):
     """None"""
     pass
 
 
+def RegisterMoveCallback2(create_move_func: Callable, get_move_func: Callable, apply_move_func: Callable, free_move_func: Callable) -> None:
+    """See https://github.com/orthanc-team/dicom-dicomweb-proxy/blob/main/proxy.py for an example from the OrthancTeam."""
+    pass
+
+
 def RegisterOnChangeCallback(func: Callable[[ChangeType, ResourceType, str], None]):
-    """Register an on change callback
+    """Register on change callback
 
     Parameters
     ----------

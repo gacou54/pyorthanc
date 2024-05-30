@@ -1,4 +1,3 @@
-version: '3.3'
 services:
   orthanc1:
     build:
@@ -10,7 +9,7 @@ services:
     depends_on:
       - orthanc2
   orthanc2:
-    image: jodogne/orthanc:1.12.1
+    image: orthancteam/orthanc:24.5.1
   test:
     build:
       context: .

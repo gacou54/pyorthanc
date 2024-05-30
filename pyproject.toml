@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyorthanc"
-version = "1.16.1"
+version = "1.17.0"
 description = "Orthanc REST API python wrapper with additional utilities"
 authors = [
     "Gabriel Couture <gacou54@gmail.com>",
