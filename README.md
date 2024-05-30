@@ -80,7 +80,7 @@ new_patient = pyorthanc.Patient(job.content['ID'], client)
 
 ## Notes on versioning
 
-The `Orthanc` and `AsyncOrthanc` classes are generated from `https://api.orthanc-server.com/`.
+The `Orthanc` and `AsyncOrthanc` classes are generated from https://orthanc.uclouvain.be/api/.
 
 Compatibility of versions between PyOrthanc and the Orthanc REST API are the following.
 Note that recent PyOrthanc versions will likely support older Orthanc version.
@@ -95,10 +95,9 @@ Note that recent PyOrthanc versions will likely support older Orthanc version.
 | 0.2.*             | Provided Google sheet from Orthanc maintainer |
 
 
-You can still use the old clients with
+You can still use the old client implementation with
 ```python
 from pyorthanc.deprecated.client import Orthanc  # Old client wrote by hand
-from pyorthanc.deprecated.client_1_11_3 import Orthanc
 ```
 
 Note that due to automatic generation some method names may be less clear.
