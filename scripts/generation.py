@@ -1,6 +1,6 @@
 import simple_openapi_client
 
-ORTHANC_API_URL = 'https://api.orthanc-server.com/orthanc-openapi.json'
+ORTHANC_API_URL = 'https://orthanc.uclouvain.be/api/orthanc-openapi.json'
 
 
 def generate_client(path: str, async_mode: bool = False):
@@ -8,7 +8,7 @@ def generate_client(path: str, async_mode: bool = False):
 
     document = simple_openapi_client.parse_openapi(ORTHANC_API_URL)
     document = _apply_corrections_to_documents(document)
-    client_str = simple_openapi_client.make_client(document, config, async_mode=async_mode)
+    client_str = simple_openapi_client.make_client(document, config, async_mode=async_mode, use_black=True)
 
     with open(path, 'w') as file:
         file.write(client_str)

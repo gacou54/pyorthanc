@@ -15,20 +15,12 @@ from httpx._types import (
 class Orthanc(httpx.Client):
     """Orthanc API
 
-    version 1.12.3
-    This is the full documentation of the [REST API](https://orthanc.uclouvain.be/book/users/rest.html) of Orthanc.<p>This reference is automatically generated from the source code of Orthanc. A [shorter cheat sheet](https://orthanc.uclouvain.be/book/users/rest-cheatsheet.html) is part of the Orthanc Book.<p>An earlier, manually crafted version from August 2019, is [still available](2019-08-orthanc-openapi.html), but is not up-to-date anymore ([source](https://groups.google.com/g/orthanc-users/c/NUiJTEICSl8/m/xKeqMrbqAAAJ)).
+    version 1.12.1
+    This is the full documentation of the [REST API](https://book.orthanc-server.com/users/rest.html) of Orthanc.<p>This reference is automatically generated from the source code of Orthanc. A [shorter cheat sheet](https://book.orthanc-server.com/users/rest-cheatsheet.html) is part of the Orthanc Book.<p>An earlier, manually crafted version from August 2019, is [still available](2019-08-orthanc-openapi.html), but is not up-to-date anymore ([source](https://groups.google.com/g/orthanc-users/c/NUiJTEICSl8/m/xKeqMrbqAAAJ)).
 
     """
 
-    def __init__(
-        self,
-        url: str,
-        username: Optional[str] = None,
-        password: Optional[str] = None,
-        return_raw_response: bool = False,
-        *args,
-        **kwargs,
-    ):
+    def __init__(self, url: str, username: Optional[str] = None, password: Optional[str] = None, return_raw_response: bool = False, *args, **kwargs):
         """
         Parameters
         ----------
@@ -45,7 +37,7 @@ class Orthanc(httpx.Client):
         """
         super().__init__(*args, **kwargs)
         self.url = url
-        self.version = "1.12.3"
+        self.version = '1.12.1'
         self.return_raw_response = return_raw_response
 
         if username and password:
@@ -55,13 +47,11 @@ class Orthanc(httpx.Client):
         """Set credentials needed for HTTP requests"""
         self._auth = httpx.BasicAuth(username, password)
 
-    def _get(
-        self,
-        route: str,
-        params: Optional[QueryParamTypes] = None,
-        headers: Optional[HeaderTypes] = None,
-        cookies: Optional[CookieTypes] = None,
-    ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
+    def _get(self,
+             route: str,
+             params: Optional[QueryParamTypes] = None,
+             headers: Optional[HeaderTypes] = None,
+             cookies: Optional[CookieTypes] = None) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """GET request with specified route
 
         Parameters
@@ -85,24 +75,20 @@ class Orthanc(httpx.Client):
             return response
 
         if 200 <= response.status_code < 300:
-            if "application/json" in response.headers["content-type"]:
+            if 'application/json' in response.headers['content-type']:
                 return response.json()
-            elif "text/plain" in response.headers["content-type"]:
+            elif 'text/plain' in response.headers['content-type']:
                 return response.text
             else:
                 return response.content
 
-        raise httpx.HTTPError(
-            f"HTTP code: {response.status_code}, with content: {response.text}"
-        )
+        raise httpx.HTTPError(f'HTTP code: {response.status_code}, with content: {response.text}')
 
-    def _delete(
-        self,
-        route: str,
-        params: Optional[QueryParamTypes] = None,
-        headers: Optional[HeaderTypes] = None,
-        cookies: Optional[CookieTypes] = None,
-    ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
+    def _delete(self,
+                route: str,
+                params: Optional[QueryParamTypes] = None,
+                headers: Optional[HeaderTypes] = None,
+                cookies: Optional[CookieTypes] = None) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """DELETE to specified route
 
         Parameters
@@ -126,28 +112,24 @@ class Orthanc(httpx.Client):
             return response
 
         if 200 <= response.status_code < 300:
-            if "application/json" in response.headers["content-type"]:
+            if 'application/json' in response.headers['content-type']:
                 return response.json()
-            elif "text/plain" in response.headers["content-type"]:
+            elif 'text/plain' in response.headers['content-type']:
                 return response.text
             else:
                 return response.content
 
-        raise httpx.HTTPError(
-            f"HTTP code: {response.status_code}, with content: {response.text}"
-        )
+        raise httpx.HTTPError(f'HTTP code: {response.status_code}, with content: {response.text}')
 
-    def _post(
-        self,
-        route: str,
-        content: Optional[RequestContent] = None,
-        data: Optional[RequestData] = None,
-        files: Optional[RequestFiles] = None,
-        json: Optional[Any] = None,
-        params: Optional[QueryParamTypes] = None,
-        headers: Optional[HeaderTypes] = None,
-        cookies: Optional[CookieTypes] = None,
-    ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
+    def _post(self,
+              route: str,
+              content: Optional[RequestContent] = None,
+              data: Optional[RequestData] = None,
+              files: Optional[RequestFiles] = None,
+              json: Optional[Any] = None,
+              params: Optional[QueryParamTypes] = None,
+              headers: Optional[HeaderTypes] = None,
+              cookies: Optional[CookieTypes] = None) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """POST to specified route
 
         Parameters
@@ -168,43 +150,30 @@ class Orthanc(httpx.Client):
         Union[Dict, List, str, bytes, int, httpx.Response]
             Serialized response of the HTTP POST request or httpx.Response.
         """
-        response = self.post(
-            route,
-            content=content,
-            data=data,
-            files=files,
-            json=json,
-            params=params,
-            headers=headers,
-            cookies=cookies,
-        )
+        response = self.post(route, content=content, data=data, files=files, json=json, params=params, headers=headers, cookies=cookies)
 
         if self.return_raw_response:
             return response
 
         if 200 <= response.status_code < 300:
-            if "application/json" in response.headers["content-type"]:
+            if 'application/json' in response.headers['content-type']:
                 return response.json()
-            elif "text/plain" in response.headers["content-type"]:
+            elif 'text/plain' in response.headers['content-type']:
                 return response.text
             else:
                 return response.content
 
-        raise httpx.HTTPError(
-            f"HTTP code: {response.status_code}, with text: {response.text}"
-        )
+        raise httpx.HTTPError(f'HTTP code: {response.status_code}, with text: {response.text}')
 
-    def _put(
-        self,
-        route: str,
-        content: RequestContent = None,
-        data: RequestData = None,
-        files: Optional[RequestFiles] = None,
-        json: Optional[Any] = None,
-        params: Optional[QueryParamTypes] = None,
-        headers: Optional[HeaderTypes] = None,
-        cookies: Optional[CookieTypes] = None,
-    ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
+    def _put(self,
+             route: str,
+             content: RequestContent = None,
+             data: RequestData = None,
+             files: Optional[RequestFiles] = None,
+             json: Optional[Any] = None,
+             params: Optional[QueryParamTypes] = None,
+             headers: Optional[HeaderTypes] = None,
+             cookies: Optional[CookieTypes] = None) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """PUT to specified route
 
         Parameters
@@ -225,51 +194,44 @@ class Orthanc(httpx.Client):
         Union[Dict, List, str, bytes, int, httpx.Response]
             Serialized response of the HTTP PUT request or httpx.Response.
         """
-        response = self.put(
-            route,
-            content=content,
-            data=data,
-            files=files,
-            json=json,
-            params=params,
-            headers=headers,
-            cookies=cookies,
-        )
+        response = self.put(route, content=content, data=data, files=files, json=json, params=params, headers=headers, cookies=cookies)
 
         if self.return_raw_response:
             return response
 
         if 200 <= response.status_code < 300:
-            if "application/json" in response.headers["content-type"]:
+            if 'application/json' in response.headers['content-type']:
                 return response.json()
-            elif "text/plain" in response.headers["content-type"]:
+            elif 'text/plain' in response.headers['content-type']:
                 return response.text
             else:
                 return response.content
 
-        raise httpx.HTTPError(
-            f"HTTP code: {response.status_code}, with text: {response.text}"
-        )
+        raise httpx.HTTPError(f'HTTP code: {response.status_code}, with text: {response.text}')
 
     def delete_changes(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Clear changes
 
         Clear the full history stored in the changes log
         Tags: Tracking changes
 
+        Parameters
+        ----------
+
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/changes",
+            route=f'{self.url}/changes',
         )
 
     def get_changes(
-        self,
-        params: QueryParamTypes = None,
+            self,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List changes
 
@@ -280,8 +242,8 @@ class Orthanc(httpx.Client):
         ----------
         params
             Dictionary of optional parameters:
-                "limit" (float): Limit the number of results
-                "since" (float): Show only the resources since the provided index
+            "limit" (float): Limit the number of results
+            "since" (float): Show only the resources since the provided index
 
         Returns
         -------
@@ -289,29 +251,33 @@ class Orthanc(httpx.Client):
             The list of changes
         """
         return self._get(
-            route=f"{self.url}/changes",
+            route=f'{self.url}/changes',
             params=params,
         )
 
     def delete_exports(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Clear exports
 
         Clear the full history stored in the exports log
         Tags: Tracking changes
 
+        Parameters
+        ----------
+
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/exports",
+            route=f'{self.url}/exports',
         )
 
     def get_exports(
-        self,
-        params: QueryParamTypes = None,
+            self,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List exports
 
@@ -322,8 +288,8 @@ class Orthanc(httpx.Client):
         ----------
         params
             Dictionary of optional parameters:
-                "limit" (float): Limit the number of results
-                "since" (float): Show only the resources since the provided index
+            "limit" (float): Limit the number of results
+            "since" (float): Show only the resources since the provided index
 
         Returns
         -------
@@ -331,13 +297,13 @@ class Orthanc(httpx.Client):
             The list of exports
         """
         return self._get(
-            route=f"{self.url}/exports",
+            route=f'{self.url}/exports',
             params=params,
         )
 
     def get_instances(
-        self,
-        params: QueryParamTypes = None,
+            self,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List the available instances
 
@@ -348,12 +314,12 @@ class Orthanc(httpx.Client):
         ----------
         params
             Dictionary of optional parameters:
-                "expand" (str): If present, retrieve detailed information about the individual instances
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "limit" (float): Limit the number of results
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "since" (float): Show only the resources since the provided index
+            "expand" (str): If present, retrieve detailed information about the individual instances
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "limit" (float): Limit the number of results
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "since" (float): Show only the resources since the provided index
 
         Returns
         -------
@@ -361,18 +327,26 @@ class Orthanc(httpx.Client):
             JSON array containing either the Orthanc identifiers, or detailed information about the reported instances (if `expand` argument is provided)
         """
         return self._get(
-            route=f"{self.url}/instances",
+            route=f'{self.url}/instances',
             params=params,
         )
 
     def post_instances(
-        self,
-        content: RequestContent = None,
+            self,
+            content: RequestContent = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Upload DICOM instances
 
         Upload DICOM instances
         Tags: Instances
+
+        Parameters
+        ----------
+        content
+            - (Content-Type: "application/dicom") DICOM file to be uploaded
+
+            - (Content-Type: "application/zip") ZIP archive containing DICOM files (new in Orthanc 1.8.2)
+
 
         Returns
         -------
@@ -380,13 +354,13 @@ class Orthanc(httpx.Client):
             Information about the uploaded instance, or list of information for each uploaded instance in the case of ZIP archive
         """
         return self._post(
-            route=f"{self.url}/instances",
+            route=f'{self.url}/instances',
             content=content,
         )
 
     def delete_instances_id(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Delete some instance
 
@@ -398,18 +372,19 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the instance of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/instances/{id_}",
+            route=f'{self.url}/instances/{id_}',
         )
 
     def get_instances_id(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get information about some instance
 
@@ -422,9 +397,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         params
             Dictionary of optional parameters:
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
         -------
@@ -432,18 +407,18 @@ class Orthanc(httpx.Client):
             Information about the DICOM instance
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}",
+            route=f'{self.url}/instances/{id_}',
             params=params,
         )
 
     def post_instances_id_anonymize(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Anonymize instance
 
-        Download an anonymized version of the DICOM instance whose Orthanc identifier is provided in the URL: https://orthanc.uclouvain.be/book/users/anonymization.html#anonymization-of-a-single-instance
+        Download an anonymized version of the DICOM instance whose Orthanc identifier is provided in the URL: https://book.orthanc-server.com/users/anonymization.html#anonymization-of-a-single-instance
         Tags: Instances
 
         Parameters
@@ -452,17 +427,15 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         json
             Dictionary with the following keys:
-              "DicomVersion": Version of the DICOM standard to be used for anonymization. Check out configuration option `DeidentifyLogsDicomVersion` for possible values.
-              "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
-              "Keep": List of DICOM tags whose value must not be destroyed by the anonymization. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "KeepLabels": Keep the labels of all resources level (defaults to `false`)
-              "KeepPrivateTags": Keep the private tags from the DICOM instances (defaults to `false`)
-              "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
-              "PrivateCreator": The private creator to be used for private tags in `Replace`
-              "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
+            "DicomVersion": Version of the DICOM standard to be used for anonymization. Check out configuration option `DeidentifyLogsDicomVersion` for possible values.
+            "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
+            "Keep": List of DICOM tags whose value must not be destroyed by the anonymization. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "KeepPrivateTags": Keep the private tags from the DICOM instances (defaults to `false`)
+            "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
+            "PrivateCreator": The private creator to be used for private tags in `Replace`
+            "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -472,14 +445,14 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/instances/{id_}/anonymize",
+            route=f'{self.url}/instances/{id_}/anonymize',
             json=json,
         )
 
     def get_instances_id_attachments(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List attachments
 
@@ -492,7 +465,7 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         params
             Dictionary of optional parameters:
-                "full" (str): If present, retrieve the attachments list and their numerical ids
+            "full" (str): If present, retrieve the attachments list and their numerical ids
 
         Returns
         -------
@@ -500,15 +473,15 @@ class Orthanc(httpx.Client):
             JSON array containing the names of the attachments
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/attachments",
+            route=f'{self.url}/instances/{id_}/attachments',
             params=params,
         )
 
     def delete_instances_id_attachments_name(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Delete attachment
 
@@ -523,22 +496,23 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         headers
             Dictionary of optional headers:
-                "If-Match" (str): Revision of the attachment, to check if its content has not changed and can be deleted. This header is mandatory if `CheckRevisions` option is `true`.
+            "If-Match" (str): Revision of the attachment, to check if its content has not changed and can be deleted. This header is mandatory if `CheckRevisions` option is `true`.
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/instances/{id_}/attachments/{name}",
+            route=f'{self.url}/instances/{id_}/attachments/{name}',
             headers=headers,
         )
 
     def get_instances_id_attachments_name(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List operations on attachments
 
@@ -553,7 +527,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -561,16 +536,16 @@ class Orthanc(httpx.Client):
             List of the available operations
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/attachments/{name}",
+            route=f'{self.url}/instances/{id_}/attachments/{name}',
             headers=headers,
         )
 
     def put_instances_id_attachments_name(
-        self,
-        id_: str,
-        name: str,
-        content: RequestContent = None,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            content: RequestContent = None,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Set attachment
 
@@ -584,10 +559,11 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the instance of interest
         content
-                - (Content-Type: "application/octet-stream") Binary data containing the attachment
+            - (Content-Type: "application/octet-stream") Binary data containing the attachment
         headers
             Dictionary of optional headers:
-                "If-Match" (str): Revision of the attachment, if this is not the first time this attachment is set.
+            "If-Match" (str): Revision of the attachment, if this is not the first time this attachment is set.
+
 
         Returns
         -------
@@ -595,15 +571,15 @@ class Orthanc(httpx.Client):
             Empty JSON object in the case of a success
         """
         return self._put(
-            route=f"{self.url}/instances/{id_}/attachments/{name}",
+            route=f'{self.url}/instances/{id_}/attachments/{name}',
             content=content,
             headers=headers,
         )
 
     def post_instances_id_attachments_name_compress(
-        self,
-        id_: str,
-        name: str,
+            self,
+            id_: str,
+            name: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Compress attachment
 
@@ -617,19 +593,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the instance of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._post(
-            route=f"{self.url}/instances/{id_}/attachments/{name}/compress",
+            route=f'{self.url}/instances/{id_}/attachments/{name}/compress',
         )
 
     def get_instances_id_attachments_name_compressed_data(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get attachment (no decompression)
 
@@ -644,7 +621,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+
 
         Returns
         -------
@@ -652,15 +630,15 @@ class Orthanc(httpx.Client):
             The attachment
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/attachments/{name}/compressed-data",
+            route=f'{self.url}/instances/{id_}/attachments/{name}/compressed-data',
             headers=headers,
         )
 
     def get_instances_id_attachments_name_compressed_md5(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get MD5 of attachment on disk
 
@@ -675,7 +653,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -683,15 +662,15 @@ class Orthanc(httpx.Client):
             The MD5 of the attachment, as stored on the disk
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/attachments/{name}/compressed-md5",
+            route=f'{self.url}/instances/{id_}/attachments/{name}/compressed-md5',
             headers=headers,
         )
 
     def get_instances_id_attachments_name_compressed_size(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get size of attachment on disk
 
@@ -706,7 +685,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -714,15 +694,15 @@ class Orthanc(httpx.Client):
             The size of the attachment, as stored on the disk
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/attachments/{name}/compressed-size",
+            route=f'{self.url}/instances/{id_}/attachments/{name}/compressed-size',
             headers=headers,
         )
 
     def get_instances_id_attachments_name_data(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get attachment
 
@@ -737,7 +717,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+
 
         Returns
         -------
@@ -745,15 +726,15 @@ class Orthanc(httpx.Client):
             The attachment
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/attachments/{name}/data",
+            route=f'{self.url}/instances/{id_}/attachments/{name}/data',
             headers=headers,
         )
 
     def get_instances_id_attachments_name_info(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get info about the attachment
 
@@ -768,7 +749,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -776,15 +758,15 @@ class Orthanc(httpx.Client):
             JSON object containing the information about the attachment
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/attachments/{name}/info",
+            route=f'{self.url}/instances/{id_}/attachments/{name}/info',
             headers=headers,
         )
 
     def get_instances_id_attachments_name_is_compressed(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Is attachment compressed?
 
@@ -799,7 +781,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -807,15 +790,15 @@ class Orthanc(httpx.Client):
             `0` if the attachment was stored uncompressed, `1` if it was compressed
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/attachments/{name}/is-compressed",
+            route=f'{self.url}/instances/{id_}/attachments/{name}/is-compressed',
             headers=headers,
         )
 
     def get_instances_id_attachments_name_md5(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get MD5 of attachment
 
@@ -830,7 +813,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -838,15 +822,15 @@ class Orthanc(httpx.Client):
             The MD5 of the attachment
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/attachments/{name}/md5",
+            route=f'{self.url}/instances/{id_}/attachments/{name}/md5',
             headers=headers,
         )
 
     def get_instances_id_attachments_name_size(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get size of attachment
 
@@ -861,7 +845,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -869,14 +854,14 @@ class Orthanc(httpx.Client):
             The size of the attachment
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/attachments/{name}/size",
+            route=f'{self.url}/instances/{id_}/attachments/{name}/size',
             headers=headers,
         )
 
     def post_instances_id_attachments_name_uncompress(
-        self,
-        id_: str,
-        name: str,
+            self,
+            id_: str,
+            name: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Uncompress attachment
 
@@ -890,18 +875,19 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the instance of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._post(
-            route=f"{self.url}/instances/{id_}/attachments/{name}/uncompress",
+            route=f'{self.url}/instances/{id_}/attachments/{name}/uncompress',
         )
 
     def post_instances_id_attachments_name_verify_md5(
-        self,
-        id_: str,
-        name: str,
+            self,
+            id_: str,
+            name: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Verify attachment
 
@@ -915,45 +901,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the instance of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             On success, a valid JSON object is returned
         """
         return self._post(
-            route=f"{self.url}/instances/{id_}/attachments/{name}/verify-md5",
-        )
-
-    def get_instances_id_content_path(
-        self,
-        id_: str,
-        path: str,
-    ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
-        """Get raw tag
-
-        Get the raw content of one DICOM tag in the hierarchy of DICOM dataset
-        Tags: Instances
-
-        Parameters
-        ----------
-        path
-            Path to the DICOM tag. This is the interleaving of one DICOM tag, possibly followed by an index for sequences. Sequences are accessible as, for instance, `/0008-1140/1/0008-1150`
-        id_
-            Orthanc identifier of the DICOM instance of interest
-
-        Returns
-        -------
-        Union[Dict, List, str, bytes, int, httpx.Response]
-            The raw value of the tag of intereset (binary data, whose memory layout depends on the underlying transfer syntax), or JSON array containing the list of available tags if accessing a dataset
-        """
-        return self._get(
-            route=f"{self.url}/instances/{id_}/content/{path}",
+            route=f'{self.url}/instances/{id_}/attachments/{name}/verify-md5',
         )
 
     def post_instances_id_export(
-        self,
-        id_: str,
-        data: RequestData = None,
+            self,
+            id_: str,
+            data: RequestData = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Write DICOM onto filesystem
 
@@ -964,23 +925,24 @@ class Orthanc(httpx.Client):
         ----------
         id_
             Orthanc identifier of the DICOM instance of interest
+
         data
             Target path on the filesystem
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._post(
-            route=f"{self.url}/instances/{id_}/export",
+            route=f'{self.url}/instances/{id_}/export',
             data=data,
         )
 
     def get_instances_id_file(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Download DICOM
 
@@ -991,12 +953,10 @@ class Orthanc(httpx.Client):
         ----------
         id_
             Orthanc identifier of the DICOM instance of interest
-        params
-            Dictionary of optional parameters:
-                "transcode" (str): If present, the DICOM file will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
         headers
             Dictionary of optional headers:
-                "Accept" (str): This HTTP header can be set to retrieve the DICOM instance in DICOMweb format
+            "Accept" (str): This HTTP header can be set to retrieve the DICOM instance in DICOMweb format
+
 
         Returns
         -------
@@ -1006,14 +966,13 @@ class Orthanc(httpx.Client):
             The DICOM instance, in DICOMweb XML format
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/file",
-            params=params,
+            route=f'{self.url}/instances/{id_}/file',
             headers=headers,
         )
 
     def get_instances_id_frames(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List available frames
 
@@ -1025,19 +984,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the DICOM instance of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             The list of the indices of the available frames
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/frames",
+            route=f'{self.url}/instances/{id_}/frames',
         )
 
     def get_instances_id_frames_frame(
-        self,
-        frame: str,
-        id_: str,
+            self,
+            frame: str,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List operations
 
@@ -1051,21 +1011,22 @@ class Orthanc(httpx.Client):
         id_
 
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             List of the available operations
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/frames/{frame}",
+            route=f'{self.url}/instances/{id_}/frames/{frame}',
         )
 
     def get_instances_id_frames_frame_image_int16(
-        self,
-        frame: float,
-        id_: str,
-        params: QueryParamTypes = None,
-        headers: HeaderTypes = None,
+            self,
+            frame: float,
+            id_: str,
+            params: QueryParamTypes = None,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Decode a frame (int16)
 
@@ -1080,11 +1041,11 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the DICOM instance of interest
         params
             Dictionary of optional parameters:
-                "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
-        headers
+            "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
+            "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)headers
             Dictionary of optional headers:
-                "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+            "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+
 
         Returns
         -------
@@ -1094,17 +1055,17 @@ class Orthanc(httpx.Client):
             PAM image (Portable Arbitrary Map)
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/frames/{frame}/image-int16",
+            route=f'{self.url}/instances/{id_}/frames/{frame}/image-int16',
             params=params,
             headers=headers,
         )
 
     def get_instances_id_frames_frame_image_uint16(
-        self,
-        frame: float,
-        id_: str,
-        params: QueryParamTypes = None,
-        headers: HeaderTypes = None,
+            self,
+            frame: float,
+            id_: str,
+            params: QueryParamTypes = None,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Decode a frame (uint16)
 
@@ -1119,11 +1080,11 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the DICOM instance of interest
         params
             Dictionary of optional parameters:
-                "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
-        headers
+            "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
+            "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)headers
             Dictionary of optional headers:
-                "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+            "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+
 
         Returns
         -------
@@ -1133,17 +1094,17 @@ class Orthanc(httpx.Client):
             PAM image (Portable Arbitrary Map)
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/frames/{frame}/image-uint16",
+            route=f'{self.url}/instances/{id_}/frames/{frame}/image-uint16',
             params=params,
             headers=headers,
         )
 
     def get_instances_id_frames_frame_image_uint8(
-        self,
-        frame: float,
-        id_: str,
-        params: QueryParamTypes = None,
-        headers: HeaderTypes = None,
+            self,
+            frame: float,
+            id_: str,
+            params: QueryParamTypes = None,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Decode a frame (uint8)
 
@@ -1158,11 +1119,11 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the DICOM instance of interest
         params
             Dictionary of optional parameters:
-                "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
-        headers
+            "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
+            "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)headers
             Dictionary of optional headers:
-                "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+            "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+
 
         Returns
         -------
@@ -1172,19 +1133,19 @@ class Orthanc(httpx.Client):
             PAM image (Portable Arbitrary Map)
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/frames/{frame}/image-uint8",
+            route=f'{self.url}/instances/{id_}/frames/{frame}/image-uint8',
             params=params,
             headers=headers,
         )
 
     def get_instances_id_frames_frame_matlab(
-        self,
-        frame: float,
-        id_: str,
+            self,
+            frame: float,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Decode frame for Matlab
 
-        Decode one frame of interest from the given DICOM instance, and export this frame as a Octave/Matlab matrix to be imported with `eval()`: https://orthanc.uclouvain.be/book/faq/matlab.html
+        Decode one frame of interest from the given DICOM instance, and export this frame as a Octave/Matlab matrix to be imported with `eval()`: https://book.orthanc-server.com/faq/matlab.html
         Tags: Instances
 
         Parameters
@@ -1194,20 +1155,21 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the DICOM instance of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             Octave/Matlab matrix
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/frames/{frame}/matlab",
+            route=f'{self.url}/instances/{id_}/frames/{frame}/matlab',
         )
 
     def get_instances_id_frames_frame_numpy(
-        self,
-        frame: float,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            frame: float,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Decode frame for numpy
 
@@ -1222,8 +1184,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the DICOM resource of interest
         params
             Dictionary of optional parameters:
-                "compress" (bool): Compress the file as `.npz`
-                "rescale" (bool): On grayscale images, apply the rescaling and return floating-point values
+            "compress" (bool): Compress the file as `.npz`
+            "rescale" (bool): On grayscale images, apply the rescaling and return floating-point values
 
         Returns
         -------
@@ -1231,16 +1193,16 @@ class Orthanc(httpx.Client):
             Numpy file: https://numpy.org/devdocs/reference/generated/numpy.lib.format.html
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/frames/{frame}/numpy",
+            route=f'{self.url}/instances/{id_}/frames/{frame}/numpy',
             params=params,
         )
 
     def get_instances_id_frames_frame_preview(
-        self,
-        frame: float,
-        id_: str,
-        params: QueryParamTypes = None,
-        headers: HeaderTypes = None,
+            self,
+            frame: float,
+            id_: str,
+            params: QueryParamTypes = None,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Decode a frame (preview)
 
@@ -1255,11 +1217,11 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the DICOM instance of interest
         params
             Dictionary of optional parameters:
-                "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
-        headers
+            "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
+            "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)headers
             Dictionary of optional headers:
-                "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+            "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+
 
         Returns
         -------
@@ -1269,15 +1231,15 @@ class Orthanc(httpx.Client):
             PAM image (Portable Arbitrary Map)
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/frames/{frame}/preview",
+            route=f'{self.url}/instances/{id_}/frames/{frame}/preview',
             params=params,
             headers=headers,
         )
 
     def get_instances_id_frames_frame_raw(
-        self,
-        frame: float,
-        id_: str,
+            self,
+            frame: float,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Access raw frame
 
@@ -1291,19 +1253,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the instance of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             The raw frame
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/frames/{frame}/raw",
+            route=f'{self.url}/instances/{id_}/frames/{frame}/raw',
         )
 
     def get_instances_id_frames_frame_raw_gz(
-        self,
-        frame: float,
-        id_: str,
+            self,
+            frame: float,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Access raw frame (compressed)
 
@@ -1317,21 +1280,22 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the instance of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             The raw frame, compressed using gzip
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/frames/{frame}/raw.gz",
+            route=f'{self.url}/instances/{id_}/frames/{frame}/raw.gz',
         )
 
     def get_instances_id_frames_frame_rendered(
-        self,
-        frame: float,
-        id_: str,
-        params: QueryParamTypes = None,
-        headers: HeaderTypes = None,
+            self,
+            frame: float,
+            id_: str,
+            params: QueryParamTypes = None,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Render a frame
 
@@ -1346,16 +1310,16 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the DICOM instance of interest
         params
             Dictionary of optional parameters:
-                "height" (float): Height of the resized image
-                "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
-                "smooth" (bool): Whether to smooth image on resize
-                "width" (float): Width of the resized image
-                "window-center" (float): Windowing center
-                "window-width" (float): Windowing width
-        headers
+            "height" (float): Height of the resized image
+            "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
+            "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
+            "smooth" (bool): Whether to smooth image on resize
+            "width" (float): Width of the resized image
+            "window-center" (float): Windowing center
+            "window-width" (float): Windowing widthheaders
             Dictionary of optional headers:
-                "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+            "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+
 
         Returns
         -------
@@ -1365,15 +1329,15 @@ class Orthanc(httpx.Client):
             PAM image (Portable Arbitrary Map)
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/frames/{frame}/rendered",
+            route=f'{self.url}/instances/{id_}/frames/{frame}/rendered',
             params=params,
             headers=headers,
         )
 
     def get_instances_id_header(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get DICOM meta-header
 
@@ -1386,8 +1350,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the DICOM instance of interest
         params
             Dictionary of optional parameters:
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
 
         Returns
         -------
@@ -1395,15 +1359,15 @@ class Orthanc(httpx.Client):
             JSON object containing the DICOM tags and their associated value
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/header",
+            route=f'{self.url}/instances/{id_}/header',
             params=params,
         )
 
     def get_instances_id_image_int16(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Decode an image (int16)
 
@@ -1416,11 +1380,11 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the DICOM instance of interest
         params
             Dictionary of optional parameters:
-                "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
-        headers
+            "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
+            "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)headers
             Dictionary of optional headers:
-                "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+            "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+
 
         Returns
         -------
@@ -1430,16 +1394,16 @@ class Orthanc(httpx.Client):
             PAM image (Portable Arbitrary Map)
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/image-int16",
+            route=f'{self.url}/instances/{id_}/image-int16',
             params=params,
             headers=headers,
         )
 
     def get_instances_id_image_uint16(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Decode an image (uint16)
 
@@ -1452,11 +1416,11 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the DICOM instance of interest
         params
             Dictionary of optional parameters:
-                "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
-        headers
+            "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
+            "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)headers
             Dictionary of optional headers:
-                "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+            "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+
 
         Returns
         -------
@@ -1466,16 +1430,16 @@ class Orthanc(httpx.Client):
             PAM image (Portable Arbitrary Map)
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/image-uint16",
+            route=f'{self.url}/instances/{id_}/image-uint16',
             params=params,
             headers=headers,
         )
 
     def get_instances_id_image_uint8(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Decode an image (uint8)
 
@@ -1488,11 +1452,11 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the DICOM instance of interest
         params
             Dictionary of optional parameters:
-                "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
-        headers
+            "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
+            "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)headers
             Dictionary of optional headers:
-                "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+            "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+
 
         Returns
         -------
@@ -1502,14 +1466,14 @@ class Orthanc(httpx.Client):
             PAM image (Portable Arbitrary Map)
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/image-uint8",
+            route=f'{self.url}/instances/{id_}/image-uint8',
             params=params,
             headers=headers,
         )
 
     def get_instances_id_labels(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List labels
 
@@ -1521,19 +1485,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the instance of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the names of the labels
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/labels",
+            route=f'{self.url}/instances/{id_}/labels',
         )
 
     def delete_instances_id_labels_label(
-        self,
-        id_: str,
-        label: str,
+            self,
+            id_: str,
+            label: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Remove label
 
@@ -1547,18 +1512,19 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the instance of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/instances/{id_}/labels/{label}",
+            route=f'{self.url}/instances/{id_}/labels/{label}',
         )
 
     def get_instances_id_labels_label(
-        self,
-        id_: str,
-        label: str,
+            self,
+            id_: str,
+            label: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Test label
 
@@ -1572,19 +1538,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the instance of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             Empty string is returned in the case of presence, error 404 in the case of absence
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/labels/{label}",
+            route=f'{self.url}/instances/{id_}/labels/{label}',
         )
 
     def put_instances_id_labels_label(
-        self,
-        id_: str,
-        label: str,
+            self,
+            id_: str,
+            label: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Add label
 
@@ -1598,21 +1565,22 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the instance of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/instances/{id_}/labels/{label}",
+            route=f'{self.url}/instances/{id_}/labels/{label}',
         )
 
     def get_instances_id_matlab(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Decode frame for Matlab
 
-        Decode the first frame of the given DICOM instance., and export this frame as a Octave/Matlab matrix to be imported with `eval()`: https://orthanc.uclouvain.be/book/faq/matlab.html
+        Decode the first frame of the given DICOM instance., and export this frame as a Octave/Matlab matrix to be imported with `eval()`: https://book.orthanc-server.com/faq/matlab.html
         Tags: Instances
 
         Parameters
@@ -1620,19 +1588,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the DICOM instance of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             Octave/Matlab matrix
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/matlab",
+            route=f'{self.url}/instances/{id_}/matlab',
         )
 
     def get_instances_id_metadata(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List metadata
 
@@ -1645,8 +1614,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         params
             Dictionary of optional parameters:
-                "expand" (str): If present, also retrieve the value of the individual metadata
-                "numeric" (str): If present, use the numeric identifier of the metadata instead of its symbolic name
+            "expand" (str): If present, also retrieve the value of the individual metadata
+            "numeric" (str): If present, use the numeric identifier of the metadata instead of its symbolic name
 
         Returns
         -------
@@ -1654,15 +1623,15 @@ class Orthanc(httpx.Client):
             JSON array containing the names of the available metadata, or JSON associative array mapping metadata to their values (if `expand` argument is provided)
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/metadata",
+            route=f'{self.url}/instances/{id_}/metadata',
             params=params,
         )
 
     def delete_instances_id_metadata_name(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Delete metadata
 
@@ -1677,22 +1646,23 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         headers
             Dictionary of optional headers:
-                "If-Match" (str): Revision of the metadata, to check if its content has not changed and can be deleted. This header is mandatory if `CheckRevisions` option is `true`.
+            "If-Match" (str): Revision of the metadata, to check if its content has not changed and can be deleted. This header is mandatory if `CheckRevisions` option is `true`.
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/instances/{id_}/metadata/{name}",
+            route=f'{self.url}/instances/{id_}/metadata/{name}',
             headers=headers,
         )
 
     def get_instances_id_metadata_name(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get metadata
 
@@ -1707,7 +1677,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+
 
         Returns
         -------
@@ -1715,16 +1686,16 @@ class Orthanc(httpx.Client):
             Value of the metadata
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/metadata/{name}",
+            route=f'{self.url}/instances/{id_}/metadata/{name}',
             headers=headers,
         )
 
     def put_instances_id_metadata_name(
-        self,
-        id_: str,
-        name: str,
-        data: RequestData = None,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            data: RequestData = None,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Set metadata
 
@@ -1737,30 +1708,32 @@ class Orthanc(httpx.Client):
             The name of the metadata, or its index (cf. `UserMetadata` configuration option)
         id_
             Orthanc identifier of the instance of interest
+
         data
             String value of the metadata
         headers
             Dictionary of optional headers:
-                "If-Match" (str): Revision of the metadata, if this is not the first time this metadata is set.
+            "If-Match" (str): Revision of the metadata, if this is not the first time this metadata is set.
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/instances/{id_}/metadata/{name}",
+            route=f'{self.url}/instances/{id_}/metadata/{name}',
             data=data,
             headers=headers,
         )
 
     def post_instances_id_modify(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Modify instance
 
-        Download a modified version of the DICOM instance whose Orthanc identifier is provided in the URL: https://orthanc.uclouvain.be/book/users/anonymization.html#modification-of-a-single-instance
+        Download a modified version of the DICOM instance whose Orthanc identifier is provided in the URL: https://book.orthanc-server.com/users/anonymization.html#modification-of-a-single-instance
         Tags: Instances
 
         Parameters
@@ -1769,15 +1742,14 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         json
             Dictionary with the following keys:
-              "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
-              "Keep": Keep the original value of the specified tags, to be chosen among the `StudyInstanceUID`, `SeriesInstanceUID` and `SOPInstanceUID` tags. Avoid this feature as much as possible, as this breaks the DICOM model of the real world.
-              "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
-              "PrivateCreator": The private creator to be used for private tags in `Replace`
-              "Remove": List of tags that must be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "RemovePrivateTags": Remove the private tags from the DICOM instances (defaults to `false`)
-              "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
+            "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
+            "Keep": Keep the original value of the specified tags, to be chosen among the `StudyInstanceUID`, `SeriesInstanceUID` and `SOPInstanceUID` tags. Avoid this feature as much as possible, as this breaks the DICOM model of the real world.
+            "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
+            "PrivateCreator": The private creator to be used for private tags in `Replace`
+            "Remove": List of tags that must be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "RemovePrivateTags": Remove the private tags from the DICOM instances (defaults to `false`)
+            "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -1787,14 +1759,14 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/instances/{id_}/modify",
+            route=f'{self.url}/instances/{id_}/modify',
             json=json,
         )
 
     def get_instances_id_module(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get instance module
 
@@ -1807,9 +1779,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         params
             Dictionary of optional parameters:
-                "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
+            "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
 
         Returns
         -------
@@ -1817,14 +1789,14 @@ class Orthanc(httpx.Client):
             Information about the DICOM instance
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/module",
+            route=f'{self.url}/instances/{id_}/module',
             params=params,
         )
 
     def get_instances_id_numpy(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Decode instance for numpy
 
@@ -1837,8 +1809,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the DICOM resource of interest
         params
             Dictionary of optional parameters:
-                "compress" (bool): Compress the file as `.npz`
-                "rescale" (bool): On grayscale images, apply the rescaling and return floating-point values
+            "compress" (bool): Compress the file as `.npz`
+            "rescale" (bool): On grayscale images, apply the rescaling and return floating-point values
 
         Returns
         -------
@@ -1846,14 +1818,14 @@ class Orthanc(httpx.Client):
             Numpy file: https://numpy.org/devdocs/reference/generated/numpy.lib.format.html
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/numpy",
+            route=f'{self.url}/instances/{id_}/numpy',
             params=params,
         )
 
     def get_instances_id_patient(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get parent patient
 
@@ -1866,9 +1838,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         params
             Dictionary of optional parameters:
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
         -------
@@ -1876,13 +1848,13 @@ class Orthanc(httpx.Client):
             Information about the parent DICOM patient
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/patient",
+            route=f'{self.url}/instances/{id_}/patient',
             params=params,
         )
 
     def get_instances_id_pdf(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get embedded PDF
 
@@ -1894,20 +1866,21 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the instance interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             PDF file
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/pdf",
+            route=f'{self.url}/instances/{id_}/pdf',
         )
 
     def get_instances_id_preview(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Decode an image (preview)
 
@@ -1920,11 +1893,11 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the DICOM instance of interest
         params
             Dictionary of optional parameters:
-                "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
-        headers
+            "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
+            "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)headers
             Dictionary of optional headers:
-                "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+            "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+
 
         Returns
         -------
@@ -1934,15 +1907,15 @@ class Orthanc(httpx.Client):
             PAM image (Portable Arbitrary Map)
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/preview",
+            route=f'{self.url}/instances/{id_}/preview',
             params=params,
             headers=headers,
         )
 
     def post_instances_id_reconstruct(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Reconstruct tags & optionally files of instance
 
@@ -1955,8 +1928,7 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         json
             Dictionary with the following keys:
-              "ReconstructFiles": Also reconstruct the files of the resources (e.g: apply IngestTranscoding, StorageCompression). 'false' by default. (New in Orthanc 1.11.0)
-
+            "ReconstructFiles": Also reconstruct the files of the resources (e.g: apply IngestTranscoding, StorageCompression). 'false' by default. (New in Orthanc 1.11.0)
 
         Returns
         -------
@@ -1965,15 +1937,15 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/instances/{id_}/reconstruct",
+            route=f'{self.url}/instances/{id_}/reconstruct',
             json=json,
         )
 
     def get_instances_id_rendered(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Render an image
 
@@ -1986,16 +1958,16 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the DICOM instance of interest
         params
             Dictionary of optional parameters:
-                "height" (float): Height of the resized image
-                "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
-                "smooth" (bool): Whether to smooth image on resize
-                "width" (float): Width of the resized image
-                "window-center" (float): Windowing center
-                "window-width" (float): Windowing width
-        headers
+            "height" (float): Height of the resized image
+            "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
+            "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
+            "smooth" (bool): Whether to smooth image on resize
+            "width" (float): Width of the resized image
+            "window-center" (float): Windowing center
+            "window-width" (float): Windowing widthheaders
             Dictionary of optional headers:
-                "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+            "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
+
 
         Returns
         -------
@@ -2005,15 +1977,15 @@ class Orthanc(httpx.Client):
             PAM image (Portable Arbitrary Map)
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/rendered",
+            route=f'{self.url}/instances/{id_}/rendered',
             params=params,
             headers=headers,
         )
 
     def get_instances_id_series(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get parent series
 
@@ -2026,9 +1998,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         params
             Dictionary of optional parameters:
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
         -------
@@ -2036,14 +2008,14 @@ class Orthanc(httpx.Client):
             Information about the parent DICOM series
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/series",
+            route=f'{self.url}/instances/{id_}/series',
             params=params,
         )
 
     def get_instances_id_simplified_tags(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get human-readable tags
 
@@ -2056,7 +2028,7 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the DICOM instance of interest
         params
             Dictionary of optional parameters:
-                "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
+            "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
 
         Returns
         -------
@@ -2064,13 +2036,13 @@ class Orthanc(httpx.Client):
             JSON object containing the DICOM tags and their associated value
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/simplified-tags",
+            route=f'{self.url}/instances/{id_}/simplified-tags',
             params=params,
         )
 
     def get_instances_id_statistics(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get instance statistics
 
@@ -2082,19 +2054,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the instance of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
 
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/statistics",
+            route=f'{self.url}/instances/{id_}/statistics',
         )
 
     def get_instances_id_study(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get parent study
 
@@ -2107,9 +2080,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         params
             Dictionary of optional parameters:
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
         -------
@@ -2117,14 +2090,14 @@ class Orthanc(httpx.Client):
             Information about the parent DICOM study
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/study",
+            route=f'{self.url}/instances/{id_}/study',
             params=params,
         )
 
     def get_instances_id_tags(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get DICOM tags
 
@@ -2137,9 +2110,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the DICOM instance of interest
         params
             Dictionary of optional parameters:
-                "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
+            "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
 
         Returns
         -------
@@ -2147,13 +2120,13 @@ class Orthanc(httpx.Client):
             JSON object containing the DICOM tags and their associated value
         """
         return self._get(
-            route=f"{self.url}/instances/{id_}/tags",
+            route=f'{self.url}/instances/{id_}/tags',
             params=params,
         )
 
     def get_jobs(
-        self,
-        params: QueryParamTypes = None,
+            self,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List jobs
 
@@ -2164,7 +2137,7 @@ class Orthanc(httpx.Client):
         ----------
         params
             Dictionary of optional parameters:
-                "expand" (str): If present, retrieve detailed information about the individual jobs
+            "expand" (str): If present, retrieve detailed information about the individual jobs
 
         Returns
         -------
@@ -2172,45 +2145,24 @@ class Orthanc(httpx.Client):
             JSON array containing either the jobs identifiers, or detailed information about the reported jobs (if `expand` argument is provided)
         """
         return self._get(
-            route=f"{self.url}/jobs",
+            route=f'{self.url}/jobs',
             params=params,
         )
 
-    def delete_jobs_id(
-        self,
-        id_: str,
-    ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
-        """Delete a job from history
-
-        Delete the job from the jobs history.  Only a completed job can be deleted. If the job has not run or not completed yet, you must cancel it first. If the job has outputs, all outputs will be deleted as well.
-        Tags: Jobs
-
-        Parameters
-        ----------
-        id_
-            Identifier of the job of interest
-
-        Returns
-        -------
-        Union[Dict, List, str, bytes, int, httpx.Response]
-        """
-        return self._delete(
-            route=f"{self.url}/jobs/{id_}",
-        )
-
     def get_jobs_id(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get job
 
-        Retrieve detailed information about the job whose identifier is provided in the URL: https://orthanc.uclouvain.be/book/users/advanced-rest.html#jobs
+        Retrieve detailed information about the job whose identifier is provided in the URL: https://book.orthanc-server.com/users/advanced-rest.html#jobs
         Tags: Jobs
 
         Parameters
         ----------
         id_
             Identifier of the job of interest
+
 
         Returns
         -------
@@ -2218,16 +2170,16 @@ class Orthanc(httpx.Client):
             JSON object detailing the job
         """
         return self._get(
-            route=f"{self.url}/jobs/{id_}",
+            route=f'{self.url}/jobs/{id_}',
         )
 
     def post_jobs_id_cancel(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Cancel job
 
-        Cancel the job whose identifier is provided in the URL. Check out the Orthanc Book for more information about the state machine applicable to jobs: https://orthanc.uclouvain.be/book/users/advanced-rest.html#jobs
+        Cancel the job whose identifier is provided in the URL. Check out the Orthanc Book for more information about the state machine applicable to jobs: https://book.orthanc-server.com/users/advanced-rest.html#jobs
         Tags: Jobs
 
         Parameters
@@ -2235,22 +2187,23 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the job of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             Empty JSON object in the case of a success
         """
         return self._post(
-            route=f"{self.url}/jobs/{id_}/cancel",
+            route=f'{self.url}/jobs/{id_}/cancel',
         )
 
     def post_jobs_id_pause(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Pause job
 
-        Pause the job whose identifier is provided in the URL. Check out the Orthanc Book for more information about the state machine applicable to jobs: https://orthanc.uclouvain.be/book/users/advanced-rest.html#jobs
+        Pause the job whose identifier is provided in the URL. Check out the Orthanc Book for more information about the state machine applicable to jobs: https://book.orthanc-server.com/users/advanced-rest.html#jobs
         Tags: Jobs
 
         Parameters
@@ -2258,22 +2211,23 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the job of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             Empty JSON object in the case of a success
         """
         return self._post(
-            route=f"{self.url}/jobs/{id_}/pause",
+            route=f'{self.url}/jobs/{id_}/pause',
         )
 
     def post_jobs_id_resubmit(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Resubmit job
 
-        Resubmit the job whose identifier is provided in the URL. Check out the Orthanc Book for more information about the state machine applicable to jobs: https://orthanc.uclouvain.be/book/users/advanced-rest.html#jobs
+        Resubmit the job whose identifier is provided in the URL. Check out the Orthanc Book for more information about the state machine applicable to jobs: https://book.orthanc-server.com/users/advanced-rest.html#jobs
         Tags: Jobs
 
         Parameters
@@ -2281,22 +2235,23 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the job of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             Empty JSON object in the case of a success
         """
         return self._post(
-            route=f"{self.url}/jobs/{id_}/resubmit",
+            route=f'{self.url}/jobs/{id_}/resubmit',
         )
 
     def post_jobs_id_resume(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Resume job
 
-        Resume the job whose identifier is provided in the URL. Check out the Orthanc Book for more information about the state machine applicable to jobs: https://orthanc.uclouvain.be/book/users/advanced-rest.html#jobs
+        Resume the job whose identifier is provided in the URL. Check out the Orthanc Book for more information about the state machine applicable to jobs: https://book.orthanc-server.com/users/advanced-rest.html#jobs
         Tags: Jobs
 
         Parameters
@@ -2304,19 +2259,20 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the job of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             Empty JSON object in the case of a success
         """
         return self._post(
-            route=f"{self.url}/jobs/{id_}/resume",
+            route=f'{self.url}/jobs/{id_}/resume',
         )
 
     def delete_jobs_id_key(
-        self,
-        id_: str,
-        key: str,
+            self,
+            id_: str,
+            key: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Delete a job output
 
@@ -2330,18 +2286,19 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the job of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/jobs/{id_}/{key}",
+            route=f'{self.url}/jobs/{id_}/{key}',
         )
 
     def get_jobs_id_key(
-        self,
-        id_: str,
-        key: str,
+            self,
+            id_: str,
+            key: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get job output
 
@@ -2355,18 +2312,19 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the job of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             Content of the output of the job
         """
         return self._get(
-            route=f"{self.url}/jobs/{id_}/{key}",
+            route=f'{self.url}/jobs/{id_}/{key}',
         )
 
     def get_modalities(
-        self,
-        params: QueryParamTypes = None,
+            self,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List DICOM modalities
 
@@ -2377,7 +2335,7 @@ class Orthanc(httpx.Client):
         ----------
         params
             Dictionary of optional parameters:
-                "expand" (str): If present, retrieve detailed information about the individual DICOM modalities
+            "expand" (str): If present, retrieve detailed information about the individual DICOM modalities
 
         Returns
         -------
@@ -2385,13 +2343,13 @@ class Orthanc(httpx.Client):
             JSON array containing either the identifiers of the modalities, or detailed information about the modalities (if `expand` argument is provided)
         """
         return self._get(
-            route=f"{self.url}/modalities",
+            route=f'{self.url}/modalities',
             params=params,
         )
 
     def delete_modalities_id(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Delete DICOM modality
 
@@ -2403,17 +2361,18 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the DICOM modality of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/modalities/{id_}",
+            route=f'{self.url}/modalities/{id_}',
         )
 
     def get_modalities_id(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List operations on modality
 
@@ -2425,19 +2384,20 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the DICOM modality of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             List of the available operations
         """
         return self._get(
-            route=f"{self.url}/modalities/{id_}",
+            route=f'{self.url}/modalities/{id_}',
         )
 
     def put_modalities_id(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Update DICOM modality
 
@@ -2450,20 +2410,19 @@ class Orthanc(httpx.Client):
             Identifier of the new/updated DICOM modality
         json
             Dictionary with the following keys:
-              "AET": AET of the remote DICOM modality
-              "AllowEcho": Whether to accept C-ECHO SCU commands issued by the remote modality
-              "AllowFind": Whether to accept C-FIND SCU commands issued by the remote modality
-              "AllowFindWorklist": Whether to accept C-FIND SCU commands for worklists issued by the remote modality
-              "AllowGet": Whether to accept C-GET SCU commands issued by the remote modality
-              "AllowMove": Whether to accept C-MOVE SCU commands issued by the remote modality
-              "AllowStorageCommitment": Whether to accept storage commitment requests issued by the remote modality
-              "AllowStore": Whether to accept C-STORE SCU commands issued by the remote modality
-              "AllowTranscoding": Whether to allow transcoding for operations initiated by this modality. This option applies to Orthanc C-GET SCP and to Orthanc C-STORE SCU. It only has an effect if the global option `EnableTranscoding` is set to `true`.
-              "Host": Host address of the remote DICOM modality (typically, an IP address)
-              "Manufacturer": Manufacturer of the remote DICOM modality (check configuration option `DicomModalities` for possible values
-              "Port": TCP port of the remote DICOM modality
-              "UseDicomTls": Whether to use DICOM TLS in the SCU connection initiated by Orthanc (new in Orthanc 1.9.0)
-
+            "AET": AET of the remote DICOM modality
+            "AllowEcho": Whether to accept C-ECHO SCU commands issued by the remote modality
+            "AllowFind": Whether to accept C-FIND SCU commands issued by the remote modality
+            "AllowFindWorklist": Whether to accept C-FIND SCU commands for worklists issued by the remote modality
+            "AllowGet": Whether to accept C-GET SCU commands issued by the remote modality
+            "AllowMove": Whether to accept C-MOVE SCU commands issued by the remote modality
+            "AllowStorageCommitment": Whether to accept storage commitment requests issued by the remote modality
+            "AllowStore": Whether to accept C-STORE SCU commands issued by the remote modality
+            "AllowTranscoding": Whether to allow transcoding for operations initiated by this modality. This option applies to Orthanc C-GET SCP and to Orthanc C-STORE SCU. It only has an effect if the global option `EnableTranscoding` is set to `true`.
+            "Host": Host address of the remote DICOM modality (typically, an IP address)
+            "Manufacturer": Manufacturer of the remote DICOM modality (check configuration option `DicomModalities` for possible values
+            "Port": TCP port of the remote DICOM modality
+            "UseDicomTls": Whether to use DICOM TLS in the SCU connection initiated by Orthanc (new in Orthanc 1.9.0)
 
         Returns
         -------
@@ -2472,13 +2431,13 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._put(
-            route=f"{self.url}/modalities/{id_}",
+            route=f'{self.url}/modalities/{id_}',
             json=json,
         )
 
     def get_modalities_id_configuration(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get modality configuration
 
@@ -2490,23 +2449,24 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the modality of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             Configuration of the modality
         """
         return self._get(
-            route=f"{self.url}/modalities/{id_}/configuration",
+            route=f'{self.url}/modalities/{id_}/configuration',
         )
 
     def post_modalities_id_echo(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Trigger C-ECHO SCU
 
-        Trigger C-ECHO SCU command against the DICOM modality whose identifier is provided in URL: https://orthanc.uclouvain.be/book/users/rest.html#performing-c-echo
+        Trigger C-ECHO SCU command against the DICOM modality whose identifier is provided in URL: https://book.orthanc-server.com/users/rest.html#performing-c-echo
         Tags: Networking
 
         Parameters
@@ -2515,9 +2475,8 @@ class Orthanc(httpx.Client):
             Identifier of the modality of interest
         json
             Dictionary with the following keys:
-              "CheckFind": Issue a dummy C-FIND command after the C-GET SCU, in order to check whether the remote modality knows about Orthanc. This field defaults to the value of the `DicomEchoChecksFind` configuration option. New in Orthanc 1.8.1.
-              "Timeout": Timeout for the C-ECHO command, in seconds
-
+            "CheckFind": Issue a dummy C-FIND command after the C-GET SCU, in order to check whether the remote modality knows about Orthanc. This field defaults to the value of the `DicomEchoChecksFind` configuration option. New in Orthanc 1.8.1.
+            "Timeout": Timeout for the C-ECHO command, in seconds
 
         Returns
         -------
@@ -2526,14 +2485,14 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/modalities/{id_}/echo",
+            route=f'{self.url}/modalities/{id_}/echo',
             json=json,
         )
 
     def post_modalities_id_find(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Hierarchical C-FIND SCU
 
@@ -2547,24 +2506,23 @@ class Orthanc(httpx.Client):
         json
             Dictionary with the following keys:
 
-
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array describing the DICOM tags of the matching patients, embedding the matching studies, then the matching series.
         """
-        warnings.warn("This method is deprecated.", DeprecationWarning, stacklevel=2)
+        warnings.warn('This method is deprecated.', DeprecationWarning, stacklevel=2)
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/modalities/{id_}/find",
+            route=f'{self.url}/modalities/{id_}/find',
             json=json,
         )
 
     def post_modalities_id_find_instance(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """C-FIND SCU for instances
 
@@ -2578,24 +2536,23 @@ class Orthanc(httpx.Client):
         json
             Dictionary with the following keys:
 
-
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array describing the DICOM tags of the matching instances
         """
-        warnings.warn("This method is deprecated.", DeprecationWarning, stacklevel=2)
+        warnings.warn('This method is deprecated.', DeprecationWarning, stacklevel=2)
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/modalities/{id_}/find-instance",
+            route=f'{self.url}/modalities/{id_}/find-instance',
             json=json,
         )
 
     def post_modalities_id_find_patient(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """C-FIND SCU for patients
 
@@ -2609,24 +2566,23 @@ class Orthanc(httpx.Client):
         json
             Dictionary with the following keys:
 
-
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array describing the DICOM tags of the matching patients
         """
-        warnings.warn("This method is deprecated.", DeprecationWarning, stacklevel=2)
+        warnings.warn('This method is deprecated.', DeprecationWarning, stacklevel=2)
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/modalities/{id_}/find-patient",
+            route=f'{self.url}/modalities/{id_}/find-patient',
             json=json,
         )
 
     def post_modalities_id_find_series(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """C-FIND SCU for series
 
@@ -2640,24 +2596,23 @@ class Orthanc(httpx.Client):
         json
             Dictionary with the following keys:
 
-
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array describing the DICOM tags of the matching series
         """
-        warnings.warn("This method is deprecated.", DeprecationWarning, stacklevel=2)
+        warnings.warn('This method is deprecated.', DeprecationWarning, stacklevel=2)
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/modalities/{id_}/find-series",
+            route=f'{self.url}/modalities/{id_}/find-series',
             json=json,
         )
 
     def post_modalities_id_find_study(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """C-FIND SCU for studies
 
@@ -2671,24 +2626,23 @@ class Orthanc(httpx.Client):
         json
             Dictionary with the following keys:
 
-
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array describing the DICOM tags of the matching studies
         """
-        warnings.warn("This method is deprecated.", DeprecationWarning, stacklevel=2)
+        warnings.warn('This method is deprecated.', DeprecationWarning, stacklevel=2)
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/modalities/{id_}/find-study",
+            route=f'{self.url}/modalities/{id_}/find-study',
             json=json,
         )
 
     def post_modalities_id_find_worklist(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """C-FIND SCU for worklist
 
@@ -2701,10 +2655,9 @@ class Orthanc(httpx.Client):
             Identifier of the modality of interest
         json
             Dictionary with the following keys:
-              "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-              "Query": Associative array containing the filter on the values of the DICOM tags
-              "Short": If set to `true`, report the DICOM tags in hexadecimal format
-
+            "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "Query": Associative array containing the filter on the values of the DICOM tags
+            "Short": If set to `true`, report the DICOM tags in hexadecimal format
 
         Returns
         -------
@@ -2714,18 +2667,18 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/modalities/{id_}/find-worklist",
+            route=f'{self.url}/modalities/{id_}/find-worklist',
             json=json,
         )
 
     def post_modalities_id_move(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Trigger C-MOVE SCU
 
-        Start a C-MOVE SCU command as a job, in order to drive the execution of a sequence of C-STORE commands by some remote DICOM modality whose identifier is provided in the URL: https://orthanc.uclouvain.be/book/users/rest.html#performing-c-move
+        Start a C-MOVE SCU command as a job, in order to drive the execution of a sequence of C-STORE commands by some remote DICOM modality whose identifier is provided in the URL: https://book.orthanc-server.com/users/rest.html#performing-c-move
         Tags: Networking
 
         Parameters
@@ -2734,16 +2687,15 @@ class Orthanc(httpx.Client):
             Identifier of the modality of interest
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
-              "Level": Level of the query (`Patient`, `Study`, `Series` or `Instance`)
-              "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option. Ignored if `DicomModalities` already sets `LocalAet` for this modality.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "Resources": List of queries identifying all the DICOM resources to be sent
-              "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
-              "TargetAet": Target AET that will be used by the remote DICOM modality as a target for its C-STORE SCU commands, defaults to `DicomAet` configuration option in order to do a simple query/retrieve
-              "Timeout": Timeout for the C-MOVE command, in seconds
-
+            "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
+            "Level": Level of the query (`Patient`, `Study`, `Series` or `Instance`)
+            "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option. Ignored if `DicomModalities` already sets `LocalAet` for this modality.
+            "Permissive": If `true`, ignore errors during the individual steps of the job.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "Resources": List of queries identifying all the DICOM resources to be sent
+            "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+            "TargetAet": Target AET that will be used by the remote DICOM modality as a target for its C-STORE SCU commands, defaults to `DicomAet` configuration option in order to do a simple query/retrieve
+            "Timeout": Timeout for the C-MOVE command, in seconds
 
         Returns
         -------
@@ -2753,18 +2705,18 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/modalities/{id_}/move",
+            route=f'{self.url}/modalities/{id_}/move',
             json=json,
         )
 
     def post_modalities_id_query(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Trigger C-FIND SCU
 
-        Trigger C-FIND SCU command against the DICOM modality whose identifier is provided in URL: https://orthanc.uclouvain.be/book/users/rest.html#performing-query-retrieve-c-find-and-find-with-rest
+        Trigger C-FIND SCU command against the DICOM modality whose identifier is provided in URL: https://book.orthanc-server.com/users/rest.html#performing-query-retrieve-c-find-and-find-with-rest
         Tags: Networking
 
         Parameters
@@ -2773,12 +2725,11 @@ class Orthanc(httpx.Client):
             Identifier of the modality of interest
         json
             Dictionary with the following keys:
-              "Level": Level of the query (`Patient`, `Study`, `Series` or `Instance`)
-              "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option. Ignored if `DicomModalities` already sets `LocalAet` for this modality.
-              "Normalize": Whether to normalize the query, i.e. whether to wipe out from the query, the DICOM tags that are not applicable for the query-retrieve level of interest
-              "Query": Associative array containing the filter on the values of the DICOM tags
-              "Timeout": Timeout for the C-FIND command and subsequent C-MOVE retrievals, in seconds (new in Orthanc 1.9.1)
-
+            "Level": Level of the query (`Patient`, `Study`, `Series` or `Instance`)
+            "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option. Ignored if `DicomModalities` already sets `LocalAet` for this modality.
+            "Normalize": Whether to normalize the query, i.e. whether to wipe out from the query, the DICOM tags that are not applicable for the query-retrieve level of interest
+            "Query": Associative array containing the filter on the values of the DICOM tags
+            "Timeout": Timeout for the C-FIND command and subsequent C-MOVE retrievals, in seconds (new in Orthanc 1.9.1)
 
         Returns
         -------
@@ -2788,18 +2739,18 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/modalities/{id_}/query",
+            route=f'{self.url}/modalities/{id_}/query',
             json=json,
         )
 
     def post_modalities_id_storage_commitment(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Trigger storage commitment request
 
-        Trigger a storage commitment request to some remote DICOM modality whose identifier is provided in the URL: https://orthanc.uclouvain.be/book/users/storage-commitment.html#storage-commitment-scu
+        Trigger a storage commitment request to some remote DICOM modality whose identifier is provided in the URL: https://book.orthanc-server.com/users/storage-commitment.html#storage-commitment-scu
         Tags: Networking
 
         Parameters
@@ -2808,10 +2759,9 @@ class Orthanc(httpx.Client):
             Identifier of the modality of interest
         json
             Dictionary with the following keys:
-              "DicomInstances": List of DICOM resources that are not necessarily stored within Orthanc, but that must be checked by storage commitment. This is a list of JSON objects that must contain the `SOPClassUID` and `SOPInstanceUID` fields.
-              "Resources": List of the Orthanc identifiers of the DICOM resources to be checked by storage commitment
-              "Timeout": Timeout for the storage commitment command (new in Orthanc 1.9.1)
-
+            "DicomInstances": List of DICOM resources that are not necessarily stored within Orthanc, but that must be checked by storage commitment. This is a list of JSON objects that must contain the `SOPClassUID` and `SOPInstanceUID` fields.
+            "Resources": List of the Orthanc identifiers of the DICOM resources to be checked by storage commitment
+            "Timeout": Timeout for the storage commitment command (new in Orthanc 1.9.1)
 
         Returns
         -------
@@ -2821,19 +2771,19 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/modalities/{id_}/storage-commitment",
+            route=f'{self.url}/modalities/{id_}/storage-commitment',
             json=json,
         )
 
     def post_modalities_id_store(
-        self,
-        id_: str,
-        data: RequestData = None,
-        json: Any = None,
+            self,
+            id_: str,
+            data: RequestData = None,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Trigger C-STORE SCU
 
-        Start a C-STORE SCU command as a job, in order to send DICOM resources stored locally to some remote DICOM modality whose identifier is provided in the URL: https://orthanc.uclouvain.be/book/users/rest.html#rest-store-scu
+        Start a C-STORE SCU command as a job, in order to send DICOM resources stored locally to some remote DICOM modality whose identifier is provided in the URL: https://book.orthanc-server.com/users/rest.html#rest-store-scu
         Tags: Networking
 
         Parameters
@@ -2842,22 +2792,22 @@ class Orthanc(httpx.Client):
             Identifier of the modality of interest
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
-              "CalledAet": Called AET that is used for this commands, defaults to `AET` configuration option. Allows you to overwrite the destination AET for a specific operation.
-              "Host": Host that is used for this commands, defaults to `Host` configuration option. Allows you to overwrite the destination host for a specific operation.
-              "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option. Ignored if `DicomModalities` already sets `LocalAet` for this modality.
-              "MoveOriginatorAet": Move originator AET that is used for this commands, in order to fake a C-MOVE SCU
-              "MoveOriginatorID": Move originator ID that is used for this commands, in order to fake a C-MOVE SCU
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Port": Port that is used for this command, defaults to `Port` configuration option. Allows you to overwrite the destination port for a specific operation.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "Resources": List of the Orthanc identifiers of all the DICOM resources to be sent
-              "StorageCommitment": Whether to chain C-STORE with DICOM storage commitment to validate the success of the transmission: https://orthanc.uclouvain.be/book/users/storage-commitment.html#chaining-c-store-with-storage-commitment
-              "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
-              "Timeout": Timeout for the C-STORE command, in seconds
-
+            "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
+            "CalledAet": Called AET that is used for this commands, defaults to `AET` configuration option. Allows you to overwrite the destination AET for a specific operation.
+            "Host": Host that is used for this commands, defaults to `Host` configuration option. Allows you to overwrite the destination host for a specific operation.
+            "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option. Ignored if `DicomModalities` already sets `LocalAet` for this modality.
+            "MoveOriginatorAet": Move originator AET that is used for this commands, in order to fake a C-MOVE SCU
+            "MoveOriginatorID": Move originator ID that is used for this commands, in order to fake a C-MOVE SCU
+            "Permissive": If `true`, ignore errors during the individual steps of the job.
+            "Port": Port that is used for this command, defaults to `Port` configuration option. Allows you to overwrite the destination port for a specific operation.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "Resources": List of the Orthanc identifiers of all the DICOM resources to be sent
+            "StorageCommitment": Whether to chain C-STORE with DICOM storage commitment to validate the success of the transmission: https://book.orthanc-server.com/users/storage-commitment.html#chaining-c-store-with-storage-commitment
+            "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+            "Timeout": Timeout for the C-STORE command, in seconds
         data
             The Orthanc identifier of one resource to be sent
+
 
         Returns
         -------
@@ -2867,15 +2817,15 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/modalities/{id_}/store",
+            route=f'{self.url}/modalities/{id_}/store',
             data=data,
             json=json,
         )
 
     def post_modalities_id_store_straight(
-        self,
-        id_: str,
-        content: RequestContent = None,
+            self,
+            id_: str,
+            content: RequestContent = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Straight C-STORE SCU
 
@@ -2887,7 +2837,8 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the modality of interest
         content
-                - (Content-Type: "application/dicom") DICOM instance to be sent
+            - (Content-Type: "application/dicom") DICOM instance to be sent
+
 
         Returns
         -------
@@ -2895,13 +2846,13 @@ class Orthanc(httpx.Client):
 
         """
         return self._post(
-            route=f"{self.url}/modalities/{id_}/store-straight",
+            route=f'{self.url}/modalities/{id_}/store-straight',
             content=content,
         )
 
     def get_patients(
-        self,
-        params: QueryParamTypes = None,
+            self,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List the available patients
 
@@ -2912,12 +2863,12 @@ class Orthanc(httpx.Client):
         ----------
         params
             Dictionary of optional parameters:
-                "expand" (str): If present, retrieve detailed information about the individual patients
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "limit" (float): Limit the number of results
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "since" (float): Show only the resources since the provided index
+            "expand" (str): If present, retrieve detailed information about the individual patients
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "limit" (float): Limit the number of results
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "since" (float): Show only the resources since the provided index
 
         Returns
         -------
@@ -2925,13 +2876,13 @@ class Orthanc(httpx.Client):
             JSON array containing either the Orthanc identifiers, or detailed information about the reported patients (if `expand` argument is provided)
         """
         return self._get(
-            route=f"{self.url}/patients",
+            route=f'{self.url}/patients',
             params=params,
         )
 
     def delete_patients_id(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Delete some patient
 
@@ -2943,18 +2894,19 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the patient of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/patients/{id_}",
+            route=f'{self.url}/patients/{id_}',
         )
 
     def get_patients_id(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get information about some patient
 
@@ -2967,9 +2919,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         params
             Dictionary of optional parameters:
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
         -------
@@ -2977,18 +2929,18 @@ class Orthanc(httpx.Client):
             Information about the DICOM patient
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}",
+            route=f'{self.url}/patients/{id_}',
             params=params,
         )
 
     def post_patients_id_anonymize(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Anonymize patient
 
-        Start a job that will anonymize all the DICOM instances within the patient whose identifier is provided in the URL. The modified DICOM instances will be stored into a brand new patient, whose Orthanc identifiers will be returned by the job. https://orthanc.uclouvain.be/book/users/anonymization.html#anonymization-of-patients-studies-or-series
+        Start a job that will anonymize all the DICOM instances within the patient whose identifier is provided in the URL. The modified DICOM instances will be stored into a brand new patient, whose Orthanc identifiers will be returned by the job. https://book.orthanc-server.com/users/anonymization.html#anonymization-of-patients-studies-or-series
         Tags: Patients
 
         Parameters
@@ -2997,21 +2949,19 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
-              "DicomVersion": Version of the DICOM standard to be used for anonymization. Check out configuration option `DeidentifyLogsDicomVersion` for possible values.
-              "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
-              "Keep": List of DICOM tags whose value must not be destroyed by the anonymization. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "KeepLabels": Keep the labels of all resources level (defaults to `false`)
-              "KeepPrivateTags": Keep the private tags from the DICOM instances (defaults to `false`)
-              "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "PrivateCreator": The private creator to be used for private tags in `Replace`
-              "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
-              "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
+            "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
+            "DicomVersion": Version of the DICOM standard to be used for anonymization. Check out configuration option `DeidentifyLogsDicomVersion` for possible values.
+            "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
+            "Keep": List of DICOM tags whose value must not be destroyed by the anonymization. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "KeepPrivateTags": Keep the private tags from the DICOM instances (defaults to `false`)
+            "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
+            "Permissive": If `true`, ignore errors during the individual steps of the job.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "PrivateCreator": The private creator to be used for private tags in `Replace`
+            "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+            "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -3021,14 +2971,14 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/patients/{id_}/anonymize",
+            route=f'{self.url}/patients/{id_}/anonymize',
             json=json,
         )
 
     def get_patients_id_archive(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Create ZIP archive
 
@@ -3041,8 +2991,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         params
             Dictionary of optional parameters:
-                "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
-                "transcode" (str): If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+            "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
+            "transcode" (str): If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -3050,14 +3000,14 @@ class Orthanc(httpx.Client):
             ZIP file containing the archive
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/archive",
+            route=f'{self.url}/patients/{id_}/archive',
             params=params,
         )
 
     def post_patients_id_archive(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Create ZIP archive
 
@@ -3070,29 +3020,28 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
-              "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
+            "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
+            "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
-            In asynchronous mode, information about the job that has been submitted to generate the archive: https://orthanc.uclouvain.be/book/users/advanced-rest.html#jobs
+            In asynchronous mode, information about the job that has been submitted to generate the archive: https://book.orthanc-server.com/users/advanced-rest.html#jobs
             In synchronous mode, the ZIP file containing the archive
         """
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/patients/{id_}/archive",
+            route=f'{self.url}/patients/{id_}/archive',
             json=json,
         )
 
     def get_patients_id_attachments(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List attachments
 
@@ -3105,7 +3054,7 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         params
             Dictionary of optional parameters:
-                "full" (str): If present, retrieve the attachments list and their numerical ids
+            "full" (str): If present, retrieve the attachments list and their numerical ids
 
         Returns
         -------
@@ -3113,15 +3062,15 @@ class Orthanc(httpx.Client):
             JSON array containing the names of the attachments
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/attachments",
+            route=f'{self.url}/patients/{id_}/attachments',
             params=params,
         )
 
     def delete_patients_id_attachments_name(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Delete attachment
 
@@ -3136,22 +3085,23 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         headers
             Dictionary of optional headers:
-                "If-Match" (str): Revision of the attachment, to check if its content has not changed and can be deleted. This header is mandatory if `CheckRevisions` option is `true`.
+            "If-Match" (str): Revision of the attachment, to check if its content has not changed and can be deleted. This header is mandatory if `CheckRevisions` option is `true`.
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/patients/{id_}/attachments/{name}",
+            route=f'{self.url}/patients/{id_}/attachments/{name}',
             headers=headers,
         )
 
     def get_patients_id_attachments_name(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List operations on attachments
 
@@ -3166,7 +3116,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -3174,16 +3125,16 @@ class Orthanc(httpx.Client):
             List of the available operations
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/attachments/{name}",
+            route=f'{self.url}/patients/{id_}/attachments/{name}',
             headers=headers,
         )
 
     def put_patients_id_attachments_name(
-        self,
-        id_: str,
-        name: str,
-        content: RequestContent = None,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            content: RequestContent = None,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Set attachment
 
@@ -3197,10 +3148,11 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the patient of interest
         content
-                - (Content-Type: "application/octet-stream") Binary data containing the attachment
+            - (Content-Type: "application/octet-stream") Binary data containing the attachment
         headers
             Dictionary of optional headers:
-                "If-Match" (str): Revision of the attachment, if this is not the first time this attachment is set.
+            "If-Match" (str): Revision of the attachment, if this is not the first time this attachment is set.
+
 
         Returns
         -------
@@ -3208,15 +3160,15 @@ class Orthanc(httpx.Client):
             Empty JSON object in the case of a success
         """
         return self._put(
-            route=f"{self.url}/patients/{id_}/attachments/{name}",
+            route=f'{self.url}/patients/{id_}/attachments/{name}',
             content=content,
             headers=headers,
         )
 
     def post_patients_id_attachments_name_compress(
-        self,
-        id_: str,
-        name: str,
+            self,
+            id_: str,
+            name: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Compress attachment
 
@@ -3230,19 +3182,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the patient of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._post(
-            route=f"{self.url}/patients/{id_}/attachments/{name}/compress",
+            route=f'{self.url}/patients/{id_}/attachments/{name}/compress',
         )
 
     def get_patients_id_attachments_name_compressed_data(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get attachment (no decompression)
 
@@ -3257,7 +3210,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+
 
         Returns
         -------
@@ -3265,15 +3219,15 @@ class Orthanc(httpx.Client):
             The attachment
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/attachments/{name}/compressed-data",
+            route=f'{self.url}/patients/{id_}/attachments/{name}/compressed-data',
             headers=headers,
         )
 
     def get_patients_id_attachments_name_compressed_md5(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get MD5 of attachment on disk
 
@@ -3288,7 +3242,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -3296,15 +3251,15 @@ class Orthanc(httpx.Client):
             The MD5 of the attachment, as stored on the disk
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/attachments/{name}/compressed-md5",
+            route=f'{self.url}/patients/{id_}/attachments/{name}/compressed-md5',
             headers=headers,
         )
 
     def get_patients_id_attachments_name_compressed_size(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get size of attachment on disk
 
@@ -3319,7 +3274,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -3327,15 +3283,15 @@ class Orthanc(httpx.Client):
             The size of the attachment, as stored on the disk
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/attachments/{name}/compressed-size",
+            route=f'{self.url}/patients/{id_}/attachments/{name}/compressed-size',
             headers=headers,
         )
 
     def get_patients_id_attachments_name_data(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get attachment
 
@@ -3350,7 +3306,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+
 
         Returns
         -------
@@ -3358,15 +3315,15 @@ class Orthanc(httpx.Client):
             The attachment
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/attachments/{name}/data",
+            route=f'{self.url}/patients/{id_}/attachments/{name}/data',
             headers=headers,
         )
 
     def get_patients_id_attachments_name_info(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get info about the attachment
 
@@ -3381,7 +3338,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -3389,15 +3347,15 @@ class Orthanc(httpx.Client):
             JSON object containing the information about the attachment
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/attachments/{name}/info",
+            route=f'{self.url}/patients/{id_}/attachments/{name}/info',
             headers=headers,
         )
 
     def get_patients_id_attachments_name_is_compressed(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Is attachment compressed?
 
@@ -3412,7 +3370,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -3420,15 +3379,15 @@ class Orthanc(httpx.Client):
             `0` if the attachment was stored uncompressed, `1` if it was compressed
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/attachments/{name}/is-compressed",
+            route=f'{self.url}/patients/{id_}/attachments/{name}/is-compressed',
             headers=headers,
         )
 
     def get_patients_id_attachments_name_md5(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get MD5 of attachment
 
@@ -3443,7 +3402,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -3451,15 +3411,15 @@ class Orthanc(httpx.Client):
             The MD5 of the attachment
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/attachments/{name}/md5",
+            route=f'{self.url}/patients/{id_}/attachments/{name}/md5',
             headers=headers,
         )
 
     def get_patients_id_attachments_name_size(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get size of attachment
 
@@ -3474,7 +3434,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -3482,14 +3443,14 @@ class Orthanc(httpx.Client):
             The size of the attachment
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/attachments/{name}/size",
+            route=f'{self.url}/patients/{id_}/attachments/{name}/size',
             headers=headers,
         )
 
     def post_patients_id_attachments_name_uncompress(
-        self,
-        id_: str,
-        name: str,
+            self,
+            id_: str,
+            name: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Uncompress attachment
 
@@ -3503,18 +3464,19 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the patient of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._post(
-            route=f"{self.url}/patients/{id_}/attachments/{name}/uncompress",
+            route=f'{self.url}/patients/{id_}/attachments/{name}/uncompress',
         )
 
     def post_patients_id_attachments_name_verify_md5(
-        self,
-        id_: str,
-        name: str,
+            self,
+            id_: str,
+            name: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Verify attachment
 
@@ -3528,19 +3490,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the patient of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             On success, a valid JSON object is returned
         """
         return self._post(
-            route=f"{self.url}/patients/{id_}/attachments/{name}/verify-md5",
+            route=f'{self.url}/patients/{id_}/attachments/{name}/verify-md5',
         )
 
     def get_patients_id_instances(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get child instances
 
@@ -3553,10 +3516,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         params
             Dictionary of optional parameters:
-                "expand" (str): If false or missing, only retrieve the list of child instances
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
         -------
@@ -3564,14 +3526,14 @@ class Orthanc(httpx.Client):
             JSON array containing information about the child DICOM instances
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/instances",
+            route=f'{self.url}/patients/{id_}/instances',
             params=params,
         )
 
     def get_patients_id_instances_tags(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get tags of instances
 
@@ -3584,9 +3546,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         params
             Dictionary of optional parameters:
-                "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
+            "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
 
         Returns
         -------
@@ -3594,13 +3556,13 @@ class Orthanc(httpx.Client):
             JSON object associating the Orthanc identifiers of the instances, with the values of their DICOM tags
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/instances-tags",
+            route=f'{self.url}/patients/{id_}/instances-tags',
             params=params,
         )
 
     def get_patients_id_labels(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List labels
 
@@ -3612,19 +3574,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the patient of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the names of the labels
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/labels",
+            route=f'{self.url}/patients/{id_}/labels',
         )
 
     def delete_patients_id_labels_label(
-        self,
-        id_: str,
-        label: str,
+            self,
+            id_: str,
+            label: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Remove label
 
@@ -3638,18 +3601,19 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the patient of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/patients/{id_}/labels/{label}",
+            route=f'{self.url}/patients/{id_}/labels/{label}',
         )
 
     def get_patients_id_labels_label(
-        self,
-        id_: str,
-        label: str,
+            self,
+            id_: str,
+            label: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Test label
 
@@ -3663,19 +3627,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the patient of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             Empty string is returned in the case of presence, error 404 in the case of absence
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/labels/{label}",
+            route=f'{self.url}/patients/{id_}/labels/{label}',
         )
 
     def put_patients_id_labels_label(
-        self,
-        id_: str,
-        label: str,
+            self,
+            id_: str,
+            label: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Add label
 
@@ -3689,18 +3654,19 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the patient of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/patients/{id_}/labels/{label}",
+            route=f'{self.url}/patients/{id_}/labels/{label}',
         )
 
     def get_patients_id_media(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Create DICOMDIR media
 
@@ -3713,9 +3679,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         params
             Dictionary of optional parameters:
-                "extended" (str): If present, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*
-                "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
-                "transcode" (str): If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+            "extended" (str): If present, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*
+            "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
+            "transcode" (str): If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -3723,14 +3689,14 @@ class Orthanc(httpx.Client):
             ZIP file containing the archive
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/media",
+            route=f'{self.url}/patients/{id_}/media',
             params=params,
         )
 
     def post_patients_id_media(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Create DICOMDIR media
 
@@ -3743,30 +3709,29 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
-              "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `false`.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
-              "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
+            "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
+            "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `false`.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
+            "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
-            In asynchronous mode, information about the job that has been submitted to generate the archive: https://orthanc.uclouvain.be/book/users/advanced-rest.html#jobs
+            In asynchronous mode, information about the job that has been submitted to generate the archive: https://book.orthanc-server.com/users/advanced-rest.html#jobs
             In synchronous mode, the ZIP file containing the archive
         """
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/patients/{id_}/media",
+            route=f'{self.url}/patients/{id_}/media',
             json=json,
         )
 
     def get_patients_id_metadata(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List metadata
 
@@ -3779,8 +3744,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         params
             Dictionary of optional parameters:
-                "expand" (str): If present, also retrieve the value of the individual metadata
-                "numeric" (str): If present, use the numeric identifier of the metadata instead of its symbolic name
+            "expand" (str): If present, also retrieve the value of the individual metadata
+            "numeric" (str): If present, use the numeric identifier of the metadata instead of its symbolic name
 
         Returns
         -------
@@ -3788,15 +3753,15 @@ class Orthanc(httpx.Client):
             JSON array containing the names of the available metadata, or JSON associative array mapping metadata to their values (if `expand` argument is provided)
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/metadata",
+            route=f'{self.url}/patients/{id_}/metadata',
             params=params,
         )
 
     def delete_patients_id_metadata_name(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Delete metadata
 
@@ -3811,22 +3776,23 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         headers
             Dictionary of optional headers:
-                "If-Match" (str): Revision of the metadata, to check if its content has not changed and can be deleted. This header is mandatory if `CheckRevisions` option is `true`.
+            "If-Match" (str): Revision of the metadata, to check if its content has not changed and can be deleted. This header is mandatory if `CheckRevisions` option is `true`.
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/patients/{id_}/metadata/{name}",
+            route=f'{self.url}/patients/{id_}/metadata/{name}',
             headers=headers,
         )
 
     def get_patients_id_metadata_name(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get metadata
 
@@ -3841,7 +3807,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+
 
         Returns
         -------
@@ -3849,16 +3816,16 @@ class Orthanc(httpx.Client):
             Value of the metadata
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/metadata/{name}",
+            route=f'{self.url}/patients/{id_}/metadata/{name}',
             headers=headers,
         )
 
     def put_patients_id_metadata_name(
-        self,
-        id_: str,
-        name: str,
-        data: RequestData = None,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            data: RequestData = None,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Set metadata
 
@@ -3871,30 +3838,32 @@ class Orthanc(httpx.Client):
             The name of the metadata, or its index (cf. `UserMetadata` configuration option)
         id_
             Orthanc identifier of the patient of interest
+
         data
             String value of the metadata
         headers
             Dictionary of optional headers:
-                "If-Match" (str): Revision of the metadata, if this is not the first time this metadata is set.
+            "If-Match" (str): Revision of the metadata, if this is not the first time this metadata is set.
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/patients/{id_}/metadata/{name}",
+            route=f'{self.url}/patients/{id_}/metadata/{name}',
             data=data,
             headers=headers,
         )
 
     def post_patients_id_modify(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Modify patient
 
-        Start a job that will modify all the DICOM instances within the patient whose identifier is provided in the URL. The modified DICOM instances will be stored into a brand new patient, whose Orthanc identifiers will be returned by the job. https://orthanc.uclouvain.be/book/users/anonymization.html#modification-of-studies-or-series
+        Start a job that will modify all the DICOM instances within the patient whose identifier is provided in the URL. The modified DICOM instances will be stored into a brand new patient, whose Orthanc identifiers will be returned by the job. https://book.orthanc-server.com/users/anonymization.html#modification-of-studies-or-series
         Tags: Patients
 
         Parameters
@@ -3903,19 +3872,18 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
-              "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
-              "Keep": Keep the original value of the specified tags, to be chosen among the `StudyInstanceUID`, `SeriesInstanceUID` and `SOPInstanceUID` tags. Avoid this feature as much as possible, as this breaks the DICOM model of the real world.
-              "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "PrivateCreator": The private creator to be used for private tags in `Replace`
-              "Remove": List of tags that must be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "RemovePrivateTags": Remove the private tags from the DICOM instances (defaults to `false`)
-              "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
-              "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
+            "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
+            "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
+            "Keep": Keep the original value of the specified tags, to be chosen among the `StudyInstanceUID`, `SeriesInstanceUID` and `SOPInstanceUID` tags. Avoid this feature as much as possible, as this breaks the DICOM model of the real world.
+            "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
+            "Permissive": If `true`, ignore errors during the individual steps of the job.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "PrivateCreator": The private creator to be used for private tags in `Replace`
+            "Remove": List of tags that must be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "RemovePrivateTags": Remove the private tags from the DICOM instances (defaults to `false`)
+            "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+            "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -3925,14 +3893,14 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/patients/{id_}/modify",
+            route=f'{self.url}/patients/{id_}/modify',
             json=json,
         )
 
     def get_patients_id_module(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get patient module
 
@@ -3945,9 +3913,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         params
             Dictionary of optional parameters:
-                "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
+            "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
 
         Returns
         -------
@@ -3955,13 +3923,13 @@ class Orthanc(httpx.Client):
             Information about the DICOM patient
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/module",
+            route=f'{self.url}/patients/{id_}/module',
             params=params,
         )
 
     def get_patients_id_protected(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Is the patient protected against recycling?
 
@@ -3973,22 +3941,23 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the patient of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             `1` if protected, `0` if not protected
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/protected",
+            route=f'{self.url}/patients/{id_}/protected',
         )
 
     def put_patients_id_protected(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
-        """Protect/Unprotect a patient against recycling
+        """Protect one patient against recycling
 
-        Protects a patient by sending `1` or `true` in the payload request. Unprotects a patient by sending `0` or `false` in the payload requests. More info: https://orthanc.uclouvain.be/book/faq/features.html#recycling-protection
+        Check out configuration options `MaximumStorageSize` and `MaximumPatientCount`
         Tags: Patients
 
         Parameters
@@ -3996,18 +3965,19 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the patient of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/patients/{id_}/protected",
+            route=f'{self.url}/patients/{id_}/protected',
         )
 
     def post_patients_id_reconstruct(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Reconstruct tags & optionally files of patient
 
@@ -4020,8 +3990,7 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         json
             Dictionary with the following keys:
-              "ReconstructFiles": Also reconstruct the files of the resources (e.g: apply IngestTranscoding, StorageCompression). 'false' by default. (New in Orthanc 1.11.0)
-
+            "ReconstructFiles": Also reconstruct the files of the resources (e.g: apply IngestTranscoding, StorageCompression). 'false' by default. (New in Orthanc 1.11.0)
 
         Returns
         -------
@@ -4030,14 +3999,14 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/patients/{id_}/reconstruct",
+            route=f'{self.url}/patients/{id_}/reconstruct',
             json=json,
         )
 
     def get_patients_id_series(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get child series
 
@@ -4050,10 +4019,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         params
             Dictionary of optional parameters:
-                "expand" (str): If false or missing, only retrieve the list of child series
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
         -------
@@ -4061,14 +4029,14 @@ class Orthanc(httpx.Client):
             JSON array containing information about the child DICOM series
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/series",
+            route=f'{self.url}/patients/{id_}/series',
             params=params,
         )
 
     def get_patients_id_shared_tags(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get shared tags
 
@@ -4081,8 +4049,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         params
             Dictionary of optional parameters:
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
 
         Returns
         -------
@@ -4090,13 +4058,13 @@ class Orthanc(httpx.Client):
             JSON object containing the values of the DICOM tags
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/shared-tags",
+            route=f'{self.url}/patients/{id_}/shared-tags',
             params=params,
         )
 
     def get_patients_id_statistics(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get patient statistics
 
@@ -4108,19 +4076,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the patient of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
 
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/statistics",
+            route=f'{self.url}/patients/{id_}/statistics',
         )
 
     def get_patients_id_studies(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get child studies
 
@@ -4133,10 +4102,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         params
             Dictionary of optional parameters:
-                "expand" (str): If false or missing, only retrieve the list of child studies
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
         -------
@@ -4144,13 +4112,13 @@ class Orthanc(httpx.Client):
             JSON array containing information about the child DICOM studies
         """
         return self._get(
-            route=f"{self.url}/patients/{id_}/studies",
+            route=f'{self.url}/patients/{id_}/studies',
             params=params,
         )
 
     def get_peers(
-        self,
-        params: QueryParamTypes = None,
+            self,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List Orthanc peers
 
@@ -4161,7 +4129,7 @@ class Orthanc(httpx.Client):
         ----------
         params
             Dictionary of optional parameters:
-                "expand" (str): If present, retrieve detailed information about the individual Orthanc peers
+            "expand" (str): If present, retrieve detailed information about the individual Orthanc peers
 
         Returns
         -------
@@ -4169,13 +4137,13 @@ class Orthanc(httpx.Client):
             JSON array containing either the identifiers of the peers, or detailed information about the peers (if `expand` argument is provided)
         """
         return self._get(
-            route=f"{self.url}/peers",
+            route=f'{self.url}/peers',
             params=params,
         )
 
     def delete_peers_id(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Delete Orthanc peer
 
@@ -4187,17 +4155,18 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the Orthanc peer of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/peers/{id_}",
+            route=f'{self.url}/peers/{id_}',
         )
 
     def get_peers_id(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List operations on peer
 
@@ -4209,19 +4178,20 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the peer of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             List of the available operations
         """
         return self._get(
-            route=f"{self.url}/peers/{id_}",
+            route=f'{self.url}/peers/{id_}',
         )
 
     def put_peers_id(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Update Orthanc peer
 
@@ -4234,14 +4204,13 @@ class Orthanc(httpx.Client):
             Identifier of the new/updated Orthanc peer
         json
             Dictionary with the following keys:
-              "CertificateFile": SSL certificate for the HTTPS connections
-              "CertificateKeyFile": Key file for the SSL certificate for the HTTPS connections
-              "CertificateKeyPassword": Key password for the SSL certificate for the HTTPS connections
-              "HttpHeaders": HTTP headers to be used for the connections to the remote peer
-              "Password": Password for the credentials
-              "URL": URL of the root of the REST API of the remote Orthanc peer, for instance `http://localhost:8042/`
-              "Username": Username for the credentials
-
+            "CertificateFile": SSL certificate for the HTTPS connections
+            "CertificateKeyFile": Key file for the SSL certificate for the HTTPS connections
+            "CertificateKeyPassword": Key password for the SSL certificate for the HTTPS connections
+            "HttpHeaders": HTTP headers to be used for the connections to the remote peer
+            "Password": Password for the credentials
+            "URL": URL of the root of the REST API of the remote Orthanc peer, for instance `http://localhost:8042/`
+            "Username": Username for the credentials
 
         Returns
         -------
@@ -4250,13 +4219,13 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._put(
-            route=f"{self.url}/peers/{id_}",
+            route=f'{self.url}/peers/{id_}',
             json=json,
         )
 
     def get_peers_id_configuration(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get peer configuration
 
@@ -4268,24 +4237,25 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the peer of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             Configuration of the peer
         """
         return self._get(
-            route=f"{self.url}/peers/{id_}/configuration",
+            route=f'{self.url}/peers/{id_}/configuration',
         )
 
     def post_peers_id_store(
-        self,
-        id_: str,
-        data: RequestData = None,
-        json: Any = None,
+            self,
+            id_: str,
+            data: RequestData = None,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Send to Orthanc peer
 
-        Send DICOM resources stored locally to some remote Orthanc peer whose identifier is provided in the URL: https://orthanc.uclouvain.be/book/users/rest.html#sending-one-resource
+        Send DICOM resources stored locally to some remote Orthanc peer whose identifier is provided in the URL: https://book.orthanc-server.com/users/rest.html#sending-one-resource
         Tags: Networking
 
         Parameters
@@ -4294,16 +4264,16 @@ class Orthanc(httpx.Client):
             Identifier of the modality of interest
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
-              "Compress": Whether to compress the DICOM instances using gzip before the actual sending
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "Resources": List of the Orthanc identifiers of all the DICOM resources to be sent
-              "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
-              "Transcode": Transcode to the provided DICOM transfer syntax before the actual sending
-
+            "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
+            "Compress": Whether to compress the DICOM instances using gzip before the actual sending
+            "Permissive": If `true`, ignore errors during the individual steps of the job.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "Resources": List of the Orthanc identifiers of all the DICOM resources to be sent
+            "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+            "Transcode": Transcode to the provided DICOM transfer syntax before the actual sending
         data
             The Orthanc identifier of one resource to be sent
+
 
         Returns
         -------
@@ -4313,15 +4283,15 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/peers/{id_}/store",
+            route=f'{self.url}/peers/{id_}/store',
             data=data,
             json=json,
         )
 
     def post_peers_id_store_straight(
-        self,
-        id_: str,
-        content: RequestContent = None,
+            self,
+            id_: str,
+            content: RequestContent = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Straight store to peer
 
@@ -4333,7 +4303,8 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the modality of interest
         content
-                - (Content-Type: "application/dicom") DICOM instance to be sent
+            - (Content-Type: "application/dicom") DICOM instance to be sent
+
 
         Returns
         -------
@@ -4341,13 +4312,13 @@ class Orthanc(httpx.Client):
 
         """
         return self._post(
-            route=f"{self.url}/peers/{id_}/store-straight",
+            route=f'{self.url}/peers/{id_}/store-straight',
             content=content,
         )
 
     def get_peers_id_system(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get peer system information
 
@@ -4359,22 +4330,27 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the peer of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             System information about the peer
         """
         return self._get(
-            route=f"{self.url}/peers/{id_}/system",
+            route=f'{self.url}/peers/{id_}/system',
         )
 
     def get_plugins(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List plugins
 
         List all the installed plugins
         Tags: System
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -4382,16 +4358,20 @@ class Orthanc(httpx.Client):
             JSON array containing the identifiers of the installed plugins
         """
         return self._get(
-            route=f"{self.url}/plugins",
+            route=f'{self.url}/plugins',
         )
 
     def get_plugins_explorer_js(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """JavaScript extensions to Orthanc Explorer
 
         Get the JavaScript extensions that are installed by all the plugins using the `OrthancPluginExtendOrthancExplorer()` function of the plugin SDK. This route is for internal use of Orthanc Explorer.
         Tags: System
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -4399,12 +4379,12 @@ class Orthanc(httpx.Client):
             The JavaScript extensions
         """
         return self._get(
-            route=f"{self.url}/plugins/explorer.js",
+            route=f'{self.url}/plugins/explorer.js',
         )
 
     def get_plugins_id(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get plugin
 
@@ -4416,22 +4396,27 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the job of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             JSON object containing information about the plugin
         """
         return self._get(
-            route=f"{self.url}/plugins/{id_}",
+            route=f'{self.url}/plugins/{id_}',
         )
 
     def get_queries(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List query/retrieve operations
 
-        List the identifiers of all the query/retrieve operations on DICOM modalities, as initiated by calls to `/modalities/{id}/query`. The length of this list is bounded by the `QueryRetrieveSize` configuration option of Orthanc. https://orthanc.uclouvain.be/book/users/rest.html#performing-query-retrieve-c-find-and-find-with-rest
+        List the identifiers of all the query/retrieve operations on DICOM modalities, as initiated by calls to `/modalities/{id}/query`. The length of this list is bounded by the `QueryRetrieveSize` configuration option of Orthanc. https://book.orthanc-server.com/users/rest.html#performing-query-retrieve-c-find-and-find-with-rest
         Tags: Networking
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -4439,12 +4424,12 @@ class Orthanc(httpx.Client):
             JSON array containing the identifiers
         """
         return self._get(
-            route=f"{self.url}/queries",
+            route=f'{self.url}/queries',
         )
 
     def delete_queries_id(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Delete a query
 
@@ -4456,17 +4441,18 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the query of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/queries/{id_}",
+            route=f'{self.url}/queries/{id_}',
         )
 
     def get_queries_id(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List operations on a query
 
@@ -4478,19 +4464,20 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the query of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the list of operations
         """
         return self._get(
-            route=f"{self.url}/queries/{id_}",
+            route=f'{self.url}/queries/{id_}',
         )
 
     def get_queries_id_answers(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List answers to a query
 
@@ -4503,9 +4490,9 @@ class Orthanc(httpx.Client):
             Identifier of the query of interest
         params
             Dictionary of optional parameters:
-                "expand" (str): If present, retrieve detailed information about the individual answers
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
+            "expand" (str): If present, retrieve detailed information about the individual answers
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
 
         Returns
         -------
@@ -4513,14 +4500,14 @@ class Orthanc(httpx.Client):
             JSON array containing the indices of the answers, or detailed information about the reported answers (if `expand` argument is provided)
         """
         return self._get(
-            route=f"{self.url}/queries/{id_}/answers",
+            route=f'{self.url}/queries/{id_}/answers',
             params=params,
         )
 
     def get_queries_id_answers_index(
-        self,
-        id_: str,
-        index: str,
+            self,
+            id_: str,
+            index: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List operations on an answer
 
@@ -4534,20 +4521,21 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the query of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the list of operations
         """
         return self._get(
-            route=f"{self.url}/queries/{id_}/answers/{index}",
+            route=f'{self.url}/queries/{id_}/answers/{index}',
         )
 
     def get_queries_id_answers_index_content(
-        self,
-        id_: str,
-        index: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            index: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get one answer
 
@@ -4562,8 +4550,8 @@ class Orthanc(httpx.Client):
             Identifier of the query of interest
         params
             Dictionary of optional parameters:
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
 
         Returns
         -------
@@ -4571,15 +4559,15 @@ class Orthanc(httpx.Client):
             JSON object containing the DICOM tags of the answer
         """
         return self._get(
-            route=f"{self.url}/queries/{id_}/answers/{index}/content",
+            route=f'{self.url}/queries/{id_}/answers/{index}/content',
             params=params,
         )
 
     def post_queries_id_answers_index_query_instances(
-        self,
-        id_: str,
-        index: str,
-        json: Any = None,
+            self,
+            id_: str,
+            index: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Query the child instances of an answer
 
@@ -4594,9 +4582,8 @@ class Orthanc(httpx.Client):
             Identifier of the query of interest
         json
             Dictionary with the following keys:
-              "Query": Associative array containing the filter on the values of the DICOM tags
-              "Timeout": Timeout for the C-FIND command, in seconds (new in Orthanc 1.9.1)
-
+            "Query": Associative array containing the filter on the values of the DICOM tags
+            "Timeout": Timeout for the C-FIND command, in seconds (new in Orthanc 1.9.1)
 
         Returns
         -------
@@ -4606,15 +4593,15 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/queries/{id_}/answers/{index}/query-instances",
+            route=f'{self.url}/queries/{id_}/answers/{index}/query-instances',
             json=json,
         )
 
     def post_queries_id_answers_index_query_series(
-        self,
-        id_: str,
-        index: str,
-        json: Any = None,
+            self,
+            id_: str,
+            index: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Query the child series of an answer
 
@@ -4629,9 +4616,8 @@ class Orthanc(httpx.Client):
             Identifier of the query of interest
         json
             Dictionary with the following keys:
-              "Query": Associative array containing the filter on the values of the DICOM tags
-              "Timeout": Timeout for the C-FIND command, in seconds (new in Orthanc 1.9.1)
-
+            "Query": Associative array containing the filter on the values of the DICOM tags
+            "Timeout": Timeout for the C-FIND command, in seconds (new in Orthanc 1.9.1)
 
         Returns
         -------
@@ -4641,15 +4627,15 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/queries/{id_}/answers/{index}/query-series",
+            route=f'{self.url}/queries/{id_}/answers/{index}/query-series',
             json=json,
         )
 
     def post_queries_id_answers_index_query_studies(
-        self,
-        id_: str,
-        index: str,
-        json: Any = None,
+            self,
+            id_: str,
+            index: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Query the child studies of an answer
 
@@ -4664,9 +4650,8 @@ class Orthanc(httpx.Client):
             Identifier of the query of interest
         json
             Dictionary with the following keys:
-              "Query": Associative array containing the filter on the values of the DICOM tags
-              "Timeout": Timeout for the C-FIND command, in seconds (new in Orthanc 1.9.1)
-
+            "Query": Associative array containing the filter on the values of the DICOM tags
+            "Timeout": Timeout for the C-FIND command, in seconds (new in Orthanc 1.9.1)
 
         Returns
         -------
@@ -4676,20 +4661,20 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/queries/{id_}/answers/{index}/query-studies",
+            route=f'{self.url}/queries/{id_}/answers/{index}/query-studies',
             json=json,
         )
 
     def post_queries_id_answers_index_retrieve(
-        self,
-        id_: str,
-        index: str,
-        data: RequestData = None,
-        json: Any = None,
+            self,
+            id_: str,
+            index: str,
+            data: RequestData = None,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Retrieve one answer
 
-        Start a C-MOVE SCU command as a job, in order to retrieve one answer associated with the query/retrieve operation whose identifiers are provided in the URL: https://orthanc.uclouvain.be/book/users/rest.html#performing-retrieve-c-move
+        Start a C-MOVE SCU command as a job, in order to retrieve one answer associated with the query/retrieve operation whose identifiers are provided in the URL: https://book.orthanc-server.com/users/rest.html#performing-retrieve-c-move
         Tags: Networking
 
         Parameters
@@ -4700,17 +4685,17 @@ class Orthanc(httpx.Client):
             Identifier of the query of interest
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
-              "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "Simplify": If set to `true`, report the DICOM tags in human-readable format (using the symbolic name of the tags)
-              "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
-              "TargetAet": AET of the target modality. By default, the AET of Orthanc is used, as defined in the `DicomAet` configuration option.
-              "Timeout": Timeout for the C-MOVE command, in seconds
-
+            "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
+            "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "Permissive": If `true`, ignore errors during the individual steps of the job.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "Simplify": If set to `true`, report the DICOM tags in human-readable format (using the symbolic name of the tags)
+            "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+            "TargetAet": AET of the target modality. By default, the AET of Orthanc is used, as defined in the `DicomAet` configuration option.
+            "Timeout": Timeout for the C-MOVE command, in seconds
         data
             AET of the target modality
+
 
         Returns
         -------
@@ -4720,14 +4705,14 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/queries/{id_}/answers/{index}/retrieve",
+            route=f'{self.url}/queries/{id_}/answers/{index}/retrieve',
             data=data,
             json=json,
         )
 
     def get_queries_id_level(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get level of original query
 
@@ -4739,18 +4724,19 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the query of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             The level
         """
         return self._get(
-            route=f"{self.url}/queries/{id_}/level",
+            route=f'{self.url}/queries/{id_}/level',
         )
 
     def get_queries_id_modality(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get modality of original query
 
@@ -4762,19 +4748,20 @@ class Orthanc(httpx.Client):
         id_
             Identifier of the query of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             The identifier of the DICOM modality
         """
         return self._get(
-            route=f"{self.url}/queries/{id_}/modality",
+            route=f'{self.url}/queries/{id_}/modality',
         )
 
     def get_queries_id_query(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get original query arguments
 
@@ -4787,8 +4774,8 @@ class Orthanc(httpx.Client):
             Identifier of the query of interest
         params
             Dictionary of optional parameters:
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
 
         Returns
         -------
@@ -4796,19 +4783,19 @@ class Orthanc(httpx.Client):
             Content of the original query
         """
         return self._get(
-            route=f"{self.url}/queries/{id_}/query",
+            route=f'{self.url}/queries/{id_}/query',
             params=params,
         )
 
     def post_queries_id_retrieve(
-        self,
-        id_: str,
-        data: RequestData = None,
-        json: Any = None,
+            self,
+            id_: str,
+            data: RequestData = None,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Retrieve all answers
 
-        Start a C-MOVE SCU command as a job, in order to retrieve all the answers associated with the query/retrieve operation whose identifier is provided in the URL: https://orthanc.uclouvain.be/book/users/rest.html#performing-retrieve-c-move
+        Start a C-MOVE SCU command as a job, in order to retrieve all the answers associated with the query/retrieve operation whose identifier is provided in the URL: https://book.orthanc-server.com/users/rest.html#performing-retrieve-c-move
         Tags: Networking
 
         Parameters
@@ -4817,17 +4804,17 @@ class Orthanc(httpx.Client):
             Identifier of the query of interest
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
-              "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "Simplify": If set to `true`, report the DICOM tags in human-readable format (using the symbolic name of the tags)
-              "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
-              "TargetAet": AET of the target modality. By default, the AET of Orthanc is used, as defined in the `DicomAet` configuration option.
-              "Timeout": Timeout for the C-MOVE command, in seconds
-
+            "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
+            "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "Permissive": If `true`, ignore errors during the individual steps of the job.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "Simplify": If set to `true`, report the DICOM tags in human-readable format (using the symbolic name of the tags)
+            "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+            "TargetAet": AET of the target modality. By default, the AET of Orthanc is used, as defined in the `DicomAet` configuration option.
+            "Timeout": Timeout for the C-MOVE command, in seconds
         data
             AET of the target modality
+
 
         Returns
         -------
@@ -4837,14 +4824,14 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/queries/{id_}/retrieve",
+            route=f'{self.url}/queries/{id_}/retrieve',
             data=data,
             json=json,
         )
 
     def get_series(
-        self,
-        params: QueryParamTypes = None,
+            self,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List the available series
 
@@ -4855,12 +4842,12 @@ class Orthanc(httpx.Client):
         ----------
         params
             Dictionary of optional parameters:
-                "expand" (str): If present, retrieve detailed information about the individual series
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "limit" (float): Limit the number of results
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "since" (float): Show only the resources since the provided index
+            "expand" (str): If present, retrieve detailed information about the individual series
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "limit" (float): Limit the number of results
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "since" (float): Show only the resources since the provided index
 
         Returns
         -------
@@ -4868,13 +4855,13 @@ class Orthanc(httpx.Client):
             JSON array containing either the Orthanc identifiers, or detailed information about the reported series (if `expand` argument is provided)
         """
         return self._get(
-            route=f"{self.url}/series",
+            route=f'{self.url}/series',
             params=params,
         )
 
     def delete_series_id(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Delete some series
 
@@ -4886,18 +4873,19 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the series of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/series/{id_}",
+            route=f'{self.url}/series/{id_}',
         )
 
     def get_series_id(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get information about some series
 
@@ -4910,9 +4898,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         params
             Dictionary of optional parameters:
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
         -------
@@ -4920,18 +4908,18 @@ class Orthanc(httpx.Client):
             Information about the DICOM series
         """
         return self._get(
-            route=f"{self.url}/series/{id_}",
+            route=f'{self.url}/series/{id_}',
             params=params,
         )
 
     def post_series_id_anonymize(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Anonymize series
 
-        Start a job that will anonymize all the DICOM instances within the series whose identifier is provided in the URL. The modified DICOM instances will be stored into a brand new series, whose Orthanc identifiers will be returned by the job. https://orthanc.uclouvain.be/book/users/anonymization.html#anonymization-of-patients-studies-or-series
+        Start a job that will anonymize all the DICOM instances within the series whose identifier is provided in the URL. The modified DICOM instances will be stored into a brand new series, whose Orthanc identifiers will be returned by the job. https://book.orthanc-server.com/users/anonymization.html#anonymization-of-patients-studies-or-series
         Tags: Series
 
         Parameters
@@ -4940,21 +4928,19 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
-              "DicomVersion": Version of the DICOM standard to be used for anonymization. Check out configuration option `DeidentifyLogsDicomVersion` for possible values.
-              "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
-              "Keep": List of DICOM tags whose value must not be destroyed by the anonymization. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "KeepLabels": Keep the labels of all resources level (defaults to `false`)
-              "KeepPrivateTags": Keep the private tags from the DICOM instances (defaults to `false`)
-              "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "PrivateCreator": The private creator to be used for private tags in `Replace`
-              "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
-              "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
+            "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
+            "DicomVersion": Version of the DICOM standard to be used for anonymization. Check out configuration option `DeidentifyLogsDicomVersion` for possible values.
+            "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
+            "Keep": List of DICOM tags whose value must not be destroyed by the anonymization. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "KeepPrivateTags": Keep the private tags from the DICOM instances (defaults to `false`)
+            "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
+            "Permissive": If `true`, ignore errors during the individual steps of the job.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "PrivateCreator": The private creator to be used for private tags in `Replace`
+            "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+            "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -4964,14 +4950,14 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/series/{id_}/anonymize",
+            route=f'{self.url}/series/{id_}/anonymize',
             json=json,
         )
 
     def get_series_id_archive(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Create ZIP archive
 
@@ -4984,8 +4970,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         params
             Dictionary of optional parameters:
-                "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
-                "transcode" (str): If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+            "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
+            "transcode" (str): If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -4993,14 +4979,14 @@ class Orthanc(httpx.Client):
             ZIP file containing the archive
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/archive",
+            route=f'{self.url}/series/{id_}/archive',
             params=params,
         )
 
     def post_series_id_archive(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Create ZIP archive
 
@@ -5013,29 +4999,28 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
-              "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
+            "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
+            "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
-            In asynchronous mode, information about the job that has been submitted to generate the archive: https://orthanc.uclouvain.be/book/users/advanced-rest.html#jobs
+            In asynchronous mode, information about the job that has been submitted to generate the archive: https://book.orthanc-server.com/users/advanced-rest.html#jobs
             In synchronous mode, the ZIP file containing the archive
         """
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/series/{id_}/archive",
+            route=f'{self.url}/series/{id_}/archive',
             json=json,
         )
 
     def get_series_id_attachments(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List attachments
 
@@ -5048,7 +5033,7 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         params
             Dictionary of optional parameters:
-                "full" (str): If present, retrieve the attachments list and their numerical ids
+            "full" (str): If present, retrieve the attachments list and their numerical ids
 
         Returns
         -------
@@ -5056,15 +5041,15 @@ class Orthanc(httpx.Client):
             JSON array containing the names of the attachments
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/attachments",
+            route=f'{self.url}/series/{id_}/attachments',
             params=params,
         )
 
     def delete_series_id_attachments_name(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Delete attachment
 
@@ -5079,22 +5064,23 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         headers
             Dictionary of optional headers:
-                "If-Match" (str): Revision of the attachment, to check if its content has not changed and can be deleted. This header is mandatory if `CheckRevisions` option is `true`.
+            "If-Match" (str): Revision of the attachment, to check if its content has not changed and can be deleted. This header is mandatory if `CheckRevisions` option is `true`.
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/series/{id_}/attachments/{name}",
+            route=f'{self.url}/series/{id_}/attachments/{name}',
             headers=headers,
         )
 
     def get_series_id_attachments_name(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List operations on attachments
 
@@ -5109,7 +5095,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -5117,16 +5104,16 @@ class Orthanc(httpx.Client):
             List of the available operations
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/attachments/{name}",
+            route=f'{self.url}/series/{id_}/attachments/{name}',
             headers=headers,
         )
 
     def put_series_id_attachments_name(
-        self,
-        id_: str,
-        name: str,
-        content: RequestContent = None,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            content: RequestContent = None,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Set attachment
 
@@ -5140,10 +5127,11 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the series of interest
         content
-                - (Content-Type: "application/octet-stream") Binary data containing the attachment
+            - (Content-Type: "application/octet-stream") Binary data containing the attachment
         headers
             Dictionary of optional headers:
-                "If-Match" (str): Revision of the attachment, if this is not the first time this attachment is set.
+            "If-Match" (str): Revision of the attachment, if this is not the first time this attachment is set.
+
 
         Returns
         -------
@@ -5151,15 +5139,15 @@ class Orthanc(httpx.Client):
             Empty JSON object in the case of a success
         """
         return self._put(
-            route=f"{self.url}/series/{id_}/attachments/{name}",
+            route=f'{self.url}/series/{id_}/attachments/{name}',
             content=content,
             headers=headers,
         )
 
     def post_series_id_attachments_name_compress(
-        self,
-        id_: str,
-        name: str,
+            self,
+            id_: str,
+            name: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Compress attachment
 
@@ -5173,19 +5161,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the series of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._post(
-            route=f"{self.url}/series/{id_}/attachments/{name}/compress",
+            route=f'{self.url}/series/{id_}/attachments/{name}/compress',
         )
 
     def get_series_id_attachments_name_compressed_data(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get attachment (no decompression)
 
@@ -5200,7 +5189,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+
 
         Returns
         -------
@@ -5208,15 +5198,15 @@ class Orthanc(httpx.Client):
             The attachment
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/attachments/{name}/compressed-data",
+            route=f'{self.url}/series/{id_}/attachments/{name}/compressed-data',
             headers=headers,
         )
 
     def get_series_id_attachments_name_compressed_md5(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get MD5 of attachment on disk
 
@@ -5231,7 +5221,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -5239,15 +5230,15 @@ class Orthanc(httpx.Client):
             The MD5 of the attachment, as stored on the disk
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/attachments/{name}/compressed-md5",
+            route=f'{self.url}/series/{id_}/attachments/{name}/compressed-md5',
             headers=headers,
         )
 
     def get_series_id_attachments_name_compressed_size(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get size of attachment on disk
 
@@ -5262,7 +5253,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -5270,15 +5262,15 @@ class Orthanc(httpx.Client):
             The size of the attachment, as stored on the disk
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/attachments/{name}/compressed-size",
+            route=f'{self.url}/series/{id_}/attachments/{name}/compressed-size',
             headers=headers,
         )
 
     def get_series_id_attachments_name_data(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get attachment
 
@@ -5293,7 +5285,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+
 
         Returns
         -------
@@ -5301,15 +5294,15 @@ class Orthanc(httpx.Client):
             The attachment
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/attachments/{name}/data",
+            route=f'{self.url}/series/{id_}/attachments/{name}/data',
             headers=headers,
         )
 
     def get_series_id_attachments_name_info(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get info about the attachment
 
@@ -5324,7 +5317,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -5332,15 +5326,15 @@ class Orthanc(httpx.Client):
             JSON object containing the information about the attachment
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/attachments/{name}/info",
+            route=f'{self.url}/series/{id_}/attachments/{name}/info',
             headers=headers,
         )
 
     def get_series_id_attachments_name_is_compressed(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Is attachment compressed?
 
@@ -5355,7 +5349,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -5363,15 +5358,15 @@ class Orthanc(httpx.Client):
             `0` if the attachment was stored uncompressed, `1` if it was compressed
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/attachments/{name}/is-compressed",
+            route=f'{self.url}/series/{id_}/attachments/{name}/is-compressed',
             headers=headers,
         )
 
     def get_series_id_attachments_name_md5(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get MD5 of attachment
 
@@ -5386,7 +5381,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -5394,15 +5390,15 @@ class Orthanc(httpx.Client):
             The MD5 of the attachment
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/attachments/{name}/md5",
+            route=f'{self.url}/series/{id_}/attachments/{name}/md5',
             headers=headers,
         )
 
     def get_series_id_attachments_name_size(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get size of attachment
 
@@ -5417,7 +5413,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -5425,14 +5422,14 @@ class Orthanc(httpx.Client):
             The size of the attachment
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/attachments/{name}/size",
+            route=f'{self.url}/series/{id_}/attachments/{name}/size',
             headers=headers,
         )
 
     def post_series_id_attachments_name_uncompress(
-        self,
-        id_: str,
-        name: str,
+            self,
+            id_: str,
+            name: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Uncompress attachment
 
@@ -5446,18 +5443,19 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the series of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._post(
-            route=f"{self.url}/series/{id_}/attachments/{name}/uncompress",
+            route=f'{self.url}/series/{id_}/attachments/{name}/uncompress',
         )
 
     def post_series_id_attachments_name_verify_md5(
-        self,
-        id_: str,
-        name: str,
+            self,
+            id_: str,
+            name: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Verify attachment
 
@@ -5471,19 +5469,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the series of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             On success, a valid JSON object is returned
         """
         return self._post(
-            route=f"{self.url}/series/{id_}/attachments/{name}/verify-md5",
+            route=f'{self.url}/series/{id_}/attachments/{name}/verify-md5',
         )
 
     def get_series_id_instances(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get child instances
 
@@ -5496,10 +5495,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         params
             Dictionary of optional parameters:
-                "expand" (str): If false or missing, only retrieve the list of child instances
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
         -------
@@ -5507,14 +5505,14 @@ class Orthanc(httpx.Client):
             JSON array containing information about the child DICOM instances
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/instances",
+            route=f'{self.url}/series/{id_}/instances',
             params=params,
         )
 
     def get_series_id_instances_tags(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get tags of instances
 
@@ -5527,9 +5525,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         params
             Dictionary of optional parameters:
-                "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
+            "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
 
         Returns
         -------
@@ -5537,13 +5535,13 @@ class Orthanc(httpx.Client):
             JSON object associating the Orthanc identifiers of the instances, with the values of their DICOM tags
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/instances-tags",
+            route=f'{self.url}/series/{id_}/instances-tags',
             params=params,
         )
 
     def get_series_id_labels(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List labels
 
@@ -5555,19 +5553,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the series of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the names of the labels
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/labels",
+            route=f'{self.url}/series/{id_}/labels',
         )
 
     def delete_series_id_labels_label(
-        self,
-        id_: str,
-        label: str,
+            self,
+            id_: str,
+            label: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Remove label
 
@@ -5581,18 +5580,19 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the series of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/series/{id_}/labels/{label}",
+            route=f'{self.url}/series/{id_}/labels/{label}',
         )
 
     def get_series_id_labels_label(
-        self,
-        id_: str,
-        label: str,
+            self,
+            id_: str,
+            label: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Test label
 
@@ -5606,19 +5606,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the series of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             Empty string is returned in the case of presence, error 404 in the case of absence
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/labels/{label}",
+            route=f'{self.url}/series/{id_}/labels/{label}',
         )
 
     def put_series_id_labels_label(
-        self,
-        id_: str,
-        label: str,
+            self,
+            id_: str,
+            label: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Add label
 
@@ -5632,18 +5633,19 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the series of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/series/{id_}/labels/{label}",
+            route=f'{self.url}/series/{id_}/labels/{label}',
         )
 
     def get_series_id_media(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Create DICOMDIR media
 
@@ -5656,9 +5658,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         params
             Dictionary of optional parameters:
-                "extended" (str): If present, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*
-                "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
-                "transcode" (str): If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+            "extended" (str): If present, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*
+            "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
+            "transcode" (str): If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -5666,14 +5668,14 @@ class Orthanc(httpx.Client):
             ZIP file containing the archive
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/media",
+            route=f'{self.url}/series/{id_}/media',
             params=params,
         )
 
     def post_series_id_media(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Create DICOMDIR media
 
@@ -5686,30 +5688,29 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
-              "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `false`.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
-              "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
+            "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
+            "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `false`.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
+            "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
-            In asynchronous mode, information about the job that has been submitted to generate the archive: https://orthanc.uclouvain.be/book/users/advanced-rest.html#jobs
+            In asynchronous mode, information about the job that has been submitted to generate the archive: https://book.orthanc-server.com/users/advanced-rest.html#jobs
             In synchronous mode, the ZIP file containing the archive
         """
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/series/{id_}/media",
+            route=f'{self.url}/series/{id_}/media',
             json=json,
         )
 
     def get_series_id_metadata(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List metadata
 
@@ -5722,8 +5723,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         params
             Dictionary of optional parameters:
-                "expand" (str): If present, also retrieve the value of the individual metadata
-                "numeric" (str): If present, use the numeric identifier of the metadata instead of its symbolic name
+            "expand" (str): If present, also retrieve the value of the individual metadata
+            "numeric" (str): If present, use the numeric identifier of the metadata instead of its symbolic name
 
         Returns
         -------
@@ -5731,15 +5732,15 @@ class Orthanc(httpx.Client):
             JSON array containing the names of the available metadata, or JSON associative array mapping metadata to their values (if `expand` argument is provided)
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/metadata",
+            route=f'{self.url}/series/{id_}/metadata',
             params=params,
         )
 
     def delete_series_id_metadata_name(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Delete metadata
 
@@ -5754,22 +5755,23 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         headers
             Dictionary of optional headers:
-                "If-Match" (str): Revision of the metadata, to check if its content has not changed and can be deleted. This header is mandatory if `CheckRevisions` option is `true`.
+            "If-Match" (str): Revision of the metadata, to check if its content has not changed and can be deleted. This header is mandatory if `CheckRevisions` option is `true`.
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/series/{id_}/metadata/{name}",
+            route=f'{self.url}/series/{id_}/metadata/{name}',
             headers=headers,
         )
 
     def get_series_id_metadata_name(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get metadata
 
@@ -5784,7 +5786,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+
 
         Returns
         -------
@@ -5792,16 +5795,16 @@ class Orthanc(httpx.Client):
             Value of the metadata
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/metadata/{name}",
+            route=f'{self.url}/series/{id_}/metadata/{name}',
             headers=headers,
         )
 
     def put_series_id_metadata_name(
-        self,
-        id_: str,
-        name: str,
-        data: RequestData = None,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            data: RequestData = None,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Set metadata
 
@@ -5814,30 +5817,32 @@ class Orthanc(httpx.Client):
             The name of the metadata, or its index (cf. `UserMetadata` configuration option)
         id_
             Orthanc identifier of the series of interest
+
         data
             String value of the metadata
         headers
             Dictionary of optional headers:
-                "If-Match" (str): Revision of the metadata, if this is not the first time this metadata is set.
+            "If-Match" (str): Revision of the metadata, if this is not the first time this metadata is set.
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/series/{id_}/metadata/{name}",
+            route=f'{self.url}/series/{id_}/metadata/{name}',
             data=data,
             headers=headers,
         )
 
     def post_series_id_modify(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Modify series
 
-        Start a job that will modify all the DICOM instances within the series whose identifier is provided in the URL. The modified DICOM instances will be stored into a brand new series, whose Orthanc identifiers will be returned by the job. https://orthanc.uclouvain.be/book/users/anonymization.html#modification-of-studies-or-series
+        Start a job that will modify all the DICOM instances within the series whose identifier is provided in the URL. The modified DICOM instances will be stored into a brand new series, whose Orthanc identifiers will be returned by the job. https://book.orthanc-server.com/users/anonymization.html#modification-of-studies-or-series
         Tags: Series
 
         Parameters
@@ -5846,19 +5851,18 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
-              "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
-              "Keep": Keep the original value of the specified tags, to be chosen among the `StudyInstanceUID`, `SeriesInstanceUID` and `SOPInstanceUID` tags. Avoid this feature as much as possible, as this breaks the DICOM model of the real world.
-              "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "PrivateCreator": The private creator to be used for private tags in `Replace`
-              "Remove": List of tags that must be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "RemovePrivateTags": Remove the private tags from the DICOM instances (defaults to `false`)
-              "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
-              "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
+            "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
+            "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
+            "Keep": Keep the original value of the specified tags, to be chosen among the `StudyInstanceUID`, `SeriesInstanceUID` and `SOPInstanceUID` tags. Avoid this feature as much as possible, as this breaks the DICOM model of the real world.
+            "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
+            "Permissive": If `true`, ignore errors during the individual steps of the job.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "PrivateCreator": The private creator to be used for private tags in `Replace`
+            "Remove": List of tags that must be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "RemovePrivateTags": Remove the private tags from the DICOM instances (defaults to `false`)
+            "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+            "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -5868,14 +5872,14 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/series/{id_}/modify",
+            route=f'{self.url}/series/{id_}/modify',
             json=json,
         )
 
     def get_series_id_module(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get series module
 
@@ -5888,9 +5892,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         params
             Dictionary of optional parameters:
-                "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
+            "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
 
         Returns
         -------
@@ -5898,14 +5902,14 @@ class Orthanc(httpx.Client):
             Information about the DICOM series
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/module",
+            route=f'{self.url}/series/{id_}/module',
             params=params,
         )
 
     def get_series_id_numpy(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Decode series for numpy
 
@@ -5918,8 +5922,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the DICOM resource of interest
         params
             Dictionary of optional parameters:
-                "compress" (bool): Compress the file as `.npz`
-                "rescale" (bool): On grayscale images, apply the rescaling and return floating-point values
+            "compress" (bool): Compress the file as `.npz`
+            "rescale" (bool): On grayscale images, apply the rescaling and return floating-point values
 
         Returns
         -------
@@ -5927,13 +5931,13 @@ class Orthanc(httpx.Client):
             Numpy file: https://numpy.org/devdocs/reference/generated/numpy.lib.format.html
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/numpy",
+            route=f'{self.url}/series/{id_}/numpy',
             params=params,
         )
 
     def get_series_id_ordered_slices(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Order the slices
 
@@ -5945,20 +5949,21 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the series of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
 
         """
-        warnings.warn("This method is deprecated.", DeprecationWarning, stacklevel=2)
+        warnings.warn('This method is deprecated.', DeprecationWarning, stacklevel=2)
         return self._get(
-            route=f"{self.url}/series/{id_}/ordered-slices",
+            route=f'{self.url}/series/{id_}/ordered-slices',
         )
 
     def get_series_id_patient(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get parent patient
 
@@ -5971,9 +5976,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         params
             Dictionary of optional parameters:
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
         -------
@@ -5981,14 +5986,14 @@ class Orthanc(httpx.Client):
             Information about the parent DICOM patient
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/patient",
+            route=f'{self.url}/series/{id_}/patient',
             params=params,
         )
 
     def post_series_id_reconstruct(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Reconstruct tags & optionally files of series
 
@@ -6001,8 +6006,7 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         json
             Dictionary with the following keys:
-              "ReconstructFiles": Also reconstruct the files of the resources (e.g: apply IngestTranscoding, StorageCompression). 'false' by default. (New in Orthanc 1.11.0)
-
+            "ReconstructFiles": Also reconstruct the files of the resources (e.g: apply IngestTranscoding, StorageCompression). 'false' by default. (New in Orthanc 1.11.0)
 
         Returns
         -------
@@ -6011,14 +6015,14 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/series/{id_}/reconstruct",
+            route=f'{self.url}/series/{id_}/reconstruct',
             json=json,
         )
 
     def get_series_id_shared_tags(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get shared tags
 
@@ -6031,8 +6035,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         params
             Dictionary of optional parameters:
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
 
         Returns
         -------
@@ -6040,13 +6044,13 @@ class Orthanc(httpx.Client):
             JSON object containing the values of the DICOM tags
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/shared-tags",
+            route=f'{self.url}/series/{id_}/shared-tags',
             params=params,
         )
 
     def get_series_id_statistics(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get series statistics
 
@@ -6058,19 +6062,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the series of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
 
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/statistics",
+            route=f'{self.url}/series/{id_}/statistics',
         )
 
     def get_series_id_study(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get parent study
 
@@ -6083,9 +6088,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         params
             Dictionary of optional parameters:
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
         -------
@@ -6093,40 +6098,45 @@ class Orthanc(httpx.Client):
             Information about the parent DICOM study
         """
         return self._get(
-            route=f"{self.url}/series/{id_}/study",
+            route=f'{self.url}/series/{id_}/study',
             params=params,
         )
 
     def get_statistics(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get database statistics
 
         Get statistics related to the database of Orthanc
         Tags: System
 
+        Parameters
+        ----------
+
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
 
         """
         return self._get(
-            route=f"{self.url}/statistics",
+            route=f'{self.url}/statistics',
         )
 
     def get_storage_commitment_id(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get storage commitment report
 
-        Get the storage commitment report whose identifier is provided in the URL: https://orthanc.uclouvain.be/book/users/storage-commitment.html#storage-commitment-scu
+        Get the storage commitment report whose identifier is provided in the URL: https://book.orthanc-server.com/users/storage-commitment.html#storage-commitment-scu
         Tags: Networking
 
         Parameters
         ----------
         id_
             Identifier of the storage commitment report
+
 
         Returns
         -------
@@ -6134,34 +6144,35 @@ class Orthanc(httpx.Client):
 
         """
         return self._get(
-            route=f"{self.url}/storage-commitment/{id_}",
+            route=f'{self.url}/storage-commitment/{id_}',
         )
 
     def post_storage_commitment_id_remove(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Remove after storage commitment
 
-        Remove out of Orthanc, the DICOM instances that have been reported to have been properly received the storage commitment report whose identifier is provided in the URL. This is only possible if the `Status` of the storage commitment report is `Success`. https://orthanc.uclouvain.be/book/users/storage-commitment.html#removing-the-instances
+        Remove out of Orthanc, the DICOM instances that have been reported to have been properly received the storage commitment report whose identifier is provided in the URL. This is only possible if the `Status` of the storage commitment report is `Success`. https://book.orthanc-server.com/users/storage-commitment.html#removing-the-instances
         Tags: Networking
 
         Parameters
         ----------
         id_
             Identifier of the storage commitment report
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._post(
-            route=f"{self.url}/storage-commitment/{id_}/remove",
+            route=f'{self.url}/storage-commitment/{id_}/remove',
         )
 
     def get_studies(
-        self,
-        params: QueryParamTypes = None,
+            self,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List the available studies
 
@@ -6172,12 +6183,12 @@ class Orthanc(httpx.Client):
         ----------
         params
             Dictionary of optional parameters:
-                "expand" (str): If present, retrieve detailed information about the individual studies
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "limit" (float): Limit the number of results
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "since" (float): Show only the resources since the provided index
+            "expand" (str): If present, retrieve detailed information about the individual studies
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "limit" (float): Limit the number of results
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "since" (float): Show only the resources since the provided index
 
         Returns
         -------
@@ -6185,13 +6196,13 @@ class Orthanc(httpx.Client):
             JSON array containing either the Orthanc identifiers, or detailed information about the reported studies (if `expand` argument is provided)
         """
         return self._get(
-            route=f"{self.url}/studies",
+            route=f'{self.url}/studies',
             params=params,
         )
 
     def delete_studies_id(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Delete some study
 
@@ -6203,18 +6214,19 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the study of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/studies/{id_}",
+            route=f'{self.url}/studies/{id_}',
         )
 
     def get_studies_id(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get information about some study
 
@@ -6227,9 +6239,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         params
             Dictionary of optional parameters:
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
         -------
@@ -6237,18 +6249,18 @@ class Orthanc(httpx.Client):
             Information about the DICOM study
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}",
+            route=f'{self.url}/studies/{id_}',
             params=params,
         )
 
     def post_studies_id_anonymize(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Anonymize study
 
-        Start a job that will anonymize all the DICOM instances within the study whose identifier is provided in the URL. The modified DICOM instances will be stored into a brand new study, whose Orthanc identifiers will be returned by the job. https://orthanc.uclouvain.be/book/users/anonymization.html#anonymization-of-patients-studies-or-series
+        Start a job that will anonymize all the DICOM instances within the study whose identifier is provided in the URL. The modified DICOM instances will be stored into a brand new study, whose Orthanc identifiers will be returned by the job. https://book.orthanc-server.com/users/anonymization.html#anonymization-of-patients-studies-or-series
         Tags: Studies
 
         Parameters
@@ -6257,21 +6269,19 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
-              "DicomVersion": Version of the DICOM standard to be used for anonymization. Check out configuration option `DeidentifyLogsDicomVersion` for possible values.
-              "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
-              "Keep": List of DICOM tags whose value must not be destroyed by the anonymization. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "KeepLabels": Keep the labels of all resources level (defaults to `false`)
-              "KeepPrivateTags": Keep the private tags from the DICOM instances (defaults to `false`)
-              "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "PrivateCreator": The private creator to be used for private tags in `Replace`
-              "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
-              "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
+            "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
+            "DicomVersion": Version of the DICOM standard to be used for anonymization. Check out configuration option `DeidentifyLogsDicomVersion` for possible values.
+            "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
+            "Keep": List of DICOM tags whose value must not be destroyed by the anonymization. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "KeepPrivateTags": Keep the private tags from the DICOM instances (defaults to `false`)
+            "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
+            "Permissive": If `true`, ignore errors during the individual steps of the job.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "PrivateCreator": The private creator to be used for private tags in `Replace`
+            "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+            "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -6281,14 +6291,14 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/studies/{id_}/anonymize",
+            route=f'{self.url}/studies/{id_}/anonymize',
             json=json,
         )
 
     def get_studies_id_archive(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Create ZIP archive
 
@@ -6301,8 +6311,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         params
             Dictionary of optional parameters:
-                "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
-                "transcode" (str): If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+            "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
+            "transcode" (str): If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -6310,14 +6320,14 @@ class Orthanc(httpx.Client):
             ZIP file containing the archive
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/archive",
+            route=f'{self.url}/studies/{id_}/archive',
             params=params,
         )
 
     def post_studies_id_archive(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Create ZIP archive
 
@@ -6330,29 +6340,28 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
-              "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
+            "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
+            "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
-            In asynchronous mode, information about the job that has been submitted to generate the archive: https://orthanc.uclouvain.be/book/users/advanced-rest.html#jobs
+            In asynchronous mode, information about the job that has been submitted to generate the archive: https://book.orthanc-server.com/users/advanced-rest.html#jobs
             In synchronous mode, the ZIP file containing the archive
         """
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/studies/{id_}/archive",
+            route=f'{self.url}/studies/{id_}/archive',
             json=json,
         )
 
     def get_studies_id_attachments(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List attachments
 
@@ -6365,7 +6374,7 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         params
             Dictionary of optional parameters:
-                "full" (str): If present, retrieve the attachments list and their numerical ids
+            "full" (str): If present, retrieve the attachments list and their numerical ids
 
         Returns
         -------
@@ -6373,15 +6382,15 @@ class Orthanc(httpx.Client):
             JSON array containing the names of the attachments
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/attachments",
+            route=f'{self.url}/studies/{id_}/attachments',
             params=params,
         )
 
     def delete_studies_id_attachments_name(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Delete attachment
 
@@ -6396,22 +6405,23 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         headers
             Dictionary of optional headers:
-                "If-Match" (str): Revision of the attachment, to check if its content has not changed and can be deleted. This header is mandatory if `CheckRevisions` option is `true`.
+            "If-Match" (str): Revision of the attachment, to check if its content has not changed and can be deleted. This header is mandatory if `CheckRevisions` option is `true`.
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/studies/{id_}/attachments/{name}",
+            route=f'{self.url}/studies/{id_}/attachments/{name}',
             headers=headers,
         )
 
     def get_studies_id_attachments_name(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List operations on attachments
 
@@ -6426,7 +6436,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -6434,16 +6445,16 @@ class Orthanc(httpx.Client):
             List of the available operations
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/attachments/{name}",
+            route=f'{self.url}/studies/{id_}/attachments/{name}',
             headers=headers,
         )
 
     def put_studies_id_attachments_name(
-        self,
-        id_: str,
-        name: str,
-        content: RequestContent = None,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            content: RequestContent = None,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Set attachment
 
@@ -6457,10 +6468,11 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the study of interest
         content
-                - (Content-Type: "application/octet-stream") Binary data containing the attachment
+            - (Content-Type: "application/octet-stream") Binary data containing the attachment
         headers
             Dictionary of optional headers:
-                "If-Match" (str): Revision of the attachment, if this is not the first time this attachment is set.
+            "If-Match" (str): Revision of the attachment, if this is not the first time this attachment is set.
+
 
         Returns
         -------
@@ -6468,15 +6480,15 @@ class Orthanc(httpx.Client):
             Empty JSON object in the case of a success
         """
         return self._put(
-            route=f"{self.url}/studies/{id_}/attachments/{name}",
+            route=f'{self.url}/studies/{id_}/attachments/{name}',
             content=content,
             headers=headers,
         )
 
     def post_studies_id_attachments_name_compress(
-        self,
-        id_: str,
-        name: str,
+            self,
+            id_: str,
+            name: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Compress attachment
 
@@ -6490,19 +6502,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the study of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._post(
-            route=f"{self.url}/studies/{id_}/attachments/{name}/compress",
+            route=f'{self.url}/studies/{id_}/attachments/{name}/compress',
         )
 
     def get_studies_id_attachments_name_compressed_data(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get attachment (no decompression)
 
@@ -6517,7 +6530,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+
 
         Returns
         -------
@@ -6525,15 +6539,15 @@ class Orthanc(httpx.Client):
             The attachment
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/attachments/{name}/compressed-data",
+            route=f'{self.url}/studies/{id_}/attachments/{name}/compressed-data',
             headers=headers,
         )
 
     def get_studies_id_attachments_name_compressed_md5(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get MD5 of attachment on disk
 
@@ -6548,7 +6562,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -6556,15 +6571,15 @@ class Orthanc(httpx.Client):
             The MD5 of the attachment, as stored on the disk
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/attachments/{name}/compressed-md5",
+            route=f'{self.url}/studies/{id_}/attachments/{name}/compressed-md5',
             headers=headers,
         )
 
     def get_studies_id_attachments_name_compressed_size(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get size of attachment on disk
 
@@ -6579,7 +6594,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -6587,15 +6603,15 @@ class Orthanc(httpx.Client):
             The size of the attachment, as stored on the disk
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/attachments/{name}/compressed-size",
+            route=f'{self.url}/studies/{id_}/attachments/{name}/compressed-size',
             headers=headers,
         )
 
     def get_studies_id_attachments_name_data(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get attachment
 
@@ -6610,7 +6626,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+
 
         Returns
         -------
@@ -6618,15 +6635,15 @@ class Orthanc(httpx.Client):
             The attachment
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/attachments/{name}/data",
+            route=f'{self.url}/studies/{id_}/attachments/{name}/data',
             headers=headers,
         )
 
     def get_studies_id_attachments_name_info(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get info about the attachment
 
@@ -6641,7 +6658,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -6649,15 +6667,15 @@ class Orthanc(httpx.Client):
             JSON object containing the information about the attachment
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/attachments/{name}/info",
+            route=f'{self.url}/studies/{id_}/attachments/{name}/info',
             headers=headers,
         )
 
     def get_studies_id_attachments_name_is_compressed(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Is attachment compressed?
 
@@ -6672,7 +6690,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -6680,15 +6699,15 @@ class Orthanc(httpx.Client):
             `0` if the attachment was stored uncompressed, `1` if it was compressed
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/attachments/{name}/is-compressed",
+            route=f'{self.url}/studies/{id_}/attachments/{name}/is-compressed',
             headers=headers,
         )
 
     def get_studies_id_attachments_name_md5(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get MD5 of attachment
 
@@ -6703,7 +6722,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -6711,15 +6731,15 @@ class Orthanc(httpx.Client):
             The MD5 of the attachment
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/attachments/{name}/md5",
+            route=f'{self.url}/studies/{id_}/attachments/{name}/md5',
             headers=headers,
         )
 
     def get_studies_id_attachments_name_size(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get size of attachment
 
@@ -6734,7 +6754,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+
 
         Returns
         -------
@@ -6742,14 +6763,14 @@ class Orthanc(httpx.Client):
             The size of the attachment
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/attachments/{name}/size",
+            route=f'{self.url}/studies/{id_}/attachments/{name}/size',
             headers=headers,
         )
 
     def post_studies_id_attachments_name_uncompress(
-        self,
-        id_: str,
-        name: str,
+            self,
+            id_: str,
+            name: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Uncompress attachment
 
@@ -6763,18 +6784,19 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the study of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._post(
-            route=f"{self.url}/studies/{id_}/attachments/{name}/uncompress",
+            route=f'{self.url}/studies/{id_}/attachments/{name}/uncompress',
         )
 
     def post_studies_id_attachments_name_verify_md5(
-        self,
-        id_: str,
-        name: str,
+            self,
+            id_: str,
+            name: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Verify attachment
 
@@ -6788,19 +6810,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the study of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             On success, a valid JSON object is returned
         """
         return self._post(
-            route=f"{self.url}/studies/{id_}/attachments/{name}/verify-md5",
+            route=f'{self.url}/studies/{id_}/attachments/{name}/verify-md5',
         )
 
     def get_studies_id_instances(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get child instances
 
@@ -6813,10 +6836,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         params
             Dictionary of optional parameters:
-                "expand" (str): If false or missing, only retrieve the list of child instances
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
         -------
@@ -6824,14 +6846,14 @@ class Orthanc(httpx.Client):
             JSON array containing information about the child DICOM instances
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/instances",
+            route=f'{self.url}/studies/{id_}/instances',
             params=params,
         )
 
     def get_studies_id_instances_tags(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get tags of instances
 
@@ -6844,9 +6866,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         params
             Dictionary of optional parameters:
-                "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
+            "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
 
         Returns
         -------
@@ -6854,13 +6876,13 @@ class Orthanc(httpx.Client):
             JSON object associating the Orthanc identifiers of the instances, with the values of their DICOM tags
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/instances-tags",
+            route=f'{self.url}/studies/{id_}/instances-tags',
             params=params,
         )
 
     def get_studies_id_labels(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List labels
 
@@ -6872,19 +6894,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the study of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             JSON array containing the names of the labels
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/labels",
+            route=f'{self.url}/studies/{id_}/labels',
         )
 
     def delete_studies_id_labels_label(
-        self,
-        id_: str,
-        label: str,
+            self,
+            id_: str,
+            label: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Remove label
 
@@ -6898,18 +6921,19 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the study of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/studies/{id_}/labels/{label}",
+            route=f'{self.url}/studies/{id_}/labels/{label}',
         )
 
     def get_studies_id_labels_label(
-        self,
-        id_: str,
-        label: str,
+            self,
+            id_: str,
+            label: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Test label
 
@@ -6923,19 +6947,20 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the study of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
             Empty string is returned in the case of presence, error 404 in the case of absence
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/labels/{label}",
+            route=f'{self.url}/studies/{id_}/labels/{label}',
         )
 
     def put_studies_id_labels_label(
-        self,
-        id_: str,
-        label: str,
+            self,
+            id_: str,
+            label: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Add label
 
@@ -6949,18 +6974,19 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the study of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/studies/{id_}/labels/{label}",
+            route=f'{self.url}/studies/{id_}/labels/{label}',
         )
 
     def get_studies_id_media(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Create DICOMDIR media
 
@@ -6973,9 +6999,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         params
             Dictionary of optional parameters:
-                "extended" (str): If present, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*
-                "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
-                "transcode" (str): If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+            "extended" (str): If present, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*
+            "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
+            "transcode" (str): If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -6983,14 +7009,14 @@ class Orthanc(httpx.Client):
             ZIP file containing the archive
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/media",
+            route=f'{self.url}/studies/{id_}/media',
             params=params,
         )
 
     def post_studies_id_media(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Create DICOMDIR media
 
@@ -7003,34 +7029,33 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
-              "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `false`.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
-              "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
+            "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
+            "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `false`.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
+            "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
-            In asynchronous mode, information about the job that has been submitted to generate the archive: https://orthanc.uclouvain.be/book/users/advanced-rest.html#jobs
+            In asynchronous mode, information about the job that has been submitted to generate the archive: https://book.orthanc-server.com/users/advanced-rest.html#jobs
             In synchronous mode, the ZIP file containing the archive
         """
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/studies/{id_}/media",
+            route=f'{self.url}/studies/{id_}/media',
             json=json,
         )
 
     def post_studies_id_merge(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Merge study
 
-        Start a new job so as to move some DICOM resources into the DICOM study whose Orthanc identifier is provided in the URL: https://orthanc.uclouvain.be/book/users/anonymization.html#merging
+        Start a new job so as to move some DICOM resources into the DICOM study whose Orthanc identifier is provided in the URL: https://book.orthanc-server.com/users/anonymization.html#merging
         Tags: Studies
 
         Parameters
@@ -7039,13 +7064,12 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
-              "KeepSource": If set to `true`, instructs Orthanc to keep a copy of the original resources in their source study. By default, the original resources are deleted from Orthanc.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "Resources": The list of DICOM resources (studies, series, and/or instances) to be merged into the study of interest (mandatory option)
-              "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
-
+            "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
+            "KeepSource": If set to `true`, instructs Orthanc to keep a copy of the original resources in their source study. By default, the original resources are deleted from Orthanc.
+            "Permissive": If `true`, ignore errors during the individual steps of the job.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "Resources": The list of DICOM resources (studies, series, and/or instances) to be merged into the study of interest (mandatory option)
+            "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
 
         Returns
         -------
@@ -7055,14 +7079,14 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/studies/{id_}/merge",
+            route=f'{self.url}/studies/{id_}/merge',
             json=json,
         )
 
     def get_studies_id_metadata(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List metadata
 
@@ -7075,8 +7099,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         params
             Dictionary of optional parameters:
-                "expand" (str): If present, also retrieve the value of the individual metadata
-                "numeric" (str): If present, use the numeric identifier of the metadata instead of its symbolic name
+            "expand" (str): If present, also retrieve the value of the individual metadata
+            "numeric" (str): If present, use the numeric identifier of the metadata instead of its symbolic name
 
         Returns
         -------
@@ -7084,15 +7108,15 @@ class Orthanc(httpx.Client):
             JSON array containing the names of the available metadata, or JSON associative array mapping metadata to their values (if `expand` argument is provided)
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/metadata",
+            route=f'{self.url}/studies/{id_}/metadata',
             params=params,
         )
 
     def delete_studies_id_metadata_name(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Delete metadata
 
@@ -7107,22 +7131,23 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         headers
             Dictionary of optional headers:
-                "If-Match" (str): Revision of the metadata, to check if its content has not changed and can be deleted. This header is mandatory if `CheckRevisions` option is `true`.
+            "If-Match" (str): Revision of the metadata, to check if its content has not changed and can be deleted. This header is mandatory if `CheckRevisions` option is `true`.
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._delete(
-            route=f"{self.url}/studies/{id_}/metadata/{name}",
+            route=f'{self.url}/studies/{id_}/metadata/{name}',
             headers=headers,
         )
 
     def get_studies_id_metadata_name(
-        self,
-        id_: str,
-        name: str,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get metadata
 
@@ -7137,7 +7162,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+            "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+
 
         Returns
         -------
@@ -7145,16 +7171,16 @@ class Orthanc(httpx.Client):
             Value of the metadata
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/metadata/{name}",
+            route=f'{self.url}/studies/{id_}/metadata/{name}',
             headers=headers,
         )
 
     def put_studies_id_metadata_name(
-        self,
-        id_: str,
-        name: str,
-        data: RequestData = None,
-        headers: HeaderTypes = None,
+            self,
+            id_: str,
+            name: str,
+            data: RequestData = None,
+            headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Set metadata
 
@@ -7167,30 +7193,32 @@ class Orthanc(httpx.Client):
             The name of the metadata, or its index (cf. `UserMetadata` configuration option)
         id_
             Orthanc identifier of the study of interest
+
         data
             String value of the metadata
         headers
             Dictionary of optional headers:
-                "If-Match" (str): Revision of the metadata, if this is not the first time this metadata is set.
+            "If-Match" (str): Revision of the metadata, if this is not the first time this metadata is set.
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/studies/{id_}/metadata/{name}",
+            route=f'{self.url}/studies/{id_}/metadata/{name}',
             data=data,
             headers=headers,
         )
 
     def post_studies_id_modify(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Modify study
 
-        Start a job that will modify all the DICOM instances within the study whose identifier is provided in the URL. The modified DICOM instances will be stored into a brand new study, whose Orthanc identifiers will be returned by the job. https://orthanc.uclouvain.be/book/users/anonymization.html#modification-of-studies-or-series
+        Start a job that will modify all the DICOM instances within the study whose identifier is provided in the URL. The modified DICOM instances will be stored into a brand new study, whose Orthanc identifiers will be returned by the job. https://book.orthanc-server.com/users/anonymization.html#modification-of-studies-or-series
         Tags: Studies
 
         Parameters
@@ -7199,19 +7227,18 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
-              "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
-              "Keep": Keep the original value of the specified tags, to be chosen among the `StudyInstanceUID`, `SeriesInstanceUID` and `SOPInstanceUID` tags. Avoid this feature as much as possible, as this breaks the DICOM model of the real world.
-              "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "PrivateCreator": The private creator to be used for private tags in `Replace`
-              "Remove": List of tags that must be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "RemovePrivateTags": Remove the private tags from the DICOM instances (defaults to `false`)
-              "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
-              "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
+            "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
+            "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
+            "Keep": Keep the original value of the specified tags, to be chosen among the `StudyInstanceUID`, `SeriesInstanceUID` and `SOPInstanceUID` tags. Avoid this feature as much as possible, as this breaks the DICOM model of the real world.
+            "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
+            "Permissive": If `true`, ignore errors during the individual steps of the job.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "PrivateCreator": The private creator to be used for private tags in `Replace`
+            "Remove": List of tags that must be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "RemovePrivateTags": Remove the private tags from the DICOM instances (defaults to `false`)
+            "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+            "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -7221,14 +7248,14 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/studies/{id_}/modify",
+            route=f'{self.url}/studies/{id_}/modify',
             json=json,
         )
 
     def get_studies_id_module(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get study module
 
@@ -7241,9 +7268,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         params
             Dictionary of optional parameters:
-                "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
+            "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
 
         Returns
         -------
@@ -7251,14 +7278,14 @@ class Orthanc(httpx.Client):
             Information about the DICOM study
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/module",
+            route=f'{self.url}/studies/{id_}/module',
             params=params,
         )
 
     def get_studies_id_module_patient(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get patient module of study
 
@@ -7271,9 +7298,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         params
             Dictionary of optional parameters:
-                "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
+            "ignore-length" (List): Also include the DICOM tags that are provided in this list, even if their associated value is long
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
 
         Returns
         -------
@@ -7281,14 +7308,14 @@ class Orthanc(httpx.Client):
             Information about the DICOM study
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/module-patient",
+            route=f'{self.url}/studies/{id_}/module-patient',
             params=params,
         )
 
     def get_studies_id_patient(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get parent patient
 
@@ -7301,9 +7328,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         params
             Dictionary of optional parameters:
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
         -------
@@ -7311,14 +7338,14 @@ class Orthanc(httpx.Client):
             Information about the parent DICOM patient
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/patient",
+            route=f'{self.url}/studies/{id_}/patient',
             params=params,
         )
 
     def post_studies_id_reconstruct(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Reconstruct tags & optionally files of study
 
@@ -7331,8 +7358,7 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         json
             Dictionary with the following keys:
-              "ReconstructFiles": Also reconstruct the files of the resources (e.g: apply IngestTranscoding, StorageCompression). 'false' by default. (New in Orthanc 1.11.0)
-
+            "ReconstructFiles": Also reconstruct the files of the resources (e.g: apply IngestTranscoding, StorageCompression). 'false' by default. (New in Orthanc 1.11.0)
 
         Returns
         -------
@@ -7341,14 +7367,14 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/studies/{id_}/reconstruct",
+            route=f'{self.url}/studies/{id_}/reconstruct',
             json=json,
         )
 
     def get_studies_id_series(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get child series
 
@@ -7361,10 +7387,9 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         params
             Dictionary of optional parameters:
-                "expand" (str): If false or missing, only retrieve the list of child series
-                "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "requestedTags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requestedTags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
         -------
@@ -7372,14 +7397,14 @@ class Orthanc(httpx.Client):
             JSON array containing information about the child DICOM series
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/series",
+            route=f'{self.url}/studies/{id_}/series',
             params=params,
         )
 
     def get_studies_id_shared_tags(
-        self,
-        id_: str,
-        params: QueryParamTypes = None,
+            self,
+            id_: str,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get shared tags
 
@@ -7392,8 +7417,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         params
             Dictionary of optional parameters:
-                "short" (bool): If present, report the DICOM tags in hexadecimal format
-                "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
+            "short" (bool): If present, report the DICOM tags in hexadecimal format
+            "simplify" (bool): If present, report the DICOM tags in human-readable format (using the symbolic name of the tags)
 
         Returns
         -------
@@ -7401,18 +7426,18 @@ class Orthanc(httpx.Client):
             JSON object containing the values of the DICOM tags
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/shared-tags",
+            route=f'{self.url}/studies/{id_}/shared-tags',
             params=params,
         )
 
     def post_studies_id_split(
-        self,
-        id_: str,
-        json: Any = None,
+            self,
+            id_: str,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Split study
 
-        Start a new job so as to split the DICOM study whose Orthanc identifier is provided in the URL, by taking some of its children series or instances out of it and putting them into a brand new study (this new study is created by setting the `StudyInstanceUID` tag to a random identifier): https://orthanc.uclouvain.be/book/users/anonymization.html#splitting
+        Start a new job so as to split the DICOM study whose Orthanc identifier is provided in the URL, by taking some of its children series or instances out of it and putting them into a brand new study (this new study is created by setting the `StudyInstanceUID` tag to a random identifier): https://book.orthanc-server.com/users/anonymization.html#splitting
         Tags: Studies
 
         Parameters
@@ -7421,17 +7446,15 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
-              "Instances": The list of instances to be separated from the parent study. These instances must all be children of the same source study, that is specified in the URI.
-              "KeepLabels": Keep the labels of all resources level (defaults to `false`)
-              "KeepSource": If set to `true`, instructs Orthanc to keep a copy of the original series/instances in the source study. By default, the original series/instances are deleted from Orthanc.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "Remove": List of tags that must be removed in the new study (from the same modules as in the `Replace` option)
-              "Replace": Associative array to change the value of some DICOM tags in the new study. These tags must be part of the "Patient Module Attributes" or the "General Study Module Attributes", as specified by the DICOM 2011 standard in Tables C.7-1 and C.7-3.
-              "Series": The list of series to be separated from the parent study. These series must all be children of the same source study, that is specified in the URI.
-              "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
-
+            "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
+            "Instances": The list of instances to be separated from the parent study. These instances must all be children of the same source study, that is specified in the URI.
+            "KeepSource": If set to `true`, instructs Orthanc to keep a copy of the original series/instances in the source study. By default, the original series/instances are deleted from Orthanc.
+            "Permissive": If `true`, ignore errors during the individual steps of the job.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "Remove": List of tags that must be removed in the new study (from the same modules as in the `Replace` option)
+            "Replace": Associative array to change the value of some DICOM tags in the new study. These tags must be part of the "Patient Module Attributes" or the "General Study Module Attributes", as specified by the DICOM 2011 standard in Tables C.7-1 and C.7-3.
+            "Series": The list of series to be separated from the parent study. These series must all be children of the same source study, that is specified in the URI.
+            "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
 
         Returns
         -------
@@ -7441,13 +7464,13 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/studies/{id_}/split",
+            route=f'{self.url}/studies/{id_}/split',
             json=json,
         )
 
     def get_studies_id_statistics(
-        self,
-        id_: str,
+            self,
+            id_: str,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get study statistics
 
@@ -7459,39 +7482,48 @@ class Orthanc(httpx.Client):
         id_
             Orthanc identifier of the study of interest
 
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
 
         """
         return self._get(
-            route=f"{self.url}/studies/{id_}/statistics",
+            route=f'{self.url}/studies/{id_}/statistics',
         )
 
     def get_system(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get system information
 
         Get system information about Orthanc
         Tags: System
 
+        Parameters
+        ----------
+
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
 
         """
         return self._get(
-            route=f"{self.url}/system",
+            route=f'{self.url}/system',
         )
 
     def get_tools(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List operations
 
         List the available operations under URI `/tools/`
         Tags: Other
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -7499,16 +7531,20 @@ class Orthanc(httpx.Client):
             List of the available operations
         """
         return self._get(
-            route=f"{self.url}/tools",
+            route=f'{self.url}/tools',
         )
 
     def get_tools_accepted_transfer_syntaxes(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get accepted transfer syntaxes
 
         Get the list of UIDs of the DICOM transfer syntaxes that are accepted by Orthanc C-STORE SCP. This corresponds to the configuration options `AcceptedTransferSyntaxes` and `XXXTransferSyntaxAccepted`.
         Tags: System
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -7516,13 +7552,13 @@ class Orthanc(httpx.Client):
             JSON array containing the transfer syntax UIDs
         """
         return self._get(
-            route=f"{self.url}/tools/accepted-transfer-syntaxes",
+            route=f'{self.url}/tools/accepted-transfer-syntaxes',
         )
 
     def put_tools_accepted_transfer_syntaxes(
-        self,
-        data: RequestData = None,
-        json: Any = None,
+            self,
+            data: RequestData = None,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Set accepted transfer syntaxes
 
@@ -7533,9 +7569,9 @@ class Orthanc(httpx.Client):
         ----------
         json
             Dictionary with the following keys:
-
         data
             UID of the transfer syntax to be accepted. Wildcards `?` and `*` are accepted.
+
 
         Returns
         -------
@@ -7545,14 +7581,14 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._put(
-            route=f"{self.url}/tools/accepted-transfer-syntaxes",
+            route=f'{self.url}/tools/accepted-transfer-syntaxes',
             data=data,
             json=json,
         )
 
     def post_tools_bulk_anonymize(
-        self,
-        json: Any = None,
+            self,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Anonymize a set of resources
 
@@ -7563,22 +7599,20 @@ class Orthanc(httpx.Client):
         ----------
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
-              "DicomVersion": Version of the DICOM standard to be used for anonymization. Check out configuration option `DeidentifyLogsDicomVersion` for possible values.
-              "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
-              "Keep": List of DICOM tags whose value must not be destroyed by the anonymization. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "KeepLabels": Keep the labels of all resources level (defaults to `false`)
-              "KeepPrivateTags": Keep the private tags from the DICOM instances (defaults to `false`)
-              "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "PrivateCreator": The private creator to be used for private tags in `Replace`
-              "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "Resources": List of the Orthanc identifiers of the patients/studies/series/instances of interest.
-              "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
-              "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
+            "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
+            "DicomVersion": Version of the DICOM standard to be used for anonymization. Check out configuration option `DeidentifyLogsDicomVersion` for possible values.
+            "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
+            "Keep": List of DICOM tags whose value must not be destroyed by the anonymization. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "KeepPrivateTags": Keep the private tags from the DICOM instances (defaults to `false`)
+            "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
+            "Permissive": If `true`, ignore errors during the individual steps of the job.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "PrivateCreator": The private creator to be used for private tags in `Replace`
+            "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "Resources": List of the Orthanc identifiers of the patients/studies/series/instances of interest.
+            "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+            "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -7588,13 +7622,13 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/tools/bulk-anonymize",
+            route=f'{self.url}/tools/bulk-anonymize',
             json=json,
         )
 
     def post_tools_bulk_content(
-        self,
-        json: Any = None,
+            self,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Describe a set of resources
 
@@ -7605,12 +7639,11 @@ class Orthanc(httpx.Client):
         ----------
         json
             Dictionary with the following keys:
-              "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-              "Level": This optional argument specifies the level of interest (can be `Patient`, `Study`, `Series` or `Instance`). Orthanc will loop over the items inside `Resources`, and explore upward or downward in the DICOM hierarchy in order to find the level of interest.
-              "Metadata": If set to `true` (default value), the metadata associated with the resources will also be retrieved.
-              "Resources": List of the Orthanc identifiers of the patients/studies/series/instances of interest.
-              "Short": If set to `true`, report the DICOM tags in hexadecimal format
-
+            "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "Level": This optional argument specifies the level of interest (can be `Patient`, `Study`, `Series` or `Instance`). Orthanc will loop over the items inside `Resources`, and explore upward or downward in the DICOM hierarchy in order to find the level of interest.
+            "Metadata": If set to `true` (default value), the metadata associated with the resources will also be retrieved.
+            "Resources": List of the Orthanc identifiers of the patients/studies/series/instances of interest.
+            "Short": If set to `true`, report the DICOM tags in hexadecimal format
 
         Returns
         -------
@@ -7619,13 +7652,13 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/tools/bulk-content",
+            route=f'{self.url}/tools/bulk-content',
             json=json,
         )
 
     def post_tools_bulk_delete(
-        self,
-        json: Any = None,
+            self,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Delete a set of resources
 
@@ -7636,8 +7669,7 @@ class Orthanc(httpx.Client):
         ----------
         json
             Dictionary with the following keys:
-              "Resources": List of the Orthanc identifiers of the patients/studies/series/instances of interest.
-
+            "Resources": List of the Orthanc identifiers of the patients/studies/series/instances of interest.
 
         Returns
         -------
@@ -7646,13 +7678,13 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/tools/bulk-delete",
+            route=f'{self.url}/tools/bulk-delete',
             json=json,
         )
 
     def post_tools_bulk_modify(
-        self,
-        json: Any = None,
+            self,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Modify a set of resources
 
@@ -7663,21 +7695,20 @@ class Orthanc(httpx.Client):
         ----------
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
-              "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
-              "Keep": Keep the original value of the specified tags, to be chosen among the `StudyInstanceUID`, `SeriesInstanceUID` and `SOPInstanceUID` tags. Avoid this feature as much as possible, as this breaks the DICOM model of the real world.
-              "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
-              "Level": Level of the modification (`Patient`, `Study`, `Series` or `Instance`). If absent, the level defaults to `Instance`, but is set to `Patient` if `PatientID` is modified, to `Study` if `StudyInstanceUID` is modified, or to `Series` if `SeriesInstancesUID` is modified. (new in Orthanc 1.9.7)
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "PrivateCreator": The private creator to be used for private tags in `Replace`
-              "Remove": List of tags that must be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "RemovePrivateTags": Remove the private tags from the DICOM instances (defaults to `false`)
-              "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
-              "Resources": List of the Orthanc identifiers of the patients/studies/series/instances of interest.
-              "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
-              "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
+            "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
+            "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
+            "Keep": Keep the original value of the specified tags, to be chosen among the `StudyInstanceUID`, `SeriesInstanceUID` and `SOPInstanceUID` tags. Avoid this feature as much as possible, as this breaks the DICOM model of the real world.
+            "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
+            "Level": Level of the modification (`Patient`, `Study`, `Series` or `Instance`). If absent, the level defaults to `Instance`, but is set to `Patient` if `PatientID` is modified, to `Study` if `StudyInstanceUID` is modified, or to `Series` if `SeriesInstancesUID` is modified. (new in Orthanc 1.9.7)
+            "Permissive": If `true`, ignore errors during the individual steps of the job.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "PrivateCreator": The private creator to be used for private tags in `Replace`
+            "Remove": List of tags that must be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "RemovePrivateTags": Remove the private tags from the DICOM instances (defaults to `false`)
+            "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
+            "Resources": List of the Orthanc identifiers of the patients/studies/series/instances of interest.
+            "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+            "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
@@ -7687,38 +7718,13 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/tools/bulk-modify",
+            route=f'{self.url}/tools/bulk-modify',
             json=json,
         )
 
-    def get_tools_create_archive(
-        self,
-        params: QueryParamTypes = None,
-    ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
-        """Create ZIP archive
-
-        Create a ZIP archive containing the DICOM resources (patients, studies, series, or instances) whose Orthanc identifiers are provided in the 'resources' argument
-        Tags: System
-
-        Parameters
-        ----------
-        params
-            Dictionary of optional parameters:
-                "resources" (str): A comma separated list of Orthanc resource identifiers to include in the ZIP archive.
-                "transcode" (str): If present, the DICOM files will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
-        Returns
-        -------
-        Union[Dict, List, str, bytes, int, httpx.Response]
-        """
-        return self._get(
-            route=f"{self.url}/tools/create-archive",
-            params=params,
-        )
-
     def post_tools_create_archive(
-        self,
-        json: Any = None,
+            self,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Create ZIP archive
 
@@ -7729,29 +7735,28 @@ class Orthanc(httpx.Client):
         ----------
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "Resources": The list of Orthanc identifiers of interest.
-              "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
-              "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
+            "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "Resources": The list of Orthanc identifiers of interest.
+            "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
+            "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
-            In asynchronous mode, information about the job that has been submitted to generate the archive: https://orthanc.uclouvain.be/book/users/advanced-rest.html#jobs
+            In asynchronous mode, information about the job that has been submitted to generate the archive: https://book.orthanc-server.com/users/advanced-rest.html#jobs
             In synchronous mode, the ZIP file containing the archive
         """
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/tools/create-archive",
+            route=f'{self.url}/tools/create-archive',
             json=json,
         )
 
     def post_tools_create_dicom(
-        self,
-        json: Any = None,
+            self,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Create one DICOM instance
 
@@ -7762,13 +7767,12 @@ class Orthanc(httpx.Client):
         ----------
         json
             Dictionary with the following keys:
-              "Content": This field can be used to embed an image (pixel data encoded as PNG or JPEG), a PDF, or a 3D manufactoring model (MTL/OBJ/STL) inside the created DICOM instance. The file to be encapsulated must be provided using its [data URI scheme encoding](https://en.wikipedia.org/wiki/Data_URI_scheme). This field can possibly contain a JSON array, in which case a DICOM series is created containing one DICOM instance for each item in the `Content` field.
-              "Force": Avoid the consistency checks for the DICOM tags that enforce the DICOM model of the real-world. You can notably use this flag if you need to manually set the tags `StudyInstanceUID`, `SeriesInstanceUID`, or `SOPInstanceUID`. Be careful with this feature.
-              "InterpretBinaryTags": If some value in the `Tags` associative array is formatted according to some [data URI scheme encoding](https://en.wikipedia.org/wiki/Data_URI_scheme), whether this value is decoded to a binary value or kept as such (`true` by default)
-              "Parent": If present, the newly created instance will be attached to the parent DICOM resource whose Orthanc identifier is contained in this field. The DICOM tags of the parent modules in the DICOM hierarchy will be automatically copied to the newly created instance.
-              "PrivateCreator": The private creator to be used for private tags in `Tags`
-              "Tags": Associative array containing the tags of the new instance to be created
-
+            "Content": This field can be used to embed an image (pixel data encoded as PNG or JPEG), a PDF, or a 3D manufactoring model (MTL/OBJ/STL) inside the created DICOM instance. The file to be encapsulated must be provided using its [data URI scheme encoding](https://en.wikipedia.org/wiki/Data_URI_scheme). This field can possibly contain a JSON array, in which case a DICOM series is created containing one DICOM instance for each item in the `Content` field.
+            "Force": Avoid the consistency checks for the DICOM tags that enforce the DICOM model of the real-world. You can notably use this flag if you need to manually set the tags `StudyInstanceUID`, `SeriesInstanceUID`, or `SOPInstanceUID`. Be careful with this feature.
+            "InterpretBinaryTags": If some value in the `Tags` associative array is formatted according to some [data URI scheme encoding](https://en.wikipedia.org/wiki/Data_URI_scheme), whether this value is decoded to a binary value or kept as such (`true` by default)
+            "Parent": If present, the newly created instance will be attached to the parent DICOM resource whose Orthanc identifier is contained in this field. The DICOM tags of the parent modules in the DICOM hierarchy will be automatically copied to the newly created instance.
+            "PrivateCreator": The private creator to be used for private tags in `Tags`
+            "Tags": Associative array containing the tags of the new instance to be created
 
         Returns
         -------
@@ -7778,38 +7782,13 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/tools/create-dicom",
+            route=f'{self.url}/tools/create-dicom',
             json=json,
-        )
-
-    def get_tools_create_media(
-        self,
-        params: QueryParamTypes = None,
-    ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
-        """Create DICOMDIR media
-
-        Create a DICOMDIR media containing the DICOM resources (patients, studies, series, or instances) whose Orthanc identifiers are provided in the 'resources' argument
-        Tags: System
-
-        Parameters
-        ----------
-        params
-            Dictionary of optional parameters:
-                "resources" (str): A comma separated list of Orthanc resource identifiers to include in the DICOMDIR media.
-                "transcode" (str): If present, the DICOM files will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
-        Returns
-        -------
-        Union[Dict, List, str, bytes, int, httpx.Response]
-        """
-        return self._get(
-            route=f"{self.url}/tools/create-media",
-            params=params,
         )
 
     def post_tools_create_media(
-        self,
-        json: Any = None,
+            self,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Create DICOMDIR media
 
@@ -7820,55 +7799,29 @@ class Orthanc(httpx.Client):
         ----------
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
-              "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `false`.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "Resources": The list of Orthanc identifiers of interest.
-              "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
-              "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
+            "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
+            "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `false`.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "Resources": The list of Orthanc identifiers of interest.
+            "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
+            "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
-            In asynchronous mode, information about the job that has been submitted to generate the archive: https://orthanc.uclouvain.be/book/users/advanced-rest.html#jobs
+            In asynchronous mode, information about the job that has been submitted to generate the archive: https://book.orthanc-server.com/users/advanced-rest.html#jobs
             In synchronous mode, the ZIP file containing the archive
         """
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/tools/create-media",
+            route=f'{self.url}/tools/create-media',
             json=json,
         )
 
-    def get_tools_create_media_extended(
-        self,
-        params: QueryParamTypes = None,
-    ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
-        """Create DICOMDIR media
-
-        Create a DICOMDIR media containing the DICOM resources (patients, studies, series, or instances) whose Orthanc identifiers are provided in the 'resources' argument
-        Tags: System
-
-        Parameters
-        ----------
-        params
-            Dictionary of optional parameters:
-                "resources" (str): A comma separated list of Orthanc resource identifiers to include in the DICOMDIR media.
-                "transcode" (str): If present, the DICOM files will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
-        Returns
-        -------
-        Union[Dict, List, str, bytes, int, httpx.Response]
-        """
-        return self._get(
-            route=f"{self.url}/tools/create-media-extended",
-            params=params,
-        )
-
     def post_tools_create_media_extended(
-        self,
-        json: Any = None,
+            self,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Create DICOMDIR media
 
@@ -7879,34 +7832,37 @@ class Orthanc(httpx.Client):
         ----------
         json
             Dictionary with the following keys:
-              "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
-              "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `true`.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
-              "Resources": The list of Orthanc identifiers of interest.
-              "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
-              "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
-
+            "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
+            "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `true`.
+            "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+            "Resources": The list of Orthanc identifiers of interest.
+            "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
+            "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://book.orthanc-server.com/faq/transcoding.html
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
-            In asynchronous mode, information about the job that has been submitted to generate the archive: https://orthanc.uclouvain.be/book/users/advanced-rest.html#jobs
+            In asynchronous mode, information about the job that has been submitted to generate the archive: https://book.orthanc-server.com/users/advanced-rest.html#jobs
             In synchronous mode, the ZIP file containing the archive
         """
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/tools/create-media-extended",
+            route=f'{self.url}/tools/create-media-extended',
             json=json,
         )
 
     def get_tools_default_encoding(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get default encoding
 
         Get the default encoding that is used by Orthanc if parsing a DICOM instance without the `SpecificCharacterEncoding` tag, or during C-FIND. This corresponds to the configuration option `DefaultEncoding`.
         Tags: System
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -7914,12 +7870,12 @@ class Orthanc(httpx.Client):
             The name of the encoding
         """
         return self._get(
-            route=f"{self.url}/tools/default-encoding",
+            route=f'{self.url}/tools/default-encoding',
         )
 
     def put_tools_default_encoding(
-        self,
-        data: RequestData = None,
+            self,
+            data: RequestData = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Set default encoding
 
@@ -7928,25 +7884,31 @@ class Orthanc(httpx.Client):
 
         Parameters
         ----------
+
         data
             The name of the encoding. Check out configuration option `DefaultEncoding` for the allowed values.
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/tools/default-encoding",
+            route=f'{self.url}/tools/default-encoding',
             data=data,
         )
 
     def get_tools_dicom_conformance(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get DICOM conformance
 
         Get the DICOM conformance statement of Orthanc
         Tags: System
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -7954,12 +7916,12 @@ class Orthanc(httpx.Client):
             The DICOM conformance statement
         """
         return self._get(
-            route=f"{self.url}/tools/dicom-conformance",
+            route=f'{self.url}/tools/dicom-conformance',
         )
 
     def post_tools_dicom_echo(
-        self,
-        json: Any = None,
+            self,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Trigger C-ECHO SCU
 
@@ -7970,14 +7932,13 @@ class Orthanc(httpx.Client):
         ----------
         json
             Dictionary with the following keys:
-              "AET": AET of the remote DICOM modality
-              "CheckFind": Issue a dummy C-FIND command after the C-GET SCU, in order to check whether the remote modality knows about Orthanc. This field defaults to the value of the `DicomEchoChecksFind` configuration option. New in Orthanc 1.8.1.
-              "Host": Host address of the remote DICOM modality (typically, an IP address)
-              "Manufacturer": Manufacturer of the remote DICOM modality (check configuration option `DicomModalities` for possible values
-              "Port": TCP port of the remote DICOM modality
-              "Timeout": Timeout for the C-ECHO command, in seconds
-              "UseDicomTls": Whether to use DICOM TLS in the SCU connection initiated by Orthanc (new in Orthanc 1.9.0)
-
+            "AET": AET of the remote DICOM modality
+            "CheckFind": Issue a dummy C-FIND command after the C-GET SCU, in order to check whether the remote modality knows about Orthanc. This field defaults to the value of the `DicomEchoChecksFind` configuration option. New in Orthanc 1.8.1.
+            "Host": Host address of the remote DICOM modality (typically, an IP address)
+            "Manufacturer": Manufacturer of the remote DICOM modality (check configuration option `DicomModalities` for possible values
+            "Port": TCP port of the remote DICOM modality
+            "Timeout": Timeout for the C-ECHO command, in seconds
+            "UseDicomTls": Whether to use DICOM TLS in the SCU connection initiated by Orthanc (new in Orthanc 1.9.0)
 
         Returns
         -------
@@ -7986,13 +7947,13 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/tools/dicom-echo",
+            route=f'{self.url}/tools/dicom-echo',
             json=json,
         )
 
     def post_tools_execute_script(
-        self,
-        data: RequestData = None,
+            self,
+            data: RequestData = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Execute Lua script
 
@@ -8001,8 +7962,10 @@ class Orthanc(httpx.Client):
 
         Parameters
         ----------
+
         data
             The Lua script to be executed
+
 
         Returns
         -------
@@ -8010,35 +7973,34 @@ class Orthanc(httpx.Client):
             Output of the Lua script
         """
         return self._post(
-            route=f"{self.url}/tools/execute-script",
+            route=f'{self.url}/tools/execute-script',
             data=data,
         )
 
     def post_tools_find(
-        self,
-        json: Any = None,
+            self,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Look for local resources
 
-        This URI can be used to perform a search on the content of the local Orthanc server, in a way that is similar to querying remote DICOM modalities using C-FIND SCU: https://orthanc.uclouvain.be/book/users/rest.html#performing-finds-within-orthanc
+        This URI can be used to perform a search on the content of the local Orthanc server, in a way that is similar to querying remote DICOM modalities using C-FIND SCU: https://book.orthanc-server.com/users/rest.html#performing-finds-within-orthanc
         Tags: System
 
         Parameters
         ----------
         json
             Dictionary with the following keys:
-              "CaseSensitive": Enable case-sensitive search for PN value representations (defaults to configuration option `CaseSensitivePN`)
-              "Expand": Also retrieve the content of the matching resources, not only their Orthanc identifiers
-              "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-              "Labels": List of strings specifying which labels to look for in the resources (new in Orthanc 1.12.0)
-              "LabelsConstraint": Constraint on the labels, can be `All`, `Any`, or `None` (defaults to `All`, new in Orthanc 1.12.0)
-              "Level": Level of the query (`Patient`, `Study`, `Series` or `Instance`)
-              "Limit": Limit the number of reported resources
-              "Query": Associative array containing the filter on the values of the DICOM tags
-              "RequestedTags": A list of DICOM tags to include in the response (applicable only if "Expand" is set to true).  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
-              "Short": If set to `true`, report the DICOM tags in hexadecimal format
-              "Since": Show only the resources since the provided index (in conjunction with `Limit`)
-
+            "CaseSensitive": Enable case-sensitive search for PN value representations (defaults to configuration option `CaseSensitivePN`)
+            "Expand": Also retrieve the content of the matching resources, not only their Orthanc identifiers
+            "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+            "Labels": List of strings specifying which labels to look for in the resources (new in Orthanc 1.12.0)
+            "LabelsConstraint": Constraint on the labels, can be `All`, `Any`, or `None` (defaults to `All`, new in Orthanc 1.12.0)
+            "Level": Level of the query (`Patient`, `Study`, `Series` or `Instance`)
+            "Limit": Limit the number of reported resources
+            "Query": Associative array containing the filter on the values of the DICOM tags
+            "RequestedTags": A list of DICOM tags to include in the response (applicable only if "Expand" is set to true).  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
+            "Short": If set to `true`, report the DICOM tags in hexadecimal format
+            "Since": Show only the resources since the provided index (in conjunction with `Limit`)
 
         Returns
         -------
@@ -8048,13 +8010,13 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/tools/find",
+            route=f'{self.url}/tools/find',
             json=json,
         )
 
     def get_tools_generate_uid(
-        self,
-        params: QueryParamTypes = None,
+            self,
+            params: QueryParamTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Generate an identifier
 
@@ -8065,7 +8027,7 @@ class Orthanc(httpx.Client):
         ----------
         params
             Dictionary of optional parameters:
-                "level" (str): Type of DICOM resource among: `patient`, `study`, `series` or `instance`
+            "level" (str): Type of DICOM resource among: `patient`, `study`, `series` or `instance`
 
         Returns
         -------
@@ -8073,33 +8035,41 @@ class Orthanc(httpx.Client):
             The generated identifier
         """
         return self._get(
-            route=f"{self.url}/tools/generate-uid_",
+            route=f'{self.url}/tools/generate-uid_',
             params=params,
         )
 
     def post_tools_invalid_ate_tags(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Invalidate DICOM-as-JSON summaries
 
-        Remove all the attachments of the type "DICOM-as-JSON" that are associated will all the DICOM instances stored in Orthanc. These summaries will be automatically re-created on the next access. This is notably useful after changes to the `Dictionary` configuration option. https://orthanc.uclouvain.be/book/faq/orthanc-storage.html#storage-area
+        Remove all the attachments of the type "DICOM-as-JSON" that are associated will all the DICOM instances stored in Orthanc. These summaries will be automatically re-created on the next access. This is notably useful after changes to the `Dictionary` configuration option. https://book.orthanc-server.com/faq/orthanc-storage.html#storage-area
         Tags: System
+
+        Parameters
+        ----------
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._post(
-            route=f"{self.url}/tools/invalid_ate-tags",
+            route=f'{self.url}/tools/invalid_ate-tags',
         )
 
     def get_tools_labels(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get all the used labels
 
         List all the labels that are associated with any resource of the Orthanc database
         Tags: System
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -8107,16 +8077,20 @@ class Orthanc(httpx.Client):
             JSON array containing the labels
         """
         return self._get(
-            route=f"{self.url}/tools/labels",
+            route=f'{self.url}/tools/labels',
         )
 
     def get_tools_log_level(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get main log level
 
         Get the main log level of Orthanc
         Tags: Logs
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -8124,12 +8098,12 @@ class Orthanc(httpx.Client):
             Possible values: `default`, `verbose` or `trace`
         """
         return self._get(
-            route=f"{self.url}/tools/log-level",
+            route=f'{self.url}/tools/log-level',
         )
 
     def put_tools_log_level(
-        self,
-        data: RequestData = None,
+            self,
+            data: RequestData = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Set main log level
 
@@ -8138,25 +8112,31 @@ class Orthanc(httpx.Client):
 
         Parameters
         ----------
+
         data
             Possible values: `default`, `verbose` or `trace`
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/tools/log-level",
+            route=f'{self.url}/tools/log-level',
             data=data,
         )
 
     def get_tools_log_level_dicom(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get log level for `dicom`
 
         Get the log level of the log category `dicom`
         Tags: Logs
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -8164,12 +8144,12 @@ class Orthanc(httpx.Client):
             Possible values: `default`, `verbose` or `trace`
         """
         return self._get(
-            route=f"{self.url}/tools/log-level-dicom",
+            route=f'{self.url}/tools/log-level-dicom',
         )
 
     def put_tools_log_level_dicom(
-        self,
-        data: RequestData = None,
+            self,
+            data: RequestData = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Set log level for `dicom`
 
@@ -8178,25 +8158,31 @@ class Orthanc(httpx.Client):
 
         Parameters
         ----------
+
         data
             Possible values: `default`, `verbose` or `trace`
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/tools/log-level-dicom",
+            route=f'{self.url}/tools/log-level-dicom',
             data=data,
         )
 
     def get_tools_log_level_generic(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get log level for `generic`
 
         Get the log level of the log category `generic`
         Tags: Logs
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -8204,12 +8190,12 @@ class Orthanc(httpx.Client):
             Possible values: `default`, `verbose` or `trace`
         """
         return self._get(
-            route=f"{self.url}/tools/log-level-generic",
+            route=f'{self.url}/tools/log-level-generic',
         )
 
     def put_tools_log_level_generic(
-        self,
-        data: RequestData = None,
+            self,
+            data: RequestData = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Set log level for `generic`
 
@@ -8218,25 +8204,31 @@ class Orthanc(httpx.Client):
 
         Parameters
         ----------
+
         data
             Possible values: `default`, `verbose` or `trace`
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/tools/log-level-generic",
+            route=f'{self.url}/tools/log-level-generic',
             data=data,
         )
 
     def get_tools_log_level_http(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get log level for `http`
 
         Get the log level of the log category `http`
         Tags: Logs
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -8244,12 +8236,12 @@ class Orthanc(httpx.Client):
             Possible values: `default`, `verbose` or `trace`
         """
         return self._get(
-            route=f"{self.url}/tools/log-level-http",
+            route=f'{self.url}/tools/log-level-http',
         )
 
     def put_tools_log_level_http(
-        self,
-        data: RequestData = None,
+            self,
+            data: RequestData = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Set log level for `http`
 
@@ -8258,25 +8250,31 @@ class Orthanc(httpx.Client):
 
         Parameters
         ----------
+
         data
             Possible values: `default`, `verbose` or `trace`
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/tools/log-level-http",
+            route=f'{self.url}/tools/log-level-http',
             data=data,
         )
 
     def get_tools_log_level_jobs(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get log level for `jobs`
 
         Get the log level of the log category `jobs`
         Tags: Logs
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -8284,12 +8282,12 @@ class Orthanc(httpx.Client):
             Possible values: `default`, `verbose` or `trace`
         """
         return self._get(
-            route=f"{self.url}/tools/log-level-jobs",
+            route=f'{self.url}/tools/log-level-jobs',
         )
 
     def put_tools_log_level_jobs(
-        self,
-        data: RequestData = None,
+            self,
+            data: RequestData = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Set log level for `jobs`
 
@@ -8298,25 +8296,31 @@ class Orthanc(httpx.Client):
 
         Parameters
         ----------
+
         data
             Possible values: `default`, `verbose` or `trace`
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/tools/log-level-jobs",
+            route=f'{self.url}/tools/log-level-jobs',
             data=data,
         )
 
     def get_tools_log_level_lua(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get log level for `lua`
 
         Get the log level of the log category `lua`
         Tags: Logs
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -8324,12 +8328,12 @@ class Orthanc(httpx.Client):
             Possible values: `default`, `verbose` or `trace`
         """
         return self._get(
-            route=f"{self.url}/tools/log-level-lua",
+            route=f'{self.url}/tools/log-level-lua',
         )
 
     def put_tools_log_level_lua(
-        self,
-        data: RequestData = None,
+            self,
+            data: RequestData = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Set log level for `lua`
 
@@ -8338,25 +8342,31 @@ class Orthanc(httpx.Client):
 
         Parameters
         ----------
+
         data
             Possible values: `default`, `verbose` or `trace`
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/tools/log-level-lua",
+            route=f'{self.url}/tools/log-level-lua',
             data=data,
         )
 
     def get_tools_log_level_plugins(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get log level for `plugins`
 
         Get the log level of the log category `plugins`
         Tags: Logs
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -8364,12 +8374,12 @@ class Orthanc(httpx.Client):
             Possible values: `default`, `verbose` or `trace`
         """
         return self._get(
-            route=f"{self.url}/tools/log-level-plugins",
+            route=f'{self.url}/tools/log-level-plugins',
         )
 
     def put_tools_log_level_plugins(
-        self,
-        data: RequestData = None,
+            self,
+            data: RequestData = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Set log level for `plugins`
 
@@ -8378,25 +8388,31 @@ class Orthanc(httpx.Client):
 
         Parameters
         ----------
+
         data
             Possible values: `default`, `verbose` or `trace`
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/tools/log-level-plugins",
+            route=f'{self.url}/tools/log-level-plugins',
             data=data,
         )
 
     def get_tools_log_level_sqlite(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get log level for `sqlite`
 
         Get the log level of the log category `sqlite`
         Tags: Logs
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -8404,12 +8420,12 @@ class Orthanc(httpx.Client):
             Possible values: `default`, `verbose` or `trace`
         """
         return self._get(
-            route=f"{self.url}/tools/log-level-sqlite",
+            route=f'{self.url}/tools/log-level-sqlite',
         )
 
     def put_tools_log_level_sqlite(
-        self,
-        data: RequestData = None,
+            self,
+            data: RequestData = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Set log level for `sqlite`
 
@@ -8418,21 +8434,23 @@ class Orthanc(httpx.Client):
 
         Parameters
         ----------
+
         data
             Possible values: `default`, `verbose` or `trace`
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/tools/log-level-sqlite",
+            route=f'{self.url}/tools/log-level-sqlite',
             data=data,
         )
 
     def post_tools_lookup(
-        self,
-        data: RequestData = None,
+            self,
+            data: RequestData = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Look for DICOM identifiers
 
@@ -8441,8 +8459,10 @@ class Orthanc(httpx.Client):
 
         Parameters
         ----------
+
         data
             The DICOM identifier of interest (i.e. the value of `PatientID`, `StudyInstanceUID`, `SeriesInstanceUID`, or `SOPInstanceUID`)
+
 
         Returns
         -------
@@ -8450,17 +8470,21 @@ class Orthanc(httpx.Client):
             JSON array containing a list of matching Orthanc resources, each item in the list corresponding to a JSON object with the fields `Type`, `ID` and `Path` identifying one DICOM resource that is stored by Orthanc
         """
         return self._post(
-            route=f"{self.url}/tools/lookup",
+            route=f'{self.url}/tools/lookup',
             data=data,
         )
 
     def get_tools_metrics(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Are metrics collected?
 
         Returns a Boolean specifying whether Prometheus metrics are collected and exposed at `/tools/metrics-prometheus`
         Tags: System
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -8468,12 +8492,12 @@ class Orthanc(httpx.Client):
             `1` if metrics are collected, `0` if metrics are disabled
         """
         return self._get(
-            route=f"{self.url}/tools/metrics",
+            route=f'{self.url}/tools/metrics',
         )
 
     def put_tools_metrics(
-        self,
-        data: RequestData = None,
+            self,
+            data: RequestData = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Enable collection of metrics
 
@@ -8482,25 +8506,31 @@ class Orthanc(httpx.Client):
 
         Parameters
         ----------
+
         data
             `1` if metrics are collected, `0` if metrics are disabled
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/tools/metrics",
+            route=f'{self.url}/tools/metrics',
             data=data,
         )
 
     def get_tools_metrics_prometheus(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get usage metrics
 
-        Get usage metrics of Orthanc in the Prometheus file format (OpenMetrics): https://orthanc.uclouvain.be/book/users/advanced-rest.html#instrumentation-with-prometheus
+        Get usage metrics of Orthanc in the Prometheus file format (OpenMetrics): https://book.orthanc-server.com/users/advanced-rest.html#instrumentation-with-prometheus
         Tags: System
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -8508,16 +8538,20 @@ class Orthanc(httpx.Client):
             No description
         """
         return self._get(
-            route=f"{self.url}/tools/metrics-prometheus",
+            route=f'{self.url}/tools/metrics-prometheus',
         )
 
     def get_tools_now(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get UTC time
 
         Get UTC time
         Tags: System
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -8525,16 +8559,20 @@ class Orthanc(httpx.Client):
             The UTC time
         """
         return self._get(
-            route=f"{self.url}/tools/now",
+            route=f'{self.url}/tools/now',
         )
 
     def get_tools_now_local(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get local time
 
         Get local time
         Tags: System
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -8542,12 +8580,12 @@ class Orthanc(httpx.Client):
             The local time
         """
         return self._get(
-            route=f"{self.url}/tools/now-local",
+            route=f'{self.url}/tools/now-local',
         )
 
     def post_tools_reconstruct(
-        self,
-        json: Any = None,
+            self,
+            json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Reconstruct all the index
 
@@ -8558,8 +8596,7 @@ class Orthanc(httpx.Client):
         ----------
         json
             Dictionary with the following keys:
-              "ReconstructFiles": Also reconstruct the files of the resources (e.g: apply IngestTranscoding, StorageCompression). 'false' by default. (New in Orthanc 1.11.0)
-
+            "ReconstructFiles": Also reconstruct the files of the resources (e.g: apply IngestTranscoding, StorageCompression). 'false' by default. (New in Orthanc 1.11.0)
 
         Returns
         -------
@@ -8568,49 +8605,61 @@ class Orthanc(httpx.Client):
         if json is None:
             json = {}
         return self._post(
-            route=f"{self.url}/tools/reconstruct",
+            route=f'{self.url}/tools/reconstruct',
             json=json,
         )
 
     def post_tools_reset(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Restart Orthanc
 
         Restart Orthanc
         Tags: System
 
+        Parameters
+        ----------
+
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._post(
-            route=f"{self.url}/tools/reset",
+            route=f'{self.url}/tools/reset',
         )
 
     def post_tools_shutdown(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Shutdown Orthanc
 
         Shutdown Orthanc
         Tags: System
 
+        Parameters
+        ----------
+
+
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._post(
-            route=f"{self.url}/tools/shutdown",
+            route=f'{self.url}/tools/shutdown',
         )
 
     def get_tools_unknown_sop_class_accepted(
-        self,
+            self,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Is unknown SOP class accepted?
 
         Shall Orthanc C-STORE SCP accept DICOM instances with an unknown SOP class UID?
         Tags: System
+
+        Parameters
+        ----------
+
 
         Returns
         -------
@@ -8618,12 +8667,12 @@ class Orthanc(httpx.Client):
             `1` if accepted, `0` if not accepted
         """
         return self._get(
-            route=f"{self.url}/tools/unknown-sop-class-accepted",
+            route=f'{self.url}/tools/unknown-sop-class-accepted',
         )
 
     def put_tools_unknown_sop_class_accepted(
-        self,
-        data: RequestData = None,
+            self,
+            data: RequestData = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Set unknown SOP class accepted
 
@@ -8632,14 +8681,43 @@ class Orthanc(httpx.Client):
 
         Parameters
         ----------
+
         data
             `1` if accepted, `0` if not accepted
+
 
         Returns
         -------
         Union[Dict, List, str, bytes, int, httpx.Response]
         """
         return self._put(
-            route=f"{self.url}/tools/unknown-sop-class-accepted",
+            route=f'{self.url}/tools/unknown-sop-class-accepted',
             data=data,
+        )
+
+    def get_instances_id_content_tags_path(
+            self,
+            tags_path: str,
+            id_: str,
+    ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
+        """Get raw tag
+
+        Get the raw content of one DICOM tag in the hierarchy of DICOM dataset
+        Tags: Instances
+
+        Parameters
+        ----------
+        tags_path
+            Path to the DICOM tag. This is the interleaving of one DICOM tag, possibly followed by an index for sequences. Sequences are accessible as, for instance, `/0008-1140/1/0008-1150`
+        id_
+            Orthanc identifier of the DICOM instance of interest
+
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int, httpx.Response]
+            The raw value of the tag of intereset (binary data, whose memory layout depends on the underlying transfer syntax), or JSON array containing the list of available tags if accessing a dataset
+        """
+        return self._get(
+            route=f'{self.url}/instances/{id_}/content/{tags_path}',
         )
