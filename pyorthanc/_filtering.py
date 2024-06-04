@@ -12,20 +12,6 @@ from .client import Orthanc
 from .util import async_to_sync
 
 
-def build_patient_forest(
-        orthanc: Orthanc,
-        patient_filter: Optional[Callable] = None,
-        study_filter: Optional[Callable] = None,
-        series_filter: Optional[Callable] = None) -> List[Patient]:
-    warnings.warn(
-        'Function "build_patient_forest" is deprecated and will be removed in a future release. '
-        'Please use "find" instead',
-        DeprecationWarning,
-        stacklevel=2
-    )
-    return find(orthanc, patient_filter, study_filter, series_filter)
-
-
 def find(orthanc: Union[Orthanc, AsyncOrthanc],
          patient_filter: Optional[Callable] = None,
          study_filter: Optional[Callable] = None,
