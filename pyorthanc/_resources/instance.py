@@ -85,13 +85,6 @@ class Instance(Resource):
         Dict
             Dictionary with tags as key and information as value
         """
-        if self.lock:
-            if self._information is None:
-                # Setup self._information for the first time when study is lock
-                self._information = self.client.get_instances_id(self.id_)
-
-            return self._information
-
         return self.client.get_instances_id(self.id_)
 
     @property
@@ -119,8 +112,8 @@ class Instance(Resource):
         datetime
             Creation Date
         """
-        date_string = self.get_main_information()['MainDicomTags']['InstanceCreationDate']
-        time_string = self.get_main_information()['MainDicomTags']['InstanceCreationTime']
+        date_string = self._get_main_dicom_tag_value('InstanceCreationDate')
+        time_string = self._get_main_dicom_tag_value('InstanceCreationTime')
 
         return util.make_datetime_from_dicom_date(date_string, time_string)
 

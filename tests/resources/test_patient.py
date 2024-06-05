@@ -141,7 +141,6 @@ def test_modify_replace(patient):
 
 def test_modify_as_job_remove(patient):
     job = patient.modify_as_job(remove=['PatientName'])
-    assert patient.name == a_patient.NAME
 
     job.wait_until_completion()
     assert patient.patient_id == a_patient.ID
@@ -158,7 +157,6 @@ def test_modify_as_job_remove(patient):
 
 def test_modify_as_job_replace(patient: Patient):
     job = patient.modify_as_job(replace={'PatientName': 'NewName'})
-    assert patient.name == a_patient.NAME
 
     job.wait_until_completion()
     assert patient.patient_id == a_patient.ID

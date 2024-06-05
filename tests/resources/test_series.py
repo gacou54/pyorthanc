@@ -177,7 +177,6 @@ def test_modify_as_job_remove(series: Series):
         keep=['SeriesInstanceUID'],
         force=True
     )
-    assert series.manufacturer == a_series.MANUFACTURER
     job.wait_until_completion()
     modified_series = Series(job.content['ID'], series.client)
     assert modified_series.id_ == series.id_   # Ensure that it is the same object (since SeriesInstanceUID has not changed)
@@ -222,7 +221,7 @@ def test_modify_as_job_replace(series: Series):
 
 
 def test_remote_empty_instances(series):
-    series.lock = True
+    series._lock_children = True
 
     # Putting an empty instance
     series._child_resources = [None]

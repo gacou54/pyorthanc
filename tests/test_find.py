@@ -128,15 +128,11 @@ def test_query_orthanc(client_with_data_and_labels, level, query, labels, labels
         limit=limit,
         since=since,
         retrieve_all_resources=retrieve_all_resources,
-        lock=lock
+        lock_children=lock
     )
 
     for resource in result:
         assert resource.id_ in expected
-        if lock:
-            assert isinstance(resource._information, dict)
-        else:
-            assert resource._information is None
 
 
 @pytest.mark.parametrize('level, labels_constraint', [

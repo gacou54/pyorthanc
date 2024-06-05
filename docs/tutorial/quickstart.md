@@ -134,8 +134,8 @@ The `pyorthanc.find()` function allow to find resources with filters on many lev
 or with complex filter. Each filter function takes an object that correspond to the resource level
 and should return a boolean value.
 
-Note that when using the `find()` function, the state of the resources `Patient/Study/Series/Instance` 
-are locked.
+Note that when using the `find()` function, the children of the resources `Patient/Study/Series/Instance`
+are only query once and then filtered accordingly to the provided filters.
 ```python
 from datetime import datetime
 from pyorthanc import find

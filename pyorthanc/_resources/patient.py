@@ -25,13 +25,6 @@ class Patient(Resource):
         Dict
             Dictionary of patient main information.
         """
-        if self.lock:
-            if self._information is None:
-                # Setup self._information for the first time when patient is lock
-                self._information = self.client.get_patients_id(self.id_)
-
-            return self._information
-
         return self.client.get_patients_id(self.id_)
 
     @property
@@ -240,16 +233,16 @@ class Patient(Resource):
         List[Study]
             List of the patient's studies
         """
-        if self.lock:
+        if self._lock_children:
             if self._child_resources is None:
                 studies_ids = self.get_main_information()['Studies']
-                self._child_resources = [Study(i, self.client, self.lock) for i in studies_ids]
+                self._child_resources = [Study(i, self.client, self._lock_children) for i in studies_ids]
 
             return self._child_resources
 
         studies_ids = self.get_main_information()['Studies']
 
-        return [Study(i, self.client, self.lock) for i in studies_ids]
+        return [Study(i, self.client) for i in studies_ids]
 
     def anonymize(self, remove: List = None, replace: Dict = None, keep: List = None,
                   force: bool = False, keep_private_tags: bool = False,
@@ -501,6 +494,9 @@ class Patient(Resource):
                 'Use `.modify_as_job` or increase client.timeout.'
             )
 
+        # Reset cache since a main DICOM tag may have be changed
+        self._main_dicom_tags = None
+
         # if 'PatientID' is not affected, the modified_patient['ID'] is the same as self.id_
         return Patient(modified_patient['ID'], self.client)
 
@@ -592,6 +588,9 @@ class Patient(Resource):
             data['PrivateCreator'] = private_creator
 
         job_info = self.client.post_patients_id_modify(self.id_, data)
+
+        # Reset cache since a main DICOM tag may have be changed
+        self._main_dicom_tags = None
 
         return Job(job_info['ID'], self.client)
 

@@ -41,7 +41,7 @@ def test_attributes(study: Study):
 
 
 def test_remove_empty_series(study: Study):
-    study.lock = True
+    study._lock_children = True
 
     for series in study.series:
         series._child_resources = []
@@ -167,7 +167,6 @@ def test_modify_as_job_remove(study: Study):
         keep=['StudyInstanceUID'],
         force=True
     )
-    assert study.referring_physician_name == a_study.INFORMATION['MainDicomTags']['ReferringPhysicianName']
     job.wait_until_completion()
     modified_study = Study(job.content['ID'], study.client)
     assert modified_study.id_ == study.id_   # Ensure that it is the same object (since StudyInstanceUID has not changed)
