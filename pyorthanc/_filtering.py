@@ -55,7 +55,7 @@ def find(orthanc: Union[Orthanc, AsyncOrthanc],
             instance_filter=instance_filter
         ))
 
-    patients = [Patient(i, orthanc, lock=True) for i in orthanc.get_patients()]
+    patients = [Patient(i, orthanc, _lock_children=True) for i in orthanc.get_patients()]
     if patient_filter is not None:
         patients = [i for i in patients if patient_filter(i)]
 
@@ -109,7 +109,7 @@ async def _async_build_patient(
         study_filter: Optional[Callable],
         series_filter: Optional[Callable],
         instance_filter: Optional[Callable]) -> Patient:
-    patient = Patient(patient_id_, async_to_sync(async_orthanc), lock=True)
+    patient = Patient(patient_id_, async_to_sync(async_orthanc), _lock_children=True)
 
     if patient_filter is not None:
         if not patient_filter(patient):
@@ -136,7 +136,7 @@ async def _async_build_study(
         study_filter: Optional[Callable],
         series_filter: Optional[Callable],
         instance_filter: Optional[Callable]) -> Study:
-    study = Study(study_information['ID'], async_to_sync(async_orthanc), lock=True)
+    study = Study(study_information['ID'], async_to_sync(async_orthanc), _lock_children=True)
     study._information = study_information
 
     if study_filter is not None:
@@ -161,7 +161,7 @@ async def _async_build_series(
         async_orthanc: AsyncOrthanc,
         series_filter: Optional[Callable],
         instance_filter: Optional[Callable]) -> Series:
-    series = Series(series_information['ID'], async_to_sync(async_orthanc), lock=True)
+    series = Series(series_information['ID'], async_to_sync(async_orthanc), _lock_children=True)
     series._information = series_information
 
     if series_filter is not None:
@@ -181,7 +181,7 @@ def _build_instance(
         instance_information: Dict,
         orthanc: Orthanc,
         instance_filter: Optional[Callable]) -> Optional[Instance]:
-    instance = Instance(instance_information['ID'], orthanc, lock=True)
+    instance = Instance(instance_information['ID'], orthanc, _lock_children=True)
     instance._information = instance_information
 
     if instance_filter is not None:

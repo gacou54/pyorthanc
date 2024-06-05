@@ -9,7 +9,7 @@ from ..client import Orthanc
 
 class Resource:
 
-    def __init__(self, id_: str, client: Orthanc, lock: bool = False) -> None:
+    def __init__(self, id_: str, client: Orthanc, _lock_children: bool = False) -> None:
         """Constructor
 
         Parameters
@@ -18,19 +18,18 @@ class Resource:
             Orthanc identifier of the resource
         client
             Orthanc client
-        lock
-            Specify if the Resource state should be locked. This is useful when the child resources
-            have been filtered out, and you don't want the resource to return an updated version
-            or all of those children. "lock=True" is notably used for the "find" function,
-            so that only the filtered resources are kept.
+        _lock_children
+            If `_lock_children` is True, the resource children (ex. instances of a series via `Series.instances`)
+            will be cached at the first query rather than queried every time. This is useful when you want
+            to filter the children of a resource and want to maintain the filter result.
         """
         client = util.ensure_non_raw_response(client)
 
         self.id_ = id_
         self.client = client
 
-        self.lock = lock
-        self._information: Optional[Dict] = None
+        self._lock_children = _lock_children
+        self._main_dicom_tags: Optional[Dict] = None
         self._child_resources: Optional[List['Resource']] = None
 
     @property
@@ -46,7 +45,10 @@ class Resource:
 
     @property
     def main_dicom_tags(self) -> Dict[str, str]:
-        return self.get_main_information()['MainDicomTags']
+        if self._main_dicom_tags is None:
+            self._main_dicom_tags = self.get_main_information()['MainDicomTags']
+
+        return self._main_dicom_tags
 
     @abc.abstractmethod
     def get_main_information(self):
@@ -54,7 +56,7 @@ class Resource:
 
     def _get_main_dicom_tag_value(self, tag: str) -> Any:
         try:
-            return self.get_main_information()['MainDicomTags'][tag]
+            return self.main_dicom_tags[tag]
         except KeyError:
             raise errors.TagDoesNotExistError(f'{self} has no {tag} tag.')
 

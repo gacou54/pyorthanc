@@ -1,5 +1,5 @@
 from . import errors, util
-from ._filtering import build_patient_forest, find, trim_patients
+from ._filtering import find, trim_patients
 from ._find import find_instances, find_patients, find_series, find_studies, query_orthanc
 from ._modality import Modality, RemoteModality
 from ._resources import Instance, Patient, Series, Study
@@ -18,7 +18,6 @@ __all__ = [
     'Study',
     'Series',
     'Instance',
-    'build_patient_forest',
     'trim_patients',
     'find',
     'find_patients',

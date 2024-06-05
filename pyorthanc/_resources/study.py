@@ -29,13 +29,6 @@ class Study(Resource):
         Dict
             Dictionary of study information
         """
-        if self.lock:
-            if self._information is None:
-                # Setup self._information for the first time when study is lock
-                self._information = self.client.get_studies_id(self.id_)
-
-            return self._information
-
         return self.client.get_studies_id(self.id_)
 
     @property
@@ -95,16 +88,16 @@ class Study(Resource):
     @property
     def series(self) -> List[Series]:
         """Get Study series"""
-        if self.lock:
+        if self._lock_children:
             if self._child_resources is None:
                 series_ids = self.get_main_information()['Series']
-                self._child_resources = [Series(i, self.client, self.lock) for i in series_ids]
+                self._child_resources = [Series(i, self.client, self._lock_children) for i in series_ids]
 
             return self._child_resources
 
         series_ids = self.get_main_information()['Series']
 
-        return [Series(i, self.client, self.lock) for i in series_ids]
+        return [Series(i, self.client) for i in series_ids]
 
     @property
     def accession_number(self) -> str:
@@ -393,6 +386,9 @@ class Study(Resource):
                 'Use `.modify_as_job` or increase client.timeout.'
             )
 
+        # Reset cache since a main DICOM tag may have be changed
+        self._main_dicom_tags = None
+
         # if 'StudyInstanceUID' is not affected, the modified_study['ID'] is the same as self.id_
         return Study(modified_study['ID'], self.client)
 
@@ -499,6 +495,9 @@ class Study(Resource):
             data['PrivateCreator'] = private_creator
 
         job_info = self.client.post_studies_id_modify(self.id_, data)
+
+        # Reset cache since a main DICOM tag may have be changed
+        self._main_dicom_tags = None
 
         return Job(job_info['ID'], self.client)
 

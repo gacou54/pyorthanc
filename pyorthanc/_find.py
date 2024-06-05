@@ -196,7 +196,7 @@ def query_orthanc(client: Orthanc,
                   limit: int = DEFAULT_RESOURCES_LIMIT,
                   since: int = 0,
                   retrieve_all_resources: bool = True,
-                  lock: bool = False) -> List[Resource]:
+                  lock_children: bool = False) -> List[Resource]:
     """Query data in the Orthanc server
 
     Parameters
@@ -217,9 +217,10 @@ def query_orthanc(client: Orthanc,
         Show only the resources since the provided index (in conjunction with "limit").
     retrieve_all_resources
         Retrieve all resources since the index specified in the "since" parameter.
-    lock
-        if `True`, lock the resource state at lookup (useful for minimising the number of HTTP calls).
-
+    lock_children
+        If `lock_children` is True, the resource children (ex. instances of a series via `Series.instances`)
+        will be cached at the first query rather than queried every time. This is useful when you want
+        to filter the children of a resource and want to maintain the filter result.
     Returns
     -------
     List[Resource]
@@ -275,21 +276,15 @@ def query_orthanc(client: Orthanc,
         results = client.post_tools_find(data)
 
     if level == 'Patient':
-        resources = [Patient(i['ID'], client, lock=lock) for i in results]
+        resources = [Patient(i['ID'], client, _lock_children=lock_children) for i in results]
     elif level == 'Study':
-        resources = [Study(i['ID'], client, lock=lock) for i in results]
+        resources = [Study(i['ID'], client, _lock_children=lock_children) for i in results]
     elif level == 'Series':
-        resources = [Series(i['ID'], client, lock=lock) for i in results]
+        resources = [Series(i['ID'], client, _lock_children=lock_children) for i in results]
     elif level == 'Instance':
-        resources = [Instance(i['ID'], client, lock=lock) for i in results]
+        resources = [Instance(i['ID'], client, _lock_children=lock_children) for i in results]
     else:
         raise ValueError(f"Unknown level ['Patient', 'Study', 'Series', 'Instance'], got {level}")
-
-    if lock:
-        for resource in resources:
-            # This loads the state in memory. Since lock=True,
-            # subsequent queries on resource will use the local state
-            resource.get_main_information()
 
     return resources
 

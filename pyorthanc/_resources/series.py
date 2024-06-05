@@ -24,16 +24,16 @@ class Series(Resource):
     @property
     def instances(self) -> List[Instance]:
         """Get series instance"""
-        if self.lock:
+        if self._lock_children:
             if self._child_resources is None:
                 instances_ids = self.get_main_information()['Instances']
-                self._child_resources = [Instance(i, self.client, self.lock) for i in instances_ids]
+                self._child_resources = [Instance(i, self.client, self._lock_children) for i in instances_ids]
 
             return self._child_resources
 
         instances_ids = self.get_main_information()['Instances']
 
-        return [Instance(i, self.client, self.lock) for i in instances_ids]
+        return [Instance(i, self.client) for i in instances_ids]
 
     @property
     def uid(self) -> str:
@@ -41,14 +41,13 @@ class Series(Resource):
         return self._get_main_dicom_tag_value('SeriesInstanceUID')
 
     def get_main_information(self) -> Dict:
-        """Get series main information"""
-        if self.lock:
-            if self._information is None:
-                # Setup self._information for the first time when series is lock
-                self._information = self.client.get_series_id(self.id_)
+        """Get series main information
 
-            return self._information
-
+        Returns
+        -------
+        Dict
+            Dictionary of series information
+        """
         return self.client.get_series_id(self.id_)
 
     @property
@@ -435,6 +434,9 @@ class Series(Resource):
                 'Use `.modify_as_job` or increase client.timeout.'
             )
 
+        # Reset cache since a main DICOM tag may have be changed
+        self._main_dicom_tags = None
+
         # if 'SeriesInstanceUID' is not affected, the modified_series['ID'] is the same as self.id_
         return Series(modified_series['ID'], self.client)
 
@@ -541,6 +543,9 @@ class Series(Resource):
             data['PrivateCreator'] = private_creator
 
         job_info = self.client.post_series_id_modify(self.id_, data)
+
+        # Reset cache since a main DICOM tag may have be changed
+        self._main_dicom_tags = None
 
         return Job(job_info['ID'], self.client)
 
