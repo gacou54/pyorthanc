@@ -25,7 +25,7 @@ jobs:
           docker compose build --no-cache
       - name: Start services
         run: |
-          docker-compose up -d orthanc1 orthanc2
+          docker compose up -d orthanc1 orthanc2
       - name: Run Tests
         run: |
-          docker-compose run --rm test
+          docker compose run --rm test
