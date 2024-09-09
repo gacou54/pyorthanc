@@ -39,7 +39,8 @@ PyOrthanc addresses this challenge by providing a client-side, Pythonic interfac
 the complexities of HTTP requests and DICOM data handling. This is in contrast to the Orthanc Python plugin, which 
 offers a powerful means to extend Orthanc's functionality directly within the server environment.
 
-# Features and Functionalitiesy
+# Features and Functionalities
+
 PyOrthanc offers a wide range of features that facilitate data manipulation with Orthanc servers:
 
 1. Orthanc’s REST API: PyOrthanc implements Python bindings for all Orthanc REST API routes. All the functionalities exposed in Orthanc are therefore easily accessible from a Pythonic interface.
@@ -54,7 +55,7 @@ PyOrthanc offers a wide range of features that facilitate data manipulation with
  
 6. Jobs: PyOrthanc allows to monitoring of long-running tasks on the Orthanc server. 
  
-7. Orthanc SDK: PyOrthanc provides a mock of the Orthanc SDK, which brings type hints and autocomplete (intellisense) when working with the Python Plugin.
+7. Orthanc SDK: PyOrthanc provides a mock of the Orthanc SDK, which brings type hints and autocomplete (intelliSense) when working with the Python Plugin.
 
 # Architecture and Design
 The core of PyOrthanc is the Orthanc class, which handles the connection to the Orthanc server and serves as the entry 
