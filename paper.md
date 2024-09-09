@@ -21,7 +21,7 @@ affiliations:
    index: 1
  - name: Département de physique, de génie physique et d’optique, Université Laval, 1045, avenue de la Médecine, G1V 0A6, Québec, Canada
    index: 2
-date: 18 July 2024
+date: 09 September 2024
 bibliography: paper.bib
 
 ---
