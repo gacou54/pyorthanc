@@ -1,8 +1,7 @@
-ARG ORTHANC_VERSION
+ARG ORTHANC_VERSION=latest
 
 FROM orthancteam/orthanc:${ORTHANC_VERSION}
 
-MAINTAINER Yannick Lemaréchal <yannick.lemarechal.1@ulaval.ca>
 LABEL Description="Orthanc with pyorthanc"
 LABEL org.opencontainers.image.authors="Gabriel Couture, Yannick Lemaréchal"
 LABEL org.label-schema.url="https://github.com/gacou54/pyorthanc"
