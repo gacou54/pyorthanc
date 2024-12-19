@@ -1,4 +1,6 @@
-FROM orthancteam/orthanc:24.9.1
+ARG ORTHANC_VERSION
+
+FROM orthancteam/orthanc:${ORTHANC_VERSION}
 
 MAINTAINER Yannick Lemaréchal <yannick.lemarechal.1@ulaval.ca>
 LABEL Description="Orthanc with pyorthanc"
@@ -11,5 +13,6 @@ RUN apt-get -y clean && \
     DEBIAN_FRONTEND=noninteractive apt-get -y --no-install-recommends install \
     python3.11 python3.11-full
 
+ARG PYORTHANC_VERSION
 
-RUN pip install --break-system-packages   pyorthanc==1.18.0
+RUN pip install --break-system-packages pyorthanc==${PYORTHANC_VERSION}
