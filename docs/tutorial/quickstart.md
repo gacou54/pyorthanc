@@ -1,8 +1,16 @@
 # First steps
 
-## Installation
+## Orthanc installation
+For testing purposes, you can use
+- Orthanc's demo server (https://orthanc.uclouvain.be/demo)
+- Or deploy it locally with docker using `docker run -p 8042:8042 -p 4242:4242 orthancteam/orthanc`
+  - Other method to install Orthanc are available [here](https://www.orthanc-server.com/download.php)
+
+## PyOrthanc installation
 ```bash
 pip install pyorthanc
+pip install pyorthanc[all]  # (Optional) For progress bar when downloading DICOM data
+
 ```
 ## Getting started 
 ### Connect to Orthanc
