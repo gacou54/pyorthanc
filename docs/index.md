@@ -17,7 +17,7 @@ Then use the client:
 ```python
 import pyorthanc
 
-client = pyorthanc.Orthanc('https://demo.orthanc-server.com')
+client = pyorthanc.Orthanc('https://orthanc.uclouvain.be/demo')
 patient_ids = client.get_patients()
 ```
 Interact with connected modalities
