@@ -15,7 +15,7 @@ from httpx._types import (
 class Orthanc(httpx.Client):
     """Orthanc API
 
-    version 1.12.4
+    version 1.12.5
     This is the full documentation of the [REST API](https://orthanc.uclouvain.be/book/users/rest.html) of Orthanc.<p>This reference is automatically generated from the source code of Orthanc. A [shorter cheat sheet](https://orthanc.uclouvain.be/book/users/rest-cheatsheet.html) is part of the Orthanc Book.<p>An earlier, manually crafted version from August 2019, is [still available](2019-08-orthanc-openapi.html), but is not up-to-date anymore ([source](https://groups.google.com/g/orthanc-users/c/NUiJTEICSl8/m/xKeqMrbqAAAJ)).
 
     """
@@ -45,7 +45,7 @@ class Orthanc(httpx.Client):
         """
         super().__init__(*args, **kwargs)
         self.url = url
-        self.version = "1.12.4"
+        self.version = "1.12.5"
         self.return_raw_response = return_raw_response
 
         if username and password:
@@ -273,15 +273,18 @@ class Orthanc(httpx.Client):
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """List changes
 
-        Whenever Orthanc receives a new DICOM instance, this event is recorded in the so-called _Changes Log_. This enables remote scripts to react to the arrival of new DICOM resources. A typical application is auto-routing, where an external script waits for a new DICOM instance to arrive into Orthanc, then forward this instance to another modality.
+        Whenever Orthanc receives a new DICOM instance, this event is recorded in the so-called _Changes Log_. This enables remote scripts to react to the arrival of new DICOM resources. A typical application is auto-routing, where an external script waits for a new DICOM instance to arrive into Orthanc, then forward this instance to another modality. Please note that, when resources are deleted, their corresponding change entries are also removed from the Changes Log, which helps ensuring that this log does not grow indefinitely.
         Tags: Tracking changes
 
         Parameters
         ----------
         params
             Dictionary of optional parameters:
+                "last" (float): Request only the last change id (this argument must be used alone)
                 "limit" (float): Limit the number of results
-                "since" (float): Show only the resources since the provided index
+                "since" (float): Show only the resources since the provided index excluded
+                "to" (float): Show only the resources till the provided index included (only available if your DB backend supports ExtendedChanges)
+                "type" (str): Show only the changes of the provided type (only available if your DB backend supports ExtendedChanges).  Multiple values can be provided and must be separated by a ';'.
 
         Returns
         -------
@@ -348,10 +351,11 @@ class Orthanc(httpx.Client):
         ----------
         params
             Dictionary of optional parameters:
-                "expand" (str): If present, retrieve detailed information about the individual instances
+                "expand" (str): If present, retrieve detailed information about the individual resources, not only their Orthanc identifiers
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
                 "limit" (float): Limit the number of results
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
+                "response-content" (str): Defines the content of response for each returned resource.  Allowed values are `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `Attachments`.  If not specified, Orthanc will return `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`.e.g: 'response-content=MainDicomTags;Children (new in Orthanc 1.12.5 - overrides `expand`)
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
                 "since" (float): Show only the resources since the provided index
 
@@ -423,7 +427,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
@@ -644,7 +648,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+                "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
+                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
 
         Returns
         -------
@@ -737,7 +742,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+                "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
+                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
 
         Returns
         -------
@@ -1867,7 +1873,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
@@ -1955,7 +1961,7 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the instance of interest
         json
             Dictionary with the following keys:
-              "LimitToThisLevelMainDicomTags": Only reconstruct this level MainDicomTags by re-reading them from a random child instance of the resource. This option is much faster than a full reconstruct and is usefull e.g. if you have modified the 'ExtraMainDicomTags' at the Study level to optimize the speed of some C-Find. 'false' by default. (New in Orthanc 1.12.4)
+              "LimitToThisLevelMainDicomTags": Only reconstruct this level MainDicomTags by re-reading them from a random child instance of the resource. This option is much faster than a full reconstruct and is useful e.g. if you have modified the 'ExtraMainDicomTags' at the Study level to optimize the speed of some C-Find. 'false' by default. (New in Orthanc 1.12.4)
               "ReconstructFiles": Also reconstruct the files of the resources (e.g: apply IngestTranscoding, StorageCompression). 'false' by default. (New in Orthanc 1.11.0)
 
 
@@ -2028,7 +2034,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
@@ -2110,7 +2116,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
@@ -2743,7 +2749,7 @@ class Orthanc(httpx.Client):
               "Level": Level of the query (`Patient`, `Study`, `Series` or `Instance`)
               "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option. Ignored if `DicomModalities` already sets `LocalAet` for this modality.
               "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Resources": List of queries identifying all the DICOM resources to be sent
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "TargetAet": Target AET that will be used by the remote DICOM modality as a target for its C-STORE SCU commands, defaults to `DicomAet` configuration option in order to do a simple query/retrieve
@@ -2855,7 +2861,7 @@ class Orthanc(httpx.Client):
               "MoveOriginatorID": Move originator ID that is used for this commands, in order to fake a C-MOVE SCU
               "Permissive": If `true`, ignore errors during the individual steps of the job.
               "Port": Port that is used for this command, defaults to `Port` configuration option. Allows you to overwrite the destination port for a specific operation.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Resources": List of the Orthanc identifiers of all the DICOM resources to be sent
               "StorageCommitment": Whether to chain C-STORE with DICOM storage commitment to validate the success of the transmission: https://orthanc.uclouvain.be/book/users/storage-commitment.html#chaining-c-store-with-storage-commitment
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
@@ -2917,10 +2923,11 @@ class Orthanc(httpx.Client):
         ----------
         params
             Dictionary of optional parameters:
-                "expand" (str): If present, retrieve detailed information about the individual patients
+                "expand" (str): If present, retrieve detailed information about the individual resources, not only their Orthanc identifiers
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
                 "limit" (float): Limit the number of results
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
+                "response-content" (str): Defines the content of response for each returned resource.  Allowed values are `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `Attachments`.  If not specified, Orthanc will return `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`.e.g: 'response-content=MainDicomTags;Children (new in Orthanc 1.12.5 - overrides `expand`)
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
                 "since" (float): Show only the resources since the provided index
 
@@ -2973,7 +2980,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
@@ -3010,7 +3017,7 @@ class Orthanc(httpx.Client):
               "KeepPrivateTags": Keep the private tags from the DICOM instances (defaults to `false`)
               "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
               "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "PrivateCreator": The private creator to be used for private tags in `Replace`
               "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
@@ -3076,7 +3083,7 @@ class Orthanc(httpx.Client):
         json
             Dictionary with the following keys:
               "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
               "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
 
@@ -3262,7 +3269,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+                "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
+                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
 
         Returns
         -------
@@ -3355,7 +3363,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+                "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
+                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
 
         Returns
         -------
@@ -3560,7 +3569,7 @@ class Orthanc(httpx.Client):
             Dictionary of optional parameters:
                 "expand" (str): If false or missing, only retrieve the list of child instances
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
@@ -3750,7 +3759,7 @@ class Orthanc(httpx.Client):
             Dictionary with the following keys:
               "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
               "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `false`.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
               "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
 
@@ -3913,7 +3922,7 @@ class Orthanc(httpx.Client):
               "Keep": Keep the original value of the specified tags, to be chosen among the `StudyInstanceUID`, `SeriesInstanceUID` and `SOPInstanceUID` tags. Avoid this feature as much as possible, as this breaks the DICOM model of the real world.
               "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
               "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "PrivateCreator": The private creator to be used for private tags in `Replace`
               "Remove": List of tags that must be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "RemovePrivateTags": Remove the private tags from the DICOM instances (defaults to `false`)
@@ -4025,7 +4034,7 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the patient of interest
         json
             Dictionary with the following keys:
-              "LimitToThisLevelMainDicomTags": Only reconstruct this level MainDicomTags by re-reading them from a random child instance of the resource. This option is much faster than a full reconstruct and is usefull e.g. if you have modified the 'ExtraMainDicomTags' at the Study level to optimize the speed of some C-Find. 'false' by default. (New in Orthanc 1.12.4)
+              "LimitToThisLevelMainDicomTags": Only reconstruct this level MainDicomTags by re-reading them from a random child instance of the resource. This option is much faster than a full reconstruct and is useful e.g. if you have modified the 'ExtraMainDicomTags' at the Study level to optimize the speed of some C-Find. 'false' by default. (New in Orthanc 1.12.4)
               "ReconstructFiles": Also reconstruct the files of the resources (e.g: apply IngestTranscoding, StorageCompression). 'false' by default. (New in Orthanc 1.11.0)
 
 
@@ -4058,7 +4067,7 @@ class Orthanc(httpx.Client):
             Dictionary of optional parameters:
                 "expand" (str): If false or missing, only retrieve the list of child series
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
@@ -4141,7 +4150,7 @@ class Orthanc(httpx.Client):
             Dictionary of optional parameters:
                 "expand" (str): If false or missing, only retrieve the list of child studies
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
@@ -4303,7 +4312,7 @@ class Orthanc(httpx.Client):
               "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
               "Compress": Whether to compress the DICOM instances using gzip before the actual sending
               "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Resources": List of the Orthanc identifiers of all the DICOM resources to be sent
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "Transcode": Transcode to the provided DICOM transfer syntax before the actual sending
@@ -4709,7 +4718,7 @@ class Orthanc(httpx.Client):
               "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
               "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
               "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Simplify": If set to `true`, report the DICOM tags in human-readable format (using the symbolic name of the tags)
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "TargetAet": AET of the target modality. By default, the AET of Orthanc is used, as defined in the `DicomAet` configuration option.
@@ -4826,7 +4835,7 @@ class Orthanc(httpx.Client):
               "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
               "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
               "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Simplify": If set to `true`, report the DICOM tags in human-readable format (using the symbolic name of the tags)
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "TargetAet": AET of the target modality. By default, the AET of Orthanc is used, as defined in the `DicomAet` configuration option.
@@ -4861,10 +4870,11 @@ class Orthanc(httpx.Client):
         ----------
         params
             Dictionary of optional parameters:
-                "expand" (str): If present, retrieve detailed information about the individual series
+                "expand" (str): If present, retrieve detailed information about the individual resources, not only their Orthanc identifiers
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
                 "limit" (float): Limit the number of results
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
+                "response-content" (str): Defines the content of response for each returned resource.  Allowed values are `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `Attachments`.  If not specified, Orthanc will return `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`.e.g: 'response-content=MainDicomTags;Children (new in Orthanc 1.12.5 - overrides `expand`)
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
                 "since" (float): Show only the resources since the provided index
 
@@ -4917,7 +4927,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
@@ -4954,7 +4964,7 @@ class Orthanc(httpx.Client):
               "KeepPrivateTags": Keep the private tags from the DICOM instances (defaults to `false`)
               "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
               "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "PrivateCreator": The private creator to be used for private tags in `Replace`
               "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
@@ -5020,7 +5030,7 @@ class Orthanc(httpx.Client):
         json
             Dictionary with the following keys:
               "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
               "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
 
@@ -5206,7 +5216,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+                "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
+                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
 
         Returns
         -------
@@ -5299,7 +5310,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+                "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
+                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
 
         Returns
         -------
@@ -5504,7 +5516,7 @@ class Orthanc(httpx.Client):
             Dictionary of optional parameters:
                 "expand" (str): If false or missing, only retrieve the list of child instances
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
@@ -5694,7 +5706,7 @@ class Orthanc(httpx.Client):
             Dictionary with the following keys:
               "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
               "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `false`.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
               "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
 
@@ -5857,7 +5869,7 @@ class Orthanc(httpx.Client):
               "Keep": Keep the original value of the specified tags, to be chosen among the `StudyInstanceUID`, `SeriesInstanceUID` and `SOPInstanceUID` tags. Avoid this feature as much as possible, as this breaks the DICOM model of the real world.
               "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
               "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "PrivateCreator": The private creator to be used for private tags in `Replace`
               "Remove": List of tags that must be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "RemovePrivateTags": Remove the private tags from the DICOM instances (defaults to `false`)
@@ -5978,7 +5990,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
@@ -6007,7 +6019,7 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the series of interest
         json
             Dictionary with the following keys:
-              "LimitToThisLevelMainDicomTags": Only reconstruct this level MainDicomTags by re-reading them from a random child instance of the resource. This option is much faster than a full reconstruct and is usefull e.g. if you have modified the 'ExtraMainDicomTags' at the Study level to optimize the speed of some C-Find. 'false' by default. (New in Orthanc 1.12.4)
+              "LimitToThisLevelMainDicomTags": Only reconstruct this level MainDicomTags by re-reading them from a random child instance of the resource. This option is much faster than a full reconstruct and is useful e.g. if you have modified the 'ExtraMainDicomTags' at the Study level to optimize the speed of some C-Find. 'false' by default. (New in Orthanc 1.12.4)
               "ReconstructFiles": Also reconstruct the files of the resources (e.g: apply IngestTranscoding, StorageCompression). 'false' by default. (New in Orthanc 1.11.0)
 
 
@@ -6091,7 +6103,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
@@ -6179,10 +6191,11 @@ class Orthanc(httpx.Client):
         ----------
         params
             Dictionary of optional parameters:
-                "expand" (str): If present, retrieve detailed information about the individual studies
+                "expand" (str): If present, retrieve detailed information about the individual resources, not only their Orthanc identifiers
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
                 "limit" (float): Limit the number of results
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
+                "response-content" (str): Defines the content of response for each returned resource.  Allowed values are `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `Attachments`.  If not specified, Orthanc will return `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`.e.g: 'response-content=MainDicomTags;Children (new in Orthanc 1.12.5 - overrides `expand`)
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
                 "since" (float): Show only the resources since the provided index
 
@@ -6235,7 +6248,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
@@ -6272,7 +6285,7 @@ class Orthanc(httpx.Client):
               "KeepPrivateTags": Keep the private tags from the DICOM instances (defaults to `false`)
               "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
               "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "PrivateCreator": The private creator to be used for private tags in `Replace`
               "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
@@ -6338,7 +6351,7 @@ class Orthanc(httpx.Client):
         json
             Dictionary with the following keys:
               "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
               "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
 
@@ -6524,7 +6537,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+                "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
+                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
 
         Returns
         -------
@@ -6617,7 +6631,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         headers
             Dictionary of optional headers:
-                "If-None-Match" (str): Optional revision of the metadata, to check if its content has changed
+                "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
+                "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
 
         Returns
         -------
@@ -6822,7 +6837,7 @@ class Orthanc(httpx.Client):
             Dictionary of optional parameters:
                 "expand" (str): If false or missing, only retrieve the list of child instances
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
@@ -7012,7 +7027,7 @@ class Orthanc(httpx.Client):
             Dictionary with the following keys:
               "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
               "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `false`.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
               "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
 
@@ -7049,7 +7064,7 @@ class Orthanc(httpx.Client):
               "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
               "KeepSource": If set to `true`, instructs Orthanc to keep a copy of the original resources in their source study. By default, the original resources are deleted from Orthanc.
               "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Resources": The list of DICOM resources (studies, series, and/or instances) to be merged into the study of interest (mandatory option)
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
 
@@ -7211,7 +7226,7 @@ class Orthanc(httpx.Client):
               "Keep": Keep the original value of the specified tags, to be chosen among the `StudyInstanceUID`, `SeriesInstanceUID` and `SOPInstanceUID` tags. Avoid this feature as much as possible, as this breaks the DICOM model of the real world.
               "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
               "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "PrivateCreator": The private creator to be used for private tags in `Replace`
               "Remove": List of tags that must be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "RemovePrivateTags": Remove the private tags from the DICOM instances (defaults to `false`)
@@ -7309,7 +7324,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
@@ -7338,7 +7353,7 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the study of interest
         json
             Dictionary with the following keys:
-              "LimitToThisLevelMainDicomTags": Only reconstruct this level MainDicomTags by re-reading them from a random child instance of the resource. This option is much faster than a full reconstruct and is usefull e.g. if you have modified the 'ExtraMainDicomTags' at the Study level to optimize the speed of some C-Find. 'false' by default. (New in Orthanc 1.12.4)
+              "LimitToThisLevelMainDicomTags": Only reconstruct this level MainDicomTags by re-reading them from a random child instance of the resource. This option is much faster than a full reconstruct and is useful e.g. if you have modified the 'ExtraMainDicomTags' at the Study level to optimize the speed of some C-Find. 'false' by default. (New in Orthanc 1.12.4)
               "ReconstructFiles": Also reconstruct the files of the resources (e.g: apply IngestTranscoding, StorageCompression). 'false' by default. (New in Orthanc 1.11.0)
 
 
@@ -7371,7 +7386,7 @@ class Orthanc(httpx.Client):
             Dictionary of optional parameters:
                 "expand" (str): If false or missing, only retrieve the list of child series
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return
+                "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
 
         Returns
@@ -7434,7 +7449,7 @@ class Orthanc(httpx.Client):
               "KeepLabels": Keep the labels of all resources level (defaults to `false`)
               "KeepSource": If set to `true`, instructs Orthanc to keep a copy of the original series/instances in the source study. By default, the original series/instances are deleted from Orthanc.
               "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Remove": List of tags that must be removed in the new study (from the same modules as in the `Replace` option)
               "Replace": Associative array to change the value of some DICOM tags in the new study. These tags must be part of the "Patient Module Attributes" or the "General Study Module Attributes", as specified by the DICOM 2011 standard in Tables C.7-1 and C.7-3.
               "Series": The list of series to be separated from the parent study. These series must all be children of the same source study, that is specified in the URI.
@@ -7579,7 +7594,7 @@ class Orthanc(httpx.Client):
               "KeepPrivateTags": Keep the private tags from the DICOM instances (defaults to `false`)
               "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
               "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "PrivateCreator": The private creator to be used for private tags in `Replace`
               "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
@@ -7677,7 +7692,7 @@ class Orthanc(httpx.Client):
               "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
               "Level": Level of the modification (`Patient`, `Study`, `Series` or `Instance`). If absent, the level defaults to `Instance`, but is set to `Patient` if `PatientID` is modified, to `Study` if `StudyInstanceUID` is modified, or to `Series` if `SeriesInstancesUID` is modified. (new in Orthanc 1.9.7)
               "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "PrivateCreator": The private creator to be used for private tags in `Replace`
               "Remove": List of tags that must be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "RemovePrivateTags": Remove the private tags from the DICOM instances (defaults to `false`)
@@ -7696,6 +7711,43 @@ class Orthanc(httpx.Client):
             json = {}
         return self._post(
             route=f"{self.url}/tools/bulk-modify",
+            json=json,
+        )
+
+    def post_tools_count_resources(
+        self,
+        json: Any = None,
+    ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
+        """Count local resources
+
+        This URI can be used to count the resources that are matching criteria on the content of the local Orthanc server, in a way that is similar to tools/find
+        Tags: System
+
+        Parameters
+        ----------
+        json
+            Dictionary with the following keys:
+              "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
+              "Labels": List of strings specifying which labels to look for in the resources (new in Orthanc 1.12.0)
+              "LabelsConstraint": Constraint on the labels, can be `All`, `Any`, or `None` (defaults to `All`, new in Orthanc 1.12.0)
+              "Level": Level of the query (`Patient`, `Study`, `Series` or `Instance`)
+              "MetadataQuery": Associative array containing the filter on the values of the metadata (new in Orthanc 1.12.5)
+              "ParentPatient": Limit the reported resources to descendants of this patient (new in Orthanc 1.12.5)
+              "ParentSeries": Limit the reported resources to descendants of this series (new in Orthanc 1.12.5)
+              "ParentStudy": Limit the reported resources to descendants of this study (new in Orthanc 1.12.5)
+              "Query": Associative array containing the filter on the values of the DICOM tags
+              "Short": If set to `true`, report the DICOM tags in hexadecimal format
+
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int, httpx.Response]
+            A JSON object with the `Count` of matching resources
+        """
+        if json is None:
+            json = {}
+        return self._post(
+            route=f"{self.url}/tools/count-resources",
             json=json,
         )
 
@@ -7738,7 +7790,7 @@ class Orthanc(httpx.Client):
         json
             Dictionary with the following keys:
               "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Resources": The list of Orthanc identifiers of interest.
               "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
               "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
@@ -7830,7 +7882,7 @@ class Orthanc(httpx.Client):
             Dictionary with the following keys:
               "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
               "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `false`.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Resources": The list of Orthanc identifiers of interest.
               "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
               "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
@@ -7889,7 +7941,7 @@ class Orthanc(httpx.Client):
             Dictionary with the following keys:
               "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
               "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `true`.
-              "Priority": In asynchronous mode, the priority of the job. The lower the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Resources": The list of Orthanc identifiers of interest.
               "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
               "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
@@ -8037,14 +8089,20 @@ class Orthanc(httpx.Client):
         json
             Dictionary with the following keys:
               "CaseSensitive": Enable case-sensitive search for PN value representations (defaults to configuration option `CaseSensitivePN`)
-              "Expand": Also retrieve the content of the matching resources, not only their Orthanc identifiers
+              "Expand": If set to "true", retrieve detailed information about the individual resources, not only their Orthanc identifiers
               "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
               "Labels": List of strings specifying which labels to look for in the resources (new in Orthanc 1.12.0)
               "LabelsConstraint": Constraint on the labels, can be `All`, `Any`, or `None` (defaults to `All`, new in Orthanc 1.12.0)
               "Level": Level of the query (`Patient`, `Study`, `Series` or `Instance`)
               "Limit": Limit the number of reported resources
+              "MetadataQuery": Associative array containing the filter on the values of the metadata (new in Orthanc 1.12.5)
+              "OrderBy": Array of associative arrays containing the requested ordering (new in Orthanc 1.12.5)
+              "ParentPatient": Limit the reported resources to descendants of this patient (new in Orthanc 1.12.5)
+              "ParentSeries": Limit the reported resources to descendants of this series (new in Orthanc 1.12.5)
+              "ParentStudy": Limit the reported resources to descendants of this study (new in Orthanc 1.12.5)
               "Query": Associative array containing the filter on the values of the DICOM tags
               "RequestedTags": A list of DICOM tags to include in the response (applicable only if "Expand" is set to true).  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
+              "ResponseContent": Defines the content of response for each returned resource. (this field, if present, overrides the "Expand" field).  Allowed values are `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `Attachments`.  If not specified, Orthanc will return `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`.(new in Orthanc 1.12.5)
               "Short": If set to `true`, report the DICOM tags in hexadecimal format
               "Since": Show only the resources since the provided index (in conjunction with `Limit`)
 
