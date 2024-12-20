@@ -46,7 +46,7 @@ modality.move(query_response['ID'], {'TargetAet': 'target_modality'})
 
 ### Find and download patients according to criteria:
 ```python
-from pyorthanc import find_patients, retrieve_and_write_patients
+from pyorthanc import find_patients
 
 patients = find_patients(
     client=orthanc,
@@ -56,8 +56,12 @@ patients = find_patients(
 ```
 
 Download the patients data as a zip file
+
 ```python
+import os
 from pyorthanc import retrieve_and_write_patients
+
+os.makedirs('./data')  # Ensure that the target directory exists
 
 for patient in patients:
     patient.download(f'./data/patient-{patient.patient_id}.zip', with_progres=False)
