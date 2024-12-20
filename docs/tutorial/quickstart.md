@@ -55,7 +55,7 @@ patients = find_patients(
 )
 ```
 
-Download the patients data as a zip file
+Download the patients data
 
 ```python
 import os
