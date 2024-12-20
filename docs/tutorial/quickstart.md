@@ -1,8 +1,16 @@
 # First steps
 
-## Installation
+## Orthanc installation
+For testing purposes, you can use
+- Orthanc's demo server (https://orthanc.uclouvain.be/demo)
+- Or deploy it locally with docker using `docker run -p 8042:8042 -p 4242:4242 orthancteam/orthanc`
+  - Other method to install Orthanc are available [here](https://www.orthanc-server.com/download.php)
+
+## PyOrthanc installation
 ```bash
 pip install pyorthanc
+pip install pyorthanc[all]  # (Optional) For progress bar when downloading DICOM data
+
 ```
 ## Getting started 
 ### Connect to Orthanc
@@ -46,7 +54,7 @@ modality.move(query_response['ID'], {'TargetAet': 'target_modality'})
 
 ### Find and download patients according to criteria:
 ```python
-from pyorthanc import find_patients, retrieve_and_write_patients
+from pyorthanc import find_patients
 
 patients = find_patients(
     client=orthanc,
@@ -55,9 +63,13 @@ patients = find_patients(
 )
 ```
 
-Download the patients data as a zip file
+Download the patients data
+
 ```python
+import os
 from pyorthanc import retrieve_and_write_patients
+
+os.makedirs('./data')  # Ensure that the target directory exists
 
 for patient in patients:
     patient.download(f'./data/patient-{patient.patient_id}.zip', with_progres=False)
