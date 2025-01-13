@@ -9,7 +9,7 @@ services:
     depends_on:
       - orthanc2
   orthanc2:
-    image: orthancteam/orthanc:24.5.1
+    image: orthancteam/orthanc:24.12.0
   test:
     build:
       context: .
