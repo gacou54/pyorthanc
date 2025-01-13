@@ -100,8 +100,7 @@ def test_get_patient_series(client_with_data):
 
 
 def test_get_patient_series_when_no_data(client):
-    with pytest.raises(httpx.HTTPError):
-        client.get_patients_id_series(a_patient.IDENTIFIER)
+    assert client.get_patients_id_series(a_patient.IDENTIFIER) == []
 
 
 @pytest.mark.parametrize('params, expected_shared_tags', [
