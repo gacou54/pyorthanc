@@ -7,7 +7,7 @@ RUN python -m pip install poetry
 
 # Installing project dependecies
 COPY ../../pyproject.toml .
-RUN poetry install --extras "all"
+RUN poetry install --extras "all" --no-root
 
 COPY ../.. /app
 
