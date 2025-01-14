@@ -22,9 +22,11 @@ orthanc = Orthanc(url='http://localhost:8042/', username='orthanc', password='or
 ```
 
 ### Upload DICOM files to Orthanc:
+
 ```python
-with open('A_DICOM_INSTANCE_PATH.dcm', 'rb') as file:
-    orthanc.post_instances(file.read())
+import pyorthanc
+
+pyorthanc.upload(orthanc, 'A_DICOM_INSTANCE_PATH.dcm')
 ```
 ### Getting list of connected remote modalities:
 ```python

@@ -22,7 +22,7 @@ pip install pyorthanc[all]   # Install all optional dependencies
 ## Basic Usage
 Assuming an Orthanc server running locally at `http://localhost:8042`:
 ```python
-from pyorthanc import Orthanc
+from pyorthanc import Orthanc, upload
 
 # Connect to Orthanc server
 client = Orthanc('http://localhost:8042')
@@ -34,8 +34,7 @@ patient_ids = client.get_patients()
 studies = client.get_studies() 
 
 # Upload DICOM file
-with open('image.dcm', 'rb') as f:
-    client.post_instances(f.read())
+upload(client, 'image_path.dcm')
 ```
 
 ## Working with DICOM Modalities
