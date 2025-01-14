@@ -151,6 +151,16 @@ Note that recent PyOrthanc versions will likely support older Orthanc version.
 | 0.2.*             | Provided Google sheet from Orthanc maintainer |
 
 
+## Running tests
+The tests are run in a docker image launched with docker compose.
+```shell
+docker compose run test
+```
+This command starts 3 containers :
+1. A Python image with the PyOrthanc source code and launches pytest
+2. An instance of Orthanc (`orthanc1`) on which the PyOrthanc client is connected
+3. A second Orthanc instance (`orthanc2`) which acts as a modality connected to `orthanc1`
+
 ## [First steps](docs/tutorial/quickstart.md#first-steps)
 ### [Getting started](docs/tutorial/quickstart.md#getting-started)
 * [Connect to Orthanc](docs/tutorial/quickstart.md#connect-to-orthanc)
