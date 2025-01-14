@@ -32,11 +32,10 @@ nav:
 
   - 'Releases': 'releases.md'
 
-  - 'More informations':
+  - 'More information':
     - 'Contributing': 'contributing.md'
     - 'Contacts': 'contacts.md'
     - 'Citation': 'citation.md'
-
 
 
 markdown_extensions:
