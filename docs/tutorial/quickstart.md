@@ -50,8 +50,10 @@ query_response = modality.query(data=data)
 answer = modality.get_query_answers()[query_response['ID']]
 print(answer)
 
-# Retrieve (C-Move) results of query on a target modality (AET)
-modality.move(query_response['ID'], {'TargetAet': 'target_modality'})
+# Retrieve (C-Move) results of query on a Orthanc itself, or to a target modality (AET)
+modality.move(query_response['ID'])
+# or
+modality.move(query_response['ID'], {'TargetAet': 'OTHER_AET'})
 ```
 
 ### Find and download patients according to criteria:

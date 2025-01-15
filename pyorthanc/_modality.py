@@ -39,7 +39,7 @@ class Modality:
         except httpx.HTTPError:
             return False
 
-    def query(self, data: Dict) -> Dict:
+    def find(self, data: Dict) -> Dict:
         """C-Find (Querying with data)
 
         Parameters
@@ -67,11 +67,13 @@ class Modality:
         ...     modality='sample'
         ... )
 
-        >>> modality.query(data)
+        >>> modality.find(data)
         """
         return dict(self.client.post_modalities_id_query(self.modality, json=data))
 
-    def move(self, query_identifier: str, cmove_data: Dict) -> Dict:
+    query = find  # Alias
+
+    def move(self, query_identifier: str, cmove_data: Dict = None) -> Dict:
         """C-Move query results to another modality
 
         C-Move SCU: Send all the results to another modality whose AET is in the body

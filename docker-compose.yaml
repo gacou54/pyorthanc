@@ -1,5 +1,7 @@
 services:
   orthanc1:
+    ports:
+      - "8042:8042"
     build:
       dockerfile: tests/orthanc/orthanc-for-test.Dockerfile
       context: .
@@ -8,8 +10,17 @@ services:
       ORTHANC__PYTHON_SCRIPT: "/python/script.py"
     depends_on:
       - orthanc2
+
   orthanc2:
     image: orthancteam/orthanc:24.12.0
+    environment:
+        ORTHANC_JSON: |
+          {
+            "DicomModalities": {
+              "ORTHANC": [ "ORTHANC", "orthanc1", 4242 ]
+            }
+          }
+
   test:
     build:
       context: .
