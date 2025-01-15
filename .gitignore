@@ -27,6 +27,9 @@ docs/build/
 !docker/
 !docker/**
 
+!examples/
+!examples/**
+
 *.pyc
 __pycache__/
 OrthancStorage/
