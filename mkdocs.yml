@@ -13,7 +13,7 @@ nav:
   - 'Introduction': 'index.md' # README
   - 'Usage':
       - 'Quick Start': 'tutorial/quickstart.md'
-      - 'Advanced Usage': 'tutorial/advanced.md'
+      - 'Examples': 'tutorial/examples.md'
   - 'Api Reference':
       'Orthanc': 'api/client.md'
       'Asynchronous Orthanc': 'api/async_client.md'
@@ -33,7 +33,7 @@ nav:
   - 'Releases': 'releases.md'
 
   - 'More information':
-    - 'Contributing': 'contributing.md'
+    - 'Issues and contributing': 'contributing.md'
     - 'Contacts': 'contacts.md'
     - 'Citation': 'citation.md'
 

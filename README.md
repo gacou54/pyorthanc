@@ -144,6 +144,14 @@ def on_store(dicom: orthanc_sdk.DicomInstance, instance_id: str):
 orthanc_sdk.RegisterOnStoredInstanceCallback(on_store)
 ```
 
+## Examples
+Typical example can be found in these notebooks.
+-  This [notebook](https://github.com/gacou54/pyorthanc/blob/main/examples/find_data.ipynb) shows
+   how a user can query image data from an Orthanc server
+-  This [notebook](https://github.com/gacou54/pyorthanc/blob/main/examples/modalities.ipynb) shows
+   how a user can query and pull data from other modality (such as a CT scan or a PACS) connected to an Orthanc Server. 
+
+
 ## Notes on versioning
 
 The `Orthanc` and `AsyncOrthanc` classes are generated from https://orthanc.uclouvain.be/api/.
