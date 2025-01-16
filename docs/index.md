@@ -131,6 +131,14 @@ def on_store(dicom: orthanc_sdk.DicomInstance, instance_id: str):
 orthanc_sdk.RegisterOnStoredInstanceCallback(on_store)
 ```
 
+## Examples
+Typical example can be found in these notebooks.
+-  This [notebook](https://github.com/gacou54/pyorthanc/blob/main/examples/find_data.ipynb) shows
+   how a user can query image data from an Orthanc server
+-  This [notebook](https://github.com/gacou54/pyorthanc/blob/main/examples/modalities.ipynb) shows
+   how a user can query and pull data from other modality (such as a CT scan or a PACS) connected to an Orthanc Server.
+
+
 ## [First steps](tutorial/quickstart.md#first-steps)
 ### [Getting started](tutorial/quickstart.md#getting-started)
 * [Import pyorthanc library](tutorial/quickstart.md#import-pyorthanc-library)
@@ -139,10 +147,10 @@ orthanc_sdk.RegisterOnStoredInstanceCallback(on_store)
 * [Getting list of connected remote modalities:](tutorial/quickstart.md#getting-list-of-connected-remote-modalities)
 * [Find and download patients according to criteria:](tutorial/quickstart.md#find-and-download-patients-according-to-criteria)
 * [Query (C-Find) and Retrieve (C-Move) from remote modality:](tutorial/quickstart.md#query-c-find-and-retrieve-c-move-from-remote-modality)
-### [Full basic examples](tutorial/quickstart.md#full-basic-examples)
-* [Access instance informations](tutorial/quickstart.md#access-instance-informations)
-### [Advanced examples](tutorial/advanced.md)
-* [Transfer data from a PACS to a Orthanc server](tutorial/advanced.md#transfer-data-from-a-pacs-to-a-orthanc-server)
+### [Examples](tutorial/examples.md)
+* [Query and access data in an Orthanc Sever](tutorial/examples.md#find-data-on-your-orthanc-server)
+* [Interact with a connected modality](tutorial/examples.md#orthanc-as-a-tool-to-query-and-retrieve-data-from-the-hospital-pacs)
+* [Transfer data from a PACS to an Orthanc server](tutorial/examples.md#transfer-data-from-a-pacs-to-an-orthanc-server)
 ### [Community guidelines](contributing.md)
 * [Report an issue](contributing.md#report-an-issue)
 * [Support](contributing.md#seeking-support)

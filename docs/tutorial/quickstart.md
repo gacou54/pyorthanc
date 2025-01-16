@@ -4,7 +4,7 @@
 For testing purposes, you can use one of this solution to install Orthanc
 - Orthanc's demo server (https://orthanc.uclouvain.be/demo)
 - Deploy it locally with docker using `docker run -p 8042:8042 -p 4242:4242 orthancteam/orthanc`
-- Using the docker-compose from the pyorthanc repo to ha
+- Using the docker-compose from the pyorthanc repo
   1. For this, clone the repo (`git clone https://github.com/gacou54/pyorthanc`)
   2. Got in the repo (`cd pyorthanc`)
   3. Start orthanc (`docker compose up orthanc1`)
@@ -189,12 +189,4 @@ orthanc_sdk.RegisterRestCallback('/test', on_get)
 ```
 
 
-## Full basic examples
-
-Be sure that Orthanc is running. The default URL (if running locally) is `http://localhost:8042`.
-
-Here is a list of examples to helps you getting started with pyorthanc.
-
-### Access instance information
-
-[Get instance informations](https://github.com/ylemarechal/pyorthanc-examples/tree/main/basic/access_informations)
+### For examples of usage, see [this](../tutorial/examples.md)
