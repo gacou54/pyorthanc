@@ -51,7 +51,9 @@ PyOrthanc offers a wide range of features that facilitate data manipulation with
  
 4. Anonymization: PyOrthanc exposes Orthanc’s anonymization functionalities, which are useful for research and data sharing. 
  
-5. Modalities: Users can easily command Orthanc servers to invoke DIMSE services with other connected modalities (e.g. CT scan, PACS), which allows querying, storing, and retrieving DICOM data. 
+5. Modalities: Users can easily command Orthanc servers to invoke DICOM Message Service Element (DIMSE) services 
+   with other connected modalities, such as Computerized Tomography (CT) scan and hospital Picture Archiving and Communication Systems (PACS), 
+   which allows querying, storing, and retrieving DICOM data. 
  
 6. Jobs: PyOrthanc allows to monitoring of long-running tasks on the Orthanc server. 
  
