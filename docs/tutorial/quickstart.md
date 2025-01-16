@@ -2,6 +2,7 @@
 
 ## Orthanc installation
 For testing purposes, you can use one of this solution to install Orthanc
+
 - Orthanc's demo server (https://orthanc.uclouvain.be/demo)
 - Deploy it locally with docker using `docker run -p 8042:8042 -p 4242:4242 orthancteam/orthanc`
 - Using the docker-compose from the pyorthanc repo
