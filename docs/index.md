@@ -12,7 +12,7 @@
 
 ```bash
 pip install pyorthanc        # Basic installation
-pip install pyorthanc[all]   # Install all optional dependencies
+pip install pyorthanc[all]   # Install all optional dependencies (progr)
 ```
 
 ## Basic Usage
@@ -132,9 +132,11 @@ orthanc_sdk.RegisterOnStoredInstanceCallback(on_store)
 * [Access instance informations](tutorial/quickstart.md#access-instance-informations)
 ### [Advanced examples](tutorial/advanced.md)
 * [Transfer data from a PACS to a Orthanc server](tutorial/advanced.md#transfer-data-from-a-pacs-to-a-orthanc-server)
+### [Community guidelines](contributing.md)
+* [Report an issue](contributing.md#report-an-issue)
+* [Support](contributing.md#seeking-support)
+* [Contribute](contributing.md#contribute)
 ### [Releases](releases.md)
-* [Lastest release : 1.12.1](releases.md#lastest-release-1121)
-* [Release 1.11.5](releases.md#release-1115)
 ## [Contacts](contacts.md#contacts)
 * [Maintainers Team](contacts.md#maintainers-team)
 * [Useful links](contacts.md#useful-links)
