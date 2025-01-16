@@ -13,6 +13,19 @@
 - Helper functions for working with DICOM data
 - Integration with the [Orthanc Python plugin](https://orthanc.uclouvain.be/book/plugins/python.html)
 
+
+## Why PyOrthanc?
+PyOrthanc makes it easy to work with DICOM medical images stored on Orthanc servers using Python - instead
+of dealing with the DICOM protocol directly or creating complex code to interact with Orthanc's REST API.
+
+Researchers and clinicians can make simple Python script to access and manage their medical imaging data.
+
+Advanced users can use PyOrthanc to make Orthanc query a hospital PACS (Picture Archiving and Communication System).
+This allows to find and retrieve images produced in the clinic for research or quality control purposes.
+Additionally, since PyOrthanc simplifies Orthanc's anonymization operations,
+an entire medical image management workflow can be implemented in Python.
+
+
 ## Quick Install
 ```bash
 pip install pyorthanc        # Basic installation
