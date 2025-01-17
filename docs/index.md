@@ -139,6 +139,7 @@ Typical example can be found in these notebooks.
    how a user can query and pull data from other modality (such as a CT scan or a PACS) connected to an Orthanc Server.
 
 
+## [Cheat sheet](cheat_sheet.md)
 ## [First steps](tutorial/quickstart.md#first-steps)
 ### [Getting started](tutorial/quickstart.md#getting-started)
 * [Import pyorthanc library](tutorial/quickstart.md#import-pyorthanc-library)

@@ -10,7 +10,8 @@ theme:
     - content.code.select
 
 nav:
-  - 'Introduction': 'index.md' # README
+  - 'Introduction': 'index.md'
+  - 'Cheat sheet': 'cheat_sheet.md'
   - 'Usage':
       - 'Quick Start': 'tutorial/quickstart.md'
       - 'Examples': 'tutorial/examples.md'
