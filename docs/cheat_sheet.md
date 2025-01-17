@@ -1,11 +1,12 @@
 # Cheat sheet
 
 [Orthanc](https://www.orthanc-server.com/) has a very useful
-[cheat sheet](https://orthanc.uclouvain.be/book/users/rest-cheatsheet.html)
-for finding typical functionality and REST API routes. This page contains the link to the appropriate method in the `pyorthanc.Orthanc` class.
+[cheat sheet](https://orthanc.uclouvain.be/book/users/rest-cheatsheet.html) for finding functionalities and REST API routes. 
+This page contains the mappings between REST API paths and methods in the `pyorthanc.Orthanc` class.
 
 Note that `pyorthanc.Orthanc` is the low level client with which users can interact with Orthanc. Higher level functionalities
-such as `pyorthanc.Patient/Study/Series/Instance`, `pyorthanc.find_patients/studies/series/instances`, or `pyorthanc.Modality` 
+such as [Patient](api/resources/patient.md), [Study](api/resources/study.md), [Series](api/resources/series.md), 
+[Instance](api/resources/instance.md), [find_patients/studies/series/instances](api/find.md), or [Modality](api/modality.md)
 might be more convenient to use.
 
 | Path                                                 | GET                                                                                       | POST                                                                                  | DELETE                                                                       | PUT                                                                          | Summary                                         |
