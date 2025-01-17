@@ -181,6 +181,7 @@ This command starts 3 containers :
 2. An instance of Orthanc (`orthanc1`) on which the PyOrthanc client is connected
 3. A second Orthanc instance (`orthanc2`) which acts as a modality connected to `orthanc1`
 
+## [Cheat sheet](docs/cheat_sheet.md)
 ## [First steps](docs/tutorial/quickstart.md#first-steps)
 ### [Getting started](docs/tutorial/quickstart.md#getting-started)
 * [Connect to Orthanc](docs/tutorial/quickstart.md#connect-to-orthanc)
