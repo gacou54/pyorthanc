@@ -12,6 +12,16 @@ from .async_client import AsyncOrthanc
 from .client import Orthanc
 
 
+def delete_queries(client: Orthanc) -> None:
+    for query_id in client.get_queries():
+        client.delete_queries_id(query_id)
+
+
+async def async_delete_queries(client: AsyncOrthanc) -> None:
+    for query_id in await client.get_queries():
+        await client.delete_queries_id(query_id)
+
+
 def make_datetime_from_dicom_date(date: str, time: str = None) -> Optional[datetime]:
     """Attempt to decode date"""
     try:
