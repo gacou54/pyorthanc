@@ -8,6 +8,7 @@ from ._find import find_instances, find_patients, find_series, find_studies, que
 from ._modality import Modality, RemoteModality
 from ._resources import Instance, Patient, Series, Study
 from ._upload import async_upload, upload
+from .util import async_delete_queries, delete_queries
 from .jobs import Job
 from .retrieve import retrieve_and_write_instance, retrieve_and_write_patient, retrieve_and_write_patients, \
     retrieve_and_write_series, retrieve_and_write_study
@@ -15,6 +16,7 @@ from .retrieve import retrieve_and_write_instance, retrieve_and_write_patient, r
 __all__ = [
     'AsyncOrthanc',
     'async_upload',
+    'async_delete_queries',
     'Orthanc',
     'Modality',
     'RemoteModality',
@@ -23,6 +25,7 @@ __all__ = [
     'Series',
     'Instance',
     'trim_patients',
+    'delete_queries',
     'find',
     'find_patients',
     'find_studies',
