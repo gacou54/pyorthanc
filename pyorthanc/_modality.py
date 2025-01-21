@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 import httpx
 
@@ -39,7 +39,7 @@ class Modality:
         except httpx.HTTPError:
             return False
 
-    def find(self, data: Dict) -> Dict:
+    def find(self, data: Dict) -> str:
         """C-Find (Querying with data)
 
         Parameters
@@ -49,8 +49,8 @@ class Modality:
 
         Returns
         -------
-        Dict
-            Dictionary with keys {'ID': '...', 'path': '...'}
+        str
+            Returns the query ID.
 
         Examples
         -------
@@ -67,9 +67,9 @@ class Modality:
         ...     modality='sample'
         ... )
 
-        >>> modality.find(data)
+        >>> query_id = modality.find(data)
         """
-        return dict(self.client.post_modalities_id_query(self.modality, json=data))
+        return self.client.post_modalities_id_query(self.modality, json=data)['ID']
 
     query = find  # Alias
 
@@ -124,14 +124,28 @@ class Modality:
             json=instance_or_series_id
         ))
 
-    def get_query_answers(self) -> Dict:
-        answers = {}
+    def get_query_answers(self, query_id: str, simplify: bool = True, short: bool = False) -> List[Dict]:
+        """"""
+        params = self._make_response_format_params(simplify=simplify, short=short)
 
-        for query_id in self.client.get_queries():
-            for answer_id in self.client.get_queries_id_answers(query_id):
-                answers[query_id] = self.client.get_queries_id_answers_index_content(query_id, answer_id)
+        answers = []
+        for answer_id in self.client.get_queries_id_answers(query_id):
+            answer_content = self.client.get_queries_id_answers_index_content(query_id, answer_id, params)
+            answers.append(answer_content)
 
         return answers
+
+    def _make_response_format_params(self, simplify: bool, short: bool) -> Dict:
+        if simplify and not short:
+            params = {'simplify': True}
+        elif short and not simplify:
+            params = {'short': True}
+        elif simplify and short:
+            raise ValueError("simplify and short can't be both True.")
+        else:
+            params = {}
+
+        return params
 
 
 RemoteModality = Modality
