@@ -29,50 +29,33 @@ def test_echo(modality):
 
 def test_find(modality):
     setup_data(ORTHANC_2)
-    expected_query_answer = {
-        '0008,0005': {'Name': 'SpecificCharacterSet', 'Type': 'String', 'Value': 'ISO_IR 100'},
-        '0008,0050': {'Name': 'AccessionNumber', 'Type': 'String', 'Value': '20090926001'},
-        '0008,0052': {'Name': 'QueryRetrieveLevel', 'Type': 'String', 'Value': 'STUDY'},
-        '0008,0054': {'Name': 'RetrieveAETitle', 'Type': 'String', 'Value': 'ORTHANC'},
-        '0010,0020': {'Name': 'PatientID', 'Type': 'String', 'Value': 'MP15-067'},
-        '0020,000d': {'Name': 'StudyInstanceUID', 'Type': 'String', 'Value': '1.3.6.1.4.1.22213.2.6291.2.1'}
-    }
+    expected_query_answer = [{
+        'SpecificCharacterSet': 'ISO_IR 100',
+        'AccessionNumber': '20090926001',
+        'QueryRetrieveLevel': 'STUDY',
+        'RetrieveAETitle': 'ORTHANC',
+        'PatientID': 'MP15-067',
+        'StudyInstanceUID': '1.3.6.1.4.1.22213.2.6291.2.1'
+    }]
 
     result = modality.find(PAYLOAD)
 
-    assert 'ID' in result.keys()
-    assert 'Path' in result.keys()
+    assert isinstance(result, str)  # This is the query ID
 
-    queries_answers = modality.get_query_answers()[result['ID']]
+    queries_answers = modality.get_query_answers(result)
 
     assert expected_query_answer == queries_answers
+
 
 def test_query(modality):
-    setup_data(ORTHANC_2)
-    expected_query_answer = {
-        '0008,0005': {'Name': 'SpecificCharacterSet', 'Type': 'String', 'Value': 'ISO_IR 100'},
-        '0008,0050': {'Name': 'AccessionNumber', 'Type': 'String', 'Value': '20090926001'},
-        '0008,0052': {'Name': 'QueryRetrieveLevel', 'Type': 'String', 'Value': 'STUDY'},
-        '0008,0054': {'Name': 'RetrieveAETitle', 'Type': 'String', 'Value': 'ORTHANC'},
-        '0010,0020': {'Name': 'PatientID', 'Type': 'String', 'Value': 'MP15-067'},
-        '0020,000d': {'Name': 'StudyInstanceUID', 'Type': 'String', 'Value': '1.3.6.1.4.1.22213.2.6291.2.1'}
-    }
-
-    result = modality.query(PAYLOAD)
-
-    assert 'ID' in result.keys()
-    assert 'Path' in result.keys()
-
-    queries_answers = modality.get_query_answers()[result['ID']]
-
-    assert expected_query_answer == queries_answers
+    assert modality.query == modality.find
 
 
-def test_failed_query(modality):
+def test_failed_find(modality):
     bad_payload = {'Level': 'Study', 'Query': {'BadTag': 'MP*'}}
 
     with pytest.raises(httpx.HTTPError):
-        modality.query(bad_payload)
+        modality.find(bad_payload)
 
 
 def test_move(modality):
@@ -89,8 +72,8 @@ def test_move(modality):
     }
     setup_data(ORTHANC_2)
 
-    query_result = modality.query(PAYLOAD)
-    result = modality.move(query_result['ID'])
+    query_id = modality.query(PAYLOAD)
+    result = modality.move(query_id)
 
     assert result == expected_move_answer
 
@@ -117,8 +100,8 @@ def test_move_to_target_modality(modality):
     }
     setup_data(ORTHANC_2)
 
-    query_result = modality.query(PAYLOAD)
-    result = modality.move(query_result['ID'], cmove_data)
+    query_id = modality.query(PAYLOAD)
+    result = modality.move(query_id, cmove_data)
 
     assert result == expected_move_answer
 

@@ -56,7 +56,7 @@ if modality.echo():
     print("Successfully connected to PACS")
 
 # Query studies with C-FIND
-response = modality.query({
+query_id = modality.find({
     'Level': 'Study',
     'Query': {
         'PatientID': '12345*',
@@ -65,7 +65,7 @@ response = modality.query({
 })
 
 # Retrieve results with C-MOVE to a target AET
-modality.move(response['ID'], {'TargetAet': 'ORTHANC'})
+modality.move(query_id, {'TargetAet': 'ORTHANC'})
 ```
 ## Finding and Processing DICOM Data
 
