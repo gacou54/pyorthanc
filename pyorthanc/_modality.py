@@ -39,7 +39,7 @@ class Modality:
         except httpx.HTTPError:
             return False
 
-    def find(self, data: Dict) -> str:
+    def find(self, data: Dict) -> Dict:
         """C-Find (Querying with data)
 
         Parameters
@@ -49,8 +49,9 @@ class Modality:
 
         Returns
         -------
-        str
-            Returns the query ID.
+        Dict
+            Returns a dictionary with the query ID and corresponding matches (i.e. answers) to the request
+            {'ID': '<query_id>', 'answers': [{first match metadata}, {second math metadata}, ...]}
 
         Examples
         -------
@@ -67,9 +68,13 @@ class Modality:
         ...     modality='sample'
         ... )
 
-        >>> query_id = modality.find(data)
+        >>> response = modality.find(data)
+        >>> print(response['ID'], response['answers'])
         """
-        return self.client.post_modalities_id_query(self.modality, json=data)['ID']
+        query_id = self.client.post_modalities_id_query(self.modality, json=data)['ID']
+        answers = self.get_query_answers(query_id)
+
+        return {'ID': query_id, 'answers': answers}
 
     query = find  # Alias
 

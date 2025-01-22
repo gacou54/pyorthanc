@@ -63,7 +63,7 @@ if modality.echo():
     print("Successfully connected to PACS")
 
 # Query studies with C-FIND
-query_id = modality.find({
+response = modality.find({
     'Level': 'Study',
     'Query': {
         'PatientID': '12345*',
@@ -71,8 +71,11 @@ query_id = modality.find({
     }
 })
 
+# Matches (i.e. answers in Orthanc nomenclature) can be reviewed before retrieving results
+response['answers']
+
 # Retrieve results with C-MOVE to a target AET
-modality.move(query_id, {'TargetAet': 'ORTHANC'})
+modality.move(response['ID'], {'TargetAet': 'ORTHANC'})
 ```
 
 ## Finding and Processing DICOM Data

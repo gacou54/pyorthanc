@@ -38,13 +38,10 @@ def test_find(modality):
         'StudyInstanceUID': '1.3.6.1.4.1.22213.2.6291.2.1'
     }]
 
-    result = modality.find(PAYLOAD)
+    response = modality.find(PAYLOAD)
 
-    assert isinstance(result, str)  # This is the query ID
-
-    queries_answers = modality.get_query_answers(result)
-
-    assert expected_query_answer == queries_answers
+    assert isinstance(response['ID'], str)
+    assert response['answers'] == expected_query_answer
 
 
 def test_query(modality):
@@ -72,8 +69,8 @@ def test_move(modality):
     }
     setup_data(ORTHANC_2)
 
-    query_id = modality.query(PAYLOAD)
-    result = modality.move(query_id)
+    response = modality.find(PAYLOAD)
+    result = modality.move(response['ID'])
 
     assert result == expected_move_answer
 
@@ -100,8 +97,8 @@ def test_move_to_target_modality(modality):
     }
     setup_data(ORTHANC_2)
 
-    query_id = modality.query(PAYLOAD)
-    result = modality.move(query_id, cmove_data)
+    response = modality.find(PAYLOAD)
+    result = modality.move(response['ID'], cmove_data)
 
     assert result == expected_move_answer
 
