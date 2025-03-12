@@ -10,10 +10,11 @@ theme:
     - content.code.select
 
 nav:
-  - 'Introduction': 'index.md' # README
+  - 'Introduction': 'index.md'
+  - 'Cheat sheet': 'cheat_sheet.md'
   - 'Usage':
       - 'Quick Start': 'tutorial/quickstart.md'
-      - 'Advanced Usage': 'tutorial/advanced.md'
+      - 'Examples': 'tutorial/examples.md'
   - 'Api Reference':
       'Orthanc': 'api/client.md'
       'Asynchronous Orthanc': 'api/async_client.md'
@@ -32,11 +33,10 @@ nav:
 
   - 'Releases': 'releases.md'
 
-  - 'More informations':
-    - 'Contributing': 'contributing.md'
+  - 'More information':
+    - 'Issues and contributing': 'contributing.md'
     - 'Contacts': 'contacts.md'
     - 'Citation': 'citation.md'
-
 
 
 markdown_extensions:

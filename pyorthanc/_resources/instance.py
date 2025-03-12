@@ -174,7 +174,9 @@ class Instance(Resource):
     @property
     def first_level_tags(self) -> Any:
         """Get first level tags"""
-        return self.client.get_instances_id_content_tags_path(self.id_, '')
+        from warnings import warn
+        warn("`Instance.first_level_tags` is deprecated. Use `Instance.tags` instead.")
+        return self.tags
 
     @property
     def tags(self) -> Dict:

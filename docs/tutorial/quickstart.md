@@ -1,8 +1,21 @@
 # First steps
 
-## Installation
+## Orthanc installation
+For testing purposes, you can use one of this solution to install Orthanc
+
+- Orthanc's demo server (https://orthanc.uclouvain.be/demo)
+- Deploy it locally with docker using `docker run -p 8042:8042 -p 4242:4242 orthancteam/orthanc`
+- Using the docker-compose from the pyorthanc repo
+    - For this, clone the repo (`git clone https://github.com/gacou54/pyorthanc`)
+    - Got in the repo (`cd pyorthanc`)
+    - Start orthanc (`docker compose up orthanc1`)
+- Other method to install Orthanc are available [here](https://www.orthanc-server.com/download.php)
+
+## PyOrthanc installation
 ```bash
 pip install pyorthanc
+pip install pyorthanc[all]  # (Optional) For progress bar when downloading DICOM data
+
 ```
 ## Getting started 
 ### Connect to Orthanc
@@ -14,9 +27,11 @@ orthanc = Orthanc(url='http://localhost:8042/', username='orthanc', password='or
 ```
 
 ### Upload DICOM files to Orthanc:
+
 ```python
-with open('A_DICOM_INSTANCE_PATH.dcm', 'rb') as file:
-    orthanc.post_instances(file.read())
+import pyorthanc
+
+pyorthanc.upload(orthanc, 'A_DICOM_INSTANCE_PATH.dcm')
 ```
 ### Getting list of connected remote modalities:
 ```python
@@ -40,13 +55,15 @@ query_response = modality.query(data=data)
 answer = modality.get_query_answers()[query_response['ID']]
 print(answer)
 
-# Retrieve (C-Move) results of query on a target modality (AET)
-modality.move(query_response['ID'], {'TargetAet': 'target_modality'})
+# Retrieve (C-Move) results of query on a Orthanc itself, or to a target modality (AET)
+modality.move(query_response['ID'])
+# or
+modality.move(query_response['ID'], {'TargetAet': 'OTHER_AET'})
 ```
 
 ### Find and download patients according to criteria:
 ```python
-from pyorthanc import find_patients, retrieve_and_write_patients
+from pyorthanc import find_patients
 
 patients = find_patients(
     client=orthanc,
@@ -55,9 +72,13 @@ patients = find_patients(
 )
 ```
 
-Download the patients data as a zip file
+Download the patients data
+
 ```python
+import os
 from pyorthanc import retrieve_and_write_patients
+
+os.makedirs('./data')  # Ensure that the target directory exists
 
 for patient in patients:
     patient.download(f'./data/patient-{patient.patient_id}.zip', with_progres=False)
@@ -169,12 +190,4 @@ orthanc_sdk.RegisterRestCallback('/test', on_get)
 ```
 
 
-## Full basic examples
-
-Be sure that Orthanc is running. The default URL (if running locally) is `http://localhost:8042`.
-
-Here is a list of examples to helps you getting started with pyorthanc.
-
-### Access instance information
-
-[Get instance informations](https://github.com/ylemarechal/pyorthanc-examples/tree/main/basic/access_informations)
+### For examples of usage, see [this](../tutorial/examples.md)

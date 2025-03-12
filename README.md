@@ -5,80 +5,156 @@
 [![status](https://joss.theoj.org/papers/73f4c5a5e026aa4ef0e7ed9ed471a9a7/status.svg)](https://joss.theoj.org/papers/73f4c5a5e026aa4ef0e7ed9ed471a9a7)
 
 # PyOrthanc
-**PyOrthanc** is a python client for the Orthanc REST API, which fully wraps all the methods of the REST API.
-Additionally, it provides many utility functions to interact with an Orthanc instance.
 
-See the full documentation here https://gacou54.github.io/pyorthanc
+**PyOrthanc** is a comprehensive Python client for [Orthanc](https://www.orthanc-server.com/), providing:
 
----
-Install PyOrthanc using pip:
+- Complete wrapping of the Orthanc REST API methods
+- High-level utilities for common DICOM operations 
+- Asynchronous client support
+- Helper functions for working with DICOM data
+- Integration with the [Orthanc Python plugin](https://orthanc.uclouvain.be/book/plugins/python.html)
+
+
+## Why PyOrthanc?
+PyOrthanc makes it easy to work with DICOM medical images stored on Orthanc servers using Python - instead
+of dealing with the DICOM protocol directly or creating complex code to interact with Orthanc's REST API.
+
+Researchers and clinicians can make simple Python script to access and manage their medical imaging data.
+
+Advanced users can use PyOrthanc to make Orthanc query a hospital PACS (Picture Archiving and Communication System).
+This allows to find and retrieve images produced in the clinic for research or quality control purposes.
+Additionally, since PyOrthanc simplifies Orthanc's anonymization operations,
+an entire medical image management workflow can be implemented in Python.
+
+
+## Quick Install
 ```bash
-pip install pyorthanc
+pip install pyorthanc        # Basic installation
+pip install pyorthanc[all]   # Install all optional dependencies
 ```
----
-Then use the client. If Orthanc is running locally, the default URL is `http://localhost:8042`.
-```python
-import pyorthanc
 
-client = pyorthanc.Orthanc('http://localhost:8042', username='orthanc', password='orthanc')
+## Basic Usage
+Assuming an Orthanc server running locally at `http://localhost:8042`:
+```python
+from pyorthanc import Orthanc, upload
+
+# Connect to Orthanc server
+client = Orthanc('http://localhost:8042')
+# Or with authentication:
+client = Orthanc('http://localhost:8042', username='orthanc', password='orthanc')
+
+# Basic operations
 patient_ids = client.get_patients()
+studies = client.get_studies() 
+
+# Upload DICOM file
+upload(client, 'image_path.dcm')
 ```
 
-Interact with connected modalities
+## Working with DICOM Modalities
+
 ```python
-import pyorthanc
+from pyorthanc import Modality
 
-modality = pyorthanc.Modality(client, 'MY_MODALITY')
-assert modality.echo()
+# Create modality connection
+modality = Modality(client, 'REMOTE_PACS')
 
-# C-Find on modality
-response = modality.query({'Level': 'Study', 'Query': {'PatientID': '*'}})
+# Test connection with C-ECHO
+if modality.echo():
+    print("Successfully connected to PACS")
 
-# C-Move to target modality
-modality.move(response['ID'], {'TargetAet': 'target_modality'})
-```
-Find patients
-```python
-patients = pyorthanc.find_patients(client, {'PatientID': '*P001'})
-for patient in patients:
-    patient.labels
-    patient.is_stable
-    patient.name
-    ...
-    for study in patient.studies:
-        study.labels
-        study.date
-        ...
-        for series in study.series:
-            ...
-            for instance in series.instances:
-                pydicom_ds = instance.get_pydicom()
+# Query studies with C-FIND
+response = modality.find({
+    'Level': 'Study',
+    'Query': {
+        'PatientID': '12345*',
+        'StudyDate': '20230101-20231231'
+    }
+})
+
+# Matches (i.e. answers in Orthanc nomenclature) can be reviewed before retrieving results
+response['answers']
+
+# Retrieve results with C-MOVE to a target AET
+modality.move(response['ID'], {'TargetAet': 'ORTHANC'})
 ```
 
-Resources (`Patient`, `Study`, `Series`, `Instance`) can be easily __anonymized__.
-```python
-import pyorthanc
+## Finding and Processing DICOM Data
 
-orthanc_patient_id = client.get_patients()[0]
-patient = pyorthanc.Patient(orthanc_patient_id, client)
-```
-Waiting the for the anonymization process:
 ```python
-new_patient = patient.anonymize()
-new_patient_with_given_patient_id = patient.anonymize(
-   keep=['PatientName'],
-   replace={'PatientID': 'TheNewPatientID'},
-   force=True  # Needed when changing PatientID/StudyInstanceUID/SeriesInstanceUID/SOPInstanceUID
+from pyorthanc import find_patients, find_studies, find_series, find_instances
+
+# Search for patients
+patients = find_patients(
+    client,
+    query={'PatientName': '*Gabriel'},
+    labels=['research']  # It is also possible to filter by labels
 )
-```
-For long-running job (i.e. large patient) or to submit many anonymization jobs at the same time, use
-```python
-job = patient.anonymize_as_job()
-job.state  # You can follow the job state
 
-job.wait_until_completion() # Or just wait on its completion
-new_patient = pyorthanc.Patient(job.content['ID'], client)
+# Process patient data
+for patient in patients:
+    print(f"Patient: {patient.name} (ID: {patient.patient_id})")
+    print(f"Birth Date: {patient.birth_date}")
+    print(f"Labels: {patient.labels}")
+    
+    # Access studies
+    for study in patient.studies:
+        print(f"\nStudy Date: {study.date}")
+        print(f"Description: {study.description}")
+        
+        # Access series
+        for series in study.series:
+            print(f"\nModality: {series.modality}")
+            print(f"Series Description: {series.description}")
+            
+            # Access individual DICOM instances
+            for instance in series.instances:
+                # Convert to pydicom dataset
+                ds = instance.get_pydicom()
+                # Process DICOM data...
+
+# Note the existing function to query Orthanc
+find_studies(client, query={...})
+find_series(client, query={...})
+find_instances(client, query={...})
 ```
+
+## Using pyorthanc within Orthanc's Python plugin
+
+Use the `orthanc_sdk` module when using [Orthanc's Python plugin](https://orthanc.uclouvain.be/book/plugins/python.html).
+`orthanc_sdk` acts as the same as `orthanc`, but it provides type hints and autocompletion. 
+For example:
+
+```python
+from pyorthanc import orthanc_sdk
+
+# Register a new REST endpoint
+def handle_api(output: orthanc_sdk.RestOutput, uri: str, **request):
+    """Handle REST API request"""
+    if request['method'] == 'GET':
+        output.AnswerBuffer('Hello from plugin!', 'text/plain')
+    else:
+        output.SendMethodNotAllowed('GET')
+
+orthanc_sdk.RegisterRestCallback('/hello-world', handle_api)
+
+# Handle incoming DICOM
+def on_store(dicom: orthanc_sdk.DicomInstance, instance_id: str):
+    """Process stored DICOM instances"""
+    print(f'Received instance {instance_id}')
+    print(f'Size: {dicom.GetInstanceSize()} bytes')
+    print(f'Transfer Syntax: {dicom.GetInstanceTransferSyntaxUid()}')
+
+orthanc_sdk.RegisterOnStoredInstanceCallback(on_store)
+```
+
+## Examples
+Typical example can be found in these notebooks.
+-  This [notebook](https://github.com/gacou54/pyorthanc/blob/main/examples/find_data.ipynb) shows
+   how a user can query image data from an Orthanc server
+-  This [notebook](https://github.com/gacou54/pyorthanc/blob/main/examples/modalities.ipynb) shows
+   how a user can query and pull data from other modality (such as a CT scan or a PACS) connected to an Orthanc Server. 
+
 
 ## Notes on versioning
 
@@ -89,7 +165,8 @@ Note that recent PyOrthanc versions will likely support older Orthanc version.
 
 | PyOrthanc version | Generated from                                |
 |-------------------|-----------------------------------------------|
-| \>= 1.18.0        | Orthanc API 1.12.4 with Python Plugin 4.2     |
+| \>= 1.19.0        | Orthanc API 1.12.5 with Python Plugin 4.2     |
+| 1.18.0            | Orthanc API 1.12.4 with Python Plugin 4.2     |
 | 1.17.0            | Orthanc API 1.12.3 with Python Plugin 4.2     |
 | 1.13.2 to 1.16.1  | Orthanc API 1.12.1 with Python Plugin 4.1     |
 | 1.13.0, 1.13.1    | Orthanc API 1.12.1 with Python Plugin 4.0     |
@@ -98,49 +175,32 @@ Note that recent PyOrthanc versions will likely support older Orthanc version.
 | 0.2.*             | Provided Google sheet from Orthanc maintainer |
 
 
-You can still use the old client implementation with
-```python
-from pyorthanc.deprecated.client import Orthanc  # Old client wrote by hand
-```
+## Running tests
+The tests are run in a docker image launched with docker compose.
 
-Note that due to automatic generation some method names may be less clear.
-However, the automatic generation allows PyOrthanc to cover all the routes of the API of Orthanc.
-
-
-## Citation
-If you use PyOrthanc in your research or publications, please cite our work.
-
-* **JOSS Paper:** [![JOSS Status](https://joss.theoj.org/papers/73f4c5a5e026aa4ef0e7ed9ed471a9a7/status.svg)](https://joss.theoj.org/papers/73f4c5a5e026aa4ef0e7ed9ed471a9a7)
-* **Zenodo DOI:** [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14802226.svg)](https://doi.org/10.5281/zenodo.14802226)
-
-You can find further details about PyOrthanc on Zenodo.
-
-## Credits
-The `orthanc_sdk.py` has been generated from the `scripts/data/python-sdk.txt` file,
-which is from the [Python Orthanc Plugin](https://github.com/orthanc-server/orthanc-setup-samples/blob/master/python-samples/python-sdk.txt)
-
-## Contributing
-You can contribute to this project with the following steps:
-1. First, fork the project on Github 
-2. Clone the project
-   ```shell
-   git clone https://github.com/<your-github-username>/pyorthanc
-   cd pyorthanc
-   ```
-3. Create a poetry environment 
-   (this project use the [poetry](https://python-poetry.org/) for dependency management)
-   ```shell
-   peotry install 
-   ```
-4. Make a new git branch where you will apply the changes
-   ```shell
-   git checkout -b your-branch-name
-   ```
-   Now you can make your changes
-5. Once done, `git add`, `git commit` and `git push` the changes.
-6. Make a Pull Request from your branch to the https://github.com/gacou54/pyorthanc.
-
-### Run tests
 ```shell
-docker compose run --build test
+docker compose run test
 ```
+This command starts 3 containers :
+1. A Python image with the PyOrthanc source code and launches pytest
+2. An instance of Orthanc (`orthanc1`) on which the PyOrthanc client is connected
+3. A second Orthanc instance (`orthanc2`) which acts as a modality connected to `orthanc1`
+
+## [Cheat sheet](docs/cheat_sheet.md)
+## [First steps](docs/tutorial/quickstart.md#first-steps)
+### [Getting started](docs/tutorial/quickstart.md#getting-started)
+* [Connect to Orthanc](docs/tutorial/quickstart.md#connect-to-orthanc)
+* [Upload DICOM files to Orthanc](docs/tutorial/quickstart.md#upload-dicom-files-to-orthanc)
+* [Handle connected DICOM modalities](docs/tutorial/quickstart.md#getting-list-of-connected-remote-modalities)
+* [Find and download patients according to criteria](docs/tutorial/quickstart.md#find-and-download-patients-according-to-criteria)
+* [Query (C-Find) and Retrieve (C-Move) from remote modality](docs/tutorial/quickstart.md#query-c-find-and-retrieve-c-move-from-remote-modality)
+### [Advanced examples](docs/tutorial/advanced.md)
+### [Releases](https://github.com/gacou54/pyorthanc/releases)
+### [Community guidelines](docs/contributing.md)
+* [Report an issue](docs/contributing.md#report-an-issue)
+* [Support](docs/contributing.md#seeking-support)
+* [Contribute](docs/contributing.md#contribute)
+## [Contacts](docs/contacts.md#contacts)
+* [Maintainers Team](docs/contacts.md#maintainers-team)
+* [Useful links](docs/contacts.md#useful-links)
+## [Citation](docs/citation.md#citation)

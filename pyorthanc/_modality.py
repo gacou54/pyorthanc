@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 import httpx
 
@@ -39,7 +39,7 @@ class Modality:
         except httpx.HTTPError:
             return False
 
-    def query(self, data: Dict) -> Dict:
+    def find(self, data: Dict) -> Dict:
         """C-Find (Querying with data)
 
         Parameters
@@ -50,7 +50,8 @@ class Modality:
         Returns
         -------
         Dict
-            Dictionary with keys {'ID': '...', 'path': '...'}
+            Returns a dictionary with the query ID and corresponding matches (i.e. answers) to the request
+            {'ID': '<query_id>', 'answers': [{first match metadata}, {second math metadata}, ...]}
 
         Examples
         -------
@@ -67,11 +68,17 @@ class Modality:
         ...     modality='sample'
         ... )
 
-        >>> modality.query(data)
+        >>> response = modality.find(data)
+        >>> print(response['ID'], response['answers'])
         """
-        return dict(self.client.post_modalities_id_query(self.modality, json=data))
+        query_id = self.client.post_modalities_id_query(self.modality, json=data)['ID']
+        answers = self.get_query_answers(query_id)
 
-    def move(self, query_identifier: str, cmove_data: Dict) -> Dict:
+        return {'ID': query_id, 'answers': answers}
+
+    query = find  # Alias
+
+    def move(self, query_identifier: str, cmove_data: Dict = None) -> Dict:
         """C-Move query results to another modality
 
         C-Move SCU: Send all the results to another modality whose AET is in the body
@@ -122,14 +129,28 @@ class Modality:
             json=instance_or_series_id
         ))
 
-    def get_query_answers(self) -> Dict:
-        answers = {}
+    def get_query_answers(self, query_id: str, simplify: bool = True, short: bool = False) -> List[Dict]:
+        """"""
+        params = self._make_response_format_params(simplify=simplify, short=short)
 
-        for query_id in self.client.get_queries():
-            for answer_id in self.client.get_queries_id_answers(query_id):
-                answers[query_id] = self.client.get_queries_id_answers_index_content(query_id, answer_id)
+        answers = []
+        for answer_id in self.client.get_queries_id_answers(query_id):
+            answer_content = self.client.get_queries_id_answers_index_content(query_id, answer_id, params)
+            answers.append(answer_content)
 
         return answers
+
+    def _make_response_format_params(self, simplify: bool, short: bool) -> Dict:
+        if simplify and not short:
+            params = {'simplify': True}
+        elif short and not simplify:
+            params = {'short': True}
+        elif simplify and short:
+            raise ValueError("simplify and short can't be both True.")
+        else:
+            params = {}
+
+        return params
 
 
 RemoteModality = Modality
