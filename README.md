@@ -2,6 +2,8 @@
 [![documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg?style=flat)](https://gacou54.github.io/pyorthanc/)
 ![PyPI - Version](https://img.shields.io/pypi/v/pyorthanc)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/pyorthanc)
+[![status](https://joss.theoj.org/papers/73f4c5a5e026aa4ef0e7ed9ed471a9a7/status.svg)](https://joss.theoj.org/papers/73f4c5a5e026aa4ef0e7ed9ed471a9a7)
+
 # PyOrthanc
 **PyOrthanc** is a python client for the Orthanc REST API, which fully wraps all the methods of the REST API.
 Additionally, it provides many utility functions to interact with an Orthanc instance.
@@ -106,8 +108,12 @@ However, the automatic generation allows PyOrthanc to cover all the routes of th
 
 
 ## Citation
-If you publish using PyOrthanc, we kindly ask that you credit us. PyOrthanc can be found on Zenodo :
-https://zenodo.org/record/7086219 .
+If you use PyOrthanc in your research or publications, please cite our work.
+
+* **JOSS Paper:** [![JOSS Status](https://joss.theoj.org/papers/73f4c5a5e026aa4ef0e7ed9ed471a9a7/status.svg)](https://joss.theoj.org/papers/73f4c5a5e026aa4ef0e7ed9ed471a9a7)
+* **Zenodo DOI:** [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14802226.svg)](https://doi.org/10.5281/zenodo.14802226)
+
+You can find further details about PyOrthanc on Zenodo.
 
 ## Credits
 The `orthanc_sdk.py` has been generated from the `scripts/data/python-sdk.txt` file,
