@@ -26,6 +26,12 @@ This allows to find and retrieve images produced in the clinic for research or q
 Additionally, since PyOrthanc simplifies Orthanc's anonymization operations,
 an entire medical image management workflow can be implemented in Python.
 
+## PyOrthanc or python-orthanc-api-client? 
+
+Another project [`python-orthanc-api-client`](https://github.com/orthanc-team/python-orthanc-api-client) 
+from [orthanc-team](https://github.com/orthanc-team) is quite similar to `pyorthanc`. 
+
+If you are wondering which one to use, please refer to this [discussion](https://github.com/gacou54/pyorthanc/issues/80).
 
 ## Quick Install
 ```bash
