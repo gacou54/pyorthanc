@@ -2,6 +2,7 @@
 [![documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg?style=flat)](https://gacou54.github.io/pyorthanc/)
 ![PyPI - Version](https://img.shields.io/pypi/v/pyorthanc)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/pyorthanc)
+[![status](https://joss.theoj.org/papers/73f4c5a5e026aa4ef0e7ed9ed471a9a7/status.svg)](https://joss.theoj.org/papers/73f4c5a5e026aa4ef0e7ed9ed471a9a7)
 
 # PyOrthanc
 
@@ -25,6 +26,12 @@ This allows to find and retrieve images produced in the clinic for research or q
 Additionally, since PyOrthanc simplifies Orthanc's anonymization operations,
 an entire medical image management workflow can be implemented in Python.
 
+## PyOrthanc or python-orthanc-api-client? 
+
+Another project [`python-orthanc-api-client`](https://github.com/orthanc-team/python-orthanc-api-client) 
+from [orthanc-team](https://github.com/orthanc-team) is quite similar to `pyorthanc`. 
+
+If you are wondering which one to use, please refer to this [discussion](https://github.com/gacou54/pyorthanc/issues/80).
 
 ## Quick Install
 ```bash
@@ -176,6 +183,7 @@ Note that recent PyOrthanc versions will likely support older Orthanc version.
 
 ## Running tests
 The tests are run in a docker image launched with docker compose.
+
 ```shell
 docker compose run test
 ```
