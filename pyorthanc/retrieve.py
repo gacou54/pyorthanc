@@ -7,7 +7,7 @@ from ._resources.series import Series
 from ._resources.study import Study
 
 
-def retrieve_and_write_patients(patients: List[Patient], path: str) -> None:
+def retrieve_and_write_patients(patients: List[Patient], path: Union[str, os.PathLike]) -> None:
     """Retrieve and write patients to given path
 
     Parameters
@@ -21,7 +21,7 @@ def retrieve_and_write_patients(patients: List[Patient], path: str) -> None:
         retrieve_and_write_patient(patient, path)
 
 
-def retrieve_and_write_patient(patient: Patient, path: str) -> None:
+def retrieve_and_write_patient(patient: Patient, path: Union[str, os.PathLike]) -> None:
     patient_id = patient.patient_id
     if patient_id == '':
         patient_path = os.path.join(path, 'unknown-patient')
@@ -32,14 +32,14 @@ def retrieve_and_write_patient(patient: Patient, path: str) -> None:
         retrieve_and_write_study(study, patient_path)
 
 
-def retrieve_and_write_study(study: Study, patient_path: str) -> None:
+def retrieve_and_write_study(study: Study, patient_path: Union[str, os.PathLike]) -> None:
     study_path = os.path.join(patient_path, study.uid)
 
     for series in study.series:
         retrieve_and_write_series(series, study_path)
 
 
-def retrieve_and_write_series(series: Series, study_path: str) -> None:
+def retrieve_and_write_series(series: Series, study_path: Union[str, os.PathLike]) -> None:
     series_path = os.path.join(study_path, series.uid)
     os.makedirs(series_path, exist_ok=True)
 
