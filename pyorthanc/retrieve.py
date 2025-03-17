@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Union
 
 from ._resources.instance import Instance
 from ._resources.patient import Patient
