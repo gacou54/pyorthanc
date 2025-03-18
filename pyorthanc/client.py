@@ -15,7 +15,7 @@ from httpx._types import (
 class Orthanc(httpx.Client):
     """Orthanc API
 
-    version 1.12.5
+    version 1.12.6
     This is the full documentation of the [REST API](https://orthanc.uclouvain.be/book/users/rest.html) of Orthanc.<p>This reference is automatically generated from the source code of Orthanc. A [shorter cheat sheet](https://orthanc.uclouvain.be/book/users/rest-cheatsheet.html) is part of the Orthanc Book.<p>An earlier, manually crafted version from August 2019, is [still available](2019-08-orthanc-openapi.html), but is not up-to-date anymore ([source](https://groups.google.com/g/orthanc-users/c/NUiJTEICSl8/m/xKeqMrbqAAAJ)).
 
     """
@@ -45,7 +45,7 @@ class Orthanc(httpx.Client):
         """
         super().__init__(*args, **kwargs)
         self.url = url
-        self.version = "1.12.5"
+        self.version = "1.12.6"
         self.return_raw_response = return_raw_response
 
         if username and password:
@@ -2729,6 +2729,44 @@ class Orthanc(httpx.Client):
             json=json,
         )
 
+    def post_modalities_id_get(
+        self,
+        id_: str,
+        json: Any = None,
+    ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
+        """Trigger C-GET SCU
+
+        Start a C-GET SCU command as a job, in order to retrieve DICOM resources from a remote DICOM modality whose identifier is provided in the URL:
+        Tags: Networking
+
+        Parameters
+        ----------
+        id_
+            Identifier of the modality of interest
+        json
+            Dictionary with the following keys:
+              "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
+              "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option. Ignored if `DicomModalities` already sets `LocalAet` for this modality.
+              "Permissive": If `true`, ignore errors during the individual steps of the job.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
+              "Query": A query object identifying all the DICOM resources to be retrieved
+              "Resources": List of queries identifying all the DICOM resources to be sent.  Usage of wildcards is prohibited and the query shall only contain DICOM ID tags.  Additionally, you may provide SOPClassesInStudy to limit the scope of the DICOM negotiation to certain SOPClassUID or to present uncommon SOPClassUID during the DICOM negotation.  By default, Orhanc will propose the most 120 common SOPClassUIDs.
+              "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+              "Timeout": Timeout for the C-GET command, in seconds
+
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int, httpx.Response]
+
+        """
+        if json is None:
+            json = {}
+        return self._post(
+            route=f"{self.url}/modalities/{id_}/get",
+            json=json,
+        )
+
     def post_modalities_id_move(
         self,
         id_: str,
@@ -4702,9 +4740,9 @@ class Orthanc(httpx.Client):
         data: RequestData = None,
         json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
-        """Retrieve one answer
+        """Retrieve one answer with a C-MOVE or a C-GET SCU
 
-        Start a C-MOVE SCU command as a job, in order to retrieve one answer associated with the query/retrieve operation whose identifiers are provided in the URL: https://orthanc.uclouvain.be/book/users/rest.html#performing-retrieve-c-move
+        Start a C-MOVE or a C-GET SCU command as a job, in order to retrieve one answer associated with the query/retrieve operation whose identifiers are provided in the URL: https://orthanc.uclouvain.be/book/users/rest.html#performing-retrieve-c-move
         Tags: Networking
 
         Parameters
@@ -4719,6 +4757,7 @@ class Orthanc(httpx.Client):
               "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
               "Permissive": If `true`, ignore errors during the individual steps of the job.
               "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
+              "RetrieveMethod": Force usage of C-MOVE or C-GET to retrieve the resource.  If note defined in the payload, the retrieve method is defined in the DicomDefaultRetrieveMethod configuration or in DicomModalities->..->RetrieveMethod
               "Simplify": If set to `true`, report the DICOM tags in human-readable format (using the symbolic name of the tags)
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "TargetAet": AET of the target modality. By default, the AET of Orthanc is used, as defined in the `DicomAet` configuration option.
@@ -4821,7 +4860,7 @@ class Orthanc(httpx.Client):
         data: RequestData = None,
         json: Any = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
-        """Retrieve all answers
+        """Retrieve all answers with C-MOVE SCU
 
         Start a C-MOVE SCU command as a job, in order to retrieve all the answers associated with the query/retrieve operation whose identifier is provided in the URL: https://orthanc.uclouvain.be/book/users/rest.html#performing-retrieve-c-move
         Tags: Networking
@@ -4836,6 +4875,7 @@ class Orthanc(httpx.Client):
               "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
               "Permissive": If `true`, ignore errors during the individual steps of the job.
               "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
+              "RetrieveMethod": Force usage of C-MOVE or C-GET to retrieve the resource.  If note defined in the payload, the retrieve method is defined in the DicomDefaultRetrieveMethod configuration or in DicomModalities->..->RetrieveMethod
               "Simplify": If set to `true`, report the DICOM tags in human-readable format (using the symbolic name of the tags)
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "TargetAet": AET of the target modality. By default, the AET of Orthanc is used, as defined in the `DicomAet` configuration option.
@@ -7523,6 +7563,23 @@ class Orthanc(httpx.Client):
         """
         return self._get(
             route=f"{self.url}/tools",
+        )
+
+    def get_tools_accepted_sop_classes(
+        self,
+    ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
+        """Get accepted SOPClassUID
+
+        Get the list of SOP Class UIDs that are accepted by Orthanc C-STORE SCP. This corresponds to the configuration options `AcceptedSopClasses` and `RejectedSopClasses`.
+        Tags: System
+
+        Returns
+        -------
+        Union[Dict, List, str, bytes, int, httpx.Response]
+            JSON array containing the SOP Class UIDs
+        """
+        return self._get(
+            route=f"{self.url}/tools/accepted-sop-classes",
         )
 
     def get_tools_accepted_transfer_syntaxes(
