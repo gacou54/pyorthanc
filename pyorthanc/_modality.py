@@ -1,8 +1,9 @@
-from typing import Dict, List
+from typing import Any, Dict, List, Union
 
 import httpx
 
 from . import util
+from ._find import _validate_level
 from .client import Orthanc
 
 
@@ -38,6 +39,42 @@ class Modality:
 
         except httpx.HTTPError:
             return False
+
+    def get(self, level: str, resources: Union[List[Dict[str, Any]], Dict[str, Any]]) -> Dict:
+        """C-GET
+
+        C-Move SCU: Send all the results to another modality whose AET is in the body
+
+        Parameters
+        ----------
+        level
+            Level of the query ['Patient', 'Study', 'Series', 'Instance']
+        resources
+            Dict or list of dict of DICOM tags that identify data to retrieve,
+            e.g. {'StudyInstanceUID': '1.3.6.1.4.1.22213.2.6291.2.1'}
+
+        Returns
+        -------
+        Dict
+            Orthanc Response (probably a Dictionary)
+
+        Examples
+        --------
+        >>> modality = Modality(Orthanc('http://localhost:8042'), 'modality')
+        >>> query_id = modality.get(
+        ...     data={'Level': 'Study',
+        ...           'Resources': {'StudyInstanceUID': '1.3.6.1.4.1.22213.2.6291.2.1'}
+        ... )
+
+        """
+        _validate_level(level)
+        if isinstance(resources, dict):
+            resources = [resources]
+
+        return dict(self.client.post_modalities_id_get(self.modality, json={
+            'Level': level,
+            'Resources': resources
+        }))
 
     def find(self, data: Dict) -> Dict:
         """C-Find (Querying with data)
