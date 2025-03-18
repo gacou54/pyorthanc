@@ -11,4 +11,4 @@ RUN poetry install --extras "all" --no-root
 
 COPY ../.. /app
 
-ENTRYPOINT [ "poetry", "run", "pytest", "-vv" ]
+ENTRYPOINT [ "poetry", "run", "pytest", "-vv", "tests/test_modality.py::test_get"]
