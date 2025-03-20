@@ -55,6 +55,28 @@ def test_failed_find(modality):
         modality.find(bad_payload)
 
 
+def test_get(modality):
+    expected_move_answer = {
+        'Description': 'REST API',
+        'LocalAet': ORTHANC_1.AeT,
+        'RemoteAet': ORTHANC_2.AeT,
+        'Query': [{
+            '0008,0052': 'STUDY',
+            '0020,000d': '1.3.6.1.4.1.22213.2.6291.2.1'
+        }],
+    }
+    setup_data(ORTHANC_2)
+
+    result = modality.get(level='Study', resources={'StudyInstanceUID': '1.3.6.1.4.1.22213.2.6291.2.1'})
+
+    assert result == expected_move_answer
+    resulting_patient_information = modality.client.get_patients_id(
+        modality.client.get_patients()[0]
+    )
+    assert {k: v for k, v in PATIENT_INFORMATION.items() if k not in ['LastUpdate']} == \
+           {k: v for k, v in resulting_patient_information.items() if k not in ['LastUpdate']}
+
+
 def test_move(modality):
     expected_move_answer = {
         'Description': 'REST API',
