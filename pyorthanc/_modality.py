@@ -62,8 +62,10 @@ class Modality:
         --------
         >>> modality = Modality(Orthanc('http://localhost:8042'), 'modality')
         >>> query_id = modality.get(
-        ...     data={'Level': 'Study',
-        ...           'Resources': {'StudyInstanceUID': '1.3.6.1.4.1.22213.2.6291.2.1'}
+        ...     data={
+        ...         'Level': 'Study',
+        ...         'Resources': {'StudyInstanceUID': '1.3.6.1.4.1.22213.2.6291.2.1'}
+        ...     }
         ... )
 
         """

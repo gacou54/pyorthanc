@@ -2750,10 +2750,10 @@ class AsyncOrthanc(httpx.AsyncClient):
         json
             Dictionary with the following keys:
               "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
+              "Level": Level of the query (`Patient`, `Study`, `Series` or `Instance`)
               "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option. Ignored if `DicomModalities` already sets `LocalAet` for this modality.
               "Permissive": If `true`, ignore errors during the individual steps of the job.
               "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
-              "Query": A query object identifying all the DICOM resources to be retrieved
               "Resources": List of queries identifying all the DICOM resources to be sent.  Usage of wildcards is prohibited and the query shall only contain DICOM ID tags.  Additionally, you may provide SOPClassesInStudy to limit the scope of the DICOM negotiation to certain SOPClassUID or to present uncommon SOPClassUID during the DICOM negotation.  By default, Orhanc will propose the most 120 common SOPClassUIDs.
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "Timeout": Timeout for the C-GET command, in seconds
