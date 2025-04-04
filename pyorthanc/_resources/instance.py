@@ -88,6 +88,17 @@ class Instance(Resource):
         return self.client.get_instances_id(self.id_)
 
     @property
+    def url(self) -> str:
+        """Get Instance (legacy viewer) URL
+
+        Returns
+        -------
+        str
+            URL of instance (legacy viewer)
+        """
+        return f'{self.client.url}/app/explorer.html#instance?uuid={self.id_}'
+
+    @property
     def file_size(self) -> int:
         """Get the file size
 
@@ -138,7 +149,7 @@ class Instance(Resource):
     @property
     def acquisition_number(self) -> int:
         return int(self._get_main_dicom_tag_value('AcquisitionNumber'))
-    
+
     @property
     def image_index(self) -> int:
         return int(self._get_main_dicom_tag_value('ImageIndex'))
@@ -158,11 +169,11 @@ class Instance(Resource):
     @property
     def image_comments(self) -> str:
         return self._get_main_dicom_tag_value('ImageComments')
-    
+
     @property
     def instance_number(self) -> int:
         return int(self._get_main_dicom_tag_value('InstanceNumber'))
-    
+
     @property
     def number_of_frames(self) -> int:
         return int(self._get_main_dicom_tag_value('NumberOfFrames'))

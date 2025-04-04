@@ -32,6 +32,17 @@ class Study(Resource):
         return self.client.get_studies_id(self.id_)
 
     @property
+    def url(self) -> str:
+        """Get Study (legacy viewer) URL
+
+        Returns
+        -------
+        str
+            URL of study (legacy viewer)
+        """
+        return f'{self.client.url}/app/explorer.html#study?uuid={self.id_}'
+
+    @property
     def referring_physician_name(self) -> str:
         """Get referring physician name"""
         return self._get_main_dicom_tag_value('ReferringPhysicianName')
