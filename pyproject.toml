@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyorthanc"
-version = "1.20.0"
+version = "1.20.1"
 description = "Orthanc REST API python wrapper with additional utilities"
 authors = [
     "Gabriel Couture <gacou54@gmail.com>",
@@ -15,7 +15,7 @@ keywords = ["Orthanc", "DICOM", "Medical-Imaging"]
 [tool.poetry.dependencies]
 python = "^3.8"
 httpx = ">=0.24.1,<1.0.0"
-pydicom = "^2.3.0"
+pydicom = ">=2.3.0,<4.0.0"
 tqdm = { version = "^4.66.1", optional = true }
 
 [tool.poetry.extras]
