@@ -14,7 +14,8 @@ DEFAULT_RESOURCES_LIMIT = 1_000
 def find_patients(client: Orthanc,
                   query: Dict[str, str] = None,
                   labels: Union[List[str], str] = None,
-                  labels_constraint: str = 'All') -> List[Patient]:
+                  labels_constraint: str = 'All',
+                  **kwargs) -> List[Patient]:
     """Finds patients in Orthanc according to queries and labels
 
     Parameters
@@ -27,6 +28,8 @@ def find_patients(client: Orthanc,
         List of strings specifying which labels to look for in the resources.
     labels_constraint
         Constraint on the labels, can be 'All', 'Any', or 'None'.
+    **kwargs
+        Additional keyword arguments passed to `query_orthanc`
 
     Returns
     -------
@@ -51,14 +54,16 @@ def find_patients(client: Orthanc,
         level='Patient',
         query=query,
         labels=labels,
-        labels_constraint=labels_constraint
+        labels_constraint=labels_constraint,
+        **kwargs
     )
 
 
 def find_studies(client: Orthanc,
                  query: Dict[str, str] = None,
                  labels: Union[List[str], str] = None,
-                 labels_constraint: str = 'All') -> List[Study]:
+                 labels_constraint: str = 'All',
+                 **kwargs) -> List[Study]:
     """Finds studies in Orthanc according to queries and labels
 
     Parameters
@@ -71,6 +76,8 @@ def find_studies(client: Orthanc,
         List of strings specifying which labels to look for in the resources.
     labels_constraint
         Constraint on the labels, can be 'All', 'Any', or 'None'.
+    **kwargs
+        Additional keyword arguments passed to `query_orthanc`
 
     Returns
     -------
@@ -96,14 +103,16 @@ def find_studies(client: Orthanc,
         level='Study',
         query=query,
         labels=labels,
-        labels_constraint=labels_constraint
+        labels_constraint=labels_constraint,
+        **kwargs
     )
 
 
 def find_series(client: Orthanc,
                 query: Dict[str, str] = None,
                 labels: Union[List[str], str] = None,
-                labels_constraint: str = 'All') -> List[Series]:
+                labels_constraint: str = 'All',
+                **kwargs) -> List[Series]:
     """Finds series in Orthanc according to queries and labels
 
     Parameters
@@ -116,6 +125,8 @@ def find_series(client: Orthanc,
         List of strings specifying which labels to look for in the resources.
     labels_constraint
         Constraint on the labels, can be 'All', 'Any', or 'None'.
+    **kwargs
+        Additional keyword arguments passed to `query_orthanc`
 
     Returns
     -------
@@ -140,14 +151,16 @@ def find_series(client: Orthanc,
         level='Series',
         query=query,
         labels=labels,
-        labels_constraint=labels_constraint
+        labels_constraint=labels_constraint,
+        **kwargs
     )
 
 
 def find_instances(client: Orthanc,
                    query: Dict[str, str] = None,
                    labels: Union[List[str], str] = None,
-                   labels_constraint: str = 'All') -> List[Instance]:
+                   labels_constraint: str = 'All',
+                   **kwargs) -> List[Instance]:
     """Finds instances in Orthanc according to queries and labels
 
     Parameters
@@ -160,6 +173,8 @@ def find_instances(client: Orthanc,
         List of strings specifying which labels to look for in the resources.
     labels_constraint
         Constraint on the labels, can be 'All', 'Any', or 'None'.
+    **kwargs
+        Additional keyword arguments passed to `query_orthanc`
 
     Returns
     -------
@@ -184,7 +199,8 @@ def find_instances(client: Orthanc,
         level='Instance',
         query=query,
         labels=labels,
-        labels_constraint=labels_constraint
+        labels_constraint=labels_constraint,
+        **kwargs
     )
 
 
