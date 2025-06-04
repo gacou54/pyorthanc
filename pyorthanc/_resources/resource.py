@@ -51,6 +51,10 @@ class Resource:
         return self._main_dicom_tags
 
     @abc.abstractmethod
+    def legacy_viewer_url(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def get_main_information(self):
         raise NotImplementedError
 

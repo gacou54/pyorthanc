@@ -28,6 +28,17 @@ class Patient(Resource):
         return self.client.get_patients_id(self.id_)
 
     @property
+    def legacy_viewer_url(self) -> str:
+        """Get Patient (legacy viewer) URL
+
+        Returns
+        -------
+        str
+            URL of patient (legacy viewer)
+        """
+        return f'{self.client.url}/app/explorer.html#patient?uuid={self.id_}'
+
+    @property
     def patient_id(self) -> str:
         """Get patient ID"""
         return self._get_main_dicom_tag_value('PatientID')
