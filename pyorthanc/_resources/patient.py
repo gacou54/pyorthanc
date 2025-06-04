@@ -28,7 +28,7 @@ class Patient(Resource):
         return self.client.get_patients_id(self.id_)
 
     @property
-    def url(self) -> str:
+    def legacy_viewer_url(self) -> str:
         """Get Patient (legacy viewer) URL
 
         Returns

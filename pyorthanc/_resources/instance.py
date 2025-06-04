@@ -88,7 +88,7 @@ class Instance(Resource):
         return self.client.get_instances_id(self.id_)
 
     @property
-    def url(self) -> str:
+    def legacy_viewer_url(self) -> str:
         """Get Instance (legacy viewer) URL
 
         Returns

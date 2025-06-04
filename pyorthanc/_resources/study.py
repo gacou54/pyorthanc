@@ -32,7 +32,7 @@ class Study(Resource):
         return self.client.get_studies_id(self.id_)
 
     @property
-    def url(self) -> str:
+    def legacy_viewer_url(self) -> str:
         """Get Study (legacy viewer) URL
 
         Returns

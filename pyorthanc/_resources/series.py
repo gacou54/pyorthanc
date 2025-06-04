@@ -51,7 +51,7 @@ class Series(Resource):
         return self.client.get_series_id(self.id_)
 
     @property
-    def url(self) -> str:
+    def legacy_viewer_url(self) -> str:
         """Get Series (legacy viewer) URL
 
         Returns
