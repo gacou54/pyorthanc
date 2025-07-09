@@ -53,8 +53,11 @@ client = Orthanc('http://localhost:8042', username='orthanc', password='orthanc'
 patient_ids = client.get_patients()
 studies = client.get_studies() 
 
-# Upload DICOM file
-upload(client, 'image_path.dcm')
+# Upload DICOM files
+upload(client, 'image.dcm')  # From a file
+upload(client, 'dicom_files.zip')  # From a zip
+upload(client, 'path/to/directory')  # Upload all dicom files in a directory
+upload(client, 'path/to/directory', recursive=True)  # Upload all dicom files in a directory recursively
 ```
 
 ## Working with DICOM Modalities
