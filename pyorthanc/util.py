@@ -62,7 +62,7 @@ def get_pydicom(orthanc: Orthanc, instance_identifier: str) -> pydicom.FileDatas
     """Get a pydicom.FileDataset from the instance's Orthanc identifier"""
     dicom_bytes = orthanc.get_instances_id_file(instance_identifier)
 
-    return pydicom.dcmread(BytesIO(dicom_bytes))
+    return pydicom.dcmread(BytesIO(dicom_bytes), force=False)
 
 
 def ensure_non_raw_response(client: Orthanc) -> Orthanc:
@@ -91,6 +91,11 @@ def to_orthanc_series_id(patient_id: str, study_uid: str, series_uid: str) -> st
 
 def to_orthanc_instance_id(patient_id: str, study_uid: str, series_uid: str, instance_uid) -> str:
     return _make_orthanc_id(patient_id, study_uid, series_uid, instance_uid)
+
+
+def to_orthanc_instance_id_from_ds(ds: pydicom.Dataset) -> str:
+    return _make_orthanc_id(patient_id=ds.PatientID, study_uid=ds.StudyInstanceUID, series_uid=ds.SeriesInstanceUID,
+                            instance_uid=ds.SOPInstanceUID)
 
 
 def _make_orthanc_id(patient_id: str, study_uid: str = None, series_uid: str = None, instance_uid: str = None) -> str:

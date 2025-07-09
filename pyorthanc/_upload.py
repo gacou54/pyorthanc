@@ -8,7 +8,7 @@ import httpx
 import pydicom
 
 from pyorthanc import AsyncOrthanc, Orthanc
-from pyorthanc.util import _make_orthanc_id, to_orthanc_study_id, to_orthanc_series_id, to_orthanc_patient_id
+from pyorthanc.util import to_orthanc_study_id, to_orthanc_series_id, to_orthanc_patient_id, to_orthanc_instance_id_from_ds
 
 
 def upload(client: Orthanc, path_or_ds: Union[str, Path, pydicom.Dataset], recursive: bool = False, check_before_upload: bool = False) -> Union[Dict, httpx.Response]:
@@ -91,23 +91,18 @@ def _prepare_data_directory(directory: str, recursive: bool) -> Generator[bytes,
 def _is_data_already_in_orthanc(client: Orthanc, dicom_bytes):
     dicom_file_like = BytesIO(dicom_bytes)
     ds = pydicom.dcmread(dicom_file_like)
-    orthanc_id = _make_orthanc_id_from_ds(ds)
+    orthanc_id = to_orthanc_instance_id_from_ds(ds)
 
     try:
-        info = client.get_instances_id_metadata(id_=orthanc_id)
+        client.get_instances_id_metadata(id_=orthanc_id)
 
         return True, _make_already_stored_return_message(ds)
     except httpx.HTTPError as e:
         return False, ''
 
 
-def _make_orthanc_id_from_ds(ds: pydicom.Dataset):
-    return _make_orthanc_id(patient_id=ds.PatientID, study_uid=ds.StudyInstanceUID, series_uid=ds.SeriesInstanceUID,
-                            instance_uid=ds.SOPInstanceUID)
-
-
 def _make_already_stored_return_message(ds):
-    instance_id = _make_orthanc_id_from_ds(ds)
+    instance_id = to_orthanc_instance_id_from_ds(ds)
 
     data = {'ID': instance_id,
             'ParentPatient': to_orthanc_patient_id(ds.PatientID),
