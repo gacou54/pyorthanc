@@ -5,6 +5,7 @@ from .client import Orthanc
 from . import errors, util
 from ._filtering import find, trim_patients
 from ._find import find_instances, find_patients, find_series, find_studies, query_orthanc
+from ._internal_client import get_internal_client
 from ._modality import Modality, RemoteModality
 from ._resources import Instance, Patient, Series, Study
 from ._upload import async_upload, upload
@@ -31,6 +32,7 @@ __all__ = [
     'find_studies',
     'find_series',
     'find_instances',
+    'get_internal_client',
     'query_orthanc',
     'Job',
     'retrieve_and_write_patients',

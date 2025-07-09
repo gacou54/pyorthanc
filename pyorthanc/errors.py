@@ -4,3 +4,7 @@ class TagDoesNotExistError(Exception):
 
 class ModificationError(Exception):
     pass
+
+
+class NotInInternalEnvironmentError(Exception):
+    pass
