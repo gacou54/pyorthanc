@@ -112,7 +112,8 @@ Use the `orthanc_sdk` module when using [Orthanc's Python plugin](https://orthan
 For example:
 
 ```python
-from pyorthanc import orthanc_sdk
+import json
+from pyorthanc import orthanc_sdk, get_internal_client, find_series
 
 # Register a new REST endpoint
 def handle_api(output: orthanc_sdk.RestOutput, uri: str, **request):
@@ -132,6 +133,21 @@ def on_store(dicom: orthanc_sdk.DicomInstance, instance_id: str):
     print(f'Transfer Syntax: {dicom.GetInstanceTransferSyntaxUid()}')
 
 orthanc_sdk.RegisterOnStoredInstanceCallback(on_store)
+
+# Use the `pyorthanc.Orthanc()` inside Orthanc
+def get_modalities_in_orthanc(output: orthanc_sdk.RestOutput, *_, **__):
+    client = get_internal_client()  # This returns a `pyorthanc.Orthanc`
+   
+    # Don't use in a very large collection 
+    series = find_series(client)
+    modalities_in_orthanc = set([s.modality for s in series])
+   
+    output.AnswerBuffer(
+        json.dumps({'modalities': list(modalities_in_orthanc)}),
+        'application/json'
+    )
+   
+orthanc_sdk.RegisterRestCallback('/get-modalities-in-orthanc', get_modalities_in_orthanc) 
 ```
 
 ## Examples
