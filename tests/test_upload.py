@@ -2,7 +2,9 @@ import os
 import shutil
 import tempfile
 import zipfile
+from unittest.mock import patch
 
+import httpx
 import pydicom
 import pytest
 from pydicom.data import get_testdata_file
@@ -96,3 +98,20 @@ def test_upload_with_directory_without_dicom(client):
 
     assert len(instances) == 0
     assert len(client.get_patients()) == 0
+
+
+def test_upload_while_checking_if_instance_exists(client):
+    path = get_testdata_file('CT_small.dcm')
+
+    with patch('pyorthanc.client.Orthanc.get_instances_id_metadata') as mock_get_instance:
+        with patch('pyorthanc.client.Orthanc.post_instances', return_value={'ID': 'test-instance-id'}) as mock_post_instances:
+            mock_get_instance.side_effect = httpx.HTTPError('Instance already exists')
+            instances = upload(client, path, check_before_upload=True)
+            assert len(instances) == 1
+
+            mock_get_instance.side_effect = None
+            instances = upload(client, path, check_before_upload=True)
+            assert len(instances) == 1
+
+            assert mock_post_instances.call_count == 1  # Should only be called once
+            assert mock_get_instance.call_count == 2  # Call 2 times to check if an instance exists before upload

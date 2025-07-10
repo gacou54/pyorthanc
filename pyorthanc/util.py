@@ -62,7 +62,7 @@ def get_pydicom(orthanc: Orthanc, instance_identifier: str) -> pydicom.FileDatas
     """Get a pydicom.FileDataset from the instance's Orthanc identifier"""
     dicom_bytes = orthanc.get_instances_id_file(instance_identifier)
 
-    return pydicom.dcmread(BytesIO(dicom_bytes), force=False)
+    return pydicom.dcmread(BytesIO(dicom_bytes))
 
 
 def ensure_non_raw_response(client: Orthanc) -> Orthanc:
