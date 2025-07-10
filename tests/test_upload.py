@@ -13,8 +13,9 @@ def test_upload_with_path(client):
     assert len(client.get_patients()) == 0
     path = get_testdata_file('CT_small.dcm')
 
-    upload(client, path)
+    instances = upload(client, path)
 
+    assert len(instances) == 1
     assert len(client.get_patients()) == 1
 
 
@@ -22,8 +23,9 @@ def test_upload_with_ds(client):
     assert len(client.get_patients()) == 0
     ds = pydicom.dcmread(get_testdata_file('CT_small.dcm'))
 
-    upload(client, ds)
+    instances = upload(client, ds)
 
+    assert len(instances) == 1
     assert len(client.get_patients()) == 1
 
 
@@ -38,8 +40,9 @@ def test_upload_with_zip(client):
             zipf.write(ct_file_path, os.path.basename(ct_file_path))
             zipf.write(mr_file_path, os.path.basename(mr_file_path))
 
-        upload(client, zip_filepath)
+        instances = upload(client, zip_filepath)
 
+    assert len(instances) == 2
     assert len(client.get_patients()) == 2
 
 
@@ -57,10 +60,12 @@ def test_upload_with_directory(client):
         shutil.copy(mr_file_path, os.path.join(tmpdirname, 'mr', 'MR_small.dcm'))
         shutil.copy(ct_file_path, os.path.join(tmpdirname, 'ct', 'other-dir', 'CT_small.dcm'))
 
-        upload(client, tmpdirname)
+        instances = upload(client, tmpdirname)
         # Only one patient since only rtplan.dcm is in a direct directory
+        assert len(instances) == 1
         assert len(client.get_patients()) == 1
 
         # Upload everything
-        upload(client, tmpdirname, recursive=True)
+        instances = upload(client, tmpdirname, recursive=True)
+        assert len(instances) == 3
         assert len(client.get_patients()) == 3
