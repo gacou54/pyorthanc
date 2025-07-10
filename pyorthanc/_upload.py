@@ -2,10 +2,11 @@ import glob
 import os
 from io import BytesIO
 from pathlib import Path
-from typing import Dict, Generator, List, Union
+from typing import Dict, Generator, List, Tuple, Union
 
 import httpx
 import pydicom
+from pydicom.errors import InvalidDicomError
 
 from pyorthanc import AsyncOrthanc, Instance, Orthanc
 from pyorthanc.util import ensure_non_raw_response, to_orthanc_instance_id_from_ds
@@ -121,10 +122,14 @@ def _generate_dicom_bytes_from_directory(directory: str, recursive: bool) -> Gen
         yield _prepare_data_from_ds_or_file(filepath)
 
 
-def _is_data_already_in_orthanc(client: Orthanc, dicom_bytes):
-    dicom_file_like = BytesIO(dicom_bytes)
-    ds = pydicom.dcmread(dicom_file_like)
-    orthanc_id = to_orthanc_instance_id_from_ds(ds)
+def _is_data_already_in_orthanc(client: Orthanc, dicom_bytes: bytes) -> Tuple[bool, Union[Instance, None]]:
+    try:
+        dicom_file_like = BytesIO(dicom_bytes)
+        ds = pydicom.dcmread(dicom_file_like)
+        orthanc_id = to_orthanc_instance_id_from_ds(ds)
+    except InvalidDicomError:
+        # If the file is not a valid DICOM file, likely it is a zip file. It will be uploaded.
+        return False, None
 
     try:
         # Attempt to get metadata to verify if data is already in Orthanc.
@@ -132,4 +137,4 @@ def _is_data_already_in_orthanc(client: Orthanc, dicom_bytes):
         return True, Instance(orthanc_id, client)
 
     except httpx.HTTPError:
-        return False, ''
+        return False, None
