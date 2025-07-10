@@ -4,6 +4,7 @@ import tempfile
 import zipfile
 
 import pydicom
+import pytest
 from pydicom.data import get_testdata_file
 
 from pyorthanc import upload
@@ -69,3 +70,29 @@ def test_upload_with_directory(client):
         instances = upload(client, tmpdirname, recursive=True)
         assert len(instances) == 3
         assert len(client.get_patients()) == 3
+
+
+def test_upload_with_bad_path(client):
+    with pytest.raises(FileNotFoundError):
+        upload(client, 'bad_path')
+
+
+def test_upload_with_zip_without_dicom(client):
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        non_dicom_file_path = __file__
+
+        zip_filepath = os.path.join(tmpdirname, 'non_dicom_files.zip')
+        with zipfile.ZipFile(zip_filepath, 'w') as zipf:
+            zipf.write(non_dicom_file_path, os.path.basename(non_dicom_file_path))
+
+        instances = upload(client, zip_filepath)
+
+        assert len(instances) == 0
+        assert len(client.get_patients()) == 0
+
+
+def test_upload_with_directory_without_dicom(client):
+    instances = upload(client, 'pyorthanc')
+
+    assert len(instances) == 0
+    assert len(client.get_patients()) == 0
