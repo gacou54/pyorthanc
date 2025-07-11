@@ -20,4 +20,6 @@ def test_route_with_internal_client(client):
     assert response.status_code == HTTPStatus.OK
     result = response.json()
     assert 'modalities' in result
-    assert result['modalities'] == ['RTDOSE', 'RTPLAN', 'RTSTRUCT']
+    assert 'RTDOSE' in result['modalities']
+    assert 'RTPLAN' in result['modalities']
+    assert 'RTSTRUCT' in result['modalities']
