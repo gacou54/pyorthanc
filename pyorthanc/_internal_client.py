@@ -1,6 +1,6 @@
 import json
 
-from . import Orthanc, orthanc_sdk
+from . import Orthanc
 from .errors import NotInInternalEnvironmentError
 
 
@@ -26,6 +26,8 @@ def get_internal_client() -> Orthanc:
     ...
     ... orthanc_sdk.RegisterRestCallback('/get-modalities-in-orthanc', get_modalities_in_orthanc)
     """
+    from pyorthanc import orthanc_sdk
+
     config = orthanc_sdk.GetConfiguration()
 
     if not config:
