@@ -44,6 +44,8 @@ upload(client, 'image.dcm')  # From a file
 upload(client, 'dicom_files.zip')  # From a zip
 upload(client, 'path/to/directory')  # Upload all dicom files in a directory
 upload(client, 'path/to/directory', recursive=True)  # Upload all dicom files in a directory recursively
+# Check if dicom is in Orthanc before upload
+upload(client, 'path/to/directory', recursive=True, check_before_upload=True)
 ```
 ## Working with DICOM Modalities
 

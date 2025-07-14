@@ -93,6 +93,15 @@ def to_orthanc_instance_id(patient_id: str, study_uid: str, series_uid: str, ins
     return _make_orthanc_id(patient_id, study_uid, series_uid, instance_uid)
 
 
+def to_orthanc_instance_id_from_ds(ds: pydicom.Dataset) -> str:
+    return _make_orthanc_id(
+        patient_id=ds.PatientID,
+        study_uid=ds.StudyInstanceUID,
+        series_uid=ds.SeriesInstanceUID,
+        instance_uid=ds.SOPInstanceUID
+    )
+
+
 def _make_orthanc_id(patient_id: str, study_uid: str = None, series_uid: str = None, instance_uid: str = None) -> str:
     ids = [patient_id, study_uid, series_uid, instance_uid]
 
