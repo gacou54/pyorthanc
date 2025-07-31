@@ -1,4 +1,3 @@
-import logging
 import shelve
 from typing import Dict, List, Union
 
@@ -300,7 +299,6 @@ def query_orthanc(client: Orthanc,
     if local_cache:
         with shelve.open(local_cache_file) as db:
             if local_cache_name in db:
-                logging.info('Cache IDs found. Using cache.')
                 if level == 'Patient':
                     resources = [Patient(id_, client, _lock_children=lock_children) for id_ in db[(local_cache_name)]]
                 if level == 'Study':
