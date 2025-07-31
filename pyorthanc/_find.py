@@ -310,47 +310,47 @@ def query_orthanc(client: Orthanc,
 
                 return resources
 
-        data = {
-            'Expand': True,
-            'Level': level,
-            'Limit': limit,
-            'Since': since,
-            'Query': {}
-        }
+    data = {
+        'Expand': True,
+        'Level': level,
+        'Limit': limit,
+        'Since': since,
+        'Query': {}
+    }
 
-        if query is not None:
-            data['Query'] = query
+    if query is not None:
+        data['Query'] = query
 
-        if labels is not None:
-            data['Labels'] = [labels] if isinstance(labels, str) else labels
-            data['LabelsConstraint'] = labels_constraint
+    if labels is not None:
+        data['Labels'] = [labels] if isinstance(labels, str) else labels
+        data['LabelsConstraint'] = labels_constraint
 
-        if retrieve_all_resources:
-            results = []
-            while True:
-                result_for_interval = client.post_tools_find(data)
-                if len(result_for_interval) == 0:
-                    break
+    if retrieve_all_resources:
+        results = []
+        while True:
+            result_for_interval = client.post_tools_find(data)
+            if len(result_for_interval) == 0:
+                break
 
-                results += result_for_interval
-                data['Since'] += limit  # Updating the lookup window
-        else:
-            results = client.post_tools_find(data)
+            results += result_for_interval
+            data['Since'] += limit  # Updating the lookup window
+    else:
+        results = client.post_tools_find(data)
 
-        if level == 'Patient':
-            resources = [Patient(i['ID'], client, _lock_children=lock_children) for i in results]
-        elif level == 'Study':
-            resources = [Study(i['ID'], client, _lock_children=lock_children) for i in results]
-        elif level == 'Series':
-            resources = [Series(i['ID'], client, _lock_children=lock_children) for i in results]
-        elif level == 'Instance':
-            resources = [Instance(i['ID'], client, _lock_children=lock_children) for i in results]
-        else:
-            raise ValueError(f"Unknown level ['Patient', 'Study', 'Series', 'Instance'], got {level}")
+    if level == 'Patient':
+        resources = [Patient(i['ID'], client, _lock_children=lock_children) for i in results]
+    elif level == 'Study':
+        resources = [Study(i['ID'], client, _lock_children=lock_children) for i in results]
+    elif level == 'Series':
+        resources = [Series(i['ID'], client, _lock_children=lock_children) for i in results]
+    elif level == 'Instance':
+        resources = [Instance(i['ID'], client, _lock_children=lock_children) for i in results]
+    else:
+        raise ValueError(f"Unknown level ['Patient', 'Study', 'Series', 'Instance'], got {level}")
 
-        if local_cache:
-            with shelve.open(local_cache_file) as db:
-                db[local_cache_name] = [s.id_ for s in resources]
+    if local_cache:
+        with shelve.open(local_cache_file) as db:
+            db[local_cache_name] = [s.id_ for s in resources]
 
     return resources
 
