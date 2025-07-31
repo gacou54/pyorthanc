@@ -1,3 +1,5 @@
+import logging
+import shelve
 from typing import Dict, List, Union
 
 from . import util
@@ -15,6 +17,8 @@ def find_patients(client: Orthanc,
                   query: Dict[str, str] = None,
                   labels: Union[List[str], str] = None,
                   labels_constraint: str = 'All',
+                  local_cache=False,
+                  local_cache_file='pyorthanc_cache',
                   **kwargs) -> List[Patient]:
     """Finds patients in Orthanc according to queries and labels
 
@@ -55,6 +59,8 @@ def find_patients(client: Orthanc,
         query=query,
         labels=labels,
         labels_constraint=labels_constraint,
+        local_cache=local_cache,
+        local_cache_file=local_cache_file,
         **kwargs
     )
 
@@ -63,6 +69,8 @@ def find_studies(client: Orthanc,
                  query: Dict[str, str] = None,
                  labels: Union[List[str], str] = None,
                  labels_constraint: str = 'All',
+                 local_cache=False,
+                 local_cache_file='pyorthanc_cache',
                  **kwargs) -> List[Study]:
     """Finds studies in Orthanc according to queries and labels
 
@@ -104,6 +112,8 @@ def find_studies(client: Orthanc,
         query=query,
         labels=labels,
         labels_constraint=labels_constraint,
+        local_cache=local_cache,
+        local_cache_file=local_cache_file,
         **kwargs
     )
 
@@ -112,6 +122,8 @@ def find_series(client: Orthanc,
                 query: Dict[str, str] = None,
                 labels: Union[List[str], str] = None,
                 labels_constraint: str = 'All',
+                local_cache=False,
+                local_cache_file='pyorthanc_cache',
                 **kwargs) -> List[Series]:
     """Finds series in Orthanc according to queries and labels
 
@@ -152,6 +164,8 @@ def find_series(client: Orthanc,
         query=query,
         labels=labels,
         labels_constraint=labels_constraint,
+        local_cache=local_cache,
+        local_cache_file=local_cache_file,
         **kwargs
     )
 
@@ -160,6 +174,8 @@ def find_instances(client: Orthanc,
                    query: Dict[str, str] = None,
                    labels: Union[List[str], str] = None,
                    labels_constraint: str = 'All',
+                   local_cache=False,
+                   local_cache_file='pyorthanc_cache',
                    **kwargs) -> List[Instance]:
     """Finds instances in Orthanc according to queries and labels
 
@@ -200,6 +216,8 @@ def find_instances(client: Orthanc,
         query=query,
         labels=labels,
         labels_constraint=labels_constraint,
+        local_cache=local_cache,
+        local_cache_file=local_cache_file,
         **kwargs
     )
 
@@ -212,7 +230,9 @@ def query_orthanc(client: Orthanc,
                   limit: int = DEFAULT_RESOURCES_LIMIT,
                   since: int = 0,
                   retrieve_all_resources: bool = True,
-                  lock_children: bool = False) -> List[Resource]:
+                  lock_children: bool = False,
+                  local_cache=False,
+                  local_cache_file='pyorthanc_cache') -> List[Resource | Patient | Study | Series | Instance]:
     """Query data in the Orthanc server
 
     Parameters
@@ -237,6 +257,11 @@ def query_orthanc(client: Orthanc,
         If `lock_children` is True, the resource children (ex. instances of a series via `Series.instances`)
         will be cached at the first query rather than queried every time. This is useful when you want
         to filter the children of a resource and want to maintain the filter result.
+    local_cache
+        If `local_cache` is True, pyorthanc will store find result in a local file called pyorthanc_cache.
+        Usefull if data don't change between 2 pyorthanc scripts runs
+    local_cache_file
+        Name of filename for local cache.
     Returns
     -------
     List[Resource]
@@ -264,43 +289,70 @@ def query_orthanc(client: Orthanc,
     # In this function, client that return raw responses are not supported.
     client = util.ensure_non_raw_response(client)
 
-    data = {
-        'Expand': True,
-        'Level': level,
-        'Limit': limit,
-        'Since': since,
-        'Query': {}
-    }
+    local_cache_name = ((f'{level}-{query}-{labels}-{labels_constraint}-{since}-{limit}'
+                        .replace(' ', '_')
+                        .replace("'", "")
+                        .replace("'", "")
+                        .replace("[", "")
+                        .replace("]", ""))
+                        .lower())
 
-    if query is not None:
-        data['Query'] = query
+    if local_cache:
+        with shelve.open(local_cache_file) as db:
+            if local_cache_name in db:
+                logging.info('Cache IDs found. Using cache.')
+                if level == 'Patient':
+                    resources = [Patient(id_, client, _lock_children=lock_children) for id_ in db[(local_cache_name)]]
+                if level == 'Study':
+                    resources = [Study(id_, client, _lock_children=lock_children) for id_ in db[(local_cache_name)]]
+                if level == 'Series':
+                    resources = [Series(id_, client, _lock_children=lock_children) for id_ in db[(local_cache_name)]]
+                if level == 'Instance':
+                    resources = [Instance(id_, client, _lock_children=lock_children) for id_ in db[(local_cache_name)]]
 
-    if labels is not None:
-        data['Labels'] = [labels] if isinstance(labels, str) else labels
-        data['LabelsConstraint'] = labels_constraint
+                return resources
 
-    if retrieve_all_resources:
-        results = []
-        while True:
-            result_for_interval = client.post_tools_find(data)
-            if len(result_for_interval) == 0:
-                break
+        data = {
+            'Expand': True,
+            'Level': level,
+            'Limit': limit,
+            'Since': since,
+            'Query': {}
+        }
 
-            results += result_for_interval
-            data['Since'] += limit  # Updating the lookup window
-    else:
-        results = client.post_tools_find(data)
+        if query is not None:
+            data['Query'] = query
 
-    if level == 'Patient':
-        resources = [Patient(i['ID'], client, _lock_children=lock_children) for i in results]
-    elif level == 'Study':
-        resources = [Study(i['ID'], client, _lock_children=lock_children) for i in results]
-    elif level == 'Series':
-        resources = [Series(i['ID'], client, _lock_children=lock_children) for i in results]
-    elif level == 'Instance':
-        resources = [Instance(i['ID'], client, _lock_children=lock_children) for i in results]
-    else:
-        raise ValueError(f"Unknown level ['Patient', 'Study', 'Series', 'Instance'], got {level}")
+        if labels is not None:
+            data['Labels'] = [labels] if isinstance(labels, str) else labels
+            data['LabelsConstraint'] = labels_constraint
+
+        if retrieve_all_resources:
+            results = []
+            while True:
+                result_for_interval = client.post_tools_find(data)
+                if len(result_for_interval) == 0:
+                    break
+
+                results += result_for_interval
+                data['Since'] += limit  # Updating the lookup window
+        else:
+            results = client.post_tools_find(data)
+
+        if level == 'Patient':
+            resources = [Patient(i['ID'], client, _lock_children=lock_children) for i in results]
+        elif level == 'Study':
+            resources = [Study(i['ID'], client, _lock_children=lock_children) for i in results]
+        elif level == 'Series':
+            resources = [Series(i['ID'], client, _lock_children=lock_children) for i in results]
+        elif level == 'Instance':
+            resources = [Instance(i['ID'], client, _lock_children=lock_children) for i in results]
+        else:
+            raise ValueError(f"Unknown level ['Patient', 'Study', 'Series', 'Instance'], got {level}")
+
+        if local_cache:
+            with shelve.open(local_cache_file) as db:
+                db[local_cache_name] = [s.id_ for s in resources]
 
     return resources
 
