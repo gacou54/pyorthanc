@@ -51,6 +51,17 @@ class Series(Resource):
         return self.client.get_series_id(self.id_)
 
     @property
+    def legacy_viewer_url(self) -> str:
+        """Get Series (legacy viewer) URL
+
+        Returns
+        -------
+        str
+            URL of series (legacy viewer)
+        """
+        return f'{self.client.url}/app/explorer.html#series?uuid={self.id_}'
+
+    @property
     def manufacturer(self) -> str:
         """Get the manufacturer"""
         return self._get_main_dicom_tag_value('Manufacturer')
@@ -116,11 +127,11 @@ class Series(Resource):
     @property
     def body_part_examined(self) -> str:
         return self._get_main_dicom_tag_value('BodyPartExamined')
-    
+
     @property
     def sequence_name(self) -> str:
         return self._get_main_dicom_tag_value('SequenceName')
-    
+
     @property
     def cardiac_number_of_images(self) -> int:
         return int(self._get_main_dicom_tag_value('CardiacNumberOfImages'))
@@ -128,7 +139,7 @@ class Series(Resource):
     @property
     def images_in_acquisition(self) -> int:
         return int(self._get_main_dicom_tag_value('ImagesInAcquisition'))
-    
+
     @property
     def number_of_temporal_positions(self) -> int:
         return int(self._get_main_dicom_tag_value('NumberOfTemporalPositions'))
@@ -150,15 +161,15 @@ class Series(Resource):
     @property
     def series_type(self) -> str:
         return self._get_main_dicom_tag_value('SeriesType')
-    
+
     @property
     def operators_name(self) -> str:
         return self._get_main_dicom_tag_value('OperatorsName')
-    
+
     @property
     def acquisition_device_processing_description(self) -> str:
         return self._get_main_dicom_tag_value('AcquisitionDeviceProcessingDescription')
-    
+
     @property
     def contrast_bolus_agent(self) -> str:
         return self._get_main_dicom_tag_value('ContrastBolusAgent')

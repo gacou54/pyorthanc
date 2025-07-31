@@ -1,8 +1,18 @@
 # Contribute 
 
-You can contribute to this project with the following steps:
+## Report an issue
+You can open an issue [here](https://github.com/gacou54/pyorthanc/issues)
+explaining your issue.
 
-1. First, fork the project on Github
+## Seeking support
+You can open an issue [here](https://github.com/gacou54/pyorthanc/issues)
+to ask a question.
+
+## Contribute
+
+You can contribute a fix or a new feature to this project with the following steps:
+
+1. First, fork the project on GitHub
 
 2. Clone the project
 

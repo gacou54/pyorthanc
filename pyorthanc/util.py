@@ -12,6 +12,16 @@ from .async_client import AsyncOrthanc
 from .client import Orthanc
 
 
+def delete_queries(client: Orthanc) -> None:
+    for query_id in client.get_queries():
+        client.delete_queries_id(query_id)
+
+
+async def async_delete_queries(client: AsyncOrthanc) -> None:
+    for query_id in await client.get_queries():
+        await client.delete_queries_id(query_id)
+
+
 def make_datetime_from_dicom_date(date: str, time: str = None) -> Optional[datetime]:
     """Attempt to decode date"""
     try:
@@ -81,6 +91,15 @@ def to_orthanc_series_id(patient_id: str, study_uid: str, series_uid: str) -> st
 
 def to_orthanc_instance_id(patient_id: str, study_uid: str, series_uid: str, instance_uid) -> str:
     return _make_orthanc_id(patient_id, study_uid, series_uid, instance_uid)
+
+
+def to_orthanc_instance_id_from_ds(ds: pydicom.Dataset) -> str:
+    return _make_orthanc_id(
+        patient_id=ds.PatientID,
+        study_uid=ds.StudyInstanceUID,
+        series_uid=ds.SeriesInstanceUID,
+        instance_uid=ds.SOPInstanceUID
+    )
 
 
 def _make_orthanc_id(patient_id: str, study_uid: str = None, series_uid: str = None, instance_uid: str = None) -> str:

@@ -53,6 +53,7 @@ def test_modality_move(client, modality, modality_aet):
         'Description': 'REST API',
         'LocalAet': ORTHANC_1.AeT,
         'RemoteAet': ORTHANC_2.AeT,
+        'TargetAet': ORTHANC_2.AeT,
         'Query': [{
             '0008,0050': '20090926001',
             '0008,0052': 'STUDY',
