@@ -289,11 +289,11 @@ def query_orthanc(client: Orthanc,
     client = util.ensure_non_raw_response(client)
 
     local_cache_name = ((f'{level}-{query}-{labels}-{labels_constraint}-{since}-{limit}'
-                        .replace(' ', '_')
-                        .replace("'", "")
-                        .replace("'", "")
-                        .replace("[", "")
-                        .replace("]", ""))
+                         .replace(' ', '_')
+                         .replace("'", "")
+                         .replace("'", "")
+                         .replace("[", "")
+                         .replace("]", ""))
                         .lower())
 
     if local_cache:
@@ -301,11 +301,11 @@ def query_orthanc(client: Orthanc,
             if local_cache_name in db:
                 if level == 'Patient':
                     resources = [Patient(id_, client, _lock_children=lock_children) for id_ in db[(local_cache_name)]]
-                if level == 'Study':
+                elif level == 'Study':
                     resources = [Study(id_, client, _lock_children=lock_children) for id_ in db[(local_cache_name)]]
-                if level == 'Series':
+                elif level == 'Series':
                     resources = [Series(id_, client, _lock_children=lock_children) for id_ in db[(local_cache_name)]]
-                if level == 'Instance':
+                elif level == 'Instance':
                     resources = [Instance(id_, client, _lock_children=lock_children) for id_ in db[(local_cache_name)]]
 
                 return resources
