@@ -17,7 +17,7 @@ def find_patients(client: Orthanc,
                   labels: Union[List[str], str] = None,
                   labels_constraint: str = 'All',
                   local_cache: bool = False,
-                  local_cache_file: str ='pyorthanc_cache',
+                  local_cache_file: str = 'pyorthanc_cache',
                   **kwargs) -> List[Patient]:
     """Finds patients in Orthanc according to queries and labels
 
@@ -230,8 +230,8 @@ def query_orthanc(client: Orthanc,
                   since: int = 0,
                   retrieve_all_resources: bool = True,
                   lock_children: bool = False,
-                  local_cache: bool =False,
-                  local_cache_file: str ='pyorthanc_cache') -> List[Resource | Patient | Study | Series | Instance]:
+                  local_cache: bool = False,
+                  local_cache_file: str = 'pyorthanc_cache') -> List[Resource | Patient | Study | Series | Instance]:
     """Query data in the Orthanc server
 
     Parameters
