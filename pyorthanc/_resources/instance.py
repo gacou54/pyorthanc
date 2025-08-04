@@ -49,6 +49,8 @@ class Instance(Resource):
         The `.get_dicom_file_content()` method will pull all the data in a single GET call,
         while `.download()` stream the data to a file or a buffer.
         Favor the `.download()` method to avoid timeout and memory issues.
+        file_format option accepts 'zip', 'nii', 'nii.gz'
+
 
         Examples
         --------
@@ -68,9 +70,13 @@ class Instance(Resource):
         # Now do whatever you want to do
         buffer.seek(0)
         dicom_bytes = buffer.read()
+
+        # download instance in nii.gz format
+        instance.download('instance.nii.gz', file_format='nii.gz')
+
         ```
         """
-        self._download_file(f'{self.client.url}/instances/{self.id_}/file', filepath, with_progres, file_format=file_format)
+        self._download_file(f'{self.client.url}/instances/{self.id_}/file', filepath, with_progres, file_format)
 
     @property
     def uid(self) -> str:
