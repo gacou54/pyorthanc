@@ -617,6 +617,11 @@ class Series(Resource):
         ```
         """
         # self._download_file(f'{self.client.url}/series/{self.id_}/archive', filepath, with_progres)
+        if file_format.lower() not in ['zip', 'nii', 'nii.gz']:
+            raise ValueError(
+                f"format should be one of ['zip', 'nii', 'nii.gz'], "
+                f"got '{file_format}' instead."
+            )
         self._download_file(f'{self.client.url}/series/{self.id_}', filepath, with_progres, file_format)
 
     def get_shared_tags(self, simplify: bool = False, short: bool = False) -> Dict:

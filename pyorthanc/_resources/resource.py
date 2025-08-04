@@ -90,19 +90,21 @@ class Resource:
             filepath: Union[str, BinaryIO],
             with_progress: bool = False,
             file_format: str = 'zip',
-            params: Optional[QueryParamTypes] = None,):
+            params: Optional[QueryParamTypes] = None, ):
 
         # Check if filepath is a path or a file object.
         if isinstance(filepath, str):
             is_file_object = False
-            if file_format.lower() not in ['zip', 'nii', 'nii.gz']:
+            if file_format.lower() not in ['dcm', 'zip', 'nii', 'nii.gz']:
                 raise ValueError(
-                    "format should be one of ['zip', 'nii', 'nii.gz'], "
+                    f"format should be one of ['dcm, 'zip', 'nii', 'nii.gz'], "
                     f"got '{file_format}' instead."
                 )
 
             if file_format.lower() == 'zip':
                 url = f'{url}/archive'
+            elif file_format.lower() == 'dcm':
+                url = f'{url}/file'
             elif file_format.lower() in ['nii', 'nii.gz']:
                 if not self._is_neuro_plugin_installed():
                     raise PluginNotEnabledError(
