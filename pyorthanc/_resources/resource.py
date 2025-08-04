@@ -82,7 +82,7 @@ class Resource:
         try:
             _ = self.client.get_plugins_id(id_='neuro')
             return True
-        except HTTPError as e:
+        except HTTPError:
             return False
 
     def _download_file(
@@ -90,30 +90,30 @@ class Resource:
             filepath: Union[str, BinaryIO],
             with_progress: bool = False,
             file_format: str = 'zip',
-            params: Optional[QueryParamTypes] = None, ):
+            params: Optional[QueryParamTypes] = None):
+
+        if file_format.lower() not in ['dcm', 'zip', 'nii', 'nii.gz']:
+            raise ValueError(
+                f"format should be one of ['dcm, 'zip', 'nii', 'nii.gz'], "
+                f"got '{file_format}' instead."
+            )
+
+        if file_format.lower() == 'zip':
+            url = f'{url}/archive'
+        elif file_format.lower() == 'dcm':
+            url = f'{url}/file'
+        elif file_format.lower() in ['nii', 'nii.gz']:
+            if not self._is_neuro_plugin_installed():
+                raise PluginNotEnabledError(
+                    'Neuro plugin is not installed or enabled on Orthanc instance. More information on https://orthanc.uclouvain.be/book/plugins/neuro.html'
+                )
+            url = f'{url}/nifti'
+            if file_format.lower() == 'nii.gz':
+                url += '?compress'
 
         # Check if filepath is a path or a file object.
         if isinstance(filepath, str):
             is_file_object = False
-            if file_format.lower() not in ['dcm', 'zip', 'nii', 'nii.gz']:
-                raise ValueError(
-                    f"format should be one of ['dcm, 'zip', 'nii', 'nii.gz'], "
-                    f"got '{file_format}' instead."
-                )
-
-            if file_format.lower() == 'zip':
-                url = f'{url}/archive'
-            elif file_format.lower() == 'dcm':
-                url = f'{url}/file'
-            elif file_format.lower() in ['nii', 'nii.gz']:
-                if not self._is_neuro_plugin_installed():
-                    raise PluginNotEnabledError(
-                        'Neuro plugin is not installed or enabled on Orthanc instance. More information on https://orthanc.uclouvain.be/book/plugins/neuro.html'
-                    )
-                url = f'{url}/nifti'
-                if file_format.lower() == 'nii.gz':
-                    url += '?compress'
-
             filepath = open(filepath, 'wb')
         elif hasattr(filepath, 'write') and hasattr(filepath, 'seek'):
             is_file_object = True
