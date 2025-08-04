@@ -92,17 +92,11 @@ class Resource:
             file_format: str = 'zip',
             params: Optional[QueryParamTypes] = None):
 
-        if file_format.lower() not in ['dcm', 'zip', 'nii', 'nii.gz']:
-            raise ValueError(
-                f"format should be one of ['dcm, 'zip', 'nii', 'nii.gz'], "
-                f"got '{file_format}' instead."
-            )
-
         if file_format.lower() == 'zip':
             url = f'{url}/archive'
         elif file_format.lower() == 'dcm':
             url = f'{url}/file'
-        elif file_format.lower() in ['nii', 'nii.gz']:
+        elif file_format.lower() == 'nii' or file_format.lower() == 'nii.gz':
             if not self._is_neuro_plugin_installed():
                 raise PluginNotEnabledError(
                     'Neuro plugin is not installed or enabled on Orthanc instance. More information on https://orthanc.uclouvain.be/book/plugins/neuro.html'
@@ -110,6 +104,11 @@ class Resource:
             url = f'{url}/nifti'
             if file_format.lower() == 'nii.gz':
                 url += '?compress'
+        else:
+            raise ValueError(
+                f"format should be one of ['dcm, 'zip', 'nii', 'nii.gz'], "
+                f"got '{file_format}' instead."
+            )
 
         # Check if filepath is a path or a file object.
         if isinstance(filepath, str):
