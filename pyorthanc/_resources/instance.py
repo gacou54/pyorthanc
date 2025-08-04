@@ -49,7 +49,7 @@ class Instance(Resource):
         The `.get_dicom_file_content()` method will pull all the data in a single GET call,
         while `.download()` stream the data to a file or a buffer.
         Favor the `.download()` method to avoid timeout and memory issues.
-        file_format option accepts 'zip', 'nii', 'nii.gz'
+        file_format option accepts 'dcm', 'nii', 'nii.gz'
 
 
         Examples
