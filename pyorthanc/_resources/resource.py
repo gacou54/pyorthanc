@@ -1,6 +1,7 @@
 import abc
 from typing import Any, BinaryIO, Dict, List, Optional, Union
 
+from httpx import HTTPError
 from httpx._types import QueryParamTypes
 
 from .. import errors, util
@@ -77,26 +78,19 @@ class Resource:
 
         return params
 
-    def _is_plugin_installed(self,
-                             plugin_name: str):
-        if plugin_name in self.client.get_plugins():
-            return True
-
-        return False
-
     def _is_neuro_plugin_installed(self):
         try:
             _ = self.client.get_plugins_id(id_='neuro')
             return True
-        except:
+        except HTTPError as e:
             return False
 
     def _download_file(
             self, url: str,
             filepath: Union[str, BinaryIO],
             with_progress: bool = False,
-            params: Optional[QueryParamTypes] = None,
-            file_format: str = 'zip'):
+            file_format: str = 'zip',
+            params: Optional[QueryParamTypes] = None,):
 
         # Check if filepath is a path or a file object.
         if isinstance(filepath, str):
