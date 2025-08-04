@@ -139,7 +139,7 @@ class Patient(Resource):
         zip_bytes = buffer.read()
         ```
         """
-        self._download_file(f'{self.client.url}/patients/{self.id_}/archive', filepath, with_progres)
+        self._download_file(f'{self.client.url}/patients/{self.id_}', filepath, with_progres, 'zip')
 
     def get_patient_module(self, simplify: bool = False, short: bool = False) -> Dict:
         """Get patient module in a simplified version
