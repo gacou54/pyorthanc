@@ -5,6 +5,7 @@ from httpx._types import QueryParamTypes
 
 from .. import errors, util
 from ..client import Orthanc
+from ..errors import PluginNotEnabledError
 
 
 class Resource:
@@ -76,14 +77,47 @@ class Resource:
 
         return params
 
+    def _is_plugin_installed(self,
+                             plugin_name: str):
+        if plugin_name in self.client.get_plugins():
+            return True
+
+        return False
+
+    def _is_neuro_plugin_installed(self):
+        try:
+            _ = self.client.get_plugins_id(id_='neuro')
+            return True
+        except:
+            return False
+
     def _download_file(
             self, url: str,
             filepath: Union[str, BinaryIO],
             with_progress: bool = False,
-            params: Optional[QueryParamTypes] = None):
+            params: Optional[QueryParamTypes] = None,
+            file_format: str = 'zip'):
+
         # Check if filepath is a path or a file object.
         if isinstance(filepath, str):
             is_file_object = False
+            if file_format.lower() not in ['zip', 'nii', 'nii.gz']:
+                raise ValueError(
+                    "format should be one of ['zip', 'nii', 'nii.gz'], "
+                    f"got '{file_format}' instead."
+                )
+
+            if file_format.lower() == 'zip':
+                url = f'{url}/archive'
+            elif file_format.lower() in ['nii', 'nii.gz']:
+                if not self._is_neuro_plugin_installed():
+                    raise PluginNotEnabledError(
+                        'Neuro plugin is not installed or enabled on Orthanc instance. More information on https://orthanc.uclouvain.be/book/plugins/neuro.html'
+                    )
+                url = f'{url}/nifti'
+                if file_format.lower() == 'nii.gz':
+                    url += '?compress'
+
             filepath = open(filepath, 'wb')
         elif hasattr(filepath, 'write') and hasattr(filepath, 'seek'):
             is_file_object = True

@@ -42,7 +42,7 @@ class Instance(Resource):
         """
         return self.client.get_instances_id_file(self.id_)
 
-    def download(self, filepath: Union[str, BinaryIO], with_progres: bool = False) -> None:
+    def download(self, filepath: Union[str, BinaryIO], with_progres: bool = False, file_format: str = 'zip') -> None:
         """Download the DICOM file to a target path or buffer
 
         This method is an alternative to the `.get_dicom_file_content()` method for large files.
@@ -70,7 +70,7 @@ class Instance(Resource):
         dicom_bytes = buffer.read()
         ```
         """
-        self._download_file(f'{self.client.url}/instances/{self.id_}/file', filepath, with_progres)
+        self._download_file(f'{self.client.url}/instances/{self.id_}/file', filepath, with_progres, file_format=file_format)
 
     @property
     def uid(self) -> str:

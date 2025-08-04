@@ -584,7 +584,7 @@ class Series(Resource):
         """
         return self.client.get_series_id_archive(self.id_)
 
-    def download(self, filepath: Union[str, BinaryIO], with_progres: bool = False) -> None:
+    def download(self, filepath: Union[str, BinaryIO], with_progres: bool = False, file_format: str = 'zip') -> None:
         """Download the zip file to a target path or buffer
 
         This method is an alternative to the `.get_zip()` method for large files.
@@ -612,7 +612,8 @@ class Series(Resource):
         zip_bytes = buffer.read()
         ```
         """
-        self._download_file(f'{self.client.url}/series/{self.id_}/archive', filepath, with_progres)
+        # self._download_file(f'{self.client.url}/series/{self.id_}/archive', filepath, with_progres)
+        self._download_file(f'{self.client.url}/series/{self.id_}', filepath, with_progres, file_format=file_format)
 
     def get_shared_tags(self, simplify: bool = False, short: bool = False) -> Dict:
         """Retrieve the shared tags of the series"""
