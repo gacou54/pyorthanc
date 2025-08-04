@@ -96,7 +96,7 @@ class Resource:
             url = f'{url}/archive'
         elif file_format.lower() == 'dcm':
             url = f'{url}/file'
-        elif file_format.lower() == 'nii' or file_format.lower() == 'nii.gz':
+        elif file_format.lower() in ['nii', 'nii.gz']:
             if not self._is_neuro_plugin_installed():
                 raise PluginNotEnabledError(
                     'Neuro plugin is not installed or enabled on Orthanc instance. More information on https://orthanc.uclouvain.be/book/plugins/neuro.html'
