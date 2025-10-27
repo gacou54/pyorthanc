@@ -52,7 +52,7 @@ data = {'Level': 'Study', 'Query': {'PatientID': '*'}}
 query_response = modality.query(data=data)
 
 # Inspect the answer
-answer = modality.get_query_answers()[query_response['ID']]
+answer = modality.get_query_answers(query_response['ID'])
 print(answer)
 
 # Retrieve (C-Move) results of query on a Orthanc itself, or to a target modality (AET)
