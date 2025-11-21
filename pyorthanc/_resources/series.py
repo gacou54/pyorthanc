@@ -584,13 +584,14 @@ class Series(Resource):
         """
         return self.client.get_series_id_archive(self.id_)
 
-    def download(self, filepath: Union[str, BinaryIO], with_progres: bool = False) -> None:
+    def download(self, filepath: Union[str, BinaryIO], with_progres: bool = False, file_format: str = 'zip') -> None:
         """Download the zip file to a target path or buffer
 
         This method is an alternative to the `.get_zip()` method for large files.
         The `.get_zip()` method will pull all the data in a single GET call,
         while `.download()` stream the data to a file or a buffer.
         Favor the `.download()` method to avoid timeout and memory issues.
+        file_format option accepts 'zip', 'nii', 'nii.gz'
 
         Examples
         --------
@@ -610,9 +611,17 @@ class Series(Resource):
         # Now do whatever you want to do
         buffer.seek(0)
         zip_bytes = buffer.read()
+
+        # download series in nii.gz format
+        a_series.download('series.nii.gz', file_format='nii.gz')
         ```
         """
-        self._download_file(f'{self.client.url}/series/{self.id_}/archive', filepath, with_progres)
+        if file_format.lower() not in ['zip', 'nii', 'nii.gz']:
+            raise ValueError(
+                f"format should be one of ['zip', 'nii', 'nii.gz'], "
+                f"got '{file_format}' instead."
+            )
+        self._download_file(f'{self.client.url}/series/{self.id_}', filepath, with_progres, file_format)
 
     def get_shared_tags(self, simplify: bool = False, short: bool = False) -> Dict:
         """Retrieve the shared tags of the series"""

@@ -1,10 +1,12 @@
 import abc
 from typing import Any, BinaryIO, Dict, List, Optional, Union
 
+from httpx import HTTPError
 from httpx._types import QueryParamTypes
 
 from .. import errors, util
 from ..client import Orthanc
+from ..errors import PluginNotEnabledError
 
 
 class Resource:
@@ -76,11 +78,38 @@ class Resource:
 
         return params
 
+    def _is_neuro_plugin_installed(self):
+        try:
+            _ = self.client.get_plugins_id(id_='neuro')
+            return True
+        except HTTPError:
+            return False
+
     def _download_file(
             self, url: str,
             filepath: Union[str, BinaryIO],
             with_progress: bool = False,
+            file_format: str = 'zip',
             params: Optional[QueryParamTypes] = None):
+
+        if file_format.lower() == 'zip':
+            url = f'{url}/archive'
+        elif file_format.lower() == 'dcm':
+            url = f'{url}/file'
+        elif file_format.lower() in ['nii', 'nii.gz']:
+            if not self._is_neuro_plugin_installed():
+                raise PluginNotEnabledError(
+                    'Neuro plugin is not installed or enabled on Orthanc instance. More information on https://orthanc.uclouvain.be/book/plugins/neuro.html'
+                )
+            url = f'{url}/nifti'
+            if file_format.lower() == 'nii.gz':
+                url += '?compress'
+        else:
+            raise ValueError(
+                f"format should be one of ['dcm, 'zip', 'nii', 'nii.gz'], "
+                f"got '{file_format}' instead."
+            )
+
         # Check if filepath is a path or a file object.
         if isinstance(filepath, str):
             is_file_object = False

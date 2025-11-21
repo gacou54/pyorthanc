@@ -42,13 +42,15 @@ class Instance(Resource):
         """
         return self.client.get_instances_id_file(self.id_)
 
-    def download(self, filepath: Union[str, BinaryIO], with_progres: bool = False) -> None:
+    def download(self, filepath: Union[str, BinaryIO], with_progres: bool = False, file_format: str = 'dcm') -> None:
         """Download the DICOM file to a target path or buffer
 
         This method is an alternative to the `.get_dicom_file_content()` method for large files.
         The `.get_dicom_file_content()` method will pull all the data in a single GET call,
         while `.download()` stream the data to a file or a buffer.
         Favor the `.download()` method to avoid timeout and memory issues.
+        file_format option accepts 'dcm', 'nii', 'nii.gz'
+
 
         Examples
         --------
@@ -68,9 +70,19 @@ class Instance(Resource):
         # Now do whatever you want to do
         buffer.seek(0)
         dicom_bytes = buffer.read()
+
+        # download instance in nii.gz format
+        instance.download('instance.nii.gz', file_format='nii.gz')
+
         ```
         """
-        self._download_file(f'{self.client.url}/instances/{self.id_}/file', filepath, with_progres)
+        if file_format.lower() not in ['dcm', 'nii', 'nii.gz']:
+            raise ValueError(
+                f"format should be one of ['dcm, 'nii', 'nii.gz'], "
+                f"got '{file_format}' instead."
+            )
+
+        self._download_file(f'{self.client.url}/instances/{self.id_}', filepath, with_progres, file_format)
 
     @property
     def uid(self) -> str:

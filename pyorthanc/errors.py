@@ -8,3 +8,7 @@ class ModificationError(Exception):
 
 class NotInInternalEnvironmentError(Exception):
     pass
+
+
+class PluginNotEnabledError(Exception):
+    pass
