@@ -13,10 +13,10 @@ repository = "https://github.com/gacou54/pyorthanc"
 keywords = ["Orthanc", "DICOM", "Medical-Imaging"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 httpx = ">=0.24.1,<1.0.0"
-pydicom = ">=2.3.0,<4.0.0"
-tqdm = { version = "^4.66.1", optional = true }
+pydicom = ">=2.4,<4.0.0"
+tqdm = { version = ">=4.66,<5", optional = true }
 
 [tool.poetry.extras]
 progress = ["tqdm"]
