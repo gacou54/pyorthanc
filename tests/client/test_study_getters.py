@@ -61,7 +61,8 @@ def test_get_study_instances(client_with_data):
 
 
 def test_get_study_instances_when_no_data(client):
-    assert client.get_studies_id_instances(a_study.IDENTIFIER) == []
+    with pytest.raises(httpx.HTTPError):
+        client.get_studies_id_instances(a_study.IDENTIFIER)
 
 
 @pytest.mark.parametrize('params', [None, {'simplify': True}, {'short': True}])

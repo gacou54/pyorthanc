@@ -7,6 +7,7 @@ MODALITY = 'Orthanc2'
 PAYLOAD = {'Level': 'Study', 'Query': {'PatientID': 'MP*'}}
 PATIENT_INFORMATION = {
     'ID': '50610f37-9df85809-faaec921-9c829c41-e5261ca2',
+    'IsProtected': False,
     'IsStable': False,
     'Labels': [],
     'LastUpdate': 'THIS_ALWAYS_VARY',
@@ -64,6 +65,14 @@ def test_get(modality):
             '0008,0052': 'STUDY',
             '0020,000d': '1.3.6.1.4.1.22213.2.6291.2.1'
         }],
+        'Details': [{
+            'DimseErrorStatus': 0,
+            'Query': {
+                '0008,0052': 'STUDY',
+                '0020,000d': '1.3.6.1.4.1.22213.2.6291.2.1'
+            },
+            'ReceivedInstancesIds': ['92cf9011-489ca3a9-f9b7f823-07d829bf-9acd71d2']
+        }],
     }
     setup_data(ORTHANC_2)
 
@@ -72,7 +81,9 @@ def test_get(modality):
     assert result == expected_move_answer
     resulting_patient_information = modality.client.get_patients_id(
         modality.client.get_patients()[0]
+
     )
+
     assert {k: v for k, v in PATIENT_INFORMATION.items() if k not in ['LastUpdate']} == \
            {k: v for k, v in resulting_patient_information.items() if k not in ['LastUpdate']}
 
@@ -88,6 +99,16 @@ def test_move(modality):
             '0008,0052': 'STUDY',
             '0010,0020': 'MP15-067',
             '0020,000d': '1.3.6.1.4.1.22213.2.6291.2.1'
+        }],
+        'Details': [{
+            'DimseErrorStatus': 0,
+            'Query': {
+                '0008,0050': '20090926001',
+                '0008,0052': 'STUDY',
+                '0010,0020': 'MP15-067',
+                '0020,000d': '1.3.6.1.4.1.22213.2.6291.2.1'
+            },
+            'ReceivedInstancesIds': ['92cf9011-489ca3a9-f9b7f823-07d829bf-9acd71d2']
         }],
     }
     setup_data(ORTHANC_2)
@@ -118,6 +139,16 @@ def test_move_to_target_modality(modality):
             '0010,0020': 'MP15-067',
             '0020,000d': '1.3.6.1.4.1.22213.2.6291.2.1'
         }],
+        'Details': [{
+            'DimseErrorStatus': 0,
+            'Query': {
+                '0008,0050': '20090926001',
+                '0008,0052': 'STUDY',
+                '0010,0020': 'MP15-067',
+                '0020,000d': '1.3.6.1.4.1.22213.2.6291.2.1'
+            },
+            'ReceivedInstancesIds': ['92cf9011-489ca3a9-f9b7f823-07d829bf-9acd71d2']
+        }],
     }
     setup_data(ORTHANC_2)
 
@@ -146,5 +177,8 @@ def test_store(modality):
                'FailedInstancesCount': 0,
                'InstancesCount': 1,
                'LocalAet': ORTHANC_1.AeT,
-               'RemoteAet': ORTHANC_2.AeT
+               'RemoteAet': ORTHANC_2.AeT,
+               'Resources': [
+                   {'ID': '22dcf059-8fd3ade7-efb39ca3-7f46b248-0200abc9', 'Type': 'Instance'}
+               ],
            }

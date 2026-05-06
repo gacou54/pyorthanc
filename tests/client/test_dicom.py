@@ -6,6 +6,7 @@ MODALITY = ORTHANC_1.AeT
 PAYLOAD = {'Level': 'Study', 'Query': {'PatientID': 'MP*'}}
 PATIENT_INFORMATION = {
     'ID': '50610f37-9df85809-faaec921-9c829c41-e5261ca2',
+    'IsProtected': False,
     'IsStable': False,
     'Labels': [],
     'LastUpdate': 'THIS_ALWAYS_VARY',
@@ -60,6 +61,16 @@ def test_modality_move(client, modality, modality_aet):
             '0010,0020': 'MP15-067',
             '0020,000d': '1.3.6.1.4.1.22213.2.6291.2.1'
         }],
+        'Details': [{
+            'DimseErrorStatus': 0,
+            'Query': {
+                '0008,0050': '20090926001',
+                '0008,0052': 'STUDY',
+                '0010,0020': 'MP15-067',
+                '0020,000d': '1.3.6.1.4.1.22213.2.6291.2.1'
+            },
+            'ReceivedInstancesIds': ['92cf9011-489ca3a9-f9b7f823-07d829bf-9acd71d2']
+        }],
     }
     setup_data(ORTHANC_2)
 
@@ -89,5 +100,8 @@ def test_modality_store(client, modality, modality_aet):
                'FailedInstancesCount': 0,
                'InstancesCount': 1,
                'LocalAet': ORTHANC_1.AeT,
-               'RemoteAet': ORTHANC_2.AeT
+               'RemoteAet': ORTHANC_2.AeT,
+               'Resources': [
+                   {'ID': '22dcf059-8fd3ade7-efb39ca3-7f46b248-0200abc9', 'Type': 'Instance'}
+               ]
            }
