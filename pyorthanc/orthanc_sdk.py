@@ -240,6 +240,10 @@ class RestOutput:
         """Generated from C function OrthancPluginRedirect()"""
         pass
 
+    def SendStreamChunk(self, *args):
+        """Generated from C function OrthancPluginSendStreamChunk()"""
+        pass
+
     def SendHttpStatus(self, *args):
         """Generated from C function OrthancPluginSendHttpStatus()"""
         pass
@@ -258,6 +262,10 @@ class RestOutput:
 
     def SendUnauthorized(self, *args):
         """Generated from C function OrthancPluginSendUnauthorized()"""
+        pass
+
+    def StartStreamAnswer(self, *args):
+        """Generated from C function OrthancPluginStartStreamAnswer()"""
         pass
 
     def SetCookie(self, *args):
