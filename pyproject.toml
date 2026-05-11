@@ -31,6 +31,7 @@ jinja2 = "^3.1.2"
 [tool.poetry.group.dev.dependencies]
 pytest = "^9"
 simple-openapi-client = "^0.5.4"
+pytest-asyncio = "^1.3.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
