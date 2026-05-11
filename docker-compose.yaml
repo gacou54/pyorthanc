@@ -12,7 +12,7 @@ services:
       - orthanc2
 
   orthanc2:
-    image: orthancteam/orthanc:25.2.0
+    image: orthancteam/orthanc:26.4.2
     environment:
         ORTHANC_JSON: |
           {

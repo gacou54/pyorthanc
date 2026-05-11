@@ -15,7 +15,7 @@ from httpx._types import (
 class Orthanc(httpx.Client):
     """Orthanc API
 
-    version 1.12.6
+    version 1.12.11
     This is the full documentation of the [REST API](https://orthanc.uclouvain.be/book/users/rest.html) of Orthanc.<p>This reference is automatically generated from the source code of Orthanc. A [shorter cheat sheet](https://orthanc.uclouvain.be/book/users/rest-cheatsheet.html) is part of the Orthanc Book.<p>An earlier, manually crafted version from August 2019, is [still available](2019-08-orthanc-openapi.html), but is not up-to-date anymore ([source](https://groups.google.com/g/orthanc-users/c/NUiJTEICSl8/m/xKeqMrbqAAAJ)).
 
     """
@@ -45,7 +45,7 @@ class Orthanc(httpx.Client):
         """
         super().__init__(*args, **kwargs)
         self.url = url
-        self.version = "1.12.6"
+        self.version = "1.12.11"
         self.return_raw_response = return_raw_response
 
         if username and password:
@@ -355,7 +355,7 @@ class Orthanc(httpx.Client):
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
                 "limit" (float): Limit the number of results
                 "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
-                "response-content" (str): Defines the content of response for each returned resource.  Allowed values are `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `Attachments`.  If not specified, Orthanc will return `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`.e.g: 'response-content=MainDicomTags;Children (new in Orthanc 1.12.5 - overrides `expand`)
+                "response-content" (str): Defines the content of response for each returned resource.  Allowed values are `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `IsProtected`, `Attachments`.  If not specified, Orthanc will return `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `IsProtected`.e.g: 'response-content=MainDicomTags;Children (new in Orthanc 1.12.5 - overrides `expand`)
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
                 "since" (float): Show only the resources since the provided index
 
@@ -462,6 +462,7 @@ class Orthanc(httpx.Client):
               "KeepLabels": Keep the labels of all resources level (defaults to `false`)
               "KeepPrivateTags": Keep the private tags from the DICOM instances (defaults to `false`)
               "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
+              "LossyQuality": If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
               "PrivateCreator": The private creator to be used for private tags in `Replace`
               "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
@@ -633,6 +634,7 @@ class Orthanc(httpx.Client):
         self,
         id_: str,
         name: str,
+        params: QueryParamTypes = None,
         headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get attachment (no decompression)
@@ -646,6 +648,9 @@ class Orthanc(httpx.Client):
             The name of the attachment, or its index (cf. `UserContentType` configuration option)
         id_
             Orthanc identifier of the instance of interest
+        params
+            Dictionary of optional parameters:
+                "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
         headers
             Dictionary of optional headers:
                 "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
@@ -658,6 +663,7 @@ class Orthanc(httpx.Client):
         """
         return self._get(
             route=f"{self.url}/instances/{id_}/attachments/{name}/compressed-data",
+            params=params,
             headers=headers,
         )
 
@@ -727,6 +733,7 @@ class Orthanc(httpx.Client):
         self,
         id_: str,
         name: str,
+        params: QueryParamTypes = None,
         headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get attachment
@@ -740,6 +747,9 @@ class Orthanc(httpx.Client):
             The name of the attachment, or its index (cf. `UserContentType` configuration option)
         id_
             Orthanc identifier of the instance of interest
+        params
+            Dictionary of optional parameters:
+                "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
         headers
             Dictionary of optional headers:
                 "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
@@ -752,6 +762,7 @@ class Orthanc(httpx.Client):
         """
         return self._get(
             route=f"{self.url}/instances/{id_}/attachments/{name}/data",
+            params=params,
             headers=headers,
         )
 
@@ -999,6 +1010,8 @@ class Orthanc(httpx.Client):
             Orthanc identifier of the DICOM instance of interest
         params
             Dictionary of optional parameters:
+                "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
+                "lossy-quality" (float): If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
                 "transcode" (str): If present, the DICOM file will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
         headers
             Dictionary of optional headers:
@@ -1087,7 +1100,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
+                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (value is true if option is present)
         headers
             Dictionary of optional headers:
                 "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
@@ -1126,7 +1139,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
+                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (value is true if option is present)
         headers
             Dictionary of optional headers:
                 "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
@@ -1165,7 +1178,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
+                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (value is true if option is present)
         headers
             Dictionary of optional headers:
                 "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
@@ -1262,7 +1275,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
+                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (value is true if option is present)
         headers
             Dictionary of optional headers:
                 "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
@@ -1354,7 +1367,7 @@ class Orthanc(httpx.Client):
             Dictionary of optional parameters:
                 "height" (float): Height of the resized image
                 "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
+                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (value is true if option is present)
                 "smooth" (bool): Whether to smooth image on resize
                 "width" (float): Width of the resized image
                 "window-center" (float): Windowing center
@@ -1423,7 +1436,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
+                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (value is true if option is present)
         headers
             Dictionary of optional headers:
                 "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
@@ -1459,7 +1472,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
+                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (value is true if option is present)
         headers
             Dictionary of optional headers:
                 "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
@@ -1495,7 +1508,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
+                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (value is true if option is present)
         headers
             Dictionary of optional headers:
                 "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
@@ -1778,6 +1791,7 @@ class Orthanc(httpx.Client):
               "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
               "Keep": Keep the original value of the specified tags, to be chosen among the `StudyInstanceUID`, `SeriesInstanceUID` and `SOPInstanceUID` tags. Avoid this feature as much as possible, as this breaks the DICOM model of the real world.
               "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
+              "LossyQuality": If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
               "PrivateCreator": The private creator to be used for private tags in `Replace`
               "Remove": List of tags that must be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "RemovePrivateTags": Remove the private tags from the DICOM instances (defaults to `false`)
@@ -1927,7 +1941,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
+                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (value is true if option is present)
         headers
             Dictionary of optional headers:
                 "Accept" (str): Format of the resulting image. Can be `image/png` (default), `image/jpeg` or `image/x-portable-arbitrarymap`
@@ -1995,7 +2009,7 @@ class Orthanc(httpx.Client):
             Dictionary of optional parameters:
                 "height" (float): Height of the resized image
                 "quality" (float): Quality for JPEG images (between 1 and 100, defaults to 90)
-                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (defaults to false)
+                "returnUnsupportedImage" (bool): Returns an unsupported.png placeholder image if unable to provide the image instead of returning a 415 HTTP error (value is true if option is present)
                 "smooth" (bool): Whether to smooth image on resize
                 "width" (float): Width of the resized image
                 "window-center" (float): Windowing center
@@ -2527,7 +2541,7 @@ class Orthanc(httpx.Client):
         json
             Dictionary with the following keys:
               "CheckFind": Issue a dummy C-FIND command after the C-GET SCU, in order to check whether the remote modality knows about Orthanc. This field defaults to the value of the `DicomEchoChecksFind` configuration option. New in Orthanc 1.8.1.
-              "Timeout": Timeout for the C-ECHO command, in seconds
+              "Timeout": Timeout for the C-ECHO command, in seconds.  Orthanc will close the DICOM association if no C-ECHO answer is received within this time period.
 
 
         Returns
@@ -2748,11 +2762,12 @@ class Orthanc(httpx.Client):
               "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
               "Level": Level of the query (`Patient`, `Study`, `Series` or `Instance`)
               "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option. Ignored if `DicomModalities` already sets `LocalAet` for this modality.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
-              "Resources": List of queries identifying all the DICOM resources to be sent.  Usage of wildcards is prohibited and the query shall only contain DICOM ID tags.  Additionally, you may provide SOPClassesInStudy to limit the scope of the DICOM negotiation to certain SOPClassUID or to present uncommon SOPClassUID during the DICOM negotation.  By default, Orhanc will propose the most 120 common SOPClassUIDs.
+              "Permissive": If `true`, ignore errors during the individual steps of the job.  Default value is `false`.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.  Default value is `0`
+              "Resources": List of queries identifying all the DICOM resources to be sent.  Usage of wildcards is prohibited and the query shall only contain DICOM ID tags.  Additionally, you may provide SOPClassesInStudy to limit the scope of the DICOM negotiation to certain SOPClassUID or to present uncommon SOPClassUID during the DICOM negotiation.  By default, Orhanc will propose the most 120 common SOPClassUIDs.
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
-              "Timeout": Timeout for the C-GET command, in seconds
+              "Timeout": Timeout for the C-GET command, in seconds.  Orthanc will close the DICOM association if no DICOM messages are received within this time period.
+              "UserData": User data that will travel along with the job.
 
 
         Returns
@@ -2786,12 +2801,13 @@ class Orthanc(httpx.Client):
               "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
               "Level": Level of the query (`Patient`, `Study`, `Series` or `Instance`)
               "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option. Ignored if `DicomModalities` already sets `LocalAet` for this modality.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
+              "Permissive": If `true`, ignore errors during the individual steps of the job.  Default value is `false`.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.  Default value is `0`
               "Resources": List of queries identifying all the DICOM resources to be sent
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "TargetAet": Target AET that will be used by the remote DICOM modality as a target for its C-STORE SCU commands, defaults to `DicomAet` configuration option in order to do a simple query/retrieve
-              "Timeout": Timeout for the C-MOVE command, in seconds
+              "Timeout": Timeout for the C-MOVE command, in seconds.  Orthanc will close the DICOM association if no DICOM messages (e.g., C-STORE sub-operations or responses) are received within this time period.
+              "UserData": User data that will travel along with the job.
 
 
         Returns
@@ -2826,7 +2842,7 @@ class Orthanc(httpx.Client):
               "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option. Ignored if `DicomModalities` already sets `LocalAet` for this modality.
               "Normalize": Whether to normalize the query, i.e. whether to wipe out from the query, the DICOM tags that are not applicable for the query-retrieve level of interest
               "Query": Associative array containing the filter on the values of the DICOM tags
-              "Timeout": Timeout for the C-FIND command and subsequent C-MOVE retrievals, in seconds (new in Orthanc 1.9.1)
+              "Timeout": Timeout for the C-FIND command and subsequent C-GET/C-MOVE retrievals, in seconds (new in Orthanc 1.9.1).  Orthanc will close the related DICOM associations if no DICOM messages are received within this time period.
 
 
         Returns
@@ -2897,13 +2913,14 @@ class Orthanc(httpx.Client):
               "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option. Ignored if `DicomModalities` already sets `LocalAet` for this modality.
               "MoveOriginatorAet": Move originator AET that is used for this commands, in order to fake a C-MOVE SCU
               "MoveOriginatorID": Move originator ID that is used for this commands, in order to fake a C-MOVE SCU
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
+              "Permissive": If `true`, ignore errors during the individual steps of the job.  Default value is `false`.
               "Port": Port that is used for this command, defaults to `Port` configuration option. Allows you to overwrite the destination port for a specific operation.
-              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.  Default value is `0`
               "Resources": List of the Orthanc identifiers of all the DICOM resources to be sent
               "StorageCommitment": Whether to chain C-STORE with DICOM storage commitment to validate the success of the transmission: https://orthanc.uclouvain.be/book/users/storage-commitment.html#chaining-c-store-with-storage-commitment
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
-              "Timeout": Timeout for the C-STORE command, in seconds
+              "Timeout": Timeout for the C-STORE command, in seconds.  Orthanc will close the DICOM association if no DICOM messages (e.g., C-STORE responses) are received within this time period.
+              "UserData": User data that will travel along with the job.
 
         data
             The Orthanc identifier of one resource to be sent
@@ -2965,7 +2982,7 @@ class Orthanc(httpx.Client):
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
                 "limit" (float): Limit the number of results
                 "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
-                "response-content" (str): Defines the content of response for each returned resource.  Allowed values are `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `Attachments`.  If not specified, Orthanc will return `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`.e.g: 'response-content=MainDicomTags;Children (new in Orthanc 1.12.5 - overrides `expand`)
+                "response-content" (str): Defines the content of response for each returned resource.  Allowed values are `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `IsProtected`, `Attachments`.  If not specified, Orthanc will return `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `IsProtected`.e.g: 'response-content=MainDicomTags;Children (new in Orthanc 1.12.5 - overrides `expand`)
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
                 "since" (float): Show only the resources since the provided index
 
@@ -3054,13 +3071,15 @@ class Orthanc(httpx.Client):
               "KeepLabels": Keep the labels of all resources level (defaults to `false`)
               "KeepPrivateTags": Keep the private tags from the DICOM instances (defaults to `false`)
               "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
+              "LossyQuality": If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
+              "Permissive": If `true`, ignore errors during the individual steps of the job.  Default value is `false`.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.  Default value is `0`
               "PrivateCreator": The private creator to be used for private tags in `Replace`
               "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+              "UserData": User data that will travel along with the job.
 
 
         Returns
@@ -3092,6 +3111,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
+                "lossy-quality" (float): If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
                 "transcode" (str): If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
 
         Returns
@@ -3121,9 +3141,13 @@ class Orthanc(httpx.Client):
         json
             Dictionary with the following keys:
               "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
+              "Filename": Filename to set in the "Content-Disposition" HTTP header (including file extension)
+              "LossyQuality": If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in 1.12.7)
               "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
               "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+              "UserData": In asynchronous mode, user data that will be attached to the job.
+              "Utf8": If `true`, filenames will be encoded using UTF-8 in the ZIP archive, which may not be supported by your operating system or by your ZIP uncompression software. If `false`, filenames will be encoded using plain ASCII, which was the default in Orthanc <= 1.12.10. Default value is defined by the "ZipUseUtf8" configuration option. (new in 1.12.11)
 
 
         Returns
@@ -3292,6 +3316,7 @@ class Orthanc(httpx.Client):
         self,
         id_: str,
         name: str,
+        params: QueryParamTypes = None,
         headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get attachment (no decompression)
@@ -3305,6 +3330,9 @@ class Orthanc(httpx.Client):
             The name of the attachment, or its index (cf. `UserContentType` configuration option)
         id_
             Orthanc identifier of the patient of interest
+        params
+            Dictionary of optional parameters:
+                "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
         headers
             Dictionary of optional headers:
                 "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
@@ -3317,6 +3345,7 @@ class Orthanc(httpx.Client):
         """
         return self._get(
             route=f"{self.url}/patients/{id_}/attachments/{name}/compressed-data",
+            params=params,
             headers=headers,
         )
 
@@ -3386,6 +3415,7 @@ class Orthanc(httpx.Client):
         self,
         id_: str,
         name: str,
+        params: QueryParamTypes = None,
         headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get attachment
@@ -3399,6 +3429,9 @@ class Orthanc(httpx.Client):
             The name of the attachment, or its index (cf. `UserContentType` configuration option)
         id_
             Orthanc identifier of the patient of interest
+        params
+            Dictionary of optional parameters:
+                "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
         headers
             Dictionary of optional headers:
                 "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
@@ -3411,6 +3444,7 @@ class Orthanc(httpx.Client):
         """
         return self._get(
             route=f"{self.url}/patients/{id_}/attachments/{name}/data",
+            params=params,
             headers=headers,
         )
 
@@ -3767,6 +3801,7 @@ class Orthanc(httpx.Client):
             Dictionary of optional parameters:
                 "extended" (str): If present, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*
                 "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
+                "lossy-quality" (float): If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
                 "transcode" (str): If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
 
         Returns
@@ -3797,9 +3832,13 @@ class Orthanc(httpx.Client):
             Dictionary with the following keys:
               "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
               "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `false`.
+              "Filename": Filename to set in the "Content-Disposition" HTTP header (including file extension)
+              "LossyQuality": If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in 1.12.7)
               "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
               "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+              "UserData": In asynchronous mode, user data that will be attached to the job.
+              "Utf8": If `true`, filenames will be encoded using UTF-8 in the ZIP archive, which may not be supported by your operating system or by your ZIP uncompression software. If `false`, filenames will be encoded using plain ASCII, which was the default in Orthanc <= 1.12.10. Default value is defined by the "ZipUseUtf8" configuration option. (new in 1.12.11)
 
 
         Returns
@@ -3959,14 +3998,16 @@ class Orthanc(httpx.Client):
               "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
               "Keep": Keep the original value of the specified tags, to be chosen among the `StudyInstanceUID`, `SeriesInstanceUID` and `SOPInstanceUID` tags. Avoid this feature as much as possible, as this breaks the DICOM model of the real world.
               "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
+              "LossyQuality": If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
+              "Permissive": If `true`, ignore errors during the individual steps of the job.  Default value is `false`.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.  Default value is `0`
               "PrivateCreator": The private creator to be used for private tags in `Replace`
               "Remove": List of tags that must be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "RemovePrivateTags": Remove the private tags from the DICOM instances (defaults to `false`)
               "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+              "UserData": User data that will travel along with the job.
 
 
         Returns
@@ -4349,11 +4390,12 @@ class Orthanc(httpx.Client):
             Dictionary with the following keys:
               "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
               "Compress": Whether to compress the DICOM instances using gzip before the actual sending
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
+              "Permissive": If `true`, ignore errors during the individual steps of the job.  Default value is `false`.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.  Default value is `0`
               "Resources": List of the Orthanc identifiers of all the DICOM resources to be sent
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "Transcode": Transcode to the provided DICOM transfer syntax before the actual sending
+              "UserData": User data that will travel along with the job.
 
         data
             The Orthanc identifier of one resource to be sent
@@ -4755,13 +4797,14 @@ class Orthanc(httpx.Client):
             Dictionary with the following keys:
               "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
               "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
+              "Permissive": If `true`, ignore errors during the individual steps of the job.  Default value is `false`.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.  Default value is `0`
               "RetrieveMethod": Force usage of C-MOVE or C-GET to retrieve the resource.  If note defined in the payload, the retrieve method is defined in the DicomDefaultRetrieveMethod configuration or in DicomModalities->..->RetrieveMethod
               "Simplify": If set to `true`, report the DICOM tags in human-readable format (using the symbolic name of the tags)
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "TargetAet": AET of the target modality. By default, the AET of Orthanc is used, as defined in the `DicomAet` configuration option.
-              "Timeout": Timeout for the C-MOVE command, in seconds
+              "Timeout": Timeout for the C-MOVE command, in seconds.  Orthanc will close the DICOM association if no DICOM messages (e.g., C-STORE sub-operations or responses) are received within this time period.
+              "UserData": User data that will travel along with the job.
 
         data
             AET of the target modality
@@ -4873,13 +4916,14 @@ class Orthanc(httpx.Client):
             Dictionary with the following keys:
               "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
               "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
+              "Permissive": If `true`, ignore errors during the individual steps of the job.  Default value is `false`.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.  Default value is `0`
               "RetrieveMethod": Force usage of C-MOVE or C-GET to retrieve the resource.  If note defined in the payload, the retrieve method is defined in the DicomDefaultRetrieveMethod configuration or in DicomModalities->..->RetrieveMethod
               "Simplify": If set to `true`, report the DICOM tags in human-readable format (using the symbolic name of the tags)
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "TargetAet": AET of the target modality. By default, the AET of Orthanc is used, as defined in the `DicomAet` configuration option.
-              "Timeout": Timeout for the C-MOVE command, in seconds
+              "Timeout": Timeout for the C-MOVE command, in seconds.  Orthanc will close the DICOM association if no DICOM messages (e.g., C-STORE sub-operations or responses) are received within this time period.
+              "UserData": User data that will travel along with the job.
 
         data
             AET of the target modality
@@ -4914,7 +4958,7 @@ class Orthanc(httpx.Client):
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
                 "limit" (float): Limit the number of results
                 "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
-                "response-content" (str): Defines the content of response for each returned resource.  Allowed values are `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `Attachments`.  If not specified, Orthanc will return `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`.e.g: 'response-content=MainDicomTags;Children (new in Orthanc 1.12.5 - overrides `expand`)
+                "response-content" (str): Defines the content of response for each returned resource.  Allowed values are `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `IsProtected`, `Attachments`.  If not specified, Orthanc will return `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `IsProtected`.e.g: 'response-content=MainDicomTags;Children (new in Orthanc 1.12.5 - overrides `expand`)
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
                 "since" (float): Show only the resources since the provided index
 
@@ -5003,13 +5047,15 @@ class Orthanc(httpx.Client):
               "KeepLabels": Keep the labels of all resources level (defaults to `false`)
               "KeepPrivateTags": Keep the private tags from the DICOM instances (defaults to `false`)
               "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
+              "LossyQuality": If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
+              "Permissive": If `true`, ignore errors during the individual steps of the job.  Default value is `false`.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.  Default value is `0`
               "PrivateCreator": The private creator to be used for private tags in `Replace`
               "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+              "UserData": User data that will travel along with the job.
 
 
         Returns
@@ -5041,6 +5087,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
+                "lossy-quality" (float): If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
                 "transcode" (str): If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
 
         Returns
@@ -5070,9 +5117,13 @@ class Orthanc(httpx.Client):
         json
             Dictionary with the following keys:
               "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
+              "Filename": Filename to set in the "Content-Disposition" HTTP header (including file extension)
+              "LossyQuality": If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in 1.12.7)
               "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
               "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+              "UserData": In asynchronous mode, user data that will be attached to the job.
+              "Utf8": If `true`, filenames will be encoded using UTF-8 in the ZIP archive, which may not be supported by your operating system or by your ZIP uncompression software. If `false`, filenames will be encoded using plain ASCII, which was the default in Orthanc <= 1.12.10. Default value is defined by the "ZipUseUtf8" configuration option. (new in 1.12.11)
 
 
         Returns
@@ -5241,6 +5292,7 @@ class Orthanc(httpx.Client):
         self,
         id_: str,
         name: str,
+        params: QueryParamTypes = None,
         headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get attachment (no decompression)
@@ -5254,6 +5306,9 @@ class Orthanc(httpx.Client):
             The name of the attachment, or its index (cf. `UserContentType` configuration option)
         id_
             Orthanc identifier of the series of interest
+        params
+            Dictionary of optional parameters:
+                "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
         headers
             Dictionary of optional headers:
                 "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
@@ -5266,6 +5321,7 @@ class Orthanc(httpx.Client):
         """
         return self._get(
             route=f"{self.url}/series/{id_}/attachments/{name}/compressed-data",
+            params=params,
             headers=headers,
         )
 
@@ -5335,6 +5391,7 @@ class Orthanc(httpx.Client):
         self,
         id_: str,
         name: str,
+        params: QueryParamTypes = None,
         headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get attachment
@@ -5348,6 +5405,9 @@ class Orthanc(httpx.Client):
             The name of the attachment, or its index (cf. `UserContentType` configuration option)
         id_
             Orthanc identifier of the series of interest
+        params
+            Dictionary of optional parameters:
+                "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
         headers
             Dictionary of optional headers:
                 "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
@@ -5360,6 +5420,7 @@ class Orthanc(httpx.Client):
         """
         return self._get(
             route=f"{self.url}/series/{id_}/attachments/{name}/data",
+            params=params,
             headers=headers,
         )
 
@@ -5716,6 +5777,7 @@ class Orthanc(httpx.Client):
             Dictionary of optional parameters:
                 "extended" (str): If present, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*
                 "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
+                "lossy-quality" (float): If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
                 "transcode" (str): If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
 
         Returns
@@ -5746,9 +5808,13 @@ class Orthanc(httpx.Client):
             Dictionary with the following keys:
               "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
               "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `false`.
+              "Filename": Filename to set in the "Content-Disposition" HTTP header (including file extension)
+              "LossyQuality": If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in 1.12.7)
               "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
               "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+              "UserData": In asynchronous mode, user data that will be attached to the job.
+              "Utf8": If `true`, filenames will be encoded using UTF-8 in the ZIP archive, which may not be supported by your operating system or by your ZIP uncompression software. If `false`, filenames will be encoded using plain ASCII, which was the default in Orthanc <= 1.12.10. Default value is defined by the "ZipUseUtf8" configuration option. (new in 1.12.11)
 
 
         Returns
@@ -5908,14 +5974,16 @@ class Orthanc(httpx.Client):
               "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
               "Keep": Keep the original value of the specified tags, to be chosen among the `StudyInstanceUID`, `SeriesInstanceUID` and `SOPInstanceUID` tags. Avoid this feature as much as possible, as this breaks the DICOM model of the real world.
               "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
+              "LossyQuality": If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
+              "Permissive": If `true`, ignore errors during the individual steps of the job.  Default value is `false`.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.  Default value is `0`
               "PrivateCreator": The private creator to be used for private tags in `Replace`
               "Remove": List of tags that must be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "RemovePrivateTags": Remove the private tags from the DICOM instances (defaults to `false`)
               "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+              "UserData": User data that will travel along with the job.
 
 
         Returns
@@ -6202,7 +6270,7 @@ class Orthanc(httpx.Client):
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Remove after storage commitment
 
-        Remove out of Orthanc, the DICOM instances that have been reported to have been properly received the storage commitment report whose identifier is provided in the URL. This is only possible if the `Status` of the storage commitment report is `Success`. https://orthanc.uclouvain.be/book/users/storage-commitment.html#removing-the-instances
+        Remove out of Orthanc, the DICOM instances that have been reported to have been properly received in the storage commitment report whose identifier is provided in the URL. This is only possible if the `Status` of the storage commitment report is `Success`. https://orthanc.uclouvain.be/book/users/storage-commitment.html#removing-the-instances
         Tags: Networking
 
         Parameters
@@ -6235,7 +6303,7 @@ class Orthanc(httpx.Client):
                 "full" (bool): If present, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
                 "limit" (float): Limit the number of results
                 "requested-tags" (str): If present, list the DICOM Tags you want to list in the response.  This argument is a semi-column separated list of DICOM Tags identifiers; e.g: 'requested-tags=0010,0010;PatientBirthDate'.  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
-                "response-content" (str): Defines the content of response for each returned resource.  Allowed values are `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `Attachments`.  If not specified, Orthanc will return `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`.e.g: 'response-content=MainDicomTags;Children (new in Orthanc 1.12.5 - overrides `expand`)
+                "response-content" (str): Defines the content of response for each returned resource.  Allowed values are `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `IsProtected`, `Attachments`.  If not specified, Orthanc will return `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `IsProtected`.e.g: 'response-content=MainDicomTags;Children (new in Orthanc 1.12.5 - overrides `expand`)
                 "short" (bool): If present, report the DICOM tags in hexadecimal format
                 "since" (float): Show only the resources since the provided index
 
@@ -6324,13 +6392,15 @@ class Orthanc(httpx.Client):
               "KeepLabels": Keep the labels of all resources level (defaults to `false`)
               "KeepPrivateTags": Keep the private tags from the DICOM instances (defaults to `false`)
               "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
+              "LossyQuality": If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
+              "Permissive": If `true`, ignore errors during the individual steps of the job.  Default value is `false`.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.  Default value is `0`
               "PrivateCreator": The private creator to be used for private tags in `Replace`
               "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+              "UserData": User data that will travel along with the job.
 
 
         Returns
@@ -6362,6 +6432,7 @@ class Orthanc(httpx.Client):
         params
             Dictionary of optional parameters:
                 "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
+                "lossy-quality" (float): If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
                 "transcode" (str): If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
 
         Returns
@@ -6391,9 +6462,13 @@ class Orthanc(httpx.Client):
         json
             Dictionary with the following keys:
               "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
+              "Filename": Filename to set in the "Content-Disposition" HTTP header (including file extension)
+              "LossyQuality": If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in 1.12.7)
               "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
               "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+              "UserData": In asynchronous mode, user data that will be attached to the job.
+              "Utf8": If `true`, filenames will be encoded using UTF-8 in the ZIP archive, which may not be supported by your operating system or by your ZIP uncompression software. If `false`, filenames will be encoded using plain ASCII, which was the default in Orthanc <= 1.12.10. Default value is defined by the "ZipUseUtf8" configuration option. (new in 1.12.11)
 
 
         Returns
@@ -6562,6 +6637,7 @@ class Orthanc(httpx.Client):
         self,
         id_: str,
         name: str,
+        params: QueryParamTypes = None,
         headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get attachment (no decompression)
@@ -6575,6 +6651,9 @@ class Orthanc(httpx.Client):
             The name of the attachment, or its index (cf. `UserContentType` configuration option)
         id_
             Orthanc identifier of the study of interest
+        params
+            Dictionary of optional parameters:
+                "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
         headers
             Dictionary of optional headers:
                 "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
@@ -6587,6 +6666,7 @@ class Orthanc(httpx.Client):
         """
         return self._get(
             route=f"{self.url}/studies/{id_}/attachments/{name}/compressed-data",
+            params=params,
             headers=headers,
         )
 
@@ -6656,6 +6736,7 @@ class Orthanc(httpx.Client):
         self,
         id_: str,
         name: str,
+        params: QueryParamTypes = None,
         headers: HeaderTypes = None,
     ) -> Union[Dict, List, str, bytes, int, httpx.Response]:
         """Get attachment
@@ -6669,6 +6750,9 @@ class Orthanc(httpx.Client):
             The name of the attachment, or its index (cf. `UserContentType` configuration option)
         id_
             Orthanc identifier of the study of interest
+        params
+            Dictionary of optional parameters:
+                "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
         headers
             Dictionary of optional headers:
                 "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
@@ -6681,6 +6765,7 @@ class Orthanc(httpx.Client):
         """
         return self._get(
             route=f"{self.url}/studies/{id_}/attachments/{name}/data",
+            params=params,
             headers=headers,
         )
 
@@ -7037,6 +7122,7 @@ class Orthanc(httpx.Client):
             Dictionary of optional parameters:
                 "extended" (str): If present, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*
                 "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
+                "lossy-quality" (float): If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
                 "transcode" (str): If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
 
         Returns
@@ -7067,9 +7153,13 @@ class Orthanc(httpx.Client):
             Dictionary with the following keys:
               "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
               "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `false`.
+              "Filename": Filename to set in the "Content-Disposition" HTTP header (including file extension)
+              "LossyQuality": If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in 1.12.7)
               "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
               "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+              "UserData": In asynchronous mode, user data that will be attached to the job.
+              "Utf8": If `true`, filenames will be encoded using UTF-8 in the ZIP archive, which may not be supported by your operating system or by your ZIP uncompression software. If `false`, filenames will be encoded using plain ASCII, which was the default in Orthanc <= 1.12.10. Default value is defined by the "ZipUseUtf8" configuration option. (new in 1.12.11)
 
 
         Returns
@@ -7103,10 +7193,11 @@ class Orthanc(httpx.Client):
             Dictionary with the following keys:
               "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
               "KeepSource": If set to `true`, instructs Orthanc to keep a copy of the original resources in their source study. By default, the original resources are deleted from Orthanc.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
+              "Permissive": If `true`, ignore errors during the individual steps of the job.  Default value is `false`.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.  Default value is `0`
               "Resources": The list of DICOM resources (studies, series, and/or instances) to be merged into the study of interest (mandatory option)
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+              "UserData": User data that will travel along with the job.
 
 
         Returns
@@ -7265,14 +7356,16 @@ class Orthanc(httpx.Client):
               "Force": Allow the modification of tags related to DICOM identifiers, at the risk of breaking the DICOM model of the real world
               "Keep": Keep the original value of the specified tags, to be chosen among the `StudyInstanceUID`, `SeriesInstanceUID` and `SOPInstanceUID` tags. Avoid this feature as much as possible, as this breaks the DICOM model of the real world.
               "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
+              "LossyQuality": If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
+              "Permissive": If `true`, ignore errors during the individual steps of the job.  Default value is `false`.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.  Default value is `0`
               "PrivateCreator": The private creator to be used for private tags in `Replace`
               "Remove": List of tags that must be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "RemovePrivateTags": Remove the private tags from the DICOM instances (defaults to `false`)
               "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+              "UserData": User data that will travel along with the job.
 
 
         Returns
@@ -7488,12 +7581,13 @@ class Orthanc(httpx.Client):
               "Instances": The list of instances to be separated from the parent study. These instances must all be children of the same source study, that is specified in the URI.
               "KeepLabels": Keep the labels of all resources level (defaults to `false`)
               "KeepSource": If set to `true`, instructs Orthanc to keep a copy of the original series/instances in the source study. By default, the original series/instances are deleted from Orthanc.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
+              "Permissive": If `true`, ignore errors during the individual steps of the job.  Default value is `false`.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.  Default value is `0`
               "Remove": List of tags that must be removed in the new study (from the same modules as in the `Replace` option)
               "Replace": Associative array to change the value of some DICOM tags in the new study. These tags must be part of the "Patient Module Attributes" or the "General Study Module Attributes", as specified by the DICOM 2011 standard in Tables C.7-1 and C.7-3.
               "Series": The list of series to be separated from the parent study. These series must all be children of the same source study, that is specified in the URI.
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
+              "UserData": User data that will travel along with the job.
 
 
         Returns
@@ -7650,14 +7744,16 @@ class Orthanc(httpx.Client):
               "KeepLabels": Keep the labels of all resources level (defaults to `false`)
               "KeepPrivateTags": Keep the private tags from the DICOM instances (defaults to `false`)
               "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
+              "LossyQuality": If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
+              "Permissive": If `true`, ignore errors during the individual steps of the job.  Default value is `false`.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.  Default value is `0`
               "PrivateCreator": The private creator to be used for private tags in `Replace`
               "Remove": List of additional tags to be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "Replace": Associative array to change the value of some DICOM tags in the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "Resources": List of the Orthanc identifiers of the patients/studies/series/instances of interest.
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+              "UserData": User data that will travel along with the job.
 
 
         Returns
@@ -7748,8 +7844,9 @@ class Orthanc(httpx.Client):
               "Keep": Keep the original value of the specified tags, to be chosen among the `StudyInstanceUID`, `SeriesInstanceUID` and `SOPInstanceUID` tags. Avoid this feature as much as possible, as this breaks the DICOM model of the real world.
               "KeepSource": If set to `false`, instructs Orthanc to the remove original resources. By default, the original resources are kept in Orthanc.
               "Level": Level of the modification (`Patient`, `Study`, `Series` or `Instance`). If absent, the level defaults to `Instance`, but is set to `Patient` if `PatientID` is modified, to `Study` if `StudyInstanceUID` is modified, or to `Series` if `SeriesInstancesUID` is modified. (new in Orthanc 1.9.7)
-              "Permissive": If `true`, ignore errors during the individual steps of the job.
-              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
+              "LossyQuality": If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
+              "Permissive": If `true`, ignore errors during the individual steps of the job.  Default value is `false`.
+              "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.  Default value is `0`
               "PrivateCreator": The private creator to be used for private tags in `Replace`
               "Remove": List of tags that must be removed from the DICOM instances. Starting with Orthanc 1.9.4, paths to subsequences can be provided using the same syntax as the `dcmodify` command-line tool (wildcards are supported as well).
               "RemovePrivateTags": Remove the private tags from the DICOM instances (defaults to `false`)
@@ -7757,6 +7854,7 @@ class Orthanc(httpx.Client):
               "Resources": List of the Orthanc identifiers of the patients/studies/series/instances of interest.
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "Transcode": Transcode the DICOM instances to the provided DICOM transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+              "UserData": User data that will travel along with the job.
 
 
         Returns
@@ -7786,7 +7884,7 @@ class Orthanc(httpx.Client):
             Dictionary with the following keys:
               "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
               "Labels": List of strings specifying which labels to look for in the resources (new in Orthanc 1.12.0)
-              "LabelsConstraint": Constraint on the labels, can be `All`, `Any`, or `None` (defaults to `All`, new in Orthanc 1.12.0)
+              "LabelsConstraint": Constraint on the labels, can be `All`, `Any`, or `None` (defaults to `All`, new in Orthanc 1.12.0). From 1.12.11: using `None` together with an empty list of labels looks for the resources that do not have any labels attached.
               "Level": Level of the query (`Patient`, `Study`, `Series` or `Instance`)
               "MetadataQuery": Associative array containing the filter on the values of the metadata (new in Orthanc 1.12.5)
               "ParentPatient": Limit the reported resources to descendants of this patient (new in Orthanc 1.12.5)
@@ -7821,6 +7919,8 @@ class Orthanc(httpx.Client):
         ----------
         params
             Dictionary of optional parameters:
+                "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
+                "lossy-quality" (float): If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
                 "resources" (str): A comma separated list of Orthanc resource identifiers to include in the ZIP archive.
                 "transcode" (str): If present, the DICOM files will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
 
@@ -7847,10 +7947,14 @@ class Orthanc(httpx.Client):
         json
             Dictionary with the following keys:
               "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
+              "Filename": Filename to set in the "Content-Disposition" HTTP header (including file extension)
+              "LossyQuality": If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in 1.12.7)
               "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Resources": The list of Orthanc identifiers of interest.
               "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
               "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+              "UserData": In asynchronous mode, user data that will be attached to the job.
+              "Utf8": If `true`, filenames will be encoded using UTF-8 in the ZIP archive, which may not be supported by your operating system or by your ZIP uncompression software. If `false`, filenames will be encoded using plain ASCII, which was the default in Orthanc <= 1.12.10. Default value is defined by the "ZipUseUtf8" configuration option. (new in 1.12.11)
 
 
         Returns
@@ -7880,6 +7984,7 @@ class Orthanc(httpx.Client):
         json
             Dictionary with the following keys:
               "Content": This field can be used to embed an image (pixel data encoded as PNG or JPEG), a PDF, or a 3D manufactoring model (MTL/OBJ/STL) inside the created DICOM instance. The file to be encapsulated must be provided using its [data URI scheme encoding](https://en.wikipedia.org/wiki/Data_URI_scheme). This field can possibly contain a JSON array, in which case a DICOM series is created containing one DICOM instance for each item in the `Content` field.
+              "Encapsulate": If set to `true`, encapsulate the binary data of `ContentData` as such, using a compressed transfer syntax. Only applicable if `ContentData` contains a grayscale or color JPEG image in 8bpp, in which case the transfer syntax is set to "1.2.840.10008.1.2.4.50". (new in Orthanc 1.12.7)
               "Force": Avoid the consistency checks for the DICOM tags that enforce the DICOM model of the real-world. You can notably use this flag if you need to manually set the tags `StudyInstanceUID`, `SeriesInstanceUID`, or `SOPInstanceUID`. Be careful with this feature.
               "InterpretBinaryTags": If some value in the `Tags` associative array is formatted according to some [data URI scheme encoding](https://en.wikipedia.org/wiki/Data_URI_scheme), whether this value is decoded to a binary value or kept as such (`true` by default)
               "Parent": If present, the newly created instance will be attached to the parent DICOM resource whose Orthanc identifier is contained in this field. The DICOM tags of the parent modules in the DICOM hierarchy will be automatically copied to the newly created instance.
@@ -7912,6 +8017,8 @@ class Orthanc(httpx.Client):
         ----------
         params
             Dictionary of optional parameters:
+                "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
+                "lossy-quality" (float): If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
                 "resources" (str): A comma separated list of Orthanc resource identifiers to include in the DICOMDIR media.
                 "transcode" (str): If present, the DICOM files will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
 
@@ -7939,10 +8046,14 @@ class Orthanc(httpx.Client):
             Dictionary with the following keys:
               "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
               "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `false`.
+              "Filename": Filename to set in the "Content-Disposition" HTTP header (including file extension)
+              "LossyQuality": If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in 1.12.7)
               "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Resources": The list of Orthanc identifiers of interest.
               "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
               "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+              "UserData": In asynchronous mode, user data that will be attached to the job.
+              "Utf8": If `true`, filenames will be encoded using UTF-8 in the ZIP archive, which may not be supported by your operating system or by your ZIP uncompression software. If `false`, filenames will be encoded using plain ASCII, which was the default in Orthanc <= 1.12.10. Default value is defined by the "ZipUseUtf8" configuration option. (new in 1.12.11)
 
 
         Returns
@@ -7971,6 +8082,8 @@ class Orthanc(httpx.Client):
         ----------
         params
             Dictionary of optional parameters:
+                "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
+                "lossy-quality" (float): If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in v1.12.7)
                 "resources" (str): A comma separated list of Orthanc resource identifiers to include in the DICOMDIR media.
                 "transcode" (str): If present, the DICOM files will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
 
@@ -7998,10 +8111,14 @@ class Orthanc(httpx.Client):
             Dictionary with the following keys:
               "Asynchronous": If `true`, create the archive in asynchronous mode, which means that a job is submitted to create the archive in background.
               "Extended": If `true`, will include additional tags such as `SeriesDescription`, leading to a so-called *extended DICOMDIR*. Default value is `true`.
+              "Filename": Filename to set in the "Content-Disposition" HTTP header (including file extension)
+              "LossyQuality": If transcoding to a lossy transfer syntax, this entry defines the quality as an integer between 1 and 100.  If not provided, the value is defined by the "DicomLossyTranscodingQuality" configuration. (new in 1.12.7)
               "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.
               "Resources": The list of Orthanc identifiers of interest.
               "Synchronous": If `true`, create the archive in synchronous mode, which means that the HTTP answer will directly contain the ZIP file. This is the default, easy behavior. However, if global configuration option "SynchronousZipStream" is set to "false", asynchronous transfers should be preferred for large amount of data, as the creation of the temporary file might lead to network timeouts.
               "Transcode": If present, the DICOM files in the archive will be transcoded to the provided transfer syntax: https://orthanc.uclouvain.be/book/faq/transcoding.html
+              "UserData": In asynchronous mode, user data that will be attached to the job.
+              "Utf8": If `true`, filenames will be encoded using UTF-8 in the ZIP archive, which may not be supported by your operating system or by your ZIP uncompression software. If `false`, filenames will be encoded using plain ASCII, which was the default in Orthanc <= 1.12.10. Default value is defined by the "ZipUseUtf8" configuration option. (new in 1.12.11)
 
 
         Returns
@@ -8149,7 +8266,7 @@ class Orthanc(httpx.Client):
               "Expand": If set to "true", retrieve detailed information about the individual resources, not only their Orthanc identifiers
               "Full": If set to `true`, report the DICOM tags in full format (tags indexed by their hexadecimal format, associated with their symbolic name and their value)
               "Labels": List of strings specifying which labels to look for in the resources (new in Orthanc 1.12.0)
-              "LabelsConstraint": Constraint on the labels, can be `All`, `Any`, or `None` (defaults to `All`, new in Orthanc 1.12.0)
+              "LabelsConstraint": Constraint on the labels, can be `All`, `Any`, or `None` (defaults to `All`, new in Orthanc 1.12.0). From 1.12.11: using `None` together with an empty list of labels looks for the resources that do not have any labels attached.
               "Level": Level of the query (`Patient`, `Study`, `Series` or `Instance`)
               "Limit": Limit the number of reported resources
               "MetadataQuery": Associative array containing the filter on the values of the metadata (new in Orthanc 1.12.5)
@@ -8159,7 +8276,7 @@ class Orthanc(httpx.Client):
               "ParentStudy": Limit the reported resources to descendants of this study (new in Orthanc 1.12.5)
               "Query": Associative array containing the filter on the values of the DICOM tags
               "RequestedTags": A list of DICOM tags to include in the response (applicable only if "Expand" is set to true).  The tags requested tags are returned in the 'RequestedTags' field in the response.  Note that, if you are requesting tags that are not listed in the Main Dicom Tags stored in DB, building the response might be slow since Orthanc will need to access the DICOM files.  If not specified, Orthanc will return all Main Dicom Tags to keep backward compatibility with Orthanc prior to 1.11.0.
-              "ResponseContent": Defines the content of response for each returned resource. (this field, if present, overrides the "Expand" field).  Allowed values are `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `Attachments`.  If not specified, Orthanc will return `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`.(new in Orthanc 1.12.5)
+              "ResponseContent": Defines the content of response for each returned resource. (this field, if present, overrides the "Expand" field).  Allowed values are `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `IsProtected`, `Attachments`.  If not specified, Orthanc will return `MainDicomTags`, `Metadata`, `Children`, `Parent`, `Labels`, `Status`, `IsStable`, `IsProtected`.(new in Orthanc 1.12.5)
               "Short": If set to `true`, report the DICOM tags in hexadecimal format
               "Since": Show only the resources since the provided index (in conjunction with `Limit`)
 

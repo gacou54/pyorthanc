@@ -3,7 +3,7 @@ from typing import Any, Callable, Optional, Tuple
 
 from ._orthanc_sdk_enums import *
 
-VERSION = '4.1'
+VERSION = '7.0'
 
 
 class Image:
@@ -125,6 +125,22 @@ class DicomInstance:
         pass
 
 
+class DicomConnection:
+    """Generated from Orthanc C class: OrthancPluginDicomConnection"""
+
+    def GetConnectionCalledAet(self, *args):
+        """Generated from C function OrthancPluginGetConnectionCalledAet()"""
+        pass
+
+    def GetConnectionRemoteAet(self, *args):
+        """Generated from C function OrthancPluginGetConnectionRemoteAet()"""
+        pass
+
+    def GetConnectionRemoteIp(self, *args):
+        """Generated from C function OrthancPluginGetConnectionRemoteIp()"""
+        pass
+
+
 class FindAnswers:
     """Generated from Orthanc C class: OrthancPluginFindAnswers"""
 
@@ -224,6 +240,10 @@ class RestOutput:
         """Generated from C function OrthancPluginRedirect()"""
         pass
 
+    def SendStreamChunk(self, *args):
+        """Generated from C function OrthancPluginSendStreamChunk()"""
+        pass
+
     def SendHttpStatus(self, *args):
         """Generated from C function OrthancPluginSendHttpStatus()"""
         pass
@@ -242,6 +262,10 @@ class RestOutput:
 
     def SendUnauthorized(self, *args):
         """Generated from C function OrthancPluginSendUnauthorized()"""
+        pass
+
+    def StartStreamAnswer(self, *args):
+        """Generated from C function OrthancPluginStartStreamAnswer()"""
         pass
 
     def SetCookie(self, *args):
@@ -634,6 +658,42 @@ def RegisterFindCallback(func: Callable[[FindAnswers, FindQuery, str, str], None
     pass
 
 
+def RegisterFindCallback2(func: Callable[[FindAnswers, FindQuery, DicomConnection], None]) -> None:
+    """(New from v 7.0) Register on C-Find Callback using the connection object
+
+    Parameters
+    ----------
+    func
+        Function that is call when Orthanc receive an incoming C-Find request
+
+    Examples
+    --------
+    From https://orthanc.uclouvain.be/book/plugins/python.html#id30
+    ```python
+    def on_find(answers, query, connection):  # new from v 7.0: issuerAet and calledAet are available from the connection object
+        print('Received incoming C-FIND request from %s %s %s:' % (connection.GetConnectionRemoteAet(), connection.GetConnectionRemoteIp(), connection.GetConnectionCalledAet()))
+
+        # old prototype still available
+        # def OnFindLegacy(answers, query, issuerAet, calledAet):
+        #     print('Received incoming C-FIND request from %s:' % issuerAet)
+
+        answer = {}
+        for i in range(query.GetFindQuerySize()):
+            print('  %s (%04x,%04x) = [%s]' % (query.GetFindQueryTagName(i),
+                                               query.GetFindQueryTagGroup(i),
+                                               query.GetFindQueryTagElement(i),
+                                               query.GetFindQueryValue(i)))
+            answer[query.GetFindQueryTagName(i)] = ('HELLO%d-%s' % (i, query.GetFindQueryValue(i)))
+
+        answers.FindAddAnswer(orthanc.CreateDicom(
+            json.dumps(answer), None, orthanc.CreateDicomFlags.NONE))
+
+    orthanc.RegisterFindCallback2(OnFind) # new from v 7.0
+    ```
+    """
+    pass
+
+
 def RegisterIncomingCStoreInstanceFilter(*args):
     """None"""
     pass
@@ -651,6 +711,11 @@ def RegisterMoveCallback(func: Callable):
 
 def RegisterMoveCallback2(create_move_func: Callable, get_move_func: Callable, apply_move_func: Callable, free_move_func: Callable) -> None:
     """See https://github.com/orthanc-team/dicom-dicomweb-proxy/blob/main/proxy.py for an example from the OrthancTeam."""
+    pass
+
+
+def RegisterMoveCallback3(create_move_func: Callable, get_move_func: Callable, apply_move_func: Callable, free_move_func: Callable) -> None:
+    """None"""
     pass
 
 
@@ -781,8 +846,28 @@ def RegisterStorageCommitmentScpCallback(*args):
     pass
 
 
+def RegisterStorageCommitmentScpCallback2(*args):
+    """None"""
+    pass
+
+
 def RegisterWorklistCallback(*args):
     """None"""
+    pass
+
+
+def RegisterWorklistCallback2(*args):
+    """None"""
+    pass
+
+
+def ReserveQueueValue(*args):
+    """Generated from C function OrthancPluginReserveQueueValue()"""
+    pass
+
+
+def AcknowledgeQueueValue(*args):
+    """Generated from C function OrthancPluginAcknowledgeQueueValue()"""
     pass
 
 

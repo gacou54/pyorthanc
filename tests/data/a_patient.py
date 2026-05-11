@@ -4,6 +4,7 @@ NAME = 'MR-R'
 SEX = 'M'
 INFORMATION = {
     'ID': IDENTIFIER,
+    'IsProtected': False,
     'IsStable': False,
     'LastUpdate': 'THIS_IS_VARIABLE',
     'Labels': [],
