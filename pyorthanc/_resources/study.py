@@ -563,7 +563,7 @@ class Study(Resource):
         zip_bytes = buffer.read()
         ```
         """
-        self._download_file(f'{self.client.url}/studies/{self.id_}/archive', filepath, with_progres)
+        self._download_file(f'{self.client.url}/studies/{self.id_}', filepath, with_progres, 'zip')
 
     def get_shared_tags(self, simplify: bool = False, short: bool = False) -> Dict:
         """Retrieve the shared tags of the study"""
