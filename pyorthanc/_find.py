@@ -1,3 +1,4 @@
+import shelve
 from typing import Dict, List, Union
 
 from . import util
@@ -15,6 +16,8 @@ def find_patients(client: Orthanc,
                   query: Dict[str, str] = None,
                   labels: Union[List[str], str] = None,
                   labels_constraint: str = 'All',
+                  local_cache: bool = False,
+                  local_cache_file: str = 'pyorthanc_cache',
                   **kwargs) -> List[Patient]:
     """Finds patients in Orthanc according to queries and labels
 
@@ -55,6 +58,8 @@ def find_patients(client: Orthanc,
         query=query,
         labels=labels,
         labels_constraint=labels_constraint,
+        local_cache=local_cache,
+        local_cache_file=local_cache_file,
         **kwargs
     )
 
@@ -63,6 +68,8 @@ def find_studies(client: Orthanc,
                  query: Dict[str, str] = None,
                  labels: Union[List[str], str] = None,
                  labels_constraint: str = 'All',
+                 local_cache: bool = False,
+                 local_cache_file: str = 'pyorthanc_cache',
                  **kwargs) -> List[Study]:
     """Finds studies in Orthanc according to queries and labels
 
@@ -104,6 +111,8 @@ def find_studies(client: Orthanc,
         query=query,
         labels=labels,
         labels_constraint=labels_constraint,
+        local_cache=local_cache,
+        local_cache_file=local_cache_file,
         **kwargs
     )
 
@@ -112,6 +121,8 @@ def find_series(client: Orthanc,
                 query: Dict[str, str] = None,
                 labels: Union[List[str], str] = None,
                 labels_constraint: str = 'All',
+                local_cache: bool = False,
+                local_cache_file: str = 'pyorthanc_cache',
                 **kwargs) -> List[Series]:
     """Finds series in Orthanc according to queries and labels
 
@@ -152,6 +163,8 @@ def find_series(client: Orthanc,
         query=query,
         labels=labels,
         labels_constraint=labels_constraint,
+        local_cache=local_cache,
+        local_cache_file=local_cache_file,
         **kwargs
     )
 
@@ -160,6 +173,8 @@ def find_instances(client: Orthanc,
                    query: Dict[str, str] = None,
                    labels: Union[List[str], str] = None,
                    labels_constraint: str = 'All',
+                   local_cache: bool = False,
+                   local_cache_file: str = 'pyorthanc_cache',
                    **kwargs) -> List[Instance]:
     """Finds instances in Orthanc according to queries and labels
 
@@ -200,6 +215,8 @@ def find_instances(client: Orthanc,
         query=query,
         labels=labels,
         labels_constraint=labels_constraint,
+        local_cache=local_cache,
+        local_cache_file=local_cache_file,
         **kwargs
     )
 
@@ -212,7 +229,9 @@ def query_orthanc(client: Orthanc,
                   limit: int = DEFAULT_RESOURCES_LIMIT,
                   since: int = 0,
                   retrieve_all_resources: bool = True,
-                  lock_children: bool = False) -> List[Resource]:
+                  lock_children: bool = False,
+                  local_cache: bool = False,
+                  local_cache_file: str = 'pyorthanc_cache') -> List[Resource | Patient | Study | Series | Instance]:
     """Query data in the Orthanc server
 
     Parameters
@@ -237,6 +256,11 @@ def query_orthanc(client: Orthanc,
         If `lock_children` is True, the resource children (ex. instances of a series via `Series.instances`)
         will be cached at the first query rather than queried every time. This is useful when you want
         to filter the children of a resource and want to maintain the filter result.
+    local_cache
+        If `local_cache` is True, pyorthanc will store find result in a local file called pyorthanc_cache.
+        Usefull if data don't change between 2 pyorthanc scripts runs
+    local_cache_file
+        Name of filename for local cache.
     Returns
     -------
     List[Resource]
@@ -263,6 +287,28 @@ def query_orthanc(client: Orthanc,
 
     # In this function, client that return raw responses are not supported.
     client = util.ensure_non_raw_response(client)
+
+    local_cache_name = ((f'{level}-{query}-{labels}-{labels_constraint}-{since}-{limit}'
+                         .replace(' ', '_')
+                         .replace("'", "")
+                         .replace("'", "")
+                         .replace("[", "")
+                         .replace("]", ""))
+                        .lower())
+
+    if local_cache:
+        with shelve.open(local_cache_file) as db:
+            if local_cache_name in db:
+                if level == 'Patient':
+                    resources = [Patient(id_, client, _lock_children=lock_children) for id_ in db[(local_cache_name)]]
+                elif level == 'Study':
+                    resources = [Study(id_, client, _lock_children=lock_children) for id_ in db[(local_cache_name)]]
+                elif level == 'Series':
+                    resources = [Series(id_, client, _lock_children=lock_children) for id_ in db[(local_cache_name)]]
+                elif level == 'Instance':
+                    resources = [Instance(id_, client, _lock_children=lock_children) for id_ in db[(local_cache_name)]]
+
+                return resources
 
     data = {
         'Expand': True,
@@ -301,6 +347,10 @@ def query_orthanc(client: Orthanc,
         resources = [Instance(i['ID'], client, _lock_children=lock_children) for i in results]
     else:
         raise ValueError(f"Unknown level ['Patient', 'Study', 'Series', 'Instance'], got {level}")
+
+    if local_cache:
+        with shelve.open(local_cache_file) as db:
+            db[local_cache_name] = [s.id_ for s in resources]
 
     return resources
 
