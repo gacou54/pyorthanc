@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-import httpx
+import httpx2
 import pytest
 
 from pyorthanc import Orthanc
@@ -25,7 +25,7 @@ def test_client_as_context_manager():
 def test_client_when_return_raw_response(client_that_return_raw_response):
     result = client_that_return_raw_response.get_system()
 
-    assert isinstance(result, httpx.Response)
+    assert isinstance(result, httpx2.Response)
     assert result.status_code == HTTPStatus.OK
     assert 'ApiVersion' in result.json()
     assert 'DicomAet' in result.json()

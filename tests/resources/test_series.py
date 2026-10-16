@@ -2,7 +2,7 @@ import io
 from datetime import datetime
 from zipfile import ZipFile
 
-import httpx
+import httpx2
 import pytest
 
 from pyorthanc import Patient, Series, Study, errors
@@ -124,10 +124,10 @@ def test_modify_remove(series: Series):
     assert modified_series.uid == a_series.UID
     assert Study(modified_series.study_identifier, series.client).uid == Study(series.study_identifier, series.client).uid
 
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         series.modify(remove=['SeriesInstanceUID'])
 
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         series.modify(remove=['SeriesInstanceUID'], force=True)
 
 
@@ -186,7 +186,7 @@ def test_modify_as_job_remove(series: Series):
     with pytest.raises(errors.TagDoesNotExistError):
         series.manufacturer
 
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         series.modify_as_job(remove=['SeriesInstanceUID'])
 
     job = series.modify_as_job(remove=['SeriesInstanceUID'], force=True)

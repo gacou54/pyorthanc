@@ -2,7 +2,7 @@ import warnings
 from datetime import datetime
 from typing import BinaryIO, Dict, List, Union
 
-from httpx import ReadTimeout
+from httpx2 import ReadTimeout
 
 from .resource import Resource
 from .study import Study

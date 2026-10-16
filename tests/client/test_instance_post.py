@@ -1,4 +1,4 @@
-import httpx
+import httpx2
 import pytest
 
 
@@ -25,5 +25,5 @@ def test_post_instance(client, instance_bytes):
 
 
 def test_post_instance_with_bad_data(client, bad_instance_bytes):
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         client.post_instances(bad_instance_bytes)
