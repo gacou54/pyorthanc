@@ -1,7 +1,7 @@
 import abc
 from typing import Any, BinaryIO, Dict, List, Optional, Union
 
-from httpx._types import QueryParamTypes
+from httpx2._types import QueryParamTypes
 
 from .. import errors, util
 from ..client import Orthanc

@@ -1,4 +1,4 @@
-import httpx
+import httpx2
 import pytest
 
 from ..data import a_patient, a_study, a_series, an_instance
@@ -115,6 +115,6 @@ def test_tools_labels(client_with_data):
 
 
 def test_bad_label(client_with_data):
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         client_with_data.put_patients_id_labels_label(a_patient.IDENTIFIER, BAD_LABEL)
 

@@ -4,7 +4,7 @@ import tempfile
 import zipfile
 from unittest.mock import patch
 
-import httpx
+import httpx2
 import pydicom
 import pytest
 from pydicom.data import get_testdata_file
@@ -105,7 +105,7 @@ def test_upload_while_checking_if_instance_exists(client):
 
     with patch('pyorthanc.client.Orthanc.get_instances_id_metadata') as mock_get_instance:
         with patch('pyorthanc.client.Orthanc.post_instances', return_value={'ID': 'test-instance-id'}) as mock_post_instances:
-            mock_get_instance.side_effect = httpx.HTTPError('Instance already exists')
+            mock_get_instance.side_effect = httpx2.HTTPError('Instance already exists')
             instances = upload(client, path, check_before_upload=True)
             assert len(instances) == 1
 

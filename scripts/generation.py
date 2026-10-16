@@ -1,3 +1,5 @@
+import re
+
 import simple_openapi_client
 
 ORTHANC_API_URL = 'https://orthanc.uclouvain.be/api/orthanc-openapi.json'
@@ -9,6 +11,8 @@ def generate_client(path: str, async_mode: bool = False):
     document = simple_openapi_client.parse_openapi(ORTHANC_API_URL)
     document = _apply_corrections_to_documents(document)
     client_str = simple_openapi_client.make_client(document, config, async_mode=async_mode, use_black=True)
+    # simple_openapi_client templates are written for httpx, pyorthanc uses its maintained fork httpx2
+    client_str = re.sub(r'\bhttpx\b', 'httpx2', client_str)
 
     with open(path, 'w') as file:
         file.write(client_str)

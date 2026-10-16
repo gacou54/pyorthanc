@@ -1,7 +1,7 @@
 import os
 import zipfile
 
-import httpx
+import httpx2
 import pytest
 
 from ..data import a_study
@@ -31,7 +31,7 @@ def test_get_study(client_with_data):
 
 
 def test_get_study_when_no_data(client):
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         client.get_studies_id(a_study.IDENTIFIER)
 
 
@@ -48,7 +48,7 @@ def test_get_study_zip(client_with_data):
 
 
 def test_get_study_zip_with_no_data(client):
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         client.get_studies_id_archive(a_study.IDENTIFIER)
 
 
@@ -61,7 +61,7 @@ def test_get_study_instances(client_with_data):
 
 
 def test_get_study_instances_when_no_data(client):
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         client.get_studies_id_instances(a_study.IDENTIFIER)
 
 
@@ -78,5 +78,5 @@ def test_get_study_instances_tags(client_with_data, params):
 
 
 def test_get_study_instances_tags_when_no_data(client):
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         client.get_studies_id_instances_tags(a_study.IDENTIFIER)

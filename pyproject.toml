@@ -14,7 +14,7 @@ keywords = ["Orthanc", "DICOM", "Medical-Imaging"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-httpx = ">=0.24.1,<1.0.0"
+httpx2 = ">=2.0.0,<3.0.0"
 pydicom = ">=2.4,<4.0.0"
 tqdm = { version = ">=4.66,<5", optional = true }
 
@@ -23,10 +23,12 @@ progress = ["tqdm"]
 all = ["tqdm"]
 
 [tool.poetry.group.docs.dependencies]
-mkdocs = "^1.5.3"
-mkdocstrings = { extras = ["python"], version = "^0.23.0" }
-mkdocs-material = "^9.4.6"
-jinja2 = "^3.1.2"
+mkdocs = "^1.6"
+mkdocstrings = { extras = ["python"], version = "^1.0" }
+mkdocs-material = "^9.7"
+jinja2 = "^3.1.6"
+# mkdocstrings 1.0.6 (last version supporting python 3.10) breaks with pymdown-extensions 12
+pymdown-extensions = ">=10.21,<12"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9"

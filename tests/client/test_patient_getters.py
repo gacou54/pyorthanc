@@ -3,7 +3,7 @@ import warnings
 import zipfile
 from typing import Dict
 
-import httpx
+import httpx2
 import pytest
 
 from ..data import a_patient
@@ -33,7 +33,7 @@ def test_get_patient(client_with_data):
 
 
 def test_get_patient_when_no_data(client):
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         client.get_patients_id(a_patient.IDENTIFIER)
 
 
@@ -81,7 +81,7 @@ def test_get_patient_module(client_with_data, params, expected_module):
 
 
 def test_get_patient_module_when_no_data(client):
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         client.get_patients_id_module(a_patient.IDENTIFIER)
 
 
@@ -100,7 +100,7 @@ def test_get_patient_series(client_with_data):
 
 
 def test_get_patient_series_when_no_data(client):
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         client.get_patients_id_series(a_patient.IDENTIFIER)
 
 
@@ -116,7 +116,7 @@ def test_get_patient_shared_tags(client_with_data, params, expected_shared_tags)
 
 
 def test_get_patient_share_tags_when_no_data(client):
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         client.get_patients_id_shared_tags(a_patient.IDENTIFIER)
 
 
@@ -130,7 +130,7 @@ def test_get_patient_statistics(client_with_data):
 
 
 def test_get_patient_statistics_when_no_data(client):
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         client.get_patients_id_statistics(a_patient.IDENTIFIER)
 
 
