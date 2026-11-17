@@ -1,6 +1,7 @@
 import httpx2
 import pytest
 
+from pyorthanc.jobs import Job, State
 from .setup_server import ORTHANC_1, ORTHANC_2, setup_data
 
 MODALITY = 'Orthanc2'
@@ -182,3 +183,53 @@ def test_store(modality):
                    {'ID': '22dcf059-8fd3ade7-efb39ca3-7f46b248-0200abc9', 'Type': 'Instance'}
                ],
            }
+
+
+def test_store_with_kwargs(modality, second_client):
+    setup_data(ORTHANC_1)
+    an_instance_identifier = modality.client.get_instances()[0]
+
+    result = modality.store(an_instance_identifier, Permissive=True, Timeout=30)
+
+    assert result['InstancesCount'] == 1
+    assert result['FailedInstancesCount'] == 0
+    assert second_client.get_instances() == [an_instance_identifier]
+
+
+def test_store_as_job(modality, second_client):
+    setup_data(ORTHANC_1)
+    an_instance_identifier = modality.client.get_instances()[0]
+
+    job = modality.store_as_job(an_instance_identifier, Priority=1)
+
+    assert isinstance(job, Job)
+    job.wait_until_completion(time_interval=1)
+    assert job.state == State.success
+    assert job.priority == 1
+    assert second_client.get_instances() == [an_instance_identifier]
+
+
+def test_move_as_job(modality):
+    setup_data(ORTHANC_2)
+    response = modality.find(PAYLOAD)
+
+    job = modality.move_as_job(response['ID'], {'TargetAet': ORTHANC_1.AeT})
+
+    assert isinstance(job, Job)
+    job.wait_until_completion(time_interval=1)
+    assert job.state == State.success
+    assert modality.client.get_patients() == [PATIENT_INFORMATION['ID']]
+
+
+def test_get_as_job(modality):
+    setup_data(ORTHANC_2)
+
+    job = modality.get_as_job(
+        level='Study',
+        resources={'StudyInstanceUID': '1.3.6.1.4.1.22213.2.6291.2.1'}
+    )
+
+    assert isinstance(job, Job)
+    job.wait_until_completion(time_interval=1)
+    assert job.state == State.success
+    assert modality.client.get_patients() == [PATIENT_INFORMATION['ID']]
