@@ -130,8 +130,11 @@ def test_get_patient_statistics(client_with_data):
 
 
 def test_get_patient_statistics_when_no_data(client):
-    with pytest.raises(httpx2.HTTPError):
-        client.get_patients_id_statistics(a_patient.IDENTIFIER)
+    # Since Orthanc 1.13.0, the statistics of an unknown patient are empty instead of a 404 error
+    result = client.get_patients_id_statistics(a_patient.IDENTIFIER)
+
+    assert result['CountStudies'] == 0
+    assert result['CountInstances'] == 0
 
 
 def test_get_patient_studies(client_with_data):

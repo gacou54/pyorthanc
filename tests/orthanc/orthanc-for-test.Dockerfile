@@ -1,4 +1,4 @@
-FROM orthancteam/orthanc:26.4.2
+FROM orthancteam/orthanc:26.11.0
 
 RUN pip install httpx2 pydicom  --break-system-packages
 

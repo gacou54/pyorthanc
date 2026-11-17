@@ -176,7 +176,8 @@ Note that recent PyOrthanc versions will likely support older Orthanc version.
 
 | PyOrthanc version | Generated from                                |
 |-------------------|-----------------------------------------------|
-| \>= 1.23.0        | Orthanc API 1.12.11 with Python Plugin 7.0    |
+| \>= 2.0.0         | Orthanc API 1.13.1 with Python Plugin 7.1     |
+| 1.23.0            | Orthanc API 1.12.11 with Python Plugin 7.0    |
 | 1.22 - 1.20.0     | Orthanc API 1.12.6 with Python Plugin 4.2     |
 | 1.19.0, 1.19.1    | Orthanc API 1.12.5 with Python Plugin 4.2     |
 | 1.18.0            | Orthanc API 1.12.4 with Python Plugin 4.2     |

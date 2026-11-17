@@ -8,14 +8,18 @@ services:
     environment:
       PYTHON_PLUGIN_ENABLE: "true"
       ORTHANC__PYTHON_SCRIPT: "/python/script.py"
+      ORTHANC__REGISTERED_USERS: '{"orthanc": "orthanc"}'
     depends_on:
       - orthanc2
 
   orthanc2:
-    image: orthancteam/orthanc:26.4.2
+    image: orthancteam/orthanc:26.11.0
     environment:
         ORTHANC_JSON: |
           {
+            "RegisteredUsers": {
+              "orthanc": "orthanc"
+            },
             "DicomModalities": {
               "ORTHANC": [ "ORTHANC", "orthanc1", 4242 ]
             }
