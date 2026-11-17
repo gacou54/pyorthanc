@@ -1,8 +1,9 @@
 import glob
 import os
+import zipfile
 from io import BytesIO
 from pathlib import Path
-from typing import Dict, Generator, List, Tuple, Union
+from typing import Dict, Generator, List, Optional, Union
 
 import httpx2
 import pydicom
@@ -29,48 +30,31 @@ def upload(
     recursive : bool
         When `path_or_ds` is a directory, whether to upload recursively all the DICOM files in the directory
     check_before_upload : bool
-         Verify if data is already in Orthanc before sending it. It verifies if a file is stored, there is no file comparison.
+        Verify if data is already in Orthanc before sending it. It verifies if a file is stored, there is no file comparison.
     force : bool
-        Force the read of the DICOM file (for pydicom.dcmread)
+        Only used with `check_before_upload=True`. Read the files with `pydicom.dcmread(..., force=True)` to check
+        files that are not valid DICOM Part 10 files (e.g. a file without the 128-byte preamble and the "DICM" prefix).
+        Without it, these files are always uploaded. Orthanc accepts them in both cases.
+
+    Returns
+    -------
+    List[Instance]
+        The uploaded instances (and the instances that were already in Orthanc when `check_before_upload=True`)
     """
     client = ensure_non_raw_response(client)
 
     instances = []
 
-    # If path_or_ds is a directory, upload all the DICOM files in the directory.
-    if (isinstance(path_or_ds, str) or isinstance(path_or_ds, Path)) and os.path.isdir(path_or_ds):
-        for dicom_bytes in _generate_dicom_bytes_from_directory(path_or_ds, recursive=recursive):
-            if check_before_upload:
-                data_is_in_orthanc, instance = _is_data_already_in_orthanc(client, dicom_bytes, force)
-
-                # If data is already in Orthanc, skip uploading it and go to the next file.
-                if data_is_in_orthanc:
-                    instances.append(instance)
-                    continue
-
-            result = client.post_instances(dicom_bytes)
-            instance = Instance(result['ID'], client)
-            instances.append(instance)
-
-    # If path_or_ds is a DICOM file, zip file or a pydicom Dataset, upload it.
-    else:
-        dicom_bytes = _prepare_data_from_ds_or_file(path_or_ds)
-
+    for dicom_bytes in _generate_dicom_bytes(path_or_ds, recursive=recursive):
         if check_before_upload:
-            data_in_orthanc, instance = _is_data_already_in_orthanc(client, dicom_bytes, force)
-            # If data is already in Orthanc, returns the instance directly.
-            if data_in_orthanc:
-                instances.append(instance)
-                return instances
+            orthanc_id = _get_orthanc_instance_id(dicom_bytes, force)
+
+            if orthanc_id is not None and _is_instance_in_orthanc(client, orthanc_id):
+                instances.append(Instance(orthanc_id, client))
+                continue
 
         result = client.post_instances(dicom_bytes)
-
-        # When a zip is uploaded, result can be a list of instances if the zip contained multiple DICOM files.
-        if isinstance(result, list):
-            instances += [Instance(i['ID'], client) for i in result]
-        else:
-            instance = Instance(result['ID'], client)
-            instances.append(instance)
+        instances += [Instance(i['ID'], client) for i in _to_list(result)]
 
     return instances
 
@@ -80,7 +64,7 @@ async def async_upload(
         path_or_ds: Union[str, Path, pydicom.Dataset],
         recursive: bool = False,
         check_before_upload: bool = False,
-        force: bool = False) -> List[Instance]:
+        force: bool = False) -> List[str]:
     """Upload a DICOM file or dataset to Orthanc asynchronously
 
     Parameters
@@ -92,71 +76,84 @@ async def async_upload(
     recursive : bool
         When `path_or_ds` is a directory, whether to upload recursively all the DICOM files in the directory
     check_before_upload : bool
-         Verify if data is already in Orthanc before sending it. It verifies if a file is stored, there is no file comparison.
+        Verify if data is already in Orthanc before sending it. It verifies if a file is stored, there is no file comparison.
     force : bool
-        Force the read of the DICOM file (for pydicom.dcmread), only used if dataset is not provided.
+        Only used with `check_before_upload=True`. Read the files with `pydicom.dcmread(..., force=True)` to check
+        files that are not valid DICOM Part 10 files (e.g. a file without the 128-byte preamble and the "DICM" prefix).
+        Without it, these files are always uploaded. Orthanc accepts them in both cases.
+
+    Returns
+    -------
+    List[str]
+        The Orthanc identifiers of the uploaded instances (and of the instances that were already in Orthanc
+        when `check_before_upload=True`). Use them with a synchronous client, e.g. `Instance(id_, Orthanc(...))`,
+        since the resource classes do not support `AsyncOrthanc`.
     """
     client = ensure_non_raw_response(client)
 
-    instances = []
+    instance_ids = []
 
+    for dicom_bytes in _generate_dicom_bytes(path_or_ds, recursive=recursive):
+        if check_before_upload:
+            orthanc_id = _get_orthanc_instance_id(dicom_bytes, force)
+
+            if orthanc_id is not None and await _async_is_instance_in_orthanc(client, orthanc_id):
+                instance_ids.append(orthanc_id)
+                continue
+
+        result = await client.post_instances(dicom_bytes)
+        instance_ids += [i['ID'] for i in _to_list(result)]
+
+    return instance_ids
+
+
+def _generate_dicom_bytes(path_or_ds: Union[str, Path, pydicom.Dataset], recursive: bool) -> Generator[bytes, None, None]:
     # If path_or_ds is a directory, upload all the DICOM files in the directory.
-    if (isinstance(path_or_ds, str) or isinstance(path_or_ds, Path)) and os.path.isdir(path_or_ds):
-        for dicom_bytes in _generate_dicom_bytes_from_directory(path_or_ds, recursive=recursive):
-            if check_before_upload:
-                data_is_in_orthanc, instance = await _async_is_data_already_in_orthanc(client, dicom_bytes, force)
-
-                # If data is already in Orthanc, skip uploading it and go to the next file.
-                if data_is_in_orthanc:
-                    instances.append(instance)
-                    continue
-
-            result = await client.post_instances(dicom_bytes)
-            instance = Instance(result['ID'], client)
-            instances.append(instance)
+    if isinstance(path_or_ds, (str, Path)) and os.path.isdir(path_or_ds):
+        yield from _generate_dicom_bytes_from_directory(path_or_ds, recursive=recursive)
 
     # If path_or_ds is a DICOM file, zip file or a pydicom Dataset, upload it.
     else:
-        dicom_bytes = _prepare_data_from_ds_or_file(path_or_ds)
-
-        if check_before_upload:
-            data_in_orthanc, instance = await _async_is_data_already_in_orthanc(client, dicom_bytes, force)
-            # If data is already in Orthanc, returns the instance directly.
-            if data_in_orthanc:
-                instances.append(instance)
-                return instances
-
-        result = await client.post_instances(dicom_bytes)
-
-        # When a zip is uploaded, result can be a list of instances if the zip contained multiple DICOM files.
-        if isinstance(result, list):
-            instances += [Instance(i['ID'], client) for i in result]
-        else:
-            instance = Instance(result['ID'], client)
-            instances.append(instance)
-
-    return instances
+        yield _prepare_data_from_ds_or_file(path_or_ds)
 
 
-async def _async_is_data_already_in_orthanc(
-        client: AsyncOrthanc,
-        dicom_bytes: bytes,
-        force: bool = False) -> Tuple[bool, Union[Instance, None]]:
+def _to_list(result: Union[Dict, List[Dict]]) -> List[Dict]:
+    # When a zip is uploaded, result is a list of instances (empty if the zip contained no DICOM file).
+    return result if isinstance(result, list) else [result]
+
+
+def _get_orthanc_instance_id(dicom_bytes: bytes, force: bool) -> Optional[str]:
+    """Orthanc identifier of the instance in `dicom_bytes`, or None if it cannot be computed (zip file, missing tags...)"""
+    if zipfile.is_zipfile(BytesIO(dicom_bytes)):
+        return None  # Otherwise, `force=True` would make pydicom "read" the zip file as a dataset
+
     try:
-        dicom_file_like = BytesIO(dicom_bytes)
-        ds = pydicom.dcmread(dicom_file_like, force=force)
-        orthanc_id = to_orthanc_instance_id_from_ds(ds)
-    except InvalidDicomError:
-        # If the file is not a valid DICOM file, likely it is a zip file. It will be uploaded.
-        return False, None
+        ds = pydicom.dcmread(BytesIO(dicom_bytes), force=force, stop_before_pixels=True)
+        return to_orthanc_instance_id_from_ds(ds)
 
+    except (InvalidDicomError, AttributeError, ValueError, EOFError, OSError):
+        # Not a valid DICOM file, or the identifying tags are missing. The data will be uploaded.
+        return None
+
+
+def _is_instance_in_orthanc(client: Orthanc, orthanc_id: str) -> bool:
+    try:
+        # Attempt to get metadata to verify if data is already in Orthanc.
+        client.get_instances_id_metadata(id_=orthanc_id)
+        return True
+
+    except httpx2.HTTPError:
+        return False
+
+
+async def _async_is_instance_in_orthanc(client: AsyncOrthanc, orthanc_id: str) -> bool:
     try:
         # Attempt to get metadata to verify if data is already in Orthanc.
         await client.get_instances_id_metadata(id_=orthanc_id)
-        return True, Instance(orthanc_id, client)
+        return True
 
-    except httpx.HTTPError:
-        return False, None
+    except httpx2.HTTPError:
+        return False
 
 
 def _prepare_data_from_ds_or_file(path_or_ds: Union[str, Path, pydicom.Dataset]) -> bytes:
@@ -192,21 +189,3 @@ def _generate_dicom_bytes_from_directory(directory: str, recursive: bool) -> Gen
 
     for filepath in filepaths:
         yield _prepare_data_from_ds_or_file(filepath)
-
-
-def _is_data_already_in_orthanc(client: Orthanc, dicom_bytes: bytes, force: bool = False) -> Tuple[bool, Union[Instance, None]]:
-    try:
-        dicom_file_like = BytesIO(dicom_bytes)
-        ds = pydicom.dcmread(dicom_file_like, force=force)
-        orthanc_id = to_orthanc_instance_id_from_ds(ds)
-    except InvalidDicomError:
-        # If the file is not a valid DICOM file, likely it is a zip file. It will be uploaded.
-        return False, None
-
-    try:
-        # Attempt to get metadata to verify if data is already in Orthanc.
-        client.get_instances_id_metadata(id_=orthanc_id)
-        return True, Instance(orthanc_id, client)
-
-    except httpx2.HTTPError:
-        return False, None

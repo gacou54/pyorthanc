@@ -3,12 +3,12 @@ import tempfile
 import zipfile
 from unittest.mock import AsyncMock, patch
 
-import httpx
+import httpx2
 import pydicom
 import pytest
 from pydicom.data import get_testdata_file
 
-from pyorthanc import Instance, async_upload
+from pyorthanc import async_upload
 
 
 @pytest.mark.asyncio
@@ -17,9 +17,7 @@ async def test_async_upload_with_path(async_client):
 
     result = await async_upload(async_client, path)
 
-    assert isinstance(result, list)
-    assert isinstance(result[0], Instance)
-    assert result[0].id_ == 'f689ddd2-662f8fe1-8b18180d-ec2a2cee-937917af'
+    assert result == ['f689ddd2-662f8fe1-8b18180d-ec2a2cee-937917af']
 
 
 @pytest.mark.asyncio
@@ -28,9 +26,7 @@ async def test_async_upload_with_ds(async_client):
 
     result = await async_upload(async_client, ds)
 
-    assert isinstance(result, list)
-    assert isinstance(result[0], Instance)
-    assert result[0].id_ == 'f689ddd2-662f8fe1-8b18180d-ec2a2cee-937917af'
+    assert result == ['f689ddd2-662f8fe1-8b18180d-ec2a2cee-937917af']
 
 
 @pytest.mark.asyncio
@@ -48,7 +44,7 @@ async def test_async_upload_with_zip(async_client):
 
     assert isinstance(result, list)
     assert len(result) == 2
-    assert all(isinstance(i, Instance) for i in result)
+    assert all(isinstance(i, str) for i in result)
 
 
 @pytest.mark.asyncio
@@ -67,7 +63,7 @@ async def test_async_upload_with_directory(async_client):
 
     assert isinstance(result, list)
     assert len(result) == 3
-    assert all(isinstance(i, Instance) for i in result)
+    assert all(isinstance(i, str) for i in result)
 
 
 @pytest.mark.asyncio
@@ -105,7 +101,7 @@ async def test_async_upload_while_checking_if_instance_exists(async_client):
         with patch('pyorthanc.async_client.AsyncOrthanc.post_instances', new_callable=AsyncMock) as mock_post_instances:
             mock_post_instances.return_value = {'ID': 'test-instance-id'}
 
-            mock_get_instance.side_effect = httpx.HTTPError('Instance already exists')
+            mock_get_instance.side_effect = httpx2.HTTPError('Instance already exists')
             instances = await async_upload(async_client, path, check_before_upload=True)
             assert len(instances) == 1
 
@@ -116,3 +112,30 @@ async def test_async_upload_while_checking_if_instance_exists(async_client):
 
             assert mock_post_instances.call_count == 1  # Should only be called once
             assert mock_get_instance.call_count == 2  # Call 2 times to check if an instance exists before upload
+
+
+@pytest.mark.asyncio
+async def test_async_upload_zip_while_checking_with_force(async_client):
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        zip_filepath = os.path.join(tmpdirname, 'dicom_files.zip')
+        with zipfile.ZipFile(zip_filepath, 'w') as zipf:
+            zipf.write(get_testdata_file('CT_small.dcm'), 'CT_small.dcm')
+
+        result = await async_upload(async_client, zip_filepath, check_before_upload=True, force=True)
+
+    assert result == ['f689ddd2-662f8fe1-8b18180d-ec2a2cee-937917af']
+
+
+@pytest.mark.asyncio
+async def test_async_upload_file_without_preamble_while_checking_with_force(async_client, tmp_dir):
+    path = os.path.join(tmp_dir, 'without_preamble.dcm')
+    with open(get_testdata_file('CT_small.dcm'), 'rb') as f, open(path, 'wb') as f2:
+        f2.write(f.read()[132:])  # Removing the 128-byte preamble and the "DICM" prefix
+
+    first = await async_upload(async_client, path, check_before_upload=True, force=True)
+
+    with patch('pyorthanc.async_client.AsyncOrthanc.post_instances', new_callable=AsyncMock) as mock_post_instances:
+        second = await async_upload(async_client, path, check_before_upload=True, force=True)
+
+    assert first == second == ['f689ddd2-662f8fe1-8b18180d-ec2a2cee-937917af']
+    mock_post_instances.assert_not_called()
