@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import BinaryIO, Dict, List, TYPE_CHECKING, Union
+from typing import Any, BinaryIO, Dict, List, TYPE_CHECKING, Union
 
 from httpx2 import ReadTimeout
 
@@ -21,7 +21,7 @@ class Study(Resource):
     or the entire DICOM file of the Series
     """
 
-    def get_main_information(self) -> Dict:
+    def get_main_information(self) -> Dict[str, Any]:
         """Get Study information
 
         Returns
@@ -92,7 +92,7 @@ class Study(Resource):
         return Patient(self.patient_identifier, self.client)
 
     @property
-    def patient_information(self) -> Dict:
+    def patient_information(self) -> Dict[str, Any]:
         """Get patient information"""
         return self.get_main_information()['PatientMainDicomTags']
 
@@ -565,7 +565,7 @@ class Study(Resource):
         """
         self._download_file(f'{self.client.url}/studies/{self.id_}/archive', filepath, with_progres)
 
-    def get_shared_tags(self, simplify: bool = False, short: bool = False) -> Dict:
+    def get_shared_tags(self, simplify: bool = False, short: bool = False) -> Dict[str, Any]:
         """Retrieve the shared tags of the study"""
         params = self._make_response_format_params(simplify, short)
 
@@ -575,7 +575,7 @@ class Study(Resource):
         ))
 
     @property
-    def shared_tags(self) -> Dict:
+    def shared_tags(self) -> Dict[str, Any]:
         return self.get_shared_tags(simplify=True)
 
     def remove_empty_series(self) -> None:

@@ -64,7 +64,7 @@ class Resource:
         except KeyError:
             raise errors.TagDoesNotExistError(f'{self} has no {tag} tag.')
 
-    def _make_response_format_params(self, simplify: bool = False, short: bool = False) -> Dict:
+    def _make_response_format_params(self, simplify: bool = False, short: bool = False) -> Dict[str, Any]:
         if simplify and not short:
             params = {'simplify': True}
         elif short and not simplify:

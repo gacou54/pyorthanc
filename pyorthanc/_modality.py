@@ -41,7 +41,7 @@ class Modality:
         except httpx2.HTTPError:
             return False
 
-    def get(self, level: str, resources: Union[List[Dict[str, Any]], Dict[str, Any]]) -> Dict:
+    def get(self, level: str, resources: Union[List[Dict[str, Any]], Dict[str, Any]]) -> Dict[str, Any]:
         """C-GET
 
         C-Move SCU: Send all the results to another modality whose AET is in the body
@@ -115,7 +115,7 @@ class Modality:
 
         return Job(job_info['ID'], self.client)
 
-    def find(self, data: Dict) -> Dict:
+    def find(self, data: Dict) -> Dict[str, Any]:
         """C-Find (Querying with data)
 
         Parameters
@@ -154,7 +154,7 @@ class Modality:
 
     query = find  # Alias
 
-    def move(self, query_identifier: str, cmove_data: Dict = None) -> Dict:
+    def move(self, query_identifier: str, cmove_data: Dict = None) -> Dict[str, Any]:
         """C-Move query results to another modality
 
         C-Move SCU: Send all the results to another modality whose AET is in the body
@@ -216,7 +216,7 @@ class Modality:
 
         return Job(job_info['ID'], self.client)
 
-    def store(self, instance_or_series_id: str, **kwargs: Any) -> Dict:
+    def store(self, instance_or_series_id: str, **kwargs: Any) -> Dict[str, Any]:
         """Store series or instance to modality.
 
         Parameters
@@ -272,7 +272,7 @@ class Modality:
 
         return Job(job_info['ID'], self.client)
 
-    def get_query_answers(self, query_id: str, simplify: bool = True, short: bool = False) -> List[Dict]:
+    def get_query_answers(self, query_id: str, simplify: bool = True, short: bool = False) -> List[Dict[str, Any]]:
         """"""
         params = self._make_response_format_params(simplify=simplify, short=short)
 
@@ -283,7 +283,7 @@ class Modality:
 
         return answers
 
-    def _make_response_format_params(self, simplify: bool, short: bool) -> Dict:
+    def _make_response_format_params(self, simplify: bool, short: bool) -> Dict[str, Any]:
         if simplify and not short:
             params = {'simplify': True}
         elif short and not simplify:

@@ -1,7 +1,7 @@
 import time
 from datetime import datetime
 from enum import Enum
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 from . import util
 from ._orthanc_sdk_enums import ErrorCode
@@ -34,7 +34,7 @@ class Job:
         return State(state)
 
     @property
-    def content(self) -> Dict:
+    def content(self) -> Dict[str, Any]:
         return self.get_information()['Content']
 
     @property
