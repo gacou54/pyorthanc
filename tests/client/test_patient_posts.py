@@ -1,7 +1,7 @@
 import os
 import zipfile
 
-import httpx
+import httpx2
 import pytest
 
 from ..data import a_patient
@@ -19,7 +19,7 @@ def test_anonymize_patient(client_with_data):
 
 
 def test_anonymize_patient_when_no_data(client):
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         client.post_patients_id_anonymize(a_patient.IDENTIFIER)
 
 
@@ -36,5 +36,5 @@ def test_archiving_patient(client_with_data):
 
 
 def test_archiving_patient_when_no_data(client):
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         client.post_patients_id_archive(a_patient.IDENTIFIER)

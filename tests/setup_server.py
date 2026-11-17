@@ -1,7 +1,7 @@
 import dataclasses
 import os
 
-import httpx
+import httpx2
 
 
 @dataclasses.dataclass
@@ -34,41 +34,41 @@ def setup_data(orthanc: OrthancServer) -> None:
 
     for file_path in dicom_file_paths:
         with open(file_path, 'rb') as file:
-            httpx.post(
+            httpx2.post(
                 f'{orthanc.url}/instances',
                 content=file.read(),
                 headers=headers,
-                auth=httpx.BasicAuth(orthanc.username, orthanc.password)
+                auth=httpx2.BasicAuth(orthanc.username, orthanc.password)
             )
 
 
 def clear_data(orthanc: OrthancServer) -> None:
     """Remove all patient data in the test Orthanc instance with API calls."""
-    patient_identifiers = httpx.get(
+    patient_identifiers = httpx2.get(
         url=f'{orthanc.url}/patients',
-        auth=httpx.BasicAuth(orthanc.username, orthanc.password)
+        auth=httpx2.BasicAuth(orthanc.username, orthanc.password)
     ).json()
 
     for patient_identifier in patient_identifiers:
-        httpx.delete(
+        httpx2.delete(
             url=f'{orthanc.url}/patients/{patient_identifier}',
-            auth=httpx.BasicAuth(orthanc.username, orthanc.password)
+            auth=httpx2.BasicAuth(orthanc.username, orthanc.password)
         )
 
-    query_identifiers = httpx.get(
+    query_identifiers = httpx2.get(
         url=f'{orthanc.url}/queries',
-        auth=httpx.BasicAuth(orthanc.username, orthanc.password)
+        auth=httpx2.BasicAuth(orthanc.username, orthanc.password)
     ).json()
 
     for query_identifier in query_identifiers:
-        httpx.delete(
+        httpx2.delete(
             url=f'{orthanc.url}/queries/{query_identifier}',
-            auth=httpx.BasicAuth(orthanc.username, orthanc.password)
+            auth=httpx2.BasicAuth(orthanc.username, orthanc.password)
         )
 
 
 def add_modality(orthanc: OrthancServer, modality: str, host: str, port: int):
-    httpx.put(
+    httpx2.put(
         f'{orthanc.url}/modalities/{modality}',
         json={
             'AET': modality.upper(),
@@ -85,5 +85,5 @@ def add_modality(orthanc: OrthancServer, modality: str, host: str, port: int):
             'Port': port,
             'UseDicomTls': False
         },
-        auth=httpx.BasicAuth(orthanc.username, orthanc.password)
+        auth=httpx2.BasicAuth(orthanc.username, orthanc.password)
     )

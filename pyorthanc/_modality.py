@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Union
 
-import httpx
+import httpx2
 
 from . import util
 from ._find import _validate_level
@@ -37,7 +37,7 @@ class Modality:
             self.client.post_modalities_id_echo(self.modality)
             return True
 
-        except httpx.HTTPError:
+        except httpx2.HTTPError:
             return False
 
     def get(self, level: str, resources: Union[List[Dict[str, Any]], Dict[str, Any]]) -> Dict:

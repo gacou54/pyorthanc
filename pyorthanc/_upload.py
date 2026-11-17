@@ -4,7 +4,7 @@ from io import BytesIO
 from pathlib import Path
 from typing import Dict, Generator, List, Tuple, Union
 
-import httpx
+import httpx2
 import pydicom
 from pydicom.errors import InvalidDicomError
 
@@ -72,7 +72,7 @@ def upload(
     return instances
 
 
-async def async_upload(client: AsyncOrthanc, path_or_ds: Union[str, Path, pydicom.Dataset]) -> Union[Dict, httpx.Response]:
+async def async_upload(client: AsyncOrthanc, path_or_ds: Union[str, Path, pydicom.Dataset]) -> Union[Dict, httpx2.Response]:
     """Upload a DICOM file or dataset to Orthanc asynchronously
 
     Parameters
@@ -136,5 +136,5 @@ def _is_data_already_in_orthanc(client: Orthanc, dicom_bytes: bytes) -> Tuple[bo
         client.get_instances_id_metadata(id_=orthanc_id)
         return True, Instance(orthanc_id, client)
 
-    except httpx.HTTPError:
+    except httpx2.HTTPError:
         return False, None

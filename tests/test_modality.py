@@ -1,4 +1,4 @@
-import httpx
+import httpx2
 import pytest
 
 from .setup_server import ORTHANC_1, ORTHANC_2, setup_data
@@ -52,7 +52,7 @@ def test_query(modality):
 def test_failed_find(modality):
     bad_payload = {'Level': 'Study', 'Query': {'BadTag': 'MP*'}}
 
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         modality.find(bad_payload)
 
 

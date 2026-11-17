@@ -1,6 +1,6 @@
 import warnings
 
-import httpx
+import httpx2
 import pytest
 
 from ..data import a_patient
@@ -22,8 +22,8 @@ def test_set_patient_to_protected(client_with_data):
 
 
 def test_set_patient_to_protected_when_no_data(client):
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         client.put_patients_id_protected(a_patient.IDENTIFIER)
 
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         client.put_patients_id_protected(a_patient.IDENTIFIER)

@@ -2,7 +2,7 @@ import io
 from datetime import datetime
 from zipfile import ZipFile
 
-import httpx
+import httpx2
 import pytest
 
 from pyorthanc import Patient, errors
@@ -117,10 +117,10 @@ def test_modify_remove(patient):
     with pytest.raises(errors.TagDoesNotExistError):
         patient.name
 
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         patient.modify(remove=['PatientID'])
 
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         patient.modify(remove=['PatientID'], force=True)
 
 
@@ -147,7 +147,7 @@ def test_modify_as_job_remove(patient):
     with pytest.raises(errors.TagDoesNotExistError):
         patient.name
 
-    with pytest.raises(httpx.HTTPError):
+    with pytest.raises(httpx2.HTTPError):
         patient.modify_as_job(remove=['PatientID'])
 
     job = patient.modify_as_job(remove=['PatientID'], force=True)

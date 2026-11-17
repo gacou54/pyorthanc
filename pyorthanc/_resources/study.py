@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import BinaryIO, Dict, List, TYPE_CHECKING, Union
 
-from httpx import ReadTimeout
+from httpx2 import ReadTimeout
 
 from .resource import Resource
 from .series import Series
