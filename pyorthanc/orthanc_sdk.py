@@ -3,7 +3,7 @@ from typing import Any, Callable, Optional, Tuple
 
 from ._orthanc_sdk_enums import *
 
-VERSION = '7.0'
+VERSION = '7.1'
 
 
 class Image:
@@ -838,6 +838,11 @@ def RegisterRestCallback(new_route: str, func: Callable[[RestOutput, str, Any], 
 
 def RegisterStorageArea(*args):
     """None"""
+    pass
+
+
+def RegisterStorageArea3(*args):
+    """(New from v 7.1) Generated from C function OrthancPluginRegisterStorageArea3()"""
     pass
 
 

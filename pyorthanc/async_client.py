@@ -15,7 +15,7 @@ from httpx2._types import (
 class AsyncOrthanc(httpx2.AsyncClient):
     """Orthanc API
 
-    version 1.12.11
+    version 1.13.1
     This is the full documentation of the [REST API](https://orthanc.uclouvain.be/book/users/rest.html) of Orthanc.<p>This reference is automatically generated from the source code of Orthanc. A [shorter cheat sheet](https://orthanc.uclouvain.be/book/users/rest-cheatsheet.html) is part of the Orthanc Book.<p>An earlier, manually crafted version from August 2019, is [still available](2019-08-orthanc-openapi.html), but is not up-to-date anymore ([source](https://groups.google.com/g/orthanc-users/c/NUiJTEICSl8/m/xKeqMrbqAAAJ)).
 
     """
@@ -45,7 +45,7 @@ class AsyncOrthanc(httpx2.AsyncClient):
         """
         super().__init__(*args, **kwargs)
         self.url = url
-        self.version = "1.12.11"
+        self.version = "1.13.1"
         self.return_raw_response = return_raw_response
 
         if username and password:
@@ -657,8 +657,8 @@ class AsyncOrthanc(httpx2.AsyncClient):
                 "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
         headers
             Dictionary of optional headers:
-                "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
                 "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+                "Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
 
         Returns
         -------
@@ -756,8 +756,8 @@ class AsyncOrthanc(httpx2.AsyncClient):
                 "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
         headers
             Dictionary of optional headers:
-                "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
                 "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+                "Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
 
         Returns
         -------
@@ -2545,7 +2545,7 @@ class AsyncOrthanc(httpx2.AsyncClient):
         json
             Dictionary with the following keys:
               "CheckFind": Issue a dummy C-FIND command after the C-GET SCU, in order to check whether the remote modality knows about Orthanc. This field defaults to the value of the `DicomEchoChecksFind` configuration option. New in Orthanc 1.8.1.
-              "Timeout": Timeout for the C-ECHO command, in seconds.  Orthanc will close the DICOM association if no C-ECHO answer is received within this time period.
+              "Timeout": DICOM SCU Timeout for this C-ECHO command, in seconds.  Orthanc will close the DICOM association if no C-ECHO answer is received within this time period.
 
 
         Returns
@@ -2765,12 +2765,12 @@ class AsyncOrthanc(httpx2.AsyncClient):
             Dictionary with the following keys:
               "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
               "Level": Level of the query (`Patient`, `Study`, `Series` or `Instance`)
-              "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option. Ignored if `DicomModalities` already sets `LocalAet` for this modality.
+              "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option or `LocalAet` in the `DicomModalities`.
               "Permissive": If `true`, ignore errors during the individual steps of the job.  Default value is `false`.
               "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.  Default value is `0`
               "Resources": List of queries identifying all the DICOM resources to be sent.  Usage of wildcards is prohibited and the query shall only contain DICOM ID tags.  Additionally, you may provide SOPClassesInStudy to limit the scope of the DICOM negotiation to certain SOPClassUID or to present uncommon SOPClassUID during the DICOM negotiation.  By default, Orhanc will propose the most 120 common SOPClassUIDs.
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
-              "Timeout": Timeout for the C-GET command, in seconds.  Orthanc will close the DICOM association if no DICOM messages are received within this time period.
+              "Timeout": DICOM SCU Timeout for this C-GET command, in seconds.  Orthanc will close the DICOM association if no DICOM messages are received within this time period.
               "UserData": User data that will travel along with the job.
 
 
@@ -2804,13 +2804,13 @@ class AsyncOrthanc(httpx2.AsyncClient):
             Dictionary with the following keys:
               "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
               "Level": Level of the query (`Patient`, `Study`, `Series` or `Instance`)
-              "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option. Ignored if `DicomModalities` already sets `LocalAet` for this modality.
+              "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option or `LocalAet` in the `DicomModalities`.
               "Permissive": If `true`, ignore errors during the individual steps of the job.  Default value is `false`.
               "Priority": In asynchronous mode, the priority of the job. The higher the value, the higher the priority.  Default value is `0`
               "Resources": List of queries identifying all the DICOM resources to be sent
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "TargetAet": Target AET that will be used by the remote DICOM modality as a target for its C-STORE SCU commands, defaults to `DicomAet` configuration option in order to do a simple query/retrieve
-              "Timeout": Timeout for the C-MOVE command, in seconds.  Orthanc will close the DICOM association if no DICOM messages (e.g., C-STORE sub-operations or responses) are received within this time period.
+              "Timeout": DICOM SCU Timeout for this C-MOVE command, in seconds.  Orthanc will close the DICOM association if no DICOM messages (e.g., C-STORE sub-operations or responses) are received within this time period.
               "UserData": User data that will travel along with the job.
 
 
@@ -2843,10 +2843,10 @@ class AsyncOrthanc(httpx2.AsyncClient):
         json
             Dictionary with the following keys:
               "Level": Level of the query (`Patient`, `Study`, `Series` or `Instance`)
-              "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option. Ignored if `DicomModalities` already sets `LocalAet` for this modality.
+              "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option or `LocalAet` in the `DicomModalities`.
               "Normalize": Whether to normalize the query, i.e. whether to wipe out from the query, the DICOM tags that are not applicable for the query-retrieve level of interest
               "Query": Associative array containing the filter on the values of the DICOM tags
-              "Timeout": Timeout for the C-FIND command and subsequent C-GET/C-MOVE retrievals, in seconds (new in Orthanc 1.9.1).  Orthanc will close the related DICOM associations if no DICOM messages are received within this time period.
+              "Timeout": DICOM SCU Timeout for this C-FIND command and subsequent C-GET/C-MOVE retrievals, in seconds (new in Orthanc 1.9.1).  Orthanc will close the related DICOM associations if no DICOM messages are received within this time period.
 
 
         Returns
@@ -2879,7 +2879,7 @@ class AsyncOrthanc(httpx2.AsyncClient):
             Dictionary with the following keys:
               "DicomInstances": List of DICOM resources that are not necessarily stored within Orthanc, but that must be checked by storage commitment. This is a list of JSON objects that must contain the `SOPClassUID` and `SOPInstanceUID` fields.
               "Resources": List of the Orthanc identifiers of the DICOM resources to be checked by storage commitment
-              "Timeout": Timeout for the storage commitment command (new in Orthanc 1.9.1)
+              "Timeout": DICOM SCU Timeout for this storage commitment command (new in Orthanc 1.9.1)
 
 
         Returns
@@ -2914,7 +2914,7 @@ class AsyncOrthanc(httpx2.AsyncClient):
               "Asynchronous": If `true`, run the job in asynchronous mode, which means that the REST API call will immediately return, reporting the identifier of a job. Prefer this flavor wherever possible.
               "CalledAet": Called AET that is used for this commands, defaults to `AET` configuration option. Allows you to overwrite the destination AET for a specific operation.
               "Host": Host that is used for this commands, defaults to `Host` configuration option. Allows you to overwrite the destination host for a specific operation.
-              "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option. Ignored if `DicomModalities` already sets `LocalAet` for this modality.
+              "LocalAet": Local AET that is used for this commands, defaults to `DicomAet` configuration option or `LocalAet` in the `DicomModalities`.
               "MoveOriginatorAet": Move originator AET that is used for this commands, in order to fake a C-MOVE SCU
               "MoveOriginatorID": Move originator ID that is used for this commands, in order to fake a C-MOVE SCU
               "Permissive": If `true`, ignore errors during the individual steps of the job.  Default value is `false`.
@@ -2923,7 +2923,7 @@ class AsyncOrthanc(httpx2.AsyncClient):
               "Resources": List of the Orthanc identifiers of all the DICOM resources to be sent
               "StorageCommitment": Whether to chain C-STORE with DICOM storage commitment to validate the success of the transmission: https://orthanc.uclouvain.be/book/users/storage-commitment.html#chaining-c-store-with-storage-commitment
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
-              "Timeout": Timeout for the C-STORE command, in seconds.  Orthanc will close the DICOM association if no DICOM messages (e.g., C-STORE responses) are received within this time period.
+              "Timeout": DICOM SCU Timeout for this C-STORE command, in seconds.  Orthanc will close the DICOM association if no DICOM messages (e.g., C-STORE responses) are received within this time period.
               "UserData": User data that will travel along with the job.
 
         data
@@ -3339,8 +3339,8 @@ class AsyncOrthanc(httpx2.AsyncClient):
                 "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
         headers
             Dictionary of optional headers:
-                "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
                 "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+                "Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
 
         Returns
         -------
@@ -3438,8 +3438,8 @@ class AsyncOrthanc(httpx2.AsyncClient):
                 "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
         headers
             Dictionary of optional headers:
-                "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
                 "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+                "Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
 
         Returns
         -------
@@ -4694,7 +4694,7 @@ class AsyncOrthanc(httpx2.AsyncClient):
         json
             Dictionary with the following keys:
               "Query": Associative array containing the filter on the values of the DICOM tags
-              "Timeout": Timeout for the C-FIND command, in seconds (new in Orthanc 1.9.1)
+              "Timeout": DICOM SCU Timeout for this C-FIND command, in seconds (new in Orthanc 1.9.1)
 
 
         Returns
@@ -4729,7 +4729,7 @@ class AsyncOrthanc(httpx2.AsyncClient):
         json
             Dictionary with the following keys:
               "Query": Associative array containing the filter on the values of the DICOM tags
-              "Timeout": Timeout for the C-FIND command, in seconds (new in Orthanc 1.9.1)
+              "Timeout": DICOM SCU Timeout for this C-FIND command, in seconds (new in Orthanc 1.9.1)
 
 
         Returns
@@ -4764,7 +4764,7 @@ class AsyncOrthanc(httpx2.AsyncClient):
         json
             Dictionary with the following keys:
               "Query": Associative array containing the filter on the values of the DICOM tags
-              "Timeout": Timeout for the C-FIND command, in seconds (new in Orthanc 1.9.1)
+              "Timeout": DICOM SCU Timeout for this C-FIND command, in seconds (new in Orthanc 1.9.1)
 
 
         Returns
@@ -4807,7 +4807,7 @@ class AsyncOrthanc(httpx2.AsyncClient):
               "Simplify": If set to `true`, report the DICOM tags in human-readable format (using the symbolic name of the tags)
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "TargetAet": AET of the target modality. By default, the AET of Orthanc is used, as defined in the `DicomAet` configuration option.
-              "Timeout": Timeout for the C-MOVE command, in seconds.  Orthanc will close the DICOM association if no DICOM messages (e.g., C-STORE sub-operations or responses) are received within this time period.
+              "Timeout": DICOM SCU Timeout for this C-MOVE or C-GET command, in seconds.  Orthanc will close the DICOM association if no DICOM messages (e.g., C-STORE sub-operations or responses) are received within this time period.
               "UserData": User data that will travel along with the job.
 
         data
@@ -4926,7 +4926,7 @@ class AsyncOrthanc(httpx2.AsyncClient):
               "Simplify": If set to `true`, report the DICOM tags in human-readable format (using the symbolic name of the tags)
               "Synchronous": If `true`, run the job in synchronous mode, which means that the HTTP answer will directly contain the result of the job. This is the default, easy behavior, but it is *not* desirable for long jobs, as it might lead to network timeouts.
               "TargetAet": AET of the target modality. By default, the AET of Orthanc is used, as defined in the `DicomAet` configuration option.
-              "Timeout": Timeout for the C-MOVE command, in seconds.  Orthanc will close the DICOM association if no DICOM messages (e.g., C-STORE sub-operations or responses) are received within this time period.
+              "Timeout": DICOM SCU Timeout for this C-MOVE or C-GET command, in seconds.  Orthanc will close the DICOM association if no DICOM messages (e.g., C-STORE sub-operations or responses) are received within this time period.
               "UserData": User data that will travel along with the job.
 
         data
@@ -5315,8 +5315,8 @@ class AsyncOrthanc(httpx2.AsyncClient):
                 "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
         headers
             Dictionary of optional headers:
-                "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
                 "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+                "Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
 
         Returns
         -------
@@ -5414,8 +5414,8 @@ class AsyncOrthanc(httpx2.AsyncClient):
                 "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
         headers
             Dictionary of optional headers:
-                "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
                 "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+                "Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
 
         Returns
         -------
@@ -6660,8 +6660,8 @@ class AsyncOrthanc(httpx2.AsyncClient):
                 "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
         headers
             Dictionary of optional headers:
-                "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
                 "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+                "Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
 
         Returns
         -------
@@ -6759,8 +6759,8 @@ class AsyncOrthanc(httpx2.AsyncClient):
                 "filename" (str): Filename to set in the "Content-Disposition" HTTP header (including file extension)
         headers
             Dictionary of optional headers:
-                "Content-Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
                 "If-None-Match" (str): Optional revision of the attachment, to check if its content has changed
+                "Range" (str): Optional content range to access part of the attachment (new in Orthanc 1.12.5)
 
         Returns
         -------
@@ -7816,7 +7816,7 @@ class AsyncOrthanc(httpx2.AsyncClient):
         ----------
         json
             Dictionary with the following keys:
-              "Resources": List of the Orthanc identifiers of the patients/studies/series/instances of interest.
+              "Resources": List of the Orthanc identifiers of the patients/studies/series/instances of interest.  Starting from Orthanc 1.13.0, this array can also contain an array of JSON objects with 2 fields each: 'Level' and 'ID'.
 
 
         Returns
@@ -8183,13 +8183,13 @@ class AsyncOrthanc(httpx2.AsyncClient):
     ) -> str:
         """(async) Get DICOM conformance
 
-        Get the DICOM conformance statement of Orthanc
+        Get the DICOM conformance summary of Orthanc
         Tags: System
 
         Returns
         -------
         str
-            The DICOM conformance statement
+            The DICOM conformance summary
         """
         return await self._get(
             route=f"{self.url}/tools/dicom-conformance",
