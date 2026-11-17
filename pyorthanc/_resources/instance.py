@@ -77,7 +77,7 @@ class Instance(Resource):
         """Get SOPInstanceUID"""
         return self._get_main_dicom_tag_value('SOPInstanceUID')
 
-    def get_main_information(self) -> Dict:
+    def get_main_information(self) -> Dict[str, Any]:
         """Get instance information
 
         Returns
@@ -190,12 +190,12 @@ class Instance(Resource):
         return self.tags
 
     @property
-    def tags(self) -> Dict:
+    def tags(self) -> Dict[str, Any]:
         """Get tags"""
         return dict(self.client.get_instances_id_tags(self.id_))
 
     @property
-    def simplified_tags(self) -> Dict:
+    def simplified_tags(self) -> Dict[str, Any]:
         """Get simplified tags"""
         return dict(self.client.get_instances_id_tags(self.id_, params={'simplify': True}))
 

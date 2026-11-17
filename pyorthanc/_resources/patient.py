@@ -1,6 +1,6 @@
 import warnings
 from datetime import datetime
-from typing import BinaryIO, Dict, List, Union
+from typing import Any, BinaryIO, Dict, List, Union
 
 from httpx2 import ReadTimeout
 
@@ -17,7 +17,7 @@ class Patient(Resource):
     or the entire DICOM file of the Patient
     """
 
-    def get_main_information(self) -> Dict:
+    def get_main_information(self) -> Dict[str, Any]:
         """Get Patient information
 
         Returns
@@ -141,7 +141,7 @@ class Patient(Resource):
         """
         self._download_file(f'{self.client.url}/patients/{self.id_}/archive', filepath, with_progres)
 
-    def get_patient_module(self, simplify: bool = False, short: bool = False) -> Dict:
+    def get_patient_module(self, simplify: bool = False, short: bool = False) -> Dict[str, Any]:
         """Get patient module in a simplified version
 
         The method returns the DICOM patient module
@@ -605,7 +605,7 @@ class Patient(Resource):
 
         return Job(job_info['ID'], self.client)
 
-    def get_shared_tags(self, simplify: bool = False, short: bool = False) -> Dict:
+    def get_shared_tags(self, simplify: bool = False, short: bool = False) -> Dict[str, Any]:
         """Retrieve the shared tags of the patient"""
         params = self._make_response_format_params(simplify, short)
 
@@ -615,7 +615,7 @@ class Patient(Resource):
         ))
 
     @property
-    def shared_tags(self) -> Dict:
+    def shared_tags(self) -> Dict[str, Any]:
         return self.get_shared_tags(simplify=True)
 
     def remove_empty_studies(self) -> None:

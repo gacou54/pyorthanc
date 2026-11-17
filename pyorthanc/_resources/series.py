@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import BinaryIO, Dict, List, TYPE_CHECKING, Union
+from typing import Any, BinaryIO, Dict, List, TYPE_CHECKING, Union
 
 from httpx2 import ReadTimeout
 
@@ -40,7 +40,7 @@ class Series(Resource):
         """Get SeriesInstanceUID"""
         return self._get_main_dicom_tag_value('SeriesInstanceUID')
 
-    def get_main_information(self) -> Dict:
+    def get_main_information(self) -> Dict[str, Any]:
         """Get series main information
 
         Returns
@@ -614,7 +614,7 @@ class Series(Resource):
         """
         self._download_file(f'{self.client.url}/series/{self.id_}/archive', filepath, with_progres)
 
-    def get_shared_tags(self, simplify: bool = False, short: bool = False) -> Dict:
+    def get_shared_tags(self, simplify: bool = False, short: bool = False) -> Dict[str, Any]:
         """Retrieve the shared tags of the series"""
         params = self._make_response_format_params(simplify, short)
 
@@ -624,7 +624,7 @@ class Series(Resource):
         ))
 
     @property
-    def shared_tags(self) -> Dict:
+    def shared_tags(self) -> Dict[str, Any]:
         return self.get_shared_tags(simplify=True)
 
     def remove_empty_instances(self) -> None:
