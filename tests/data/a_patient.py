@@ -111,14 +111,14 @@ STATISTICS = {
     'CountInstances': 3,
     'CountSeries': 3,
     'CountStudies': 1,
-    'DicomDiskSize': '11941362',
-    'DicomDiskSizeMB': 11,
-    'DicomUncompressedSize': '11941362',
-    'DicomUncompressedSizeMB': 11,
-    'DiskSize': '12937775',
-    'DiskSizeMB': 12,
-    'UncompressedSize': '12937775',
-    'UncompressedSizeMB': 12
+    'DicomDiskSize': '1936534',
+    'DicomDiskSizeMB': 1,
+    'DicomUncompressedSize': '1936534',
+    'DicomUncompressedSizeMB': 1,
+    'DiskSize': '1936534',
+    'DiskSizeMB': 1,
+    'UncompressedSize': '1936534',
+    'UncompressedSizeMB': 1
 }
 SERIES = [{'ExpectedNumberOfInstances': None, 'ID': 'c4c1fcc9-ae63f793-40cbcf25-fbd3efe5-ad72ff06', 'Instances': ['22dcf059-8fd3ade7-efb39ca3-7f46b248-0200abc9'], 'IsStable': False, 'Labels': [], 'LastUpdate': '20190810T020641', 'MainDicomTags': {'ImageOrientationPatient': '1\\0\\0\\0\\1\\0', 'Manufacturer': 'ADAC', 'Modality': 'RTDOSE', 'SeriesInstanceUID': '2.16.840.1.113669.2.931128.981194414.20100301170148.767969', 'SeriesNumber': '', 'StationName': 'pinnc-2'}, 'ParentStudy': '118bc493-b3b3172a-082119bd-f6802ec3-81695613', 'Status': 'Unknown', 'Type': 'Series'}, {'ExpectedNumberOfInstances': None, 'ID': 'e2a7df26-99673e0f-05aa84cd-c89677c0-634a2a96', 'Instances': ['348befe7-5be5ff53-70120381-3baa0cc2-e4e04220'], 'IsStable': False, 'Labels': [], 'LastUpdate': '20190810T020642', 'MainDicomTags': {'Manufacturer': 'ADAC', 'Modality': 'RTSTRUCT', 'SeriesDescription': 'Pinnacle POI', 'SeriesInstanceUID': '2.16.840.1.113669.2.931128.981194414.20100301170148.767959', 'SeriesNumber': '', 'StationName': 'pinnc-2'}, 'ParentStudy': '118bc493-b3b3172a-082119bd-f6802ec3-81695613', 'Status': 'Unknown', 'Type': 'Series'}, {'ExpectedNumberOfInstances': None, 'ID': '60108266-ece4d8f7-7b028286-a7b61f25-c6d33f0b', 'Instances': ['da2024f5-606f9e83-41b012bb-9dced1ea-77bcd599'], 'IsStable': False, 'Labels': [], 'LastUpdate': '20190810T020642', 'MainDicomTags': {'Manufacturer': 'ADAC', 'Modality': 'RTPLAN', 'OperatorsName': '', 'SeriesInstanceUID': '2.16.840.1.113669.2.931128.981194414.20100301170148.767977', 'SeriesNumber': '', 'StationName': 'pinnc-2'}, 'ParentStudy': '118bc493-b3b3172a-082119bd-f6802ec3-81695613', 'Status': 'Unknown', 'Type': 'Series'}]
 STUDIES = [{'ID': '118bc493-b3b3172a-082119bd-f6802ec3-81695613', 'IsStable': False, 'Labels': [], 'LastUpdate': '20190819T193722', 'MainDicomTags': {'AccessionNumber': '', 'ReferringPhysicianName': '', 'StudyDate': '20100223', 'StudyID': '', 'StudyInstanceUID': '1.2.840.113619.2.55.3.671782272.419.1266452812.128', 'StudyTime': ''}, 'ParentPatient': 'e34c28ce-981b0e5c-2a481559-cf0d5fbe-053335f8', 'PatientMainDicomTags': {'OtherPatientIDs': 'other-id-1\\other-id-2', 'PatientBirthDate': '19410901', 'PatientID': '03HDQ000', 'PatientName': 'MR-R', 'PatientSex': 'M'}, 'Series': ['c4c1fcc9-ae63f793-40cbcf25-fbd3efe5-ad72ff06', 'e2a7df26-99673e0f-05aa84cd-c89677c0-634a2a96', '60108266-ece4d8f7-7b028286-a7b61f25-c6d33f0b'], 'Type': 'Study'}]
