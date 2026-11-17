@@ -59,6 +59,12 @@ print(answer)
 modality.move(query_response['ID'])
 # or
 modality.move(query_response['ID'], {'TargetAet': 'OTHER_AET'})
+
+# For large transfers, run the C-Move as an Orthanc job and follow it
+# (there are also `Modality.get_as_job()` and `Modality.store_as_job()`)
+job = modality.move_as_job(query_response['ID'])
+job.wait_until_completion()
+print(job.state)
 ```
 
 ### Find and download patients according to criteria:
