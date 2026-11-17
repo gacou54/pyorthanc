@@ -14,7 +14,7 @@ keywords = ["Orthanc", "DICOM", "Medical-Imaging"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-httpx2 = ">=2.0.0,<3.0.0"
+httpx2 = ">=2.0.0,<3.0.0,!=2.16.1"
 pydicom = ">=2.4,<4.0.0"
 tqdm = { version = ">=4.66,<5", optional = true }
 
