@@ -56,7 +56,7 @@ INSTANCES = [
         'Type': 'Instance'
     },
     {
-        'FileSize': 10373100,
+        'FileSize': 368196,
         'FileUuid': '89b19e2c-9bfb-4751-a539-d54ac9a3d912',
         'ID': '348befe7-5be5ff53-70120381-3baa0cc2-e4e04220',
         'IndexInSeries': None,
