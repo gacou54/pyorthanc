@@ -38,6 +38,26 @@ orthanc = Orthanc(url='http://localhost:8042')
 upload(orthanc, 'directory/path', recursive=True, check_before_upload=True)
 ```
 
+To check if a file is in Orthanc, `pyorthanc` reads it with `pydicom`. Files that are not valid DICOM Part 10
+files (e.g. without the 128-byte preamble and the "DICM" prefix) cannot be read, so they are always uploaded.
+Use `force=True` to read them with `pydicom.dcmread(..., force=True)` and check them as well.
+
+```python
+upload(orthanc, 'directory/path', check_before_upload=True, force=True)
+```
+
+## Asynchronous upload
+`async_upload()` takes the same options as `upload()`, with an `AsyncOrthanc` client.
+It returns the Orthanc identifiers of the instances (`list[str]`).
+
+```python
+from pyorthanc import AsyncOrthanc, async_upload
+
+async_orthanc = AsyncOrthanc(url='http://localhost:8042')
+
+instance_ids = await async_upload(async_orthanc, 'directory/path', recursive=True, check_before_upload=True)
+```
+
 ## Reference
 ::: pyorthanc._upload
 options:

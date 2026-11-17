@@ -115,3 +115,42 @@ def test_upload_while_checking_if_instance_exists(client):
 
             assert mock_post_instances.call_count == 1  # Should only be called once
             assert mock_get_instance.call_count == 2  # Call 2 times to check if an instance exists before upload
+
+
+def test_upload_zip_while_checking_with_force(client):
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        zip_filepath = os.path.join(tmpdirname, 'dicom_files.zip')
+        with zipfile.ZipFile(zip_filepath, 'w') as zipf:
+            zipf.write(get_testdata_file('CT_small.dcm'), 'CT_small.dcm')
+
+        instances = upload(client, zip_filepath, check_before_upload=True, force=True)
+
+    assert [i.id_ for i in instances] == ['f689ddd2-662f8fe1-8b18180d-ec2a2cee-937917af']
+
+
+def test_upload_file_without_preamble_while_checking_with_force(client, tmp_dir):
+    path = os.path.join(tmp_dir, 'without_preamble.dcm')
+    with open(get_testdata_file('CT_small.dcm'), 'rb') as f, open(path, 'wb') as f2:
+        f2.write(f.read()[132:])  # Removing the 128-byte preamble and the "DICM" prefix
+
+    first = upload(client, path, check_before_upload=True, force=True)
+
+    with patch('pyorthanc.client.Orthanc.post_instances') as mock_post_instances:
+        second = upload(client, path, check_before_upload=True, force=True)
+
+    assert [i.id_ for i in first] == [i.id_ for i in second] == ['f689ddd2-662f8fe1-8b18180d-ec2a2cee-937917af']
+    mock_post_instances.assert_not_called()
+
+
+def test_upload_file_without_preamble_while_checking_without_force(client, tmp_dir):
+    path = os.path.join(tmp_dir, 'without_preamble.dcm')
+    with open(get_testdata_file('CT_small.dcm'), 'rb') as f, open(path, 'wb') as f2:
+        f2.write(f.read()[132:])  # Removing the 128-byte preamble and the "DICM" prefix
+
+    upload(client, path)
+
+    # Without force, the file cannot be read by pydicom, so it is uploaded again
+    with patch('pyorthanc.client.Orthanc.post_instances', return_value={'ID': 'an-id'}) as mock_post_instances:
+        upload(client, path, check_before_upload=True)
+
+    mock_post_instances.assert_called_once()
