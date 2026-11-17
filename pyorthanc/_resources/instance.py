@@ -183,13 +183,6 @@ class Instance(Resource):
         return self._get_main_dicom_tag_value('TemporalPositionIdentifier')
 
     @property
-    def first_level_tags(self) -> Any:
-        """Get first level tags"""
-        from warnings import warn
-        warn("`Instance.first_level_tags` is deprecated. Use `Instance.tags` instead.")
-        return self.tags
-
-    @property
     def tags(self) -> Dict[str, Any]:
         """Get tags"""
         return dict(self.client.get_instances_id_tags(self.id_))
