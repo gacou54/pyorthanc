@@ -25,6 +25,8 @@ services:
     build:
       context: .
       dockerfile: tests/orthanc/pytest.Dockerfile
+      args:
+        PYTHON_VERSION: ${PYTHON_VERSION:-3.11}
     depends_on:
       - orthanc1
       - orthanc2

@@ -13,7 +13,7 @@ repository = "https://github.com/gacou54/pyorthanc"
 keywords = ["Orthanc", "DICOM", "Medical-Imaging"]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 httpx2 = ">=2.0.0,<3.0.0,!=2.16.1"
 pydicom = ">=2.4,<4.0.0"
 tqdm = { version = ">=4.66,<5", optional = true }
@@ -27,8 +27,6 @@ mkdocs = "^1.6"
 mkdocstrings = { extras = ["python"], version = "^1.0" }
 mkdocs-material = "^9.7"
 jinja2 = "^3.1.6"
-# mkdocstrings 1.0.6 (last version supporting python 3.10) breaks with pymdown-extensions 12
-pymdown-extensions = ">=10.21,<12"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^9"
