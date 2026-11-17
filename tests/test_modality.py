@@ -203,7 +203,7 @@ def test_store_as_job(modality, second_client):
     job = modality.store_as_job(an_instance_identifier, Priority=1)
 
     assert isinstance(job, Job)
-    job.wait_until_completion(time_interval=1)
+    job.wait_until_completion()
     assert job.state == State.success
     assert job.priority == 1
     assert second_client.get_instances() == [an_instance_identifier]
@@ -216,7 +216,7 @@ def test_move_as_job(modality):
     job = modality.move_as_job(response['ID'], {'TargetAet': ORTHANC_1.AeT})
 
     assert isinstance(job, Job)
-    job.wait_until_completion(time_interval=1)
+    job.wait_until_completion()
     assert job.state == State.success
     assert modality.client.get_patients() == [PATIENT_INFORMATION['ID']]
 
@@ -230,6 +230,6 @@ def test_get_as_job(modality):
     )
 
     assert isinstance(job, Job)
-    job.wait_until_completion(time_interval=1)
+    job.wait_until_completion()
     assert job.state == State.success
     assert modality.client.get_patients() == [PATIENT_INFORMATION['ID']]
