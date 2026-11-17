@@ -8318,11 +8318,11 @@ class AsyncOrthanc(httpx2.AsyncClient):
             The generated identifier
         """
         return await self._get(
-            route=f"{self.url}/tools/generate-uid_",
+            route=f"{self.url}/tools/generate-uid",
             params=params,
         )
 
-    async def post_tools_invalid_ate_tags(
+    async def post_tools_invalidate_tags(
         self,
     ) -> Any:
         """(async) Invalidate DICOM-as-JSON summaries
@@ -8335,7 +8335,7 @@ class AsyncOrthanc(httpx2.AsyncClient):
         Any
         """
         return await self._post(
-            route=f"{self.url}/tools/invalid_ate-tags",
+            route=f"{self.url}/tools/invalidate-tags",
         )
 
     async def get_tools_labels(

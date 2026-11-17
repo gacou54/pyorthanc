@@ -8314,11 +8314,11 @@ class Orthanc(httpx2.Client):
             The generated identifier
         """
         return self._get(
-            route=f"{self.url}/tools/generate-uid_",
+            route=f"{self.url}/tools/generate-uid",
             params=params,
         )
 
-    def post_tools_invalid_ate_tags(
+    def post_tools_invalidate_tags(
         self,
     ) -> Any:
         """Invalidate DICOM-as-JSON summaries
@@ -8331,7 +8331,7 @@ class Orthanc(httpx2.Client):
         Any
         """
         return self._post(
-            route=f"{self.url}/tools/invalid_ate-tags",
+            route=f"{self.url}/tools/invalidate-tags",
         )
 
     def get_tools_labels(

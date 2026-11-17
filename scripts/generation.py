@@ -2,7 +2,7 @@ import re
 from typing import Dict, Iterable, Tuple
 
 import simple_openapi_client
-from simple_openapi_client.maker import _make_function_name
+from simple_openapi_client.maker import _make_function_name, _rename_route_parameters
 
 ORTHANC_API_URL = 'https://orthanc.uclouvain.be/api/orthanc-openapi.json'
 
@@ -20,10 +20,10 @@ RETURN_TYPE_CORRECTIONS = {
 }
 
 
-def generate_client(path: str, async_mode: bool = False):
+def generate_client(path: str, async_mode: bool = False, api_url_or_path: str = ORTHANC_API_URL):
     config = simple_openapi_client.Config(client_name='AsyncOrthanc' if async_mode else 'Orthanc')
 
-    document = simple_openapi_client.parse_openapi(ORTHANC_API_URL)
+    document = simple_openapi_client.parse_openapi(api_url_or_path)
     document = _apply_corrections_to_documents(document)
     client_str = simple_openapi_client.make_client(document, config, async_mode=async_mode, use_black=True)
     # simple_openapi_client templates are written for httpx, pyorthanc uses its maintained fork httpx2
@@ -47,7 +47,8 @@ def make_return_types(document) -> Dict[str, str]:
             continue
 
         for operation_name, operation in path.operations.items():
-            function_name = _make_function_name(route.replace('id', 'id_'), operation_name)
+            # Same naming as simple_openapi_client.make_client()
+            function_name = _make_function_name(_rename_route_parameters(route), operation_name)
             return_types[function_name] = _return_type_from_content_types(_success_content_types(operation))
 
     for function_name, return_type in RETURN_TYPE_CORRECTIONS.items():
